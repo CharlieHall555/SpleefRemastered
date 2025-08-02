@@ -3,18 +3,10 @@ ServerLoader.init()
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 
-local PlaneGenerator = require(ModuleDirectory.PlaneGenerator)
+local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
 
-local params : PlaneGenerator.PlaneCreationParams = {
-    size = Vector2.new(10 , 10),
-    shape = "Circle"
-}
+local params : MapGenerator.
 
-local output = PlaneGenerator.generatePlane(params)
+MapGenerator.generate(
 
-local GridGenerator = require(ModuleDirectory.GridGenerator)
-local params2 : GridGenerator.GridCreationParams = {
-    worldPosition = Vector3.new(0 , 50 , 0)
-}
-
-GridGenerator.generateGrid(params2 , output)
+)

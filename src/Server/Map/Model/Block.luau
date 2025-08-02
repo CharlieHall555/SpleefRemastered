@@ -7,20 +7,20 @@ export type BlockConfig = {
 export type Block = {
     Id: number,
     _blockId: number,
-    _gridId: number?,
+    _LayerId: number?,
     Part: Part,
     Shape: string?,
     Regenerates: boolean,
     Obstacle: any?,
     State: string,
-    ParentGrid: any?,
-    GridPosition: Vector2,
+    ParentLayer: any?,
+    LayerPosition: Vector2,
     Falling: boolean,
 
-    setParentGridId: (self: Block, parentGridId: number) -> nil,
+    setParentLayerId: (self: Block, parentLayerId: number) -> nil,
     setObstacle: (self: Block, Obstacle: any) -> nil,
     RemoveObstacle: (self: Block) -> nil,
-    setGridPosition: (self: Block, newGridPosition: Vector2) -> nil,
+    setLayerPosition: (self: Block, newLayerPosition: Vector2) -> nil,
     setWorldPosition: (self: Block , newWorldPosition : Vector3) -> nil,
     getWorldPosition: (self: Block) -> Vector3,
     Destroy: (self: Block) -> nil
@@ -53,7 +53,7 @@ function Block.new(config: BlockConfig?): Block
     self.Id = Counter
     Counter += 1
     self._blockId = self.Id
-    self._gridId = nil
+    self._LayerId = nil
 
     -- take or create part
     self.Part = PartPool.take() or Instance.new("Part")
@@ -80,16 +80,16 @@ function Block.new(config: BlockConfig?): Block
 
     -- initial state
     self.State = "DEFAULT"
-    self.ParentGrid = nil
-    self.GridPosition = Vector2.new(0, 0)
+    self.ParentLayer = nil
+    self.LayerPosition = Vector2.new(0, 0)
     self.Falling = false
 
     LoadedBlocks[self.Id] = self
     return self
 end
 
-function Block:setParentGridId(parentGridId: number): nil
-    self._gridId = parentGridId
+function Block:setParentLayerId(parentLayerId: number): nil
+    self._LayerId = parentLayerId
 end
 
 function Block:setObstacle(obstacle: any)
@@ -106,8 +106,8 @@ function Block:setWorldPosition(newWorldPosition: Vector3): nil
     self.Part.Position = newWorldPosition
 end
 
-function Block:setGridPosition(newGridPosition: Vector2): nil
-    self.GridPosition = newGridPosition
+function Block:setLayerPosition(newLayerPosition: Vector2): nil
+    self.LayerPosition = newLayerPosition
 end
 
 function Block:getWorldPosition(): Vector3
@@ -115,8 +115,8 @@ function Block:getWorldPosition(): Vector3
 end
 
 function Block:Destroy(): nil
-    if self.ParentGrid then
-        self.ParentGrid:RemoveBlock(self)
+    if self.ParentLayer then
+        self.ParentLayer:RemoveBlock(self)
     end
     if self.Obstacle then
         self.Obstacle:Destroy()

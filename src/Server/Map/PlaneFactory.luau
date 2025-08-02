@@ -7,12 +7,12 @@ size: Vector2,
 shape: "Circle" | "Square",
 }
 
-export type PlaneCreationOutput = { [number]: { [number]: PlaceInfo } }
+export type PlaneData = { [number]: { [number]: PlaceInfo } }
 
-local PlaneGenerator = {}
-PlaneGenerator.__index = PlaneGenerator
+local PlaneFactory = {}
+PlaneFactory.__index = PlaneFactory
 
-function PlaneGenerator.generatePlane(params: PlaneCreationParams): PlaneCreationOutput
+function PlaneFactory.create(params: PlaneCreationParams): PlaneData
     local width = math.floor(params.size.X)
     local height = math.floor(params.size.Y)
     local shape = params.shape
@@ -47,4 +47,4 @@ function PlaneGenerator.generatePlane(params: PlaneCreationParams): PlaneCreatio
     return PlanePlane
 end
 
-return PlaneGenerator
+return PlaneFactory

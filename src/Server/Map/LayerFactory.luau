@@ -1,23 +1,23 @@
-export type GridCreationParams = {
+export type LayerCreationParams = {
     worldPosition: Vector3,
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlaneGenerator = require(ModuleDirectory.PlaneGenerator)
-local Grid = require(ModuleDirectory.Map.Grid)
+local PlaneGenerator = require(ModuleDirectory.Map.PlaneFactory)
+local Layer = require(ModuleDirectory.Map.Layer)
 local Block = require(ModuleDirectory.Map.Block)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
-local GridGenerator = {}
-GridGenerator.__index = GridGenerator
+local LayerFactory = {}
+LayerFactory.__index = LayerFactory
 
-function GridGenerator.generateGrid(params: GridCreationParams, plane: PlaneGenerator.PlaneCreationOutput): Grid.Grid
+function LayerFactory.create(params: LayerCreationParams, plane: PlaneGenerator.PlaneData): Layer.Layer
     local width = #plane
     local height = #plane[1]
     local origin = params.worldPosition
     local blockSize = Config.BLOCK_SIZE
 
-    local grid = Grid.new(origin, Vector2.new(width, height))
+    local Layer = Layer.new(origin, Vector2.new(width, height))
 
     for x = 1, width do
         for y = 1, height do
@@ -30,14 +30,14 @@ function GridGenerator.generateGrid(params: GridCreationParams, plane: PlaneGene
                 )
                 local blk = Block.new()
                 blk:setWorldPosition(worldPos)
-                blk:setGridPosition(Vector2.new(x, y))
-                blk:setParentGridId(grid._id)
-                grid:addBlock(blk, Vector2.new(x, y))
+                blk:setLayerPosition(Vector2.new(x, y))
+                blk:setParentLayerId(Layer._id)
+                Layer:addBlock(blk, Vector2.new(x, y))
             end
         end
     end
 
-    return grid
+    return Layer
 end
 
-return GridGenerator
+return LayerFactory

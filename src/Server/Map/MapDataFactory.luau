@@ -1,31 +1,28 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlaneGenerator = require(ModuleDirectory.PlaneGenerator)
-local GridGenerator = require(ModuleDirectory.GridGenerator)
+local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
+local LayerFactory = require(ModuleDirectory.Map.LayerFactory)
 
 export type MapGenerationParams = {
 layerSeperation: number,
 originPosition: Vector3,
-layerParams: {PlaneGenerator.PlaneCreationParams}
+layerParams: {PlaneFactory.PlaneCreationParams}
 }
 
 export type layerOutput = {
 layerNumber: number,
-gridParms: GridGenerator.GridCreationParams,
-planeInfo: PlaneGenerator.PlaneCreationOutput
+LayerParms: LayerFactory.LayerCreationParams,
+planeInfo: PlaneFactory.PlaneData
 }
 
-export type MapGeneratorOutput = {
+export type MapData = {
 layerSeperation: number,
-gridToGenerate: {layerOutput}
+LayerToGenerate: {layerOutput}
 }
 
-export type MapGenerator = {
-generateMap: (self: MapGenerator, params: MapGenerationParams) -> MapGeneratorOutput
-}
 
 local MapGenerator = {}
 
-function MapGenerator:generateMap(params: MapGenerationParams): MapGeneratorOutput
+function MapGenerator:generateMap(params: MapGenerationParams): MapData
     local layerSeperation = params.layerSeperation
     local originPosition = params.originPosition
     local outputs: {layerOutput} = {}
@@ -36,21 +33,21 @@ function MapGenerator:generateMap(params: MapGenerationParams): MapGeneratorOutp
         local creationParams = table.clone(planeParams)
         creationParams.worldPosition = worldPosition
 
-        local planeInfo = PlaneGenerator.generatePlane(creationParams)
-        local gridParms: GridGenerator.GridCreationParams = {
+        local planeInfo = PlaneFactory.create(creationParams)
+        local LayerParms: LayerFactory.LayerCreationParams = {
             worldPosition = worldPosition
         }
 
         table.insert(outputs, {
             layerNumber = layerNumber,
-            gridParms = gridParms,
+            LayerParms = LayerParms,
             planeInfo = planeInfo
         })
     end
 
     return {
         layerSeperation = layerSeperation,
-        gridToGenerate = outputs
+        LayerToGenerate = outputs
     }
 end
 

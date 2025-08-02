@@ -8,20 +8,27 @@ ModuleDirectory.ValueBinder = game:GetService("ServerScriptService").Core.ValueB
 ModuleDirectory.Container = game:GetService("ServerScriptService").Model.Inventory.Container
 ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Slot
 
+
+-- Map Generation System
+ModuleDirectory.Map = {}
+ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Map.Model.Block
+ModuleDirectory.Map.Layer = game:GetService("ServerScriptService").Map.Model.Layer
+ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
+
+ModuleDirectory.Map.PlaneFactory = game:GetService("ServerScriptService").Map.PlaneFactory
+ModuleDirectory.Map.LayerFactory = game:GetService("ServerScriptService").Map.LayerFactory
+ModuleDirectory.Map.MapDataFactory = game:GetService("ServerScriptService").Map.MapDataFactory
+ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.MapGenerator
+
+
 -- Model Player
 ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player.PlayerData
-ModuleDirectory.Map = {}
-ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Model.Map.Block
-ModuleDirectory.Map.Grid = game:GetService("ServerScriptService").Model.Map.Grid
-ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Model.Map.Map
+
 
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 
-ModuleDirectory.PlaneGenerator = game:GetService("ServerScriptService").Controller.PlaneGenerator
-ModuleDirectory.GridGenerator = game:GetService("ServerScriptService").Controller.GridGenerator
-ModuleDirectory.MapGenerator = game:GetService("ServerScriptService").Controller.MapGenerator
-ModuleDirectory.MapBuilder = game:GetService("ServerScriptService").Controller.MapBuilder
+
 
 
 -- Resources
