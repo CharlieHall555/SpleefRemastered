@@ -1,0 +1,35 @@
+{
+  "name": "ArgonStartProject",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$path": "src/Shared",
+      "Asynchronous": {
+        "$className": "RemoteEvent"
+      },
+      "Synchronous": {
+        "$className": "RemoteFunction"
+      }
+    },
+    "ServerScriptService": {
+      "$path": "src/Server",
+      "BindableEvent": {
+        "$className": "BindableEvent"
+      },
+      "BindableFunction": {
+        "$className": "BindableFunction"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "$path": "src/Client",
+        "BindableEvent": {
+          "$className": "BindableEvent"
+        },
+        "BindableFunction": {
+          "$className": "BindableFunction"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,74 @@
+local Timer = {}
+local Debris = game:GetService("Debris")
+local RunService = game:GetService("RunService")
+
+export type Timer = {
+	Time: number,
+	State: string,
+	Callback: (any?) -> (any?),
+	Connection: RBXScriptConnection?,
+
+	Start: (self: Timer) -> nil,
+	Pause: (self: Timer) -> nil,
+	Restart: (self: Timer) -> nil,
+	End: (self: Timer) -> nil,
+	Destroy: (self: Timer) -> nil,
+}
+
+local function tickdown(Timer: Timer, deltaTime: number)
+	Timer.Time -= deltaTime
+	if Timer.Time <= 0 then
+		if Timer.Callback then
+			Timer["Callback"]()
+		end
+	end
+end
+
+function Timer.init() end
+
+function Timer.new(Callback: () -> ()): Timer
+	local newTimer = {}
+	setmetatable(newTimer, Timer)
+	newTimer.Time = 0
+	newTimer.State = "Idle"
+	newTimer.CallBack = Callback
+	newTimer.Connection = nil
+	return newTimer
+end
+
+function Timer:Start(StartTime: number): nil
+	self.Time = 0
+	self.State = "Running"
+	self.Connection = RunService.RenderStepped:Connect(function(deltaTime)
+		tickdown(self, deltaTime)
+	end)
+end
+
+function Timer:Restart(): nil
+	if self.Connection then
+		self.Connection:Disconnect()
+	end
+	self.Connection = RunService.RenderStepped:Connect(function(deltaTime)
+		tickdown(self, deltaTime)
+	end)
+end
+
+function Timer:Pause(): nil
+	self.State = "Paused"
+	if self.Connection then
+		self.Connection:Disconnect()
+	end
+end
+
+function Timer:End(): nil
+	self:Destroy()
+end
+
+function Timer:Destroy(): nil
+	if self.Connection then
+		self.Connection:Disconnect()
+	end
+	self = nil
+end
+
+return Timer
