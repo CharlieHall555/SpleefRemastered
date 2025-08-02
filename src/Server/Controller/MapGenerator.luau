@@ -1,48 +1,57 @@
-export type PlaceInfo = {
-place: boolean
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local PlaneGenerator = require(ModuleDirectory.PlaneGenerator)
+local GridGenerator = require(ModuleDirectory.GridGenerator)
+
+export type MapGenerationParams = {
+layerSeperation: number,
+originPosition: Vector3,
+layerParams: {PlaneGenerator.PlaneCreationParams}
 }
 
-export type MapCreationParams = {
-size: Vector2,
-shape: "Circle" | "Square",
+export type layerOutput = {
+layerNumber: number,
+gridParms: GridGenerator.GridCreationParams,
+planeInfo: PlaneGenerator.PlaneCreationOutput
+}
+
+export type MapGeneratorOutput = {
+layerSeperation: number,
+gridToGenerate: {layerOutput}
+}
+
+export type MapGenerator = {
+generateMap: (self: MapGenerator, params: MapGenerationParams) -> MapGeneratorOutput
 }
 
 local MapGenerator = {}
-MapGenerator.__index = MapGenerator
 
-function MapGenerator.generatePlane(params: MapCreationParams): { [number]: { [number]: PlaceInfo } }
-    local width = math.floor(params.size.X)
-    local height = math.floor(params.size.Y)
-    local shape = params.shape
+function MapGenerator:generateMap(params: MapGenerationParams): MapGeneratorOutput
+    local layerSeperation = params.layerSeperation
+    local originPosition = params.originPosition
+    local outputs: {layerOutput} = {}
 
-    local mapPlane: { [number]: { [number]: PlaceInfo } } = {}
 
-    if shape == "Square" then
-        for x = 1, width do
-            mapPlane[x] = {}
-            for y = 1, height do
-                mapPlane[x][y] = { place = true }
-            end
-        end
-    elseif shape == "Circle" then
-        local cx = (width + 1) / 2
-        local cy = (height + 1) / 2
-        local radius = math.min(width, height) / 2
+    for layerNumber, planeParams in ipairs(params.layerParams) do
+        local worldPosition = originPosition + Vector3.new(0, layerSeperation * (layerNumber - 1), 0)
+        local creationParams = table.clone(planeParams)
+        creationParams.worldPosition = worldPosition
 
-        for x = 1, width do
-            mapPlane[x] = {}
-            for y = 1, height do
-                local dx = x - cx
-                local dy = y - cy
-                local inside = (dx * dx + dy * dy) <= (radius * radius)
-                mapPlane[x][y] = { place = inside }
-            end
-        end
-    else
-        error(("MapGenerator.generatePlane: Unsupported shape %s"):format(tostring(shape)))
+        local planeInfo = PlaneGenerator.generatePlane(creationParams)
+        local gridParms: GridGenerator.GridCreationParams = {
+            worldPosition = worldPosition
+        }
+
+        table.insert(outputs, {
+            layerNumber = layerNumber,
+            gridParms = gridParms,
+            planeInfo = planeInfo
+        })
     end
 
-    return mapPlane
+    return {
+        layerSeperation = layerSeperation,
+        gridToGenerate = outputs
+    }
 end
 
 return MapGenerator

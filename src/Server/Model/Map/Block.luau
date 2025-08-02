@@ -17,11 +17,11 @@ export type Block = {
     GridPosition: Vector2,
     Falling: boolean,
 
-    setParentGrid: (self: Block, ParentGrid: any) -> nil,
+    setParentGridId: (self: Block, parentGridId: number) -> nil,
     setObstacle: (self: Block, Obstacle: any) -> nil,
-    setParent: (self: Block, newParent: Instance) -> nil,
     RemoveObstacle: (self: Block) -> nil,
     setGridPosition: (self: Block, newGridPosition: Vector2) -> nil,
+    setWorldPosition: (self: Block , newWorldPosition : Vector3) -> nil,
     getWorldPosition: (self: Block) -> Vector3,
     Destroy: (self: Block) -> nil
 }
@@ -45,7 +45,7 @@ function Block.new(config: BlockConfig?): Block
     config = config or {}
     local materialName = config.Material or "Sand"
     local shape = config.Shape
-    local regenerates  = config.Regenerates or false
+    local regenerates = config.Regenerates or false
 
     local self = setmetatable({}, Block)
 
@@ -53,7 +53,7 @@ function Block.new(config: BlockConfig?): Block
     self.Id = Counter
     Counter += 1
     self._blockId = self.Id
-    self._gridId  = nil
+    self._gridId = nil
 
     -- take or create part
     self.Part = PartPool.take() or Instance.new("Part")
@@ -63,7 +63,8 @@ function Block.new(config: BlockConfig?): Block
     self.Part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
     self.Part.Color = Materials[materialName].Color
     self.Part.Material = Materials[materialName].Material
-    self.Part.Anchored  = true
+    self.Part.Anchored = true
+    self.Part.Parent = game.Workspace
     self.Part:AddTag("Block")
     self.Part:SetAttribute("Id", self.Id)
 
@@ -74,24 +75,21 @@ function Block.new(config: BlockConfig?): Block
 
     if shape == "Ball" then
         self.Part.Shape = Enum.PartType.Ball
-        self.Part.Size  = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
+        self.Part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
     end
 
     -- initial state
     self.State = "DEFAULT"
     self.ParentGrid = nil
     self.GridPosition = Vector2.new(0, 0)
-    self.Falling  = false
+    self.Falling = false
 
     LoadedBlocks[self.Id] = self
     return self
 end
 
-function Block:setParentGrid(parentGrid: any): nil
-    self.ParentGrid = parentGrid
-    if parentGrid and parentGrid._gridId then
-        self._gridId = parentGrid._gridId
-    end
+function Block:setParentGridId(parentGridId: number): nil
+    self._gridId = parentGridId
 end
 
 function Block:setObstacle(obstacle: any)
@@ -99,28 +97,17 @@ function Block:setObstacle(obstacle: any)
     obstacle:setParentBlock(self)
 end
 
-function Block:setParent(newParent: Instance)
-    self.Part.Parent = newParent
-end
 
 function Block:RemoveObstacle()
     self.Obstacle = nil
 end
 
+function Block:setWorldPosition(newWorldPosition: Vector3): nil
+    self.Part.Position = newWorldPosition
+end
+
 function Block:setGridPosition(newGridPosition: Vector2): nil
     self.GridPosition = newGridPosition
-    self.Part.Parent = game.Workspace.Map
-    local origin = self.ParentGrid.OriginPosition
-
-    self.Part.Position = Vector3.new(
-        origin.X + (newGridPosition.X * self.Part.Size.X),
-        origin.Y,
-        origin.Z + (newGridPosition.Y * self.Part.Size.Z)
-    )
-
-    if self.Shape == "Ball" then
-        self.Part.Size = Vector3.new(5.5, 5.5, 5.5)
-    end
 end
 
 function Block:getWorldPosition(): Vector3
@@ -136,7 +123,7 @@ function Block:Destroy(): nil
     end
 
     self.Part.Transparency = 1
-    self.Part.CanCollide   = false
+    self.Part.CanCollide = false
     PartPool.add(self.Part)
 
     LoadedBlocks[self.Id] = nil

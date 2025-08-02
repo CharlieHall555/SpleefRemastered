@@ -13,11 +13,16 @@ ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player
 ModuleDirectory.Map = {}
 ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Model.Map.Block
 ModuleDirectory.Map.Grid = game:GetService("ServerScriptService").Model.Map.Grid
+ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Model.Map.Map
 
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 
+ModuleDirectory.PlaneGenerator = game:GetService("ServerScriptService").Controller.PlaneGenerator
+ModuleDirectory.GridGenerator = game:GetService("ServerScriptService").Controller.GridGenerator
 ModuleDirectory.MapGenerator = game:GetService("ServerScriptService").Controller.MapGenerator
+ModuleDirectory.MapBuilder = game:GetService("ServerScriptService").Controller.MapBuilder
+
 
 -- Resources
 ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Materials
