@@ -2,53 +2,57 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
 local LayerFactory = require(ModuleDirectory.Map.LayerFactory)
 
-export type MapGenerationParams = {
-layerSeperation: number,
-originPosition: Vector3,
-layerParams: {PlaneFactory.PlaneCreationParams}
+export type MapDataCreationParams = {
+	layerSeperation: number,
+	originPosition: Vector3,
+	layerParams: { PlaneFactory.PlaneCreationParams },
 }
 
 export type layerOutput = {
-layerNumber: number,
-LayerParms: LayerFactory.LayerCreationParams,
-planeInfo: PlaneFactory.PlaneData
+	layerNumber: number,
+	layerParms: LayerFactory.LayerCreationParams,
+	planeInfo: PlaneFactory.PlaneData,
 }
 
 export type MapData = {
-layerSeperation: number,
-LayerToGenerate: {layerOutput}
+	originPosition: Vector3,
+	layerSeperation: number,
+	layersToGenerate: { layerOutput },
 }
 
+local MapDataFactory = {}
 
-local MapGenerator = {}
+function MapDataFactory.create(params: MapDataCreationParams): MapData
+	local separation = params.layerSeperation
+	local origin = params.originPosition
+	local outputs: { any } = {}
 
-function MapGenerator:generateMap(params: MapGenerationParams): MapData
-    local layerSeperation = params.layerSeperation
-    local originPosition = params.originPosition
-    local outputs: {layerOutput} = {}
+    print(separation)
 
+	for i, planeParams in ipairs(params.layerParams) do
+		local height = origin.Y + separation * (i - 1)
+		-- Calculate worldPosition so each layer is centered at origin X,Z
+		local worldPosition = Vector3.new(origin.X, height, origin.Z)
 
-    for layerNumber, planeParams in ipairs(params.layerParams) do
-        local worldPosition = originPosition + Vector3.new(0, layerSeperation * (layerNumber - 1), 0)
-        local creationParams = table.clone(planeParams)
-        creationParams.worldPosition = worldPosition
+		local clonedParams = table.clone(planeParams)
 
-        local planeInfo = PlaneFactory.create(creationParams)
-        local LayerParms: LayerFactory.LayerCreationParams = {
-            worldPosition = worldPosition
-        }
+		local planeInfo = PlaneFactory.create(clonedParams)
+		local layerParams: LayerFactory.LayerCreationParams = {
+			worldPosition = worldPosition,
+		}
 
-        table.insert(outputs, {
-            layerNumber = layerNumber,
-            LayerParms = LayerParms,
-            planeInfo = planeInfo
-        })
-    end
+		table.insert(outputs, {
+			layerNumber = i,
+			layerParams = layerParams,
+			planeInfo = planeInfo,
+		})
+	end
 
-    return {
-        layerSeperation = layerSeperation,
-        LayerToGenerate = outputs
-    }
+	return {
+		layerSeparation = separation,
+		layersToGenerate = outputs,
+		originPosition = origin,
+	}
 end
 
-return MapGenerator
+return MapDataFactory

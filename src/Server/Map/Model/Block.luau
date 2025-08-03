@@ -97,7 +97,6 @@ function Block:setObstacle(obstacle: any)
     obstacle:setParentBlock(self)
 end
 
-
 function Block:RemoveObstacle()
     self.Obstacle = nil
 end

@@ -18,6 +18,7 @@ ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
 ModuleDirectory.Map.PlaneFactory = game:GetService("ServerScriptService").Map.PlaneFactory
 ModuleDirectory.Map.LayerFactory = game:GetService("ServerScriptService").Map.LayerFactory
 ModuleDirectory.Map.MapDataFactory = game:GetService("ServerScriptService").Map.MapDataFactory
+ModuleDirectory.Map.MapBuilder = game:GetService("ServerScriptService").Map.MapBuilder
 ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.MapGenerator
 
 
