@@ -35,6 +35,12 @@ local function loadTable(tableToLoad : {}) : nil
 		else
 			warn(ModuleName .. " Missing .init() method.")
 		end
+		local loaded_fun = EachModule["onLoaded"]
+		if loaded_fun then
+			loaded_fun()
+		else
+			warn(ModuleName .. " Missing .onLoaded() method.")
+		end
 	end
 
 end

@@ -38,12 +38,13 @@ function PlayersInGame.removePlayer(player: Player): nil
     for i, p in ipairs(activePlayers) do
         if p == player then
             table.remove(activePlayers, i)
+            if onChange then
+                onChange(activePlayers)
+            end
             break
         end
     end
-    if onChange then
-        onChange(activePlayers)
-    end
+    
 end
 
 function PlayersInGame.setOnChange(fn: (players: { Player }) -> ()): nil

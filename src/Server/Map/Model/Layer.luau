@@ -1,5 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local Block = ModuleDirectory.Map.Block
+local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
+local Block = require(ModuleDirectory.Map.Block)
 
 export type Layer = {
     _id: number,
@@ -69,9 +70,9 @@ function Layer:getRandomBlock(): Block.Block?
     return self.Blocks[math.random(1, #self.Blocks)]
 end
 
-function Layer:destroy(): nil
+function Layer:Destroy(): nil
     for _, blk in ipairs(self.Blocks) do
-        blk:Destroy()
+        BlockFactory.destroy(blk)
     end
     self.Blocks = {}
     self.TileMap = {}

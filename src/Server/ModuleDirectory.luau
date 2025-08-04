@@ -11,6 +11,9 @@ ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Sl
 ModuleDirectory.PlayerPool = game:GetService("ServerScriptService").Round.PlayerPool
 ModuleDirectory.PlayersInGame = game:GetService("ServerScriptService").Round.PlayersInGame
 ModuleDirectory.PlayerDeathDetector = game:GetService("ServerScriptService").Round.PlayerDeathDetector
+ModuleDirectory.TeleportManager = game:GetService("ServerScriptService").Round.TeleportManager
+ModuleDirectory.RoundManager = game:GetService("ServerScriptService").Round.RoundManager
+ModuleDirectory.PlayerPositionTracker = game:GetService("ServerScriptService").Gameplay.PlayerPositionTracker
 
 
 -- Map Generation System
@@ -18,6 +21,7 @@ ModuleDirectory.Map = {}
 ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Map.Model.Block
 ModuleDirectory.Map.Layer = game:GetService("ServerScriptService").Map.Model.Layer
 ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
+ModuleDirectory.Map.BlockFactory = game:GetService("ServerScriptService").Map.BlockFactory
 
 ModuleDirectory.Map.PlaneFactory = game:GetService("ServerScriptService").Map.PlaneFactory
 ModuleDirectory.Map.LayerFactory = game:GetService("ServerScriptService").Map.LayerFactory

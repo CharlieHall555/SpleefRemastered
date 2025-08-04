@@ -5,7 +5,7 @@ export type LayerCreationParams = {
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
 local Layer = require(ModuleDirectory.Map.Layer)
-local Block = require(ModuleDirectory.Map.Block)
+local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 local LayerFactory = {}
@@ -41,7 +41,7 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
                     0,
                     (y - 1) * blockSize
                 )
-                local blk = Block.new()
+                local blk = BlockFactory.create()
                 blk:setWorldPosition(worldPos)
                 blk:setLayerPosition(Vector2.new(x, y))
                 blk:setParentLayerId(layerInstance._id)

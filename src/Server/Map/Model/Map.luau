@@ -37,4 +37,12 @@ function Map:getTopLayer(): Layer.Layer ?
     return nil
 end
 
+function Map:Destroy()
+    for _ , each in self.Layers do
+        each:Destroy()
+    end
+
+    self = nil 
+end
+
 return Map
