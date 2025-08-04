@@ -1,6 +1,7 @@
 local Timer = {}
 local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
+Timer.__index = Timer
 
 export type Timer = {
 	Time: number,
@@ -8,7 +9,7 @@ export type Timer = {
 	Callback: (any?) -> (any?),
 	Connection: RBXScriptConnection?,
 
-	Start: (self: Timer) -> nil,
+	Start: (self: Timer , startTime : number) -> nil,
 	Pause: (self: Timer) -> nil,
 	Restart: (self: Timer) -> nil,
 	End: (self: Timer) -> nil,
@@ -39,7 +40,7 @@ end
 function Timer:Start(StartTime: number): nil
 	self.Time = 0
 	self.State = "Running"
-	self.Connection = RunService.RenderStepped:Connect(function(deltaTime)
+	self.Connection = RunService.Stepped:Connect(function(deltaTime)
 		tickdown(self, deltaTime)
 	end)
 end
@@ -48,7 +49,7 @@ function Timer:Restart(): nil
 	if self.Connection then
 		self.Connection:Disconnect()
 	end
-	self.Connection = RunService.RenderStepped:Connect(function(deltaTime)
+	self.Connection = RunService.Stepped:Connect(function(deltaTime)
 		tickdown(self, deltaTime)
 	end)
 end

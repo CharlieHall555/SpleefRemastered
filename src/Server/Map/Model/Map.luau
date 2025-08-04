@@ -22,7 +22,7 @@ function Map.new(originPosition: Vector3): Map
     return self
 end
 
-function Map:addLayer(Layer: Layer.Layer): nil
+function Map:addLayer(Layer:Layer.Layer): nil
     table.insert(self.Layers, Layer)
     self.Count += 1
 end

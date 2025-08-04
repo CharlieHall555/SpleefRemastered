@@ -27,3 +27,6 @@ local testMapParams: MapDataFactory.MapDataCreationParams = {
 
 -- then generate:
 local map = MapGenerator.generate(testMapParams)
+
+local RoundSystem = require(ModuleDirectory.RoundSystem)
+RoundSystem.main()

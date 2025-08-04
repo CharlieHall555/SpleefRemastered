@@ -8,6 +8,8 @@ ModuleDirectory.ValueBinder = game:GetService("ServerScriptService").Core.ValueB
 ModuleDirectory.Container = game:GetService("ServerScriptService").Model.Inventory.Container
 ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Slot
 
+ModuleDirectory.PlayerPool = game:GetService("ServerScriptService").Round.PlayerPool
+ModuleDirectory.ActivePlayers = game:GetService("ServerScriptService").Round.ActivePlayers
 
 -- Map Generation System
 ModuleDirectory.Map = {}
@@ -21,6 +23,7 @@ ModuleDirectory.Map.MapDataFactory = game:GetService("ServerScriptService").Map.
 ModuleDirectory.Map.MapBuilder = game:GetService("ServerScriptService").Map.MapBuilder
 ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.MapGenerator
 
+ModuleDirectory.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
 
 -- Model Player
 ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player.PlayerData
@@ -29,7 +32,7 @@ ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 
-
+ModuleDirectory.Timer = game:GetService("ReplicatedStorage").Utilities.Timer
 
 
 -- Resources
