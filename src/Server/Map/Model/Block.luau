@@ -38,7 +38,8 @@ Block.__index = Block
 local Counter = 0
 
 function Block.init(): nil
-    -- no-op for now
+    local BlocksFolder = Instance.new("Folder" , game.Workspace)
+    BlocksFolder.Name = "Blocks"
 end
 
 function Block.new(config: BlockConfig?): Block
@@ -64,7 +65,7 @@ function Block.new(config: BlockConfig?): Block
     self.Part.Color = Materials[materialName].Color
     self.Part.Material = Materials[materialName].Material
     self.Part.Anchored = true
-    self.Part.Parent = game.Workspace
+    self.Part.Parent = game.Workspace.Blocks
     self.Part:AddTag("Block")
     self.Part:SetAttribute("Id", self.Id)
 

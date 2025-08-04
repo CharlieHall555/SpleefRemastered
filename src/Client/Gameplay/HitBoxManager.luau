@@ -97,7 +97,10 @@ function HitBoxManager.init()
         local tags = otherPart:GetTags()
         for _ , each in tags do
             local f = tagCallback[each]
-            f(otherPart)
+            if f then 
+                f(otherPart)
+            end
+           
         end
 
     end)
