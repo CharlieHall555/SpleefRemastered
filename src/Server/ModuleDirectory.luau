@@ -9,7 +9,9 @@ ModuleDirectory.Container = game:GetService("ServerScriptService").Model.Invento
 ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Slot
 
 ModuleDirectory.PlayerPool = game:GetService("ServerScriptService").Round.PlayerPool
-ModuleDirectory.ActivePlayers = game:GetService("ServerScriptService").Round.ActivePlayers
+ModuleDirectory.PlayersInGame = game:GetService("ServerScriptService").Round.PlayersInGame
+ModuleDirectory.PlayerDeathDetector = game:GetService("ServerScriptService").Round.PlayerDeathDetector
+
 
 -- Map Generation System
 ModuleDirectory.Map = {}
@@ -27,7 +29,6 @@ ModuleDirectory.RoundSystem = game:GetService("ServerScriptService").Round.Round
 
 -- Model Player
 ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player.PlayerData
-
 
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool

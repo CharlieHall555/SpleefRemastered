@@ -19,8 +19,11 @@ export type Timer = {
 local function tickdown(Timer: Timer, deltaTime: number)
 	Timer.Time -= deltaTime
 	if Timer.Time <= 0 then
+		if Timer.Connection then
+				Timer.Connection:Disconnect()
+		end
 		if Timer.Callback then
-			Timer["Callback"]()
+			Timer["Callback"]()	
 		end
 	end
 end
@@ -32,15 +35,18 @@ function Timer.new(Callback: () -> ()): Timer
 	setmetatable(newTimer, Timer)
 	newTimer.Time = 0
 	newTimer.State = "Idle"
-	newTimer.CallBack = Callback
+	newTimer.Callback = Callback
 	newTimer.Connection = nil
 	return newTimer
 end
 
 function Timer:Start(StartTime: number): nil
-	self.Time = 0
+	self.Time = StartTime
 	self.State = "Running"
-	self.Connection = RunService.Stepped:Connect(function(deltaTime)
+	if self.Connection then
+		self.Connection:Disconnect()
+	end
+	self.Connection = RunService.Stepped:Connect(function(_ , deltaTime)
 		tickdown(self, deltaTime)
 	end)
 end
@@ -49,7 +55,7 @@ function Timer:Restart(): nil
 	if self.Connection then
 		self.Connection:Disconnect()
 	end
-	self.Connection = RunService.Stepped:Connect(function(deltaTime)
+	self.Connection = RunService.Stepped:Connect(function(_ ,deltaTime)
 		tickdown(self, deltaTime)
 	end)
 end

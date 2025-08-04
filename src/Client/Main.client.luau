@@ -4,4 +4,5 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientLoader = require(Root.Core.ClientLoader)
 ClientLoader.init()
 
-
+local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+RemoteEventHandler.FireOnServer("PLAYER_LOADED")
