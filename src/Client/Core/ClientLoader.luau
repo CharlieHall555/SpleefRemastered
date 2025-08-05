@@ -26,7 +26,7 @@ local function loadTable(tableToLoad : {}) : nil
 		if result == nil then continue end 
 		
 		local EachModule = result
-		table.insert(loaded , EachModule)
+		loaded[ModuleName] = EachModule
 
         print(EachModule)
 		local init_fun = EachModule["init"]
@@ -35,6 +35,16 @@ local function loadTable(tableToLoad : {}) : nil
 		else
 			warn(ModuleName .. " Missing .init() method.")
 		end
+	end
+	for ModuleName , EachModule in loaded do
+		
+		local loaded_fun = EachModule["onLoaded"]
+		if loaded_fun then
+			loaded_fun()
+		else
+			warn(ModuleName .. " Missing .onLoaded() method.")
+		end
+	
 	end
 
 end
