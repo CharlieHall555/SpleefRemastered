@@ -29,6 +29,7 @@ function PartPool.startUp(initial)
     for i = 1 , initial do
         partCount += 1
         local newPart = Instance.new("Part")
+        newPart.CastShadow = false
         table.insert(partDump , newPart)
         if partCount > Config.PARTS_PER_FRAME then
             task.wait()

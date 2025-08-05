@@ -46,6 +46,7 @@ function RoundManager.init(): nil
 	end)
 
 	RoundSystem.connectEnding(function()
+		print("hahsah")
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(100,0, 0))
 		task.wait()
 		currentMap:Destroy()

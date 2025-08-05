@@ -22,6 +22,7 @@ function Map.new(originPosition: Vector3): Map
     return self
 end
 
+---@diagnostic disable-next-line: undefined-type
 function Map:addLayer(Layer:Layer.Layer): nil
     table.insert(self.Layers, Layer)
     self.Count += 1

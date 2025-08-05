@@ -146,7 +146,7 @@ function RoundSystem.onACTIVE()
 end
 
 function RoundSystem.onENDING()
-	PlayersInGame.clear()
+	
 end
 
 function RoundSystem.changeState(newState: RoundState): nil
@@ -162,6 +162,7 @@ function RoundSystem.changeState(newState: RoundState): nil
 	end
 
 	if newState == "ENDING" then
+		PlayersInGame.clear()
 		RoundSystem.queueEvent(buildEventContext("END_COMPLETE"))
 	elseif newState == "STARTING" then
 		RoundSystem.queueEvent(buildEventContext("STARTUP_COMPLETE"))

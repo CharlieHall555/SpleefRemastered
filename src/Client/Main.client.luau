@@ -12,9 +12,3 @@ local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 
 local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTracker)
 
-while true do
-
-    ClientThrowableTracker.newThrowable(Vector3.new(10 , 20 , 30) , Vector3.new(math.random(), math.random() , math.random()))
-    task.wait(0.1)
-    
-end

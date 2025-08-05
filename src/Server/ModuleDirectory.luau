@@ -15,6 +15,9 @@ ModuleDirectory.TeleportManager = game:GetService("ServerScriptService").Round.T
 ModuleDirectory.RoundManager = game:GetService("ServerScriptService").Round.RoundManager
 ModuleDirectory.PlayerPositionTracker = game:GetService("ServerScriptService").Gameplay.PlayerPositionTracker
 
+ModuleDirectory.Throwable = game:GetService("ServerScriptService").Throwable.Throwable
+ModuleDirectory.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
+ModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
 
 -- Map Generation System
 ModuleDirectory.Map = {}
@@ -36,9 +39,9 @@ ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player
 
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
-
+ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ModuleDirectory.Timer = game:GetService("ReplicatedStorage").Utilities.Timer
-
+ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
 -- Resources
 ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Materials

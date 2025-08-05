@@ -38,8 +38,9 @@ Block.__index = Block
 local Counter = 0
 
 function Block.init(): nil
-    local BlocksFolder = Instance.new("Folder" , game.Workspace)
+    local BlocksFolder = Instance.new("Folder")
     BlocksFolder.Name = "Blocks"
+    BlocksFolder.Parent = game.Workspace
 end
 
 function Block.new(config: BlockConfig?): Block
