@@ -1,6 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
 
 local REINSTATEMENT_THRESHOLD = 0.5
 
@@ -27,13 +28,14 @@ function ClientDestructionHandler.destroyBlock(block: Part)
 end
 
 function ClientDestructionHandler:init()
-    RemoteEventHandler.newEventConnection("BLOCK_DESTROY_CONFIRMATION", function(blockId: number)
-        ClientDestructionHandler.receiveDestroyedBlock(blockId)
+    RemoteEventHandler.newEventConnection("BLOCK_DESTROY_CONFIRMATION", function(blockId: number, type : string , pos : Vector3)
+        ClientDestructionHandler.receiveDestroyedBlock(blockId , type , pos)
     end)
 end
 
-function ClientDestructionHandler.receiveDestroyedBlock(blockId: number)
+function ClientDestructionHandler.receiveDestroyedBlock(blockId: number , type : string , blockWorldPosition : Vector3)
     _awaitingConfirmation[blockId] = nil
+    SoundPlayer.queuePositionalSound("rbxassetid://18568754795", blockWorldPosition)
 end
 
 return ClientDestructionHandler

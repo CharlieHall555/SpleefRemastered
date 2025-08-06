@@ -16,6 +16,7 @@ export type Block = {
     ParentLayer: any?,
     LayerPosition: Vector2,
     Falling: boolean,
+    Type : string,
 
     setParentLayerId: (self: Block, parentLayerId: number) -> nil,
     setObstacle: (self: Block, Obstacle: any) -> nil,
@@ -45,7 +46,7 @@ end
 
 function Block.new(config: BlockConfig?): Block
     config = config or {}
-    local materialName = config.Material or "Sand"
+    local materialName = config.Type or "Sand"
     local shape = config.Shape
     local regenerates = config.Regenerates or false
 
@@ -56,6 +57,7 @@ function Block.new(config: BlockConfig?): Block
     Counter += 1
     self._blockId = self.Id
     self._LayerId = nil
+    self.Type = config.Type
 
     -- take or create part
     self.Part = PartPool.take() or Instance.new("Part")

@@ -47,5 +47,5 @@ ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThr
 	end
 end)
 
-local player = game.Players.LocalPlayer
-print(player:GetNetworkPing())
+local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+

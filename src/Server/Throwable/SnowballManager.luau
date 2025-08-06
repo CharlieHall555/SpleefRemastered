@@ -4,7 +4,8 @@ local Config = require(game:GetService("ServerScriptService").ServerConfiguratio
 local ThrowableManager = require(ModuleDirectory.ThrowableManager)
 local Throwable = require(ModuleDirectory.Throwable)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
-
+local Block = require(ModuleDirectory.Map.Block)
+local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local SnowballManager = {}
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
@@ -18,8 +19,10 @@ function SnowballManager.onHit(throwable : Throwable.Throwable , hit : RaycastRe
 	print("hit " .. hit.Instance.Name)
 	local blockId = hit.Instance:GetAttribute("Id")
 	if blockId then
+		local block : Block.Block = LoadedBlocks[blockId]
+		local blockPosition = hit.Instance.Position
 		BlockFactory.destroyById(blockId)
-		RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId)
+		RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , block.Type , blockPosition)
 	end
 end
 
