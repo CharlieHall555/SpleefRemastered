@@ -16,6 +16,7 @@ ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool  
 
 ModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
+ModuleDirectory.ClientSideStateTracker = Root.ClientSideStateTracker
 
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil

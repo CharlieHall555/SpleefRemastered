@@ -121,9 +121,6 @@ function Block:getWorldPosition(): Vector3
 end
 
 function Block:Destroy(): nil
-	if self.ParentLayer then
-		self.ParentLayer:RemoveBlock(self)
-	end
 	if self.Obstacle then
 		self.Obstacle:Destroy()
 	end

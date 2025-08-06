@@ -6,7 +6,8 @@ Timer.__index = Timer
 export type Timer = {
 	Time: number,
 	State: string,
-	Callback: (any?) -> (any?),
+	EndCallback: () -> (),
+	Callback: (number) -> (),
 	Connection: RBXScriptConnection?,
 
 	Start: (self: Timer , startTime : number) -> nil,
@@ -18,24 +19,28 @@ export type Timer = {
 
 local function tickdown(Timer: Timer, deltaTime: number)
 	Timer.Time -= deltaTime
+	if Timer.Callback then
+		Timer.Callback(Timer.Time)
+	end
 	if Timer.Time <= 0 then
 		if Timer.Connection then
-				Timer.Connection:Disconnect()
+			Timer.Connection:Disconnect()
 		end
-		if Timer.Callback then
-			Timer["Callback"]()	
+		if Timer.EndCallback then
+			Timer["EndCallback"]()	
 		end
 	end
 end
 
 function Timer.init() end
 
-function Timer.new(Callback: () -> ()): Timer
+function Timer.new(): Timer
 	local newTimer = {}
 	setmetatable(newTimer, Timer)
 	newTimer.Time = 0
 	newTimer.State = "Idle"
-	newTimer.Callback = Callback
+	newTimer.Callback = nil
+	newTimer.EndCallback = nil
 	newTimer.Connection = nil
 	return newTimer
 end

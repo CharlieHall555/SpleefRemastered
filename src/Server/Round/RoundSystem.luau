@@ -28,6 +28,7 @@ local PlayersInGame = require(ModuleDirectory.PlayersInGame)
 local Timer = require(ModuleDirectory.Timer)
 local RunService = game:GetService("RunService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 -- queue of pending state-change events
 local eventsQueue: { EventContext } = {}
@@ -55,20 +56,28 @@ local transitions = {
 	onINTERMISSION = nil :: ((Round) -> ())?,
 }
 
-
-
 function RoundSystem.init()
 	PlayerPool.setOnChange(RoundSystem.onPlayerPoolChange)
 	PlayersInGame.setOnChange(RoundSystem.onActivePoolChange)
 	RunService.Stepped:Connect(RoundSystem.mainLoop)
 
-	intermissionTimer = Timer.new(function()
+	intermissionTimer = Timer.new()
+	intermissionTimer.EndCallback = function()
 		RoundSystem.queueEvent(buildEventContext("INTERMISSION_TIMER_ENDED"))
-	end)
+	end
 
-	roundTimer = Timer.new(function()
+	roundTimer = Timer.new()
+	roundTimer.EndCallback = function()
 		RoundSystem.queueEvent(buildEventContext("ROUND_TIMER_ENDED"))
-	end)
+	end
+
+	roundTimer.Callback = function(time : number)
+		--RemoteEventHandler.FireOnAllClients("ROUND_TIMER_CHANGED" , time)
+	end
+
+	intermissionTimer.Callback = function(time : number)
+		--RemoteEventHandler.FireOnAllClients("INTERMISSION_TIMER_CHANGED" , time)
+	end
 end
 
 function RoundSystem.mainLoop(dt: number): nil
@@ -133,7 +142,7 @@ end
 function RoundSystem.onSTARTING()
 	-- initialize round data
 	currentRound = {
-		alivePlayers = PlayerPool.getActivePool(),
+		alivePlayers = table.clone(PlayerPool.getActivePool()),
 		startTime = time(),
 		gamemode = "Spleef",
 	}
@@ -150,6 +159,11 @@ end
 function RoundSystem.onENDING()
 	
 end
+
+function RoundSystem.getCurrentRound() : Round?
+	return currentRound
+end
+
 
 function RoundSystem.changeState(newState: RoundState): nil
 	state = newState

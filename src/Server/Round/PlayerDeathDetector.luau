@@ -8,6 +8,13 @@ local connections = {}
 local onDeathCallback = nil
 local PlayerDeathDetector = {}
 
+export type playerDeathRecord = {
+    userId : number,
+    timeOfDeath : number
+}
+
+local playerDeathCache : {[number] : playerDeathRecord} = {}
+
 function PlayerDeathDetector.init()
     
     Players.PlayerAdded:Connect(function(player)
@@ -21,9 +28,14 @@ function PlayerDeathDetector.init()
             end
             local humanoid = character:WaitForChild("Humanoid")
             deathConnection = humanoid.Died:Connect(function()
-                print("died")
                 if RoundSystem.getState() == "ACTIVE" then
                     PlayersInGame.removePlayer(player)
+
+                    playerDeathCache[player.UserId] = {
+                        userId = player.UserId,
+                        timeOfDeath = time()
+                    }
+
                 end
                 if onDeathCallback then
                     onDeathCallback(player)
@@ -43,6 +55,14 @@ function PlayerDeathDetector.init()
 
     end)
 
+end
+
+function PlayerDeathDetector.clearCache()
+
+    for eachKey , _ in playerDeathCache do
+        playerDeathCache[eachKey] = nil
+    end
+    
 end
 
 function PlayerDeathDetector.setCallback(func : (player : Player) -> ())

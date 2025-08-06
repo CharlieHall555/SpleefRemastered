@@ -1,5 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Layer = require(ModuleDirectory.Map.Layer)
+local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 
 export type Map = {
     OriginPosition: Vector3,
@@ -50,6 +51,10 @@ end
 
 function Map:Destroy()
     for _ , each in self.Layers do
+        
+        for _, blk in ipairs(table.clone(each.Blocks)) do
+            BlockFactory.destroy(blk)
+        end
         each:Destroy()
     end
 

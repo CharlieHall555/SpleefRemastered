@@ -1,10 +1,10 @@
+
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local TweenService = game:GetService("TweenService")
 local Block = require(ModuleDirectory.Map.Block)
 local Layer = require(ModuleDirectory.Map.Layer)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local LoadedLayers = require(ModuleDirectory.LoadedLayers)
-local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 local BlockFactory = {
     _activeTweens = {}
@@ -56,8 +56,6 @@ function BlockFactory.bulkCreate(configs: {Block.BlockConfig}): {Block.Block}
     return blocks
 end
 
-local fadeInfo = TweenInfo.new(Config.SLOW_FALL_TIME)
-
 function BlockFactory.slowDestroy(block: Block.Block): nil
     if not block or not block.Part then
         return
@@ -65,7 +63,8 @@ function BlockFactory.slowDestroy(block: Block.Block): nil
 
     local part = block.Part
     part.Transparency = 0
-    local tween = TweenService:Create(part, fadeInfo, {Transparency = 0.8})
+    local tweenInfo = TweenInfo.new(1)
+    local tween = TweenService:Create(part, tweenInfo, {Transparency = 0.8})
     BlockFactory._activeTweens[block] = tween
     tween:Play()
 
@@ -77,6 +76,18 @@ function BlockFactory.slowDestroy(block: Block.Block): nil
             BlockFactory.destroy(block)
         end
     end)
+end
+
+function BlockFactory.stopAllTweens(): nil
+    for block, tween in pairs(BlockFactory._activeTweens) do
+        if tween then
+            tween:Cancel()
+            BlockFactory._activeTweens[block] = nil
+            if tween.Instance and tween.Instance:IsA("Part") then
+                tween.Instance.Transparency = 1
+            end
+        end
+    end
 end
 
 return BlockFactory

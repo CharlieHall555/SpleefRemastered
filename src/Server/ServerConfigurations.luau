@@ -4,9 +4,9 @@ return {
 
     BLOCK_SIZE = 5,
 
-    INTERMISSION_TIME = 2,
+    INTERMISSION_TIME = 10,
     REQUIRED_PLAYERS = 1,
-    ROUND_TIME = 5,
+    ROUND_TIME = 20,
     PLAYERS_TO_END = 0,
 
     TELEPORT_RETRIES = 1,

@@ -6,8 +6,10 @@ local Timer = require(ModuleDirectory.Timer)
 local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
 local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
 local SuddenDeath = require(ModuleDirectory.SuddenDeath)
-
+local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local currentMap = nil
+local PlayerDeathDetector = require(ModuleDirectory.PlayerDeathDetector)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local testMapParams: MapDataFactory.MapDataCreationParams = {
 	layerSeperation = 50, -- vertical distance between each layer
@@ -30,6 +32,8 @@ local testMapParams: MapDataFactory.MapDataCreationParams = {
 
 -- then generate:
 
+
+
 local RoundManager = {}
 
 function RoundManager.init(): nil
@@ -39,29 +43,44 @@ function RoundManager.init(): nil
 		end
 	end)
 
-	RoundSystem.connectStarting(function()
+	RoundSystem.connectStarting(function(currentRound : RoundSystem.Round)
 		
+		print(currentRound)
 		currentMap = MapGenerator.generate(testMapParams)
 		task.wait(1)
+		RemoteEventHandler.FireOnClients(currentRound.alivePlayers , "CHANGE_STATE" , "ROUND_STARTING")
 
 	end)
 
 	RoundSystem.connectEnding(function()
+		BlockFactory.stopAllTweens()
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(100,0, 0))
 		task.wait()
 		currentMap:Destroy()
+		
 		task.wait(1)
 	end)
 
 	RoundSystem.connectIntermission(function()
 	end)
 
+	RoundSystem.connectActive(function(currentRound)
+		RemoteEventHandler.FireOnClients(currentRound.alivePlayers , "CHANGE_STATE" , "ACTIVE")
 
-	RoundSystem.connectActive(function()
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
 		SuddenDeath.start(currentMap)
 	end)
+
+	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
+
 end
+
+function RoundManager.onPlayerDeath(playerWhoDied : Player)
+
+	RemoteEventHandler.FireOnClient(playerWhoDied , "CHANGE_STATE" , "INTERMISSION")
+	
+end
+
 
 
 
