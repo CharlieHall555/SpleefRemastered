@@ -2,9 +2,10 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local RoundSystem = require(ModuleDirectory.RoundSystem)
 local TeleportManager = require(ModuleDirectory.TeleportManager)
 local PlayersInGame = require(ModuleDirectory.PlayersInGame) -- holds the "active players currently in game"
-
+local Timer = require(ModuleDirectory.Timer)
 local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
 local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
+local SuddenDeath = require(ModuleDirectory.SuddenDeath)
 
 local currentMap = nil
 
@@ -46,7 +47,6 @@ function RoundManager.init(): nil
 	end)
 
 	RoundSystem.connectEnding(function()
-		print("hahsah")
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(100,0, 0))
 		task.wait()
 		currentMap:Destroy()
@@ -59,6 +59,7 @@ function RoundManager.init(): nil
 
 	RoundSystem.connectActive(function()
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
+		SuddenDeath.start(currentMap)
 	end)
 end
 

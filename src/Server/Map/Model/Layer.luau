@@ -1,6 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Block = require(ModuleDirectory.Map.Block)
+local LoadedLayers = require(ModuleDirectory.LoadedLayers)
 
 export type Layer = {
     _id: number,
@@ -39,6 +39,7 @@ function Layer.new(originPosition: Vector3, size: Vector2): Layer
         end
     end
 
+    LoadedLayers[self._id] = self
     return self
 end
 
@@ -71,11 +72,13 @@ function Layer:getRandomBlock(): Block.Block?
 end
 
 function Layer:Destroy(): nil
+    LoadedLayers[self._id] = nil
     for _, blk in ipairs(self.Blocks) do
-        BlockFactory.destroy(blk)
+        blk:Destroy()
     end
     self.Blocks = {}
     self.TileMap = {}
+    
 end
 
 function Layer:isEmpty(): boolean

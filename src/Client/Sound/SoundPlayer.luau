@@ -17,6 +17,16 @@ local activePlayers: { SpatialSoundPlayer } = {}
 local idlePlayers: { SpatialSoundPlayer } = {}
 local queuedSounds: { { soundId: string, position: Vector3 } } = {}
 
+local isMuted = false
+
+function SoundPlayer.setInMuted(value : boolean) : nil
+    isMuted = value   
+end
+
+function SoundPlayer.getIsMuted() : boolean
+    return isMuted
+end
+
 function SoundPlayer.init()
     -- create pool of spatial players
     for i = 1, Config.N_SOUND_PLAYERS do
@@ -74,8 +84,10 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3): n
     end
 
     -- play
-    player.sound:Play()
-
+    if isMuted == false then
+        player.sound:Play()
+    end
+  
     -- cleanup when finished
     player.sound.Ended:Connect(function()
         -- remove from activePlayers

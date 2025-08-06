@@ -15,12 +15,14 @@ ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 
 ModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool  
 
-ModuleDirectory.SoundPlayer = Root.SoundPlayer
+ModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
 
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
 ModuleDirectory.InputHandler = Root.Input.InputHandler
+
+ModuleDirectory.ClientCommands = Root.ClientCommands
 
 return ModuleDirectory

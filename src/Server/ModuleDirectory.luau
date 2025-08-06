@@ -35,6 +35,7 @@ ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.Ma
 ModuleDirectory.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
 
 ModuleDirectory.SnowballManager = game:GetService("ServerScriptService").Throwable.SnowballManager
+ModuleDirectory.SuddenDeath = game:GetService("ServerScriptService").Round.SuddenDeath
 
 -- Model Player
 ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player.PlayerData
@@ -50,6 +51,8 @@ ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Mat
 
 -- Loaded Assets
 ModuleDirectory.LoadedBlocks = game:GetService("ServerScriptService").Loaded.Block
+ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Layer
+
 
 -- Remote Handlers
 ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler

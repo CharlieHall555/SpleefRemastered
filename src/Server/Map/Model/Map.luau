@@ -8,7 +8,9 @@ export type Map = {
 
     new: (originPosition: Vector3) -> Map,
     addLayer: (self: Map, Layer: Layer.Layer ) -> nil,
-    getTopLayer: (self: Map) -> Layer.Layer ?
+    getTopLayer: (self: Map) -> Layer.Layer ?,
+    getRandomLayer: (self: Map) -> Layer.Layer?
+
 }
 
 local Map = {}
@@ -37,6 +39,14 @@ function Map:getTopLayer(): Layer.Layer ?
     end
     return nil
 end
+
+function Map:getRandomLayer(): Layer.Layer?
+    if #self.Layers == 0 then
+        return nil
+    end
+    return self.Layers[math.random(1, #self.Layers)]
+end
+
 
 function Map:Destroy()
     for _ , each in self.Layers do
