@@ -78,6 +78,12 @@ function RoundSystem.init()
 	intermissionTimer.Callback = function(time : number)
 		--RemoteEventHandler.FireOnAllClients("INTERMISSION_TIMER_CHANGED" , time)
 	end
+
+	RemoteEventHandler.newEventConnection("PLAYER_LOADED" , function(player)
+		
+		RemoteEventHandler.FireOnClient(player , "SEND_SERVER_STATE" , state)
+
+	end)
 end
 
 function RoundSystem.mainLoop(dt: number): nil
@@ -153,7 +159,7 @@ function RoundSystem.onSTARTING()
 end
 
 function RoundSystem.onACTIVE()
-	roundTimer:Start(Config.ROUND_TIME)
+	roundTimer:Start(Config.MAXIMUM_ROUND_TIME)
 end
 
 function RoundSystem.onENDING()
@@ -167,6 +173,7 @@ end
 
 function RoundSystem.changeState(newState: RoundState): nil
 	state = newState
+	RemoteEventHandler.FireOnAllClients("SEND_SERVER_STATE" , state)
 	print("new-state: " .. state)
 	local handler = RoundSystem["on" .. newState]
 	local callback = transitions["on" .. newState]

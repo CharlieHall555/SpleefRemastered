@@ -79,13 +79,14 @@ function BlockFactory.slowDestroy(block: Block.Block): nil
 end
 
 function BlockFactory.stopAllTweens(): nil
-    for block, tween in pairs(BlockFactory._activeTweens) do
+    for block, tween : Tween in pairs(BlockFactory._activeTweens) do
         if tween then
             tween:Cancel()
             BlockFactory._activeTweens[block] = nil
             if tween.Instance and tween.Instance:IsA("Part") then
                 tween.Instance.Transparency = 1
             end
+            tween:Destroy()
         end
     end
 end

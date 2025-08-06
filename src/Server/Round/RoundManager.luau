@@ -78,7 +78,7 @@ end
 function RoundManager.onPlayerDeath(playerWhoDied : Player)
 
 	RemoteEventHandler.FireOnClient(playerWhoDied , "CHANGE_STATE" , "INTERMISSION")
-	
+
 end
 
 

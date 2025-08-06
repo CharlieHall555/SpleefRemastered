@@ -8,6 +8,7 @@ export type ClientSideState = "IN_ROUND" | "ROUND_STARTING" | "INTERMISSION"
 
 -- current client-side state
 local state: ClientSideState = "INTERMISSION"
+local serverState : string
 
 -- user-registered callbacks for each state
 local transitions: {
@@ -20,6 +21,7 @@ local transitions: {
 function ClientSideStateTracker.init(): nil
     ClientSideStateTracker.changeState("INTERMISSION")
     RemoteEventHandler.newEventConnection("CHANGE_STATE", ClientSideStateTracker.receivedStateChange)
+    RemoteEventHandler.newEventConnection("SEND_SERVER_STATE" , ClientSideStateTracker.setServerState)
 end
 
 -- when server tells us to change state
@@ -44,6 +46,16 @@ end
 
 function ClientSideStateTracker.getState(): ClientSideState
     return state
+end
+
+function ClientSideStateTracker.getServerState(): string
+    return serverState
+end
+
+function ClientSideStateTracker.setServerState(newServerState : string): nil
+    serverState = newServerState
+    print("SERVER STATECHANGE: " .. serverState)
+
 end
 
 function ClientSideStateTracker.connectIntermission(fn: () -> ())
