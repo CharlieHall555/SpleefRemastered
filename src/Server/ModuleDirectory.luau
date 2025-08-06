@@ -34,6 +34,8 @@ ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.Ma
 
 ModuleDirectory.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
 
+ModuleDirectory.SnowballManager = game:GetService("ServerScriptService").Throwable.SnowballManager
+
 -- Model Player
 ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player.PlayerData
 

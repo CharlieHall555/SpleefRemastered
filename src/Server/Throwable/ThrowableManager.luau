@@ -58,7 +58,7 @@ end
 local function updateClients(newThrowable : Throwable.Throwable)
 	local dataToSend = {
 		sP = VectorUtil.SerializeVector3(newThrowable.position), -- in here the position is nil?
-		d = VectorUtil.SerializeVector3(newThrowable.direction),
+		v = VectorUtil.SerializeVector3(newThrowable.velocity),
 		t = newThrowable.type,
 		s = workspace:GetServerTimeNow(),
 		uid = newThrowable.uid

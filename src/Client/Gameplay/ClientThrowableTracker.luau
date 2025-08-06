@@ -48,15 +48,14 @@ end
 
 function ClientThrowableTracker.receiveFromServer(throwableData: ThrowableData.ThrowableData)
 	local startPosition = VectorUtil.DeserializeVector3(throwableData.sP)
-	local direction = VectorUtil.DeserializeVector3(throwableData.d)
+	local velocity = VectorUtil.DeserializeVector3(throwableData.v)
     local _type = throwableData.t
 	local timeNow = workspace:GetServerTimeNow()
 	local elapsedTime = timeNow - throwableData.s
 
 	local speed = 80
-	local initialVelocity = direction.Unit * speed
 
-	local simulatedVelocity = initialVelocity
+	local simulatedVelocity = velocity
 	local simulatedPosition = startPosition
 
 	local timeStep = 1 / 60
@@ -67,7 +66,7 @@ function ClientThrowableTracker.receiveFromServer(throwableData: ThrowableData.T
 		elapsedTime -= step
 	end
 
-	ClientThrowableTracker.newThrowable(simulatedPosition, direction , _type)
+	ClientThrowableTracker.newThrowable(simulatedPosition, velocity , _type)
 end
 
 function ClientThrowableTracker.onLoaded()
@@ -96,7 +95,7 @@ function ClientThrowableTracker.mainLoop(deltaTime: number): nil
 	end
 end
 
-function ClientThrowableTracker.newThrowable(startPosition: Vector3, direction: Vector3 , _type : string): string
+function ClientThrowableTracker.newThrowable(startPosition: Vector3, velocity: Vector3 , _type : string): string
 	local part = PartPool.take()
 	if not part then
 		part = Instance.new("Part")
@@ -114,14 +113,11 @@ function ClientThrowableTracker.newThrowable(startPosition: Vector3, direction: 
 	part.Transparency = 0
 	part.Parent = workspace
 
-	local speed = 80
-	local velocity = direction.Unit * speed
 	local uid = generateUID()
 
 	throwables[uid] = {
 		uid = uid,
 		position = startPosition,
-		direction = direction,
 		velocity = velocity,
         type = _type,
 		part = part,

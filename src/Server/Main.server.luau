@@ -6,7 +6,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local RoundSystem = require(ModuleDirectory.RoundSystem)
 RoundSystem.main()  
 
-local ThrowableManager = require(ModuleDirectory.ThrowableManager)
+--[[local ThrowableManager = require(ModuleDirectory.ThrowableManager)
 
 while true do
 
@@ -14,4 +14,4 @@ while true do
     
     task.wait(0)
     
-end
+end]]--

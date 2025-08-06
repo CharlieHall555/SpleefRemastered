@@ -16,5 +16,6 @@ ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPo
 ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
+ModuleDirectory.InputHandler = Root.Input.InputHandler
 
 return ModuleDirectory

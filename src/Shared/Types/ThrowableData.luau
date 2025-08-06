@@ -10,7 +10,7 @@ ThrowableDataMappings = {
 
 export type ThrowableData = { --sent over network so small keys
     sP : string, --compressed vector
-    d : string, -- compressed vector
+    v : string, -- compressed vector
     t : string, -- string
     s : number, -- number
     uid : number,
