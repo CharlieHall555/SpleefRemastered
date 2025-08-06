@@ -61,6 +61,8 @@ function Block.new(config: BlockConfig?): Block
     self.Part = PartPool.take() or Instance.new("Part")
     self.Part.CastShadow = false
     self.Part.CanCollide = true
+    self.Part.CanTouch = true
+    self.Part.CanQuery = true
     self.Part.Transparency = 0
     self.Part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
     self.Part.Color = Materials[materialName].Color
@@ -123,9 +125,14 @@ function Block:Destroy(): nil
         self.Obstacle:Destroy()
     end
 
-    self.Part.Transparency = 1
-    self.Part.CanCollide = false
-    PartPool.add(self.Part)
+    if self.Part then
+        self.Part.Transparency = 1
+        self.Part.CanCollide = false
+        self.Part.CanQuery = false
+        self.Part.CanTouch = false
+        PartPool.add(self.Part)
+    end
+    
 
     LoadedBlocks[self.Id] = nil
     self.Part = nil

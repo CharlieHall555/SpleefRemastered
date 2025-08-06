@@ -4,7 +4,7 @@ return {
 
     BLOCK_SIZE = 5,
 
-    INTERMISSION_TIME = 16,
+    INTERMISSION_TIME = 5,
     REQUIRED_PLAYERS = 1,
     ROUND_TIME = 30,
     PLAYERS_TO_END = 0,

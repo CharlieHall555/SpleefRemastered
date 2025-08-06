@@ -5,7 +5,7 @@ export type Throwable = {
     position: Vector3,
     direction: Vector3,
     velocity: Vector3,
-    type : string,
+    typeName : string,
 }
 
 return Throwable

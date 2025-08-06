@@ -1,12 +1,21 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Block = require(ModuleDirectory.Map.Block)
-
+local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 
 local BlockFactory = {}
 
 function BlockFactory.create(config : Block.BlockConfig) : Block.Block
     local newBlock = Block.new(config)
     return newBlock
+end
+
+function BlockFactory.destroyById(blockId : number) : nil
+
+    local block = LoadedBlocks[blockId]
+    if block then
+        block:Destroy() 
+    end
+    
 end
 
 function BlockFactory.destroy(block : Block.Block) : nil

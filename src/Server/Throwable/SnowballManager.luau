@@ -2,6 +2,8 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local ThrowableManager = require(ModuleDirectory.ThrowableManager)
+local Throwable = require(ModuleDirectory.Throwable)
+local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 
 local SnowballManager = {}
 
@@ -9,6 +11,16 @@ local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire times
 
 function SnowballManager.init()
 	RemoteEventHandler.newEventConnection("CREATE_SNOWBALL", SnowballManager.createSnowballFor)
+	ThrowableManager.registerOnHit("snowball" , SnowballManager.onHit)
+end
+
+function SnowballManager.onHit(throwable : Throwable.Throwable , hit : RaycastResult)
+	print("hit " .. hit.Instance.Name)
+	local blockId = hit.Instance:GetAttribute("Id")
+	if blockId then
+		BlockFactory.destroyById(blockId)
+		RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId)
+	end
 end
 
 function SnowballManager.createSnowballFor(player, playerPosition, direction)
