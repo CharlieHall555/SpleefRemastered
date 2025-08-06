@@ -18,8 +18,9 @@ local gravityTable: { [string]: Vector3 } = {}
 local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult) -> () } = {}
 local rayParams = RaycastParams.new()
 
--- Enable debug stamping
-local DEBUG = true
+-- Debug and cast settings
+local DEBUG = false
+local CAST_RADIUS = 0.1 -- half-width of the swept box for collision checks
 
 local function generateUID(): string
     _nextId += 1
@@ -45,6 +46,7 @@ function ThrowableManager.mainLoop(dt: number): nil
         local newVel = th.velocity + gravityTable[th.typeName] * dt
         local newPos = oldPos + newVel * dt
 
+        -- Debug stamp for path
         if DEBUG then
             local stamp = Instance.new("Part")
             stamp.Size = Vector3.new(0.2, 0.2, 0.2)
@@ -57,8 +59,28 @@ function ThrowableManager.mainLoop(dt: number): nil
             Debris:AddItem(stamp, 5)
         end
 
-        local hit = workspace:Raycast(oldPos, newPos - oldPos, rayParams)
-        if hit or oldPos.Y < -100 then
+        -- Swept-box collision (Blockcast) between oldPos and newPos
+        local direction = newPos - oldPos
+        local center = oldPos:Lerp(newPos, 0.5)
+        local orient = direction.Magnitude > 0 and direction.Unit or Vector3.new(0, 0, 1)
+        local castCFrame = CFrame.new(center, center + orient)
+        local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
+        local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction, rayParams)
+
+        if oldPos.Y < -100 then
+            ThrowableManager.removeThrowable(uid)
+        elseif hit then
+            if DEBUG then
+                local stamp = Instance.new("Part")
+                stamp.Size = Vector3.new(1, 1, 1)
+                stamp.CFrame = CFrame.new(hit.Position)
+                stamp.Anchored = true
+                stamp.CanCollide = false
+                stamp.Transparency = 0
+                stamp.BrickColor = BrickColor.new("Parsley green")
+                stamp.Parent = workspace
+                Debris:AddItem(stamp, 5)
+            end
             ThrowableManager.onHit(th, hit)
             ThrowableManager.removeThrowable(uid)
         else
@@ -79,11 +101,7 @@ local function updateClients(newThrowable: Throwable.Throwable)
     RemoteEventHandler.FireOnAllClients("NEW_THROWABLE", dataToSend)
 end
 
-function ThrowableManager.newThrowable(
-    position: Vector3,
-    direction: Vector3,
-    _type: string
-): string
+function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _type: string): string
     assert(typeof(position) == "Vector3", "ThrowableManager.newThrowable: 'position' must be a Vector3")
     assert(typeof(direction) == "Vector3", "ThrowableManager.newThrowable: 'direction' must be a Vector3")
     assert(typeof(_type) == "string" and _type ~= "", "ThrowableManager.newThrowable: '_type' must be a non-empty string")
@@ -92,11 +110,11 @@ function ThrowableManager.newThrowable(
     local speed = 80
     local velocity = direction.Unit * speed
     local new = {
-        uid      = uid,
+        uid = uid,
         direction = direction,
-        position  = position,
-        velocity  = velocity,
-        typeName  = _type,
+        position = position,
+        velocity = velocity,
+        typeName = _type,
     }
     loadedThrowables[uid] = new
 
@@ -104,24 +122,19 @@ function ThrowableManager.newThrowable(
     return uid
 end
 
-function ThrowableManager.onHit(
-    throwable: Throwable.Throwable,
-    hit: RaycastResult?
-): nil
+function ThrowableManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult?): nil
     local f = typeHitFunctions[throwable.typeName]
     if f and hit then
         f(throwable, hit)
     end
 end
 
-function ThrowableManager.registerOnHit(
-    typeName: string,
-    func: (Throwable.Throwable, RaycastResult) -> ()
-): nil
+function ThrowableManager.registerOnHit(typeName: string, func: (Throwable.Throwable, RaycastResult) -> ()): nil
     typeHitFunctions[typeName] = func
 end
 
 function ThrowableManager.removeThrowable(uid: string): nil
+    RemoteEventHandler.FireOnAllClients("DELETE_THROWABLE", uid)
     loadedThrowables[uid] = nil
 end
 

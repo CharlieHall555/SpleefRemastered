@@ -1,140 +1,176 @@
 local ClientThrowableTracker = {}
 
 export type Throwable = {
-    uid: string,
-    startPosition: Vector3,
-    initialVelocity: Vector3,
-    type: string,
-    launchTime: number,
-    lastTime: number,
-    part: Part,
+	uid: string,
+	startPosition: Vector3,
+	initialVelocity: Vector3,
+	type: string,
+	launchTime: number,
+	displayTime: number,
+	targetTime: number,
+	part: Part,
 }
 
 local RunService = game:GetService("RunService")
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local PartPool = require(ClientModuleDirectory.PartPool)
+local SnowballPool = require(ClientModuleDirectory.SnowballPool)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ThrowableData = require(ClientModuleDirectory.ThrowableData)
 local VectorUtil = require(ClientModuleDirectory.VectorUtil)
 local ThrowableDefinitions = require(ClientModuleDirectory.ThrowableDefinitions)
+local Debris = game:GetService("Debris")
 
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Include
 rayParams.IgnoreWater = true
 
-local gravityTable: {[string]: Vector3} = {}
+local gravityTable: { [string]: Vector3 } = {}
 local throwables: { [string]: Throwable } = {}
 local typeHitFunctions: { [string]: (Throwable, RaycastResult) -> () } = {}
 
-local _nextId = 0
-local function generateUID(): string
-    _nextId += 1
-    return "t_" .. tostring(_nextId)
+local newTable: { [string]: () -> Part } = {}
+
+function newTable.snowball()
+	local newThrowable = SnowballPool.take()
+	return newThrowable
 end
 
+local _nextId = 0
+local function generateUID(): string
+	_nextId += 1
+	return "t_" .. tostring(_nextId)
+end
+
+-- How far behind the actual position we start the visual interpolation (in seconds)
+local INTERPOLATION_OFFSET = 0.05
+
 function ClientThrowableTracker.init()
-    for eachType, def in ThrowableDefinitions do
-        gravityTable[eachType] = Vector3.new(0, -def.gravity, 0)
-    end
-    RunService.RenderStepped:Connect(ClientThrowableTracker.mainLoop)
-    RemoteEventHandler.newEventConnection("NEW_THROWABLE", ClientThrowableTracker.receiveFromServer)
+	for eachType, def in ThrowableDefinitions do
+		gravityTable[eachType] = Vector3.new(0, -def.gravity, 0)
+	end
+	RunService.RenderStepped:Connect(ClientThrowableTracker.mainLoop)
+	RemoteEventHandler.newEventConnection("NEW_THROWABLE", ClientThrowableTracker.receiveFromServer)
+
+	RemoteEventHandler.newEventConnection("DELETE_THROWABLE", ClientThrowableTracker.removeThrowable)
 end
 
 function ClientThrowableTracker.onLoaded()
-    rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks") }
+	rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks") }
 end
 
 function ClientThrowableTracker.receiveFromServer(data: ThrowableData.ThrowableData)
-    local startPosition = VectorUtil.DeserializeVector3(data.sP)
-    local velocity = VectorUtil.DeserializeVector3(data.v)
-    local typeName = data.t
-    local launchTime = data.s
-    ClientThrowableTracker.newThrowable(startPosition, velocity, typeName, launchTime)
+	local startPosition = VectorUtil.DeserializeVector3(data.sP)
+	local velocity = VectorUtil.DeserializeVector3(data.v)
+	local typeName = data.t
+	local launchTime = data.s
+	ClientThrowableTracker.newThrowable(startPosition, velocity, typeName, launchTime)
 end
 
-function ClientThrowableTracker.mainLoop()
-    local now = workspace:GetServerTimeNow()
-    for uid, throwable in pairs(throwables) do
-        local gravity = gravityTable[throwable.type]
-        -- calculate previous and current positions
-        local tPrev = throwable.lastTime
-        local tNow = now
-        local dtPrev = tPrev - throwable.launchTime
-        local dtNow = tNow - throwable.launchTime
+function ClientThrowableTracker.mainLoop(dt: number)
+	local now = workspace:GetServerTimeNow()
+	for uid, throwable in pairs(throwables) do
+		-- Update targetTime each frame so interpolation continues
+		throwable.targetTime = now
 
-        local prevPos = throwable.startPosition
-            + throwable.initialVelocity * dtPrev
-            + 0.5 * gravity * dtPrev * dtPrev
-        local newPos = throwable.startPosition
-            + throwable.initialVelocity * dtNow
-            + 0.5 * gravity * dtNow * dtNow
+		-- Interpolate displayTime toward the true server time
+		local oldDisplay = throwable.displayTime
+		local newDisplay = math.min(throwable.targetTime, oldDisplay + dt)
+		throwable.displayTime = newDisplay
 
-        local direction = newPos - prevPos
-        local result = workspace:Raycast(prevPos, direction, rayParams)
+		local gravity = gravityTable[throwable.type]
+		-- compute positions at old and new display times
+		local dtPrev = oldDisplay - throwable.launchTime
+		local dtNow = newDisplay - throwable.launchTime
 
-        if result or newPos.Y < -100 then
-            local hitFunc = typeHitFunctions[throwable.type]
-            if result and hitFunc then
+		local prevPos = throwable.startPosition + throwable.initialVelocity * dtPrev + 0.5 * gravity * dtPrev * dtPrev
+		local newPos = throwable.startPosition + throwable.initialVelocity * dtNow + 0.5 * gravity * dtNow * dtNow
+
+		-- raycast for collision between prev and new
+		local direction = newPos - prevPos
+		local result = workspace:Raycast(prevPos, direction, rayParams)
+
+		if newPos.Y < -100 then
+			ClientThrowableTracker.removeThrowable(uid)
+		elseif result then
+			local hitFunc = typeHitFunctions[throwable.type]
+            if hitFunc then
                 hitFunc(throwable, result)
             end
-            ClientThrowableTracker.removeThrowable(uid)
-        else
-            throwable.part.Position = newPos
-            throwable.lastTime = tNow
-        end
-    end
+			ClientThrowableTracker.removeThrowable(uid)
+		else
+			throwable.part.Position = newPos
+		end
+	end
 end
 
-function ClientThrowableTracker.newThrowable(startPosition: Vector3, initialVelocity: Vector3, typeName: string, launchTime: number): string
-    local part = PartPool.take()
-    if not part then
-        part = Instance.new("Part")
-        warn("Had to generate new part")
-    end
+function ClientThrowableTracker.newThrowable(
+	startPosition: Vector3,
+	initialVelocity: Vector3,
+	typeName: string,
+	launchTime: number
+): string
+	local g = newTable[typeName]
+	local part
+	if g then
+		part = g()
+	end
 
-    -- apply definition properties
-    part.Size = ThrowableDefinitions[typeName].size
-    part.Color = ThrowableDefinitions[typeName].color
-    part.Material = ThrowableDefinitions[typeName].material
-    part.Shape = Enum.PartType.Ball
-    part.Anchored = true
-    part.CanCollide = false
-    part.Transparency = 0
-    part.Parent = workspace
+	if not part then
+		part = Instance.new("Part")
+		warn("Had to generate new part")
+	end
 
-    -- compute and set initial position based on launchTime
-    local now = workspace:GetServerTimeNow()
-    local gravity = gravityTable[typeName]
-    local dt = now - launchTime
-    local currentPos = startPosition + initialVelocity * dt + 0.5 * gravity * dt * dt
-    part.Position = currentPos
+	local def = ThrowableDefinitions[typeName]
+	part.Size = def.size
+	part.Color = def.color
+	part.Material = def.material
+	part.Shape = Enum.PartType.Ball
+	part.Anchored = true
+	part.CanCollide = false
+	part.Transparency = 0
+	part.Parent = workspace
 
-    -- store throwable state
-    local uid = generateUID()
-    throwables[uid] = {
-        uid = uid,
-        startPosition = startPosition,
-        initialVelocity = initialVelocity,
-        type = typeName,
-        launchTime = launchTime,
-        lastTime = now,
-        part = part,
-    }
+	-- Determine display start time (slightly behind actual)
+	local now = workspace:GetServerTimeNow()
+	local displayTime = math.max(launchTime, now - INTERPOLATION_OFFSET)
+	local targetTime = now
 
-    return uid
+	-- compute and set initial visual position
+	local gravity = gravityTable[typeName]
+	local dtDisplay = displayTime - launchTime
+	local currentPos = startPosition + initialVelocity * dtDisplay + 0.5 * gravity * dtDisplay * dtDisplay
+	part.Position = currentPos
+
+	-- store throwable state
+	local uid = generateUID()
+	throwables[uid] = {
+		uid = uid,
+		startPosition = startPosition,
+		initialVelocity = initialVelocity,
+		type = typeName,
+		launchTime = launchTime,
+		displayTime = displayTime,
+		targetTime = targetTime,
+		part = part,
+	}
+
+	return uid
 end
 
 function ClientThrowableTracker.removeThrowable(uid: string)
-    local t = throwables[uid]
-    if not t then return end
-    PartPool.add(t.part)
-    t.part.Transparency = 1
-    throwables[uid] = nil
+	local t = throwables[uid]
+	if not t then
+		return
+	end
+	PartPool.add(t.part)
+	t.part.Transparency = 1
+	throwables[uid] = nil
 end
 
 function ClientThrowableTracker.registerOnHit(typeName: string, func: (Throwable, RaycastResult) -> ())
-    typeHitFunctions[typeName] = func
+	typeHitFunctions[typeName] = func
 end
 
 return ClientThrowableTracker

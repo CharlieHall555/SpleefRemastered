@@ -37,13 +37,15 @@ end)
 
 print(binding1)
 
-RemoteEventHandler.newEventConnection("BLOCK_DESTROY_CONFIRMATION", function(blockId : number)
-end)
+local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
 
 ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThrowableTracker.Throwable , hit)
 	if hit.Instance and hit.Instance:IsA("Part") then
 		
-		hit.Instance.Transparency = 1
+		--ClientDestructionHandler.destroyBlock(hit.Instance)
 
 	end
 end)
+
+local player = game.Players.LocalPlayer
+print(player:GetNetworkPing())

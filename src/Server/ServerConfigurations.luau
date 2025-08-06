@@ -6,7 +6,7 @@ return {
 
     INTERMISSION_TIME = 5,
     REQUIRED_PLAYERS = 1,
-    ROUND_TIME = 30,
+    ROUND_TIME = 100,
     PLAYERS_TO_END = 0,
 
     TELEPORT_RETRIES = 1,
