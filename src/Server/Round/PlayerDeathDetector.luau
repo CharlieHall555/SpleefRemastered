@@ -57,6 +57,15 @@ function PlayerDeathDetector.init()
 
 end
 
+function PlayerDeathDetector.getDeathTime(player : Player) : number?
+    local record = playerDeathCache[player.UserId]
+    if record then
+        return record.timeOfDeath
+    else
+        return nil
+    end
+end
+
 function PlayerDeathDetector.clearCache()
 
     for eachKey , _ in playerDeathCache do

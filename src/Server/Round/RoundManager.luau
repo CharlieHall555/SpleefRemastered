@@ -9,6 +9,8 @@ local SuddenDeath = require(ModuleDirectory.SuddenDeath)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local currentMap = nil
 local PlayerDeathDetector = require(ModuleDirectory.PlayerDeathDetector)
+local WinnerDetection = require(ModuleDirectory.WinnerDetection)
+
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
@@ -40,6 +42,7 @@ local SuddenDeathTimer = Timer.new()
 local RoundManager = {}
 
 function RoundManager.init(): nil
+	
 	TeleportManager.setCallback(function(playerWhoFailed)
 		if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "STARTING" then
 			PlayersInGame.removePlayer(playerWhoFailed)
@@ -55,17 +58,19 @@ function RoundManager.init(): nil
 		print(currentRound)
 		currentMap = MapGenerator.generate(testMapParams)
 		task.wait(1)
-		RemoteEventHandler.FireOnClients(currentRound.alivePlayers , "CHANGE_STATE" , "ROUND_STARTING")
+		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "ROUND_STARTING")
 
 	end)
 
-	RoundSystem.connectEnding(function()
+	RoundSystem.connectEnding(function(currentRound)
 		SuddenDeathTimer:End()
 
 		BlockFactory.stopAllTweens()
+		print(WinnerDetection.getWinner(currentRound.startingPlayers))
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0 , 6 , 0))
 		task.wait()
 		currentMap:Destroy()
+		PlayerDeathDetector.clearCache()
 		
 		task.wait(1)
 	end)
@@ -74,7 +79,7 @@ function RoundManager.init(): nil
 	end)
 
 	RoundSystem.connectActive(function(currentRound)
-		RemoteEventHandler.FireOnClients(currentRound.alivePlayers , "CHANGE_STATE" , "ACTIVE")
+		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "ACTIVE")
 
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
 

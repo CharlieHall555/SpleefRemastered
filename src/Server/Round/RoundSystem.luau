@@ -11,7 +11,7 @@ type RoundEvent =
 export type RoundState = "STARTING" | "INTERMISSION" | "WAITING" | "ENDING" | "ACTIVE"
 
 export type Round = {
-	alivePlayers: { Player },
+	startingPlayers: { Player },
 	startTime: number,
 	gamemode: string,
 }
@@ -148,7 +148,7 @@ end
 function RoundSystem.onSTARTING()
 	-- initialize round data
 	currentRound = {
-		alivePlayers = table.clone(PlayerPool.getActivePool()),
+		startingPlayers = table.clone(PlayerPool.getActivePool()),
 		startTime = time(),
 		gamemode = "Spleef",
 	}

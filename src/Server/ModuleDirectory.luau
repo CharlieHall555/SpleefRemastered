@@ -14,6 +14,7 @@ ModuleDirectory.PlayerDeathDetector = game:GetService("ServerScriptService").Rou
 ModuleDirectory.TeleportManager = game:GetService("ServerScriptService").Round.TeleportManager
 ModuleDirectory.RoundManager = game:GetService("ServerScriptService").Round.RoundManager
 ModuleDirectory.PlayerPositionTracker = game:GetService("ServerScriptService").Gameplay.PlayerPositionTracker
+ModuleDirectory.WinnerDetection = game:GetService("ServerScriptService").Round.WinnerDetection
 
 ModuleDirectory.Throwable = game:GetService("ServerScriptService").Throwable.Throwable
 ModuleDirectory.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
