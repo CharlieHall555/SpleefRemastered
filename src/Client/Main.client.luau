@@ -24,35 +24,6 @@ local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTrac
 
 local InputHandler = require(ClientModuleDirectory.InputHandler)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -93,4 +64,5 @@ local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
 local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
 
 local n = 0
+
 

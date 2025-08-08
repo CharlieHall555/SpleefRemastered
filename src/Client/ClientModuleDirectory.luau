@@ -22,6 +22,7 @@ ModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
 ModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
 ModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
 ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
+ModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
 
 -- State Management
 ModuleDirectory.StateChangeManager = Root.StateChangeManager

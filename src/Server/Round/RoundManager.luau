@@ -86,6 +86,8 @@ function RoundManager.init(): nil
 
 	RoundSystem.connectActive(function(currentRound)
 		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "ACTIVE")
+		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "HIGHLIGHT_PLAYERS" , currentRound.startingPlayers)
+
 
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
 

@@ -2,6 +2,7 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
+local PlayerHighlighter = require(ClientModuleDirectory.PlayerHighlighter)
 
 local StateChangeManager = {}
 
@@ -12,7 +13,7 @@ function StateChangeManager.init()
     end)
 
     ClientStateTracker.connectIntermission(function()
-        
+        PlayerHighlighter.reset()
     end)
 
     ClientStateTracker.connectRoundStarting(function()
