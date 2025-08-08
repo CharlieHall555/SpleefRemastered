@@ -16,5 +16,4 @@ function PlayerManager.init()
 
 end
 
-
 return PlayerManager

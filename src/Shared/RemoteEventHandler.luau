@@ -98,7 +98,10 @@ function RemoteEventHandler.init(): nil
 	if IsServer then
 		ASynchronousBridge.OnServerEvent:Connect(function(player, eventName, args)
 			local connections = EventConnectionsCache[eventName]
-			assert(connections, "Event connection by name not set up for " .. eventName)
+			if connections == nil then
+				warn("Event connection by name not set up for " .. eventName)
+				return
+			end 
 			for _, fn in pairs(connections) do
 				fn(player, table.unpack(args or {}))
 			end

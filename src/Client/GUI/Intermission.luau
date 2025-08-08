@@ -58,6 +58,7 @@ function Intermission.init()
 
     RemoteEventHandler.newEventConnection("PLAYER_WON" , function(playerName : string)
         
+        IntermissionGUI.Visible = true
         IntermissionGUI.Status.Winner.Text = "Winner: " .. playerName
         task.delay(4 , function()
             IntermissionGUI.Visible = false

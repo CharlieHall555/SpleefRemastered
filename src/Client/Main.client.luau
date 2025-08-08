@@ -1,17 +1,57 @@
 local Root = script.Parent
+local QueryLoaded = game:GetService("ReplicatedStorage"):WaitForChild("QueryLoaded")
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
+local Player = game.Players.LocalPlayer
+
+local isServerLoaded = false
+while isServerLoaded == false do
+	isServerLoaded = QueryLoaded:InvokeServer()
+	print(isServerLoaded)
+	task.wait(0.1)
+end
 
 local ClientLoader = require(Root.Core.ClientLoader)
 ClientLoader.init()
-
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 RemoteEventHandler.FireOnServer("PLAYER_LOADED")
+local loadingScreen = Player.PlayerGui:FindFirstChild("Loading")
+pcall(function()
+	loadingScreen.removeEvent:Fire()
+end)
 
-local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 
 local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTracker)
 
 local InputHandler = require(ClientModuleDirectory.InputHandler)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()

@@ -28,7 +28,7 @@ local function loadTable(tableToLoad : {}) : nil
 		local EachModule = result
 		loaded[ModuleName] = EachModule
 
-        print(EachModule)
+        print("Required " .. ModuleName)
 		local init_fun = EachModule["init"]
 		if init_fun then
 			init_fun()

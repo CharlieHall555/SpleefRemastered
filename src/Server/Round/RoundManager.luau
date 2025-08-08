@@ -10,6 +10,9 @@ local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local currentMap = nil
 local PlayerDeathDetector = require(ModuleDirectory.PlayerDeathDetector)
 local WinnerDetection = require(ModuleDirectory.WinnerDetection)
+local PlayerData = require(ModuleDirectory.PlayerData)
+
+local PLayerManger = require(ModuleDirectory.PlayerManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -68,6 +71,7 @@ function RoundManager.init(): nil
 		BlockFactory.stopAllTweens()
 		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
 		print(Winner)
+		PlayerData.incrementWins(Winner , 1)
 		RemoteEventHandler.FireOnAllClients("PLAYER_WON" , Winner.DisplayName)
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0 , 6 , 0))
 		task.wait()

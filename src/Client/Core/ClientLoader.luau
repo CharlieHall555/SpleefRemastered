@@ -36,6 +36,19 @@ local function loadTable(tableToLoad : {}) : nil
 			warn(ModuleName .. " Missing .init() method.")
 		end
 	end
+
+end
+
+function ClientLoader.init()
+
+	loadTable(ClientModuleDirectory)
+
+	EventHandler.FireEvent("ClientLoaded")
+	print("[CLIENT] all modules loaded.")
+end
+
+function ClientLoader.loaded()
+
 	for ModuleName , EachModule in loaded do
 		
 		local loaded_fun = EachModule["onLoaded"]
@@ -47,21 +60,6 @@ local function loadTable(tableToLoad : {}) : nil
 	
 	end
 
-end
-
-function ClientLoader.init()
-
-	loadTable(ClientModuleDirectory)
-
-	for _, EachModule in loaded do
-		local loaded_fun = EachModule["onLoad"]
-		if loaded_fun then
-			loaded_fun()
-		end
-	end
-
-	EventHandler.FireEvent("ClientLoaded")
-	print("[CLIENT] all modules loaded.")
 end
 
 return ClientLoader

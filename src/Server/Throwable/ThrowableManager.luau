@@ -39,7 +39,7 @@ end
 
 function ThrowableManager.onLoaded(): nil
     rayParams.FilterType = Enum.RaycastFilterType.Include
-    rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks") }
+    rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks" , 4) }
     rayParams.IgnoreWater = true
 end
 

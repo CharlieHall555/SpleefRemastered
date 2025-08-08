@@ -20,6 +20,9 @@
         "$className": "BindableFunction"
       }
     },
+    "ReplicatedFirst": {
+      "$path": "src/ReplicatedFirst"
+    },
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "$path": "src/Client",

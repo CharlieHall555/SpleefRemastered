@@ -41,6 +41,7 @@ ModuleDirectory.SuddenDeath = game:GetService("ServerScriptService").Round.Sudde
 -- Model Player
 ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Player.PlayerData
 ModuleDirectory.Leaderstats = game:GetService("ServerScriptService").Player.Leaderstats
+ModuleDirectory.PlayerManager = game:GetService("ServerScriptService").Player.PlayerManager
 
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
