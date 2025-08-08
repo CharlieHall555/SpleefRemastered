@@ -24,6 +24,7 @@ function Intermission.init()
     IntermissionGUI = GUI.IntermissionHud
     IntermissionGUI.Parent = localPlayer.PlayerGui
     IntermissionGUI.Enabled = (ClientStateTracker.getState() == "INTERMISSION")
+    IntermissionGUI.Status.Winner.Visible = false
 
     ClientStateTracker.connectIntermission(function()
         
@@ -52,6 +53,15 @@ function Intermission.init()
             IntermissionGUI.Status.Timer.Text = math.max(math.floor(newValue) , 0)
 
         end
+
+    end)
+
+    RemoteEventHandler.newEventConnection("PLAYER_WON" , function(playerName : string)
+        
+        IntermissionGUI.Status.Winner.Text = "Winner: " .. playerName
+        task.delay(4 , function()
+            IntermissionGUI.Visible = false
+        end)
 
     end)
     

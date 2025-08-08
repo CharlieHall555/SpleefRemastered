@@ -2,10 +2,11 @@ local AnalyticsService = game:GetService("AnalyticsService")
 
 local Onboarding = {}
 
-export type Action = "JOINED_ROUND" | "SHOT" | "BROKEN_BLOCK" | "WON"
+export type Action = "JOINED_GAME" | "JOINED_ROUND" | "SHOT" | "BROKEN_BLOCK" | "WON"
 
 export type Progress = {
     step: number,
+    hasJoinedGame: boolean,
     hasJoinedRound: boolean,
     hasShot: boolean,
     hasBrokenBlock: boolean,
@@ -16,6 +17,7 @@ local _progressByUserId: { [number]: Progress } = {}
 
 -- Map actions to progress field names
 local ACTION_TO_FIELD: { [Action]: string } = {
+    JOINED_GAME = "hasJoinedGame",
     JOINED_ROUND = "hasJoinedRound",
     SHOT = "hasShot",
     BROKEN_BLOCK = "hasBrokenBlock",
@@ -24,6 +26,7 @@ local ACTION_TO_FIELD: { [Action]: string } = {
 
 -- Map actions to display names
 local ACTION_TO_STEP_NAME: { [Action]: string } = {
+    JOINED_GAME = "Joined Game",
     JOINED_ROUND = "Joined Round",
     SHOT = "First Shot",
     BROKEN_BLOCK = "Broke Block",
@@ -32,10 +35,11 @@ local ACTION_TO_STEP_NAME: { [Action]: string } = {
 
 -- Fixed step ordering so we can handle out-of-order completion
 local ACTION_TO_STEP_NUMBER: { [Action]: number } = {
-    JOINED_ROUND = 1,
-    SHOT = 2,
-    BROKEN_BLOCK = 3,
-    WON = 4
+    JOINED_GAME = 1,
+    JOINED_ROUND = 2,
+    SHOT = 3,
+    BROKEN_BLOCK = 4,
+    WON = 5
 }
 
 local function getOrCreateProgress(userId: number, defaultStep: number?): Progress
@@ -45,6 +49,7 @@ local function getOrCreateProgress(userId: number, defaultStep: number?): Progre
     end
     p = {
         step = defaultStep or 1,
+        hasJoinedGame = false,
         hasJoinedRound = false,
         hasShot = false,
         hasBrokenBlock = false,
@@ -76,7 +81,7 @@ function Onboarding.registerUser(player: Player, previousStep: number?)
     getOrCreateProgress(player.UserId, previousStep or 1)
 end
 
-function Onboarding.getStep(player: Player) : number?
+function Onboarding.getStep(player: Player): number?
     local progress = _progressByUserId[player.UserId]
     if progress == nil then
         return nil

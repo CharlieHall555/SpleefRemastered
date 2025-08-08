@@ -42,7 +42,7 @@ local SuddenDeathTimer = Timer.new()
 local RoundManager = {}
 
 function RoundManager.init(): nil
-	
+
 	TeleportManager.setCallback(function(playerWhoFailed)
 		if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "STARTING" then
 			PlayersInGame.removePlayer(playerWhoFailed)
@@ -66,7 +66,9 @@ function RoundManager.init(): nil
 		SuddenDeathTimer:End()
 
 		BlockFactory.stopAllTweens()
-		print(WinnerDetection.getWinner(currentRound.startingPlayers))
+		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
+		print(Winner)
+		RemoteEventHandler.FireOnAllClients("PLAYER_WON" , Winner.DisplayName)
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0 , 6 , 0))
 		task.wait()
 		currentMap:Destroy()

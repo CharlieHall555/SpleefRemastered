@@ -5,8 +5,8 @@ ModuleDirectory.ServerEventHandler = game:GetService("ServerScriptService").Core
 ModuleDirectory.ValueBinder = game:GetService("ServerScriptService").Core.ValueBinder
 
 -- Model Inventory
-ModuleDirectory.Container = game:GetService("ServerScriptService").Model.Inventory.Container
-ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Slot
+--ModuleDirectory.Container = game:GetService("ServerScriptService").Model.Inventory.Container
+--ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Slot
 
 ModuleDirectory.PlayerPool = game:GetService("ServerScriptService").Round.PlayerPool
 ModuleDirectory.PlayersInGame = game:GetService("ServerScriptService").Round.PlayersInGame
@@ -39,7 +39,8 @@ ModuleDirectory.SnowballManager = game:GetService("ServerScriptService").Throwab
 ModuleDirectory.SuddenDeath = game:GetService("ServerScriptService").Round.SuddenDeath
 
 -- Model Player
-ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Model.Player.PlayerData
+ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Player.PlayerData
+ModuleDirectory.Leaderstats = game:GetService("ServerScriptService").Player.Leaderstats
 
 -- Utilities
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
@@ -54,6 +55,8 @@ ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Mat
 ModuleDirectory.LoadedBlocks = game:GetService("ServerScriptService").Loaded.Block
 ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Layer
 
+ModuleDirectory.Analytics = {}
+ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
 
 -- Remote Handlers
 ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
