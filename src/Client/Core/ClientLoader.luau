@@ -58,8 +58,16 @@ function ClientLoader.init()
 	print("[CLIENT] all modules loaded.")
 end
 
-function ClientLoader.loaded()
+function ClientLoader.profileLoaded()
 
+	for ModuleName , EachModule in loaded do
+		
+		local loaded_fun = EachModule["onProfileLoaded"]
+		if loaded_fun then
+			loaded_fun()
+		end
+	
+	end
 
 end
 

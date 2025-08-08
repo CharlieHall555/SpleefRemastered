@@ -18,10 +18,21 @@ function PlayerManager.init()
 
     Players.PlayerRemoving:Connect(PlayerData.onPlayerRemoving)
 
+    RemoteEventHandler.newEventConnection("QUERY_PROFILE_LOAD" , function(player)
+        
+        return PlayerData.isProfileLoaded(player)
+
+    end)
+
+    PlayerData.setCallback(PlayerManager.onProfileLoad)
+
 end
 
 function PlayerManager.Setup(player)
     PlayerData.onPlayerAdded(player)
+end
+
+function PlayerManager.onProfileLoad(player)
     Leaderstats.updateStat(player , "Wins" , PlayerData.getWins(player))
 end
 

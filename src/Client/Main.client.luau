@@ -2,6 +2,7 @@ local Root = script.Parent
 local QueryLoaded = game:GetService("ReplicatedStorage"):WaitForChild("QueryLoaded")
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Player = game.Players.LocalPlayer
+local loadingScreen = Player.PlayerGui:WaitForChild("Loading")
 
 local isServerLoaded = false
 while isServerLoaded == false do
@@ -14,7 +15,14 @@ local ClientLoader = require(Root.Core.ClientLoader)
 ClientLoader.init()
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 RemoteEventHandler.FireOnServer("PLAYER_LOADED")
-local loadingScreen = Player.PlayerGui:FindFirstChild("Loading")
+
+local ProfileLoaded = false
+while ProfileLoaded == false do
+	ProfileLoaded = RemoteEventHandler.InvokeOnServer("QUERY_PROFILE_LOAD")
+	print("profileload" , ProfileLoaded)
+	task.wait(0.1)
+end
+
 pcall(function()
 	loadingScreen.removeEvent:Fire()
 end)

@@ -1,87 +1,110 @@
 local Players = game:GetService("Players")
 
-local PlayerData = {}
-
 local ProfileTemplate = {
-	onboardingStep = 0,
-	onboardingComplete = "true",
-	wins = 0,
+    onboardingStep = 0,
+    onboardingComplete = "true",
+    wins = 0
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
-
 local ProfileStore = ProfileService.GetProfileStore("PlayerData", ProfileTemplate)
 
-local Profiles = {} -- [player] = profile
+local profiles: { [number]: any } = {}
+local loading: { [number]: boolean } = {}
+local callback : (playerWhoLoaded : Player) -> (nil)
+
+local PlayerData: PlayerData = {} :: any
+
+function PlayerData.setCallback(fn : (playerWhoLoaded : Player) -> (nil))
+    callback = fn
+end
 
 function PlayerData.onPlayerAdded(player: Player)
-    print("PP0")
-    local profile = ProfileStore:LoadProfileAsync("Player_" .. player.UserId)
-    print("PP1")
-    if profile ~= nil then
-        print("PP2")
-        profile:AddUserId(player.UserId) -- GDPR compliance
-        profile:Reconcile() -- Fill in missing variables from ProfileTemplate (optional)
-        profile:ListenToRelease(function()
-            Profiles[player.UserId] = nil
-            player:Kick()
+    local userId = player.UserId
+    if profiles[userId] or loading[userId] then
+        return
+    end
+
+    loading[userId] = true
+
+    task.spawn(function()
+        local ok, profile = pcall(function()
+            return ProfileStore:LoadProfileAsync("Player_" .. userId)
         end)
-        if player:IsDescendantOf(Players) == true then
-            print("PROFILES" , Profiles)
-            Profiles[player.UserId] = profile
+
+        if not ok or profile == nil then
+            loading[userId] = nil
+            warn("Could not load user profile, user kicked.")
+            if player.Parent == Players then
+                player:Kick("Could not load profile.")
+            end
+            return
+        end
+
+        profile:AddUserId(userId)
+        profile:Reconcile()
+        profile:ListenToRelease(function()
+            profiles[userId] = nil
+            loading[userId] = nil
+            if player.Parent == Players then
+                player:Kick()
+            end
+        end)
+
+        if player:IsDescendantOf(Players) then
+            profiles[userId] = profile
+            callback(player)
         else
             profile:Release()
         end
-    else
-        print("PP9")
-        warn("Could not load user profile, User kicked.")
-        player:Kick("Could not load profile.")
-    end
+
+        loading[userId] = nil
+    end)
 end
 
 function PlayerData.onPlayerRemoving(player: Player)
-    local profile = Profiles[player.UserId]
+    local userId = player.UserId
+    local profile = profiles[userId]
     if profile ~= nil then
         profile:Release()
     end
+    profiles[userId] = nil
+    loading[userId] = nil
 end
 
-function PlayerData.init() : nil
-   
+function PlayerData.init(): nil
+ 
 end
 
-function PlayerData.getWins(player : Player) : number
-    print(Profiles)
-	local profile = Profiles[player.UserId]
-	if profile == nil then 
-        warn(player.Name .. " Profile is nil")
-        return 0 
-    end	
-    print(profile.Data.wins)
-	return profile.Data.wins or 0
+function PlayerData.isProfileLoaded(player: Player): boolean
+    return profiles[player.UserId] ~= nil
 end
 
-function PlayerData.setWins(player : Player , newValue : number) : nil
-	local profile = Profiles[player.UserId]
-	if profile == nil then 
-        warn(player.Name .. " Profile is nil")
-        return 
-    end	
-    
-	profile.Data.wins = newValue
+function PlayerData.getWins(player: Player): number
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return 0
+    end
+    return profile.Data.wins or 0
 end
 
-function PlayerData.incrementWins(player : Player , amount : number) : nil
-	local starting = PlayerData.getWins(player) or 0
-	local profile = Profiles[player.UserId]
-	if profile == nil then
-        warn(player.Name .. " Profile is nil")
+function PlayerData.setWins(player: Player, newValue: number): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
         return
-    end	
-	profile.Data.wins = starting + amount
+    end
+    profile.Data.wins = newValue
 end
 
-
-
+function PlayerData.incrementWins(player: Player, amount: number): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return
+    end
+    profile.Data.wins = (profile.Data.wins or 0) + amount
+end
 
 return PlayerData
