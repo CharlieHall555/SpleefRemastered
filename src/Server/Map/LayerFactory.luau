@@ -8,6 +8,8 @@ local Layer = require(ModuleDirectory.Map.Layer)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
+--Config.MAX_PARTS_PER_FRAME_PER_LAYER
+
 local LayerFactory = {}
 LayerFactory.__index = LayerFactory
 
@@ -32,6 +34,8 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
 
     local layerInstance = Layer.new(center, Vector2.new(width, height))
 
+    local count = 0
+
     for x = 1, width do
         for y = 1, height do
             local info = plane[x][y]
@@ -46,6 +50,11 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
                 blk:setLayerPosition(Vector2.new(x, y))
                 blk:setParentLayerId(layerInstance._id)
                 layerInstance:addBlock(blk, Vector2.new(x, y))
+                count += 1
+                if count > Config.MAX_PARTS_PER_FRAME_PER_LAYER then
+                    task.wait()
+                    count = 0
+                end
             end
         end
     end

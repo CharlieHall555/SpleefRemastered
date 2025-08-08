@@ -15,6 +15,7 @@ function MapBuilder.build(param: MapDataFactory.MapData): Map.Map
         print(layerOutput)
         local Layer = LayerFactory.create(layerOutput.layerParams, layerOutput.planeInfo)
         map:addLayer(Layer)
+        task.wait()
     end
 
     return map

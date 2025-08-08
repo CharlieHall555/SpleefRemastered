@@ -7,6 +7,7 @@ local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Block = require(ModuleDirectory.Map.Block)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local SnowballManager = {}
+local RoundSystem = require(ModuleDirectory.RoundSystem)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
@@ -27,6 +28,10 @@ function SnowballManager.onHit(throwable : Throwable.Throwable , hit : RaycastRe
 end
 
 function SnowballManager.createSnowballFor(player, playerPosition, direction)
+	if RoundSystem.getState() ~= "ACTIVE" then
+		return
+	end
+	
 	if not playerPosition or not direction then
 		warn("Snowball creation failed: missing position or direction for", player)
 		return
@@ -44,10 +49,14 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 		return
 	end
 
+	local spawnPosition
 	local distance = (playerPosition - rootPart.Position).Magnitude
 	if distance > Config.SNOWBALL_DISTANCE_THRESHOLD then
-		warn("Snowball creation failed: spawn too far from player:", player)
+		warn("Snowball creation point altered: spawn too far from player:", player)
+		spawnPosition = rootPart.Position
 		return
+	else
+		spawnPosition = playerPosition
 	end
 
 	local userId = player.UserId
@@ -59,7 +68,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	end
 
 	_lastSnowballFired[userId] = now
-	ThrowableManager.newThrowable(playerPosition, direction, "snowball")
+	ThrowableManager.newThrowable(spawnPosition, direction, "snowball")
 end
 
 return SnowballManager

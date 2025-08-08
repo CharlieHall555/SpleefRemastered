@@ -26,7 +26,6 @@ function SuddenDeath.destroyRandomBlock(map: Map.Map)
 	if randomBlock then
 		BlockFactory.slowDestroy(randomBlock)
 	end
-	print("Hi")
 end
 
 return SuddenDeath

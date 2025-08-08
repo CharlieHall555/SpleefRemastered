@@ -21,6 +21,7 @@ local ThrowableData = require(ClientModuleDirectory.ThrowableData)
 local VectorUtil = require(ClientModuleDirectory.VectorUtil)
 local ThrowableDefinitions = require(ClientModuleDirectory.ThrowableDefinitions)
 local Debris = game:GetService("Debris")
+local localPlayer = game.Players.LocalPlayer
 
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Include
@@ -44,7 +45,7 @@ local function generateUID(): string
 end
 
 -- How far behind the actual position we start the visual interpolation (in seconds)
-local INTERPOLATION_OFFSET = 0.05
+local INTERPOLATION_OFFSET = 0.2
 
 function ClientThrowableTracker.init()
 	for eachType, def in ThrowableDefinitions do
@@ -54,10 +55,49 @@ function ClientThrowableTracker.init()
 	RemoteEventHandler.newEventConnection("NEW_THROWABLE", ClientThrowableTracker.receiveFromServer)
 
 	RemoteEventHandler.newEventConnection("DELETE_THROWABLE", ClientThrowableTracker.removeThrowable)
+
+	ClientThrowableTracker.pollPing()
+
 end
 
 function ClientThrowableTracker.onLoaded()
 	rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks") }
+end
+
+local function average(table)
+  	local sum = 0
+	for _, v in ipairs(table) do
+		sum += v
+	end
+	return sum / (#table)
+end
+
+function ClientThrowableTracker.pollPing()
+    task.spawn(function()
+        local pingSamples = {}
+        local sampleSize = 5
+
+        while localPlayer and localPlayer.Parent do 
+            local success, err = pcall(function()
+                local ping = math.max(0, localPlayer:GetNetworkPing())
+                ping = math.min(ping, 0.5) -- cap max ping to 0.5 seconds
+
+                -- store sample
+                table.insert(pingSamples, ping)
+                if #pingSamples > sampleSize then
+                    table.remove(pingSamples, 1)
+                end
+
+                INTERPOLATION_OFFSET = average(pingSamples) / 2
+            end)
+
+            if not success then
+                warn("[ClientThrowableTracker.pollPing] Error:", err)
+            end
+
+            task.wait(0.5)
+        end
+    end)
 end
 
 function ClientThrowableTracker.receiveFromServer(data: ThrowableData.ThrowableData)

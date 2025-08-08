@@ -76,7 +76,7 @@ function RoundSystem.init()
 	end
 
 	intermissionTimer.Callback = function(time : number)
-		--RemoteEventHandler.FireOnAllClients("INTERMISSION_TIMER_CHANGED" , time)
+		RemoteEventHandler.FireOnAllClients("INTERMISSION_TIMER_CHANGED" , time)
 	end
 
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED" , function(player)

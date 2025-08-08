@@ -10,6 +10,9 @@ local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local currentMap = nil
 local PlayerDeathDetector = require(ModuleDirectory.PlayerDeathDetector)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+
+local LobbySpawn
 
 local testMapParams: MapDataFactory.MapDataCreationParams = {
 	layerSeperation = 50, -- vertical distance between each layer
@@ -17,22 +20,22 @@ local testMapParams: MapDataFactory.MapDataCreationParams = {
 	layerParams = { -- each entry is PlaneFactory.PlaneCreationParams
 		{
 			size = Vector2.new(20, 20), -- X×Y dimensions
-			shape = "Square",
-		},
-		{
-			size = Vector2.new(16, 16),
 			shape = "Circle",
 		},
 		{
-			size = Vector2.new(12, 12),
-			shape = "Square",
+			size = Vector2.new(26, 26),
+			shape = "Circle",
+		},
+		{
+			size = Vector2.new(35, 35),
+			shape = "Circle",
 		},
 	},
 }
 
 -- then generate:
 
-
+local SuddenDeathTimer = Timer.new()
 
 local RoundManager = {}
 
@@ -43,8 +46,12 @@ function RoundManager.init(): nil
 		end
 	end)
 
+	SuddenDeathTimer.EndCallback = function()
+		SuddenDeath.start(currentMap)
+		print("startSuddenDeath")
+	end
+
 	RoundSystem.connectStarting(function(currentRound : RoundSystem.Round)
-		
 		print(currentRound)
 		currentMap = MapGenerator.generate(testMapParams)
 		task.wait(1)
@@ -53,8 +60,10 @@ function RoundManager.init(): nil
 	end)
 
 	RoundSystem.connectEnding(function()
+		SuddenDeathTimer:End()
+
 		BlockFactory.stopAllTweens()
-		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(100,0, 0))
+		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0 , 6 , 0))
 		task.wait()
 		currentMap:Destroy()
 		
@@ -68,16 +77,22 @@ function RoundManager.init(): nil
 		RemoteEventHandler.FireOnClients(currentRound.alivePlayers , "CHANGE_STATE" , "ACTIVE")
 
 		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
-		SuddenDeath.start(currentMap)
+
+		SuddenDeathTimer:Start(Config.ROUND_TIME)
 	end)
 
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
 
+	LobbySpawn = game.Workspace:WaitForChild("SpawnLocation")
+
 end
+
 
 function RoundManager.onPlayerDeath(playerWhoDied : Player)
 
 	RemoteEventHandler.FireOnClient(playerWhoDied , "CHANGE_STATE" , "INTERMISSION")
+	RemoteEventHandler.FireOnAllClients("PLAYER_DIED" , playerWhoDied)
+
 
 end
 

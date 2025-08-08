@@ -15,6 +15,8 @@ local _nextId = 0
 
 -- Physics constants
 local gravityTable: { [string]: Vector3 } = {}
+local velocityTable: { [string]: Vector3 } = {}
+
 local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult) -> () } = {}
 local rayParams = RaycastParams.new()
 
@@ -30,6 +32,7 @@ end
 function ThrowableManager.init(): nil
     for eachType, eachTable in pairs(ThrowableDefinitions) do
         gravityTable[eachType] = Vector3.new(0, -eachTable.gravity, 0)
+        velocityTable[eachType] = eachTable.velocity
     end
     RunService.Heartbeat:Connect(ThrowableManager.mainLoop)
 end
@@ -107,7 +110,7 @@ function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _t
     assert(typeof(_type) == "string" and _type ~= "", "ThrowableManager.newThrowable: '_type' must be a non-empty string")
 
     local uid = generateUID()
-    local speed = 80
+    local speed = velocityTable[_type] or 80
     local velocity = direction.Unit * speed
     local new = {
         uid = uid,

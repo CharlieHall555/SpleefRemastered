@@ -1,29 +1,42 @@
---Client Module Directory 
+-- Client Module Directory
 local Root = script.Parent
 local ModuleDirectory = {}
 
+-- Core
 ModuleDirectory.ClientEventHandler = Root.Core.ClientEventHandler
 ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
-ModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
+
+-- Configuration
 ModuleDirectory.Config = Root.ClientConfigurations
 ModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
-
-ModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
-ModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
-
-ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
-
-ModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool  
-
-ModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
-ModuleDirectory.ClientSideStateTracker = Root.ClientSideStateTracker
-
-ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
-ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
-ModuleDirectory.InputHandler = Root.Input.InputHandler
+-- GUI
+ModuleDirectory.GUI = {}
+ModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
+ModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
+ModuleDirectory.GUI.Intermission = Root.GUI.Intermission
 
+-- Gameplay
+ModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
+ModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
+ModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
+ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
+
+-- State Management
+ModuleDirectory.StateChangeManager = Root.StateChangeManager
+ModuleDirectory.ClientStateTracker = Root.ClientStateTracker
+
+-- Utilities (Client)
+ModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
+ModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
+ModuleDirectory.InputHandler = Root.Input.InputHandler
 ModuleDirectory.ClientCommands = Root.ClientCommands
+
+
+
+-- Utilities (Shared)
+ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
+ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 
 return ModuleDirectory

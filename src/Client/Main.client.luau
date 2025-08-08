@@ -21,12 +21,13 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 	if action.context == "GAME" then
 		local character = player.Character or player.CharacterAdded:Wait()
 		local rootPart = character:FindFirstChild("HumanoidRootPart")
+		local headPart = character:FindFirstChild("Head")
 		if not rootPart then
 			warn("Cannot throw snowball: missing HumanoidRootPart for", player)
 			return
 		end
 
-		local playerPosition = rootPart.Position
+		local playerPosition = headPart.Position
 
 		local targetPosition = mouse.Hit.p
 		local direction = (targetPosition - playerPosition).Unit
@@ -48,4 +49,8 @@ ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThr
 end)
 
 local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+
+local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
+
+local n = 0
 
