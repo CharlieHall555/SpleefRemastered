@@ -34,7 +34,7 @@ end
 
 local function onDied(player)
     print(player.Name .. " died")
-    if RoundSystem.getState() == "ACTIVE" then
+    if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "PREPARING" then
         PlayersInGame.removePlayer(player)
 
         playerDeathCache[player.UserId] = {

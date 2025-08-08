@@ -132,7 +132,11 @@ function RoundSystem.processEvent(eventToProcess: EventContext): nil
         end
     elseif state == "PREPARING" then
         if eventToProcess.name == "PREPARING_TIMER_ENDED" then
-            RoundSystem.changeState("ACTIVE")
+			RoundSystem.changeState("ACTIVE")
+        elseif eventToProcess.name == "ACTIVE_POOL_CHANGED" then
+            if #PlayersInGame.getActivePlayers() <= Config.PLAYERS_TO_END then
+                RoundSystem.changeState("ENDING")
+            end
         end
     elseif state == "ACTIVE" then
         if eventToProcess.name == "ROUND_TIMER_ENDED" then
@@ -177,6 +181,8 @@ end
 
 function RoundSystem.onACTIVE()
     roundTimer:Start(Config.MAXIMUM_ROUND_TIME)
+    RemoteEventHandler.FireOnAllClients("ROUND_TIMER_STARTED" , Config.MAXIMUM_ROUND_TIME)
+
 end
 
 function RoundSystem.onENDING()

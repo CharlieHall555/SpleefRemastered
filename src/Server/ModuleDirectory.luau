@@ -19,6 +19,7 @@ ModuleDirectory.WinnerDetection = game:GetService("ServerScriptService").Round.W
 ModuleDirectory.Throwable = game:GetService("ServerScriptService").Throwable.Throwable
 ModuleDirectory.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
 ModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
+ModuleDirectory.AmmoManager = game:GetService("ServerScriptService").Gameplay.AmmoManager
 
 -- Map Generation System
 ModuleDirectory.Map = {}

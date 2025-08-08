@@ -86,6 +86,8 @@ function Leaderstats.updateStat(player: Player, statName: string, newValue: any)
     local ok, coerced = pcall(_coerceValue, dataType, newValue)
     if ok then
         statObj.Value = coerced
+    else
+        warn("failed to coerce type, Target: " .. dataType .. " Value: ".. newValue)
     end
 end
 

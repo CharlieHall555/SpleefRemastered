@@ -1,5 +1,3 @@
-local ClientThrowableTracker = {}
-
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
@@ -14,6 +12,7 @@ local serverStateMappings = {
     STARTING = "Round Starting",
     WAITING = "Waiting for players",
     ENDING = "Round Ending",
+    PREPARING = "Round Active",
     ACTIVE = "Round Active"
 }
 

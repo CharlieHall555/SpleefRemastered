@@ -8,12 +8,21 @@ local PlayerManager = {}
 
 function PlayerManager.init()
     
-    Players.PlayerAdded:Connect(PlayerData.onPlayerAdded)
+    for _ , eachPlayer in Players:GetPlayers() do
+        PlayerManager.Setup(eachPlayer)
+    end
+
+    Players.PlayerAdded:Connect(PlayerManager.Setup)
 
     RemoteEventHandler.newEventConnection("PLAYER_LOADED", Leaderstats.newPlayer)
 
     Players.PlayerRemoving:Connect(PlayerData.onPlayerRemoving)
 
+end
+
+function PlayerManager.Setup(player)
+    PlayerData.onPlayerAdded(player)
+    Leaderstats.updateStat(player , "Wins" , PlayerData.getWins(player))
 end
 
 return PlayerManager

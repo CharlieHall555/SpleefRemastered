@@ -1,6 +1,7 @@
-local Config = game:GetService("ServerScriptService").ServerConfigurations
+local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RoundSystem = require(ModuleDirectory.RoundSystem)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 -- USEFUL CONFIGS: Config.MAX_AMMO, Config.STARTING_AMMO
 
@@ -40,6 +41,9 @@ function AmmoManager.setUp(players: { Player })
 	for _, player in ipairs(players) do
 		if player and player.UserId and player.UserId ~= 0 then
 			AmmoStore[player.UserId] = starting
+			RemoteEventHandler.FireOnClient(player , "SET_MAX_AMMO", Config.MAX_AMMO)
+			RemoteEventHandler.FireOnClient(player , "AMMO_CHANGED", Config.MAX_AMMO)
+
 		end
 	end
 end
@@ -59,7 +63,9 @@ function AmmoManager.incrementAmmo(player: Player, value: number): nil
 		current = clampAmmo(Config.STARTING_AMMO or 0)
 	end
 
-	AmmoStore[userId] = clampAmmo(current + value)
+	local newValue = clampAmmo(current + value)
+	RemoteEventHandler.FireOnClient(player , "AMMO_CHANGED", newValue)
+	AmmoStore[userId] = newValue
 end
 
 function AmmoManager.reset()

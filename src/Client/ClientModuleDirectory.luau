@@ -16,6 +16,7 @@ ModuleDirectory.GUI = {}
 ModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
 ModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
 ModuleDirectory.GUI.Intermission = Root.GUI.Intermission
+ModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
 
 -- Gameplay
 ModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender

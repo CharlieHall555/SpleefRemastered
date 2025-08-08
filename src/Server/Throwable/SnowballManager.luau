@@ -8,6 +8,7 @@ local Block = require(ModuleDirectory.Map.Block)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local SnowballManager = {}
 local RoundSystem = require(ModuleDirectory.RoundSystem)
+local AmmoManager = require(ModuleDirectory.AmmoManager)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
@@ -29,6 +30,10 @@ end
 
 function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	if RoundSystem.getState() ~= "ACTIVE" then
+		return
+	end
+
+	if AmmoManager.getAmmo(player) < 1 then
 		return
 	end
 	
@@ -68,6 +73,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	end
 
 	_lastSnowballFired[userId] = now
+	AmmoManager.incrementAmmo(player , -1)
 	ThrowableManager.newThrowable(spawnPosition, direction, "snowball")
 end
 

@@ -1,7 +1,7 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RoundSystem = require(ModuleDirectory.RoundSystem)
 local TeleportManager = require(ModuleDirectory.TeleportManager)
-local PlayersInGame = require(ModuleDirectory.PlayersInGame) -- holds the "active players currently in game"
+local PlayersInGame = require(ModuleDirectory.PlayersInGame)
 local Timer = require(ModuleDirectory.Timer)
 local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
 local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
@@ -11,6 +11,8 @@ local currentMap = nil
 local PlayerDeathDetector = require(ModuleDirectory.PlayerDeathDetector)
 local WinnerDetection = require(ModuleDirectory.WinnerDetection)
 local PlayerData = require(ModuleDirectory.PlayerData)
+local Leaderstats = require(ModuleDirectory.Leaderstats)
+local AmmoManager = require(ModuleDirectory.AmmoManager)
 
 local PLayerManger = require(ModuleDirectory.PlayerManager)
 
@@ -20,11 +22,11 @@ local Config = require(game:GetService("ServerScriptService").ServerConfiguratio
 local LobbySpawn
 
 local testMapParams: MapDataFactory.MapDataCreationParams = {
-	layerSeperation = 50, -- vertical distance between each layer
-	originPosition = Vector3.new(0, 0, 0), -- world‐space origin of your bottom layer
-	layerParams = { -- each entry is PlaneFactory.PlaneCreationParams
+	layerSeperation = 50,
+	originPosition = Vector3.new(0, 0, 0),
+	layerParams = {
 		{
-			size = Vector2.new(20, 20), -- X×Y dimensions
+			size = Vector2.new(20, 20),
 			shape = "Circle",
 		},
 		{
@@ -38,83 +40,84 @@ local testMapParams: MapDataFactory.MapDataCreationParams = {
 	},
 }
 
--- then generate:
-
 local SuddenDeathTimer = Timer.new()
 
 local RoundManager = {}
 
-function RoundManager.init(): nil
-
-	TeleportManager.setCallback(function(playerWhoFailed)
-		if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "STARTING" then
-			PlayersInGame.removePlayer(playerWhoFailed)
-		end
-	end)
-
-	SuddenDeathTimer.EndCallback = function()
-		SuddenDeath.start(currentMap)
-		print("startSuddenDeath")
+local function onTeleportFail(playerWhoFailed)
+	if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "STARTING" then
+		PlayersInGame.removePlayer(playerWhoFailed)
 	end
+end
 
-	RoundSystem.connectStarting(function(currentRound : RoundSystem.Round)
-		print(currentRound)
-		currentMap = MapGenerator.generate(testMapParams)
-		task.wait(1)
-		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "ROUND_STARTING")
+local function onSuddenDeathTimerEnd()
+	SuddenDeath.start(currentMap)
+	RemoteEventHandler.FireOnAllClients("START_SUDDEN_DEATH")
+	print("startSuddenDeath")
+end
 
-	end)
+local function onRoundStarting(currentRound: RoundSystem.Round)
+	print(currentRound)
+	currentMap = MapGenerator.generate(testMapParams)
+	task.wait(1)
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
+end
 
-	RoundSystem.connectPreparing(function()
-	end)
+local function onRoundPreparing(currentRound)
+	AmmoManager.setUp(PlayersInGame.getActivePlayers())
+	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ACTIVE")
+end
 
-	RoundSystem.connectEnding(function(currentRound)
-		SuddenDeathTimer:End()
+local function onRoundEnding(currentRound)
+	SuddenDeathTimer:End()
+	AmmoManager.reset()
+	BlockFactory.stopAllTweens()
+	local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
+	print(Winner)
+	if Winner then
+		PlayerData.incrementWins(Winner, 1)
+		print(PlayerData.getWins(Winner))
+		Leaderstats.updateStat(Winner, "Wins", PlayerData.getWins(Winner))
+		RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName)
+	else
+		print("No winner")
+	end
+	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
+	task.wait()
+	currentMap:Destroy()
+	PlayerDeathDetector.clearCache()
+	task.wait(1)
+end
 
-		BlockFactory.stopAllTweens()
-		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
-		print(Winner)
-		PlayerData.incrementWins(Winner , 1)
-		RemoteEventHandler.FireOnAllClients("PLAYER_WON" , Winner.DisplayName)
-		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0 , 6 , 0))
-		task.wait()
-		currentMap:Destroy()
-		PlayerDeathDetector.clearCache()
-		
-		task.wait(1)
-	end)
+local function onRoundIntermission(currentRound)
+	print("hi!")
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
+end
 
-	RoundSystem.connectIntermission(function(currentRound)
-		print("hi!")
-		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "INTERMISSION")
-	end)
+local function onRoundActive(currentRound)
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "HIGHLIGHT_PLAYERS", currentRound.startingPlayers)
+	SuddenDeathTimer:Start(Config.ROUND_TIME)
+end
 
-	RoundSystem.connectActive(function(currentRound)
-		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "ACTIVE")
-		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "HIGHLIGHT_PLAYERS" , currentRound.startingPlayers)
-
-
-		TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
-
-		SuddenDeathTimer:Start(Config.ROUND_TIME)
-	end)
-
+function RoundManager.init(): nil
+	TeleportManager.setCallback(onTeleportFail)
+	SuddenDeathTimer.Callback = function(currentT)
+		RemoteEventHandler.FireOnAllClients("SUDDEN_DEATH_TIMER_CHANGED" , currentT)
+	end
+	SuddenDeathTimer.EndCallback = onSuddenDeathTimerEnd
+	RoundSystem.connectStarting(onRoundStarting)
+	RoundSystem.connectPreparing(onRoundPreparing)
+	RoundSystem.connectEnding(onRoundEnding)
+	RoundSystem.connectIntermission(onRoundIntermission)
+	RoundSystem.connectActive(onRoundActive)
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
-
 	LobbySpawn = game.Workspace:WaitForChild("SpawnLocation")
-
 end
 
-
-function RoundManager.onPlayerDeath(playerWhoDied : Player)
-
-	RemoteEventHandler.FireOnClient(playerWhoDied , "CHANGE_STATE" , "INTERMISSION")
-	RemoteEventHandler.FireOnAllClients("PLAYER_DIED" , playerWhoDied)
-
-
+function RoundManager.onPlayerDeath(playerWhoDied: Player)
+	RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
+	RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied)
 end
-
-
-
 
 return RoundManager
