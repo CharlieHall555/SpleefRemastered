@@ -28,7 +28,8 @@ function PlayerHighlighter.highlightPlayer(player: Player)
     if character then
         -- Clone the template and set its parent
         local newHighlight = highlightTemplate:Clone()
-        newHighlight.Parent = character
+        newHighlight.Parent = localPlayer.PlayerGui
+        newHighlight.Adornee = character
         newHighlight.Enabled = true
 
         highlights[player] = newHighlight

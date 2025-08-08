@@ -28,6 +28,7 @@ function Intermission.init()
 
     ClientStateTracker.connectIntermission(function()
         
+        print("change")
         print("nah")
         IntermissionGUI.Enabled = true
 
@@ -58,10 +59,10 @@ function Intermission.init()
 
     RemoteEventHandler.newEventConnection("PLAYER_WON" , function(playerName : string)
         
-        IntermissionGUI.Visible = true
+        IntermissionGUI.Status.Winner.Visible = true
         IntermissionGUI.Status.Winner.Text = "Winner: " .. playerName
         task.delay(4 , function()
-            IntermissionGUI.Visible = false
+            IntermissionGUI.Status.Winner.Visible = false
         end)
 
     end)

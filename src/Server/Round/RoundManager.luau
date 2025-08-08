@@ -65,6 +65,9 @@ function RoundManager.init(): nil
 
 	end)
 
+	RoundSystem.connectPreparing(function()
+	end)
+
 	RoundSystem.connectEnding(function(currentRound)
 		SuddenDeathTimer:End()
 
@@ -81,7 +84,9 @@ function RoundManager.init(): nil
 		task.wait(1)
 	end)
 
-	RoundSystem.connectIntermission(function()
+	RoundSystem.connectIntermission(function(currentRound)
+		print("hi!")
+		RemoteEventHandler.FireOnClients(currentRound.startingPlayers , "CHANGE_STATE" , "INTERMISSION")
 	end)
 
 	RoundSystem.connectActive(function(currentRound)

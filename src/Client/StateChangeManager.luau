@@ -13,6 +13,7 @@ function StateChangeManager.init()
     end)
 
     ClientStateTracker.connectIntermission(function()
+        print("Hi")
         PlayerHighlighter.reset()
     end)
 
