@@ -89,7 +89,7 @@ function ClientThrowableTracker.pollPing()
                 end
 
 				if RunService:IsStudio() then
-					INTERPOLATION_OFFSET = 0.2 -- remove in production
+					INTERPOLATION_OFFSET = 0.08 -- remove in production
 				else
                 	INTERPOLATION_OFFSET = average(pingSamples) / 2
 				end

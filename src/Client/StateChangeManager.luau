@@ -3,6 +3,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
 local PlayerHighlighter = require(ClientModuleDirectory.PlayerHighlighter)
+local SystemMessage = require(ClientModuleDirectory.SystemMessage)
 
 local StateChangeManager = {}
 
@@ -20,10 +21,11 @@ function StateChangeManager.init()
     ClientStateTracker.connectRoundStarting(function()
         
         AlertSystem.addAlert("Round starting...")
+        SystemMessage.send("ROUND STARTING" , Color3.fromRGB(9, 134, 16) , true)
 
     end)
 
 
-end
+end 
 
 return StateChangeManager 

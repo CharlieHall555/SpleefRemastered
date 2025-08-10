@@ -5,6 +5,7 @@ local Player = game.Players.LocalPlayer
 local loadingScreen = Player.PlayerGui:WaitForChild("Loading")
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 
+
 local isServerLoaded = false
 while isServerLoaded == false do
 	isServerLoaded = QueryLoaded:InvokeServer()
@@ -32,8 +33,9 @@ end)
 RemoteEventHandler.FireOnServer("PLAYER_LOADED")
 
 local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTracker)
-
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local InputHandler = require(ClientModuleDirectory.InputHandler)
+local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -54,6 +56,10 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 			return
 		end
 
+		if ClientStateTracker.getServerState() ~= "ACTIVE" then
+			return
+		end
+
 		local playerPosition = headPart.Position
 
 		local targetPosition = mouse.Hit.p
@@ -66,6 +72,13 @@ end)
 
 print(binding1)
 
+HitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(otherPart : Part)
+	
+	ClientAmmoTracker.predictIncrement(1)
+	otherPart.Transparency = 1
+
+end)
+
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
 
 ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThrowableTracker.Throwable , hit)
@@ -76,10 +89,13 @@ ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThr
 	end
 end)
 
+
+
 local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
 
 local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
 
 local n = 0
 
-
+local SystemMessage = require(ClientModuleDirectory.SystemMessage)
+	

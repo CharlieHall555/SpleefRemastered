@@ -24,13 +24,18 @@ Players.PlayerAdded:Connect(function(player)
 
 end)
 
--- Cleanup when a player leaves
-Players.PlayerRemoving:Connect(function(player)
+function PlayerPositionTracker.removePlayer(player)
 	local uid = player.UserId
+	if player.character then
+		player.character.PrimaryPart:SetNetworkOwner(player)
+	end
 	lastUpdateTime[uid] = nil
 	cache[uid] = nil
 	unresponsivePlayers[uid] = nil
-end)
+end
+
+-- Cleanup when a player leaves
+Players.PlayerRemoving:Connect(PlayerPositionTracker.removePlayer)
 
 -- Helper to mark player responsive again (with optional debounce if desired)
 local function restoreNetworkOwnership(player)

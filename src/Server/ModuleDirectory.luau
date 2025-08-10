@@ -20,6 +20,8 @@ ModuleDirectory.Throwable = game:GetService("ServerScriptService").Throwable.Thr
 ModuleDirectory.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
 ModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
 ModuleDirectory.AmmoManager = game:GetService("ServerScriptService").Gameplay.AmmoManager
+ModuleDirectory.PlayerRaycastParamsHandler = game:GetService("ServerScriptService").Throwable.PlayerRaycastParmsHandler
+
 
 -- Map Generation System
 ModuleDirectory.Map = {}
@@ -33,6 +35,10 @@ ModuleDirectory.Map.LayerFactory = game:GetService("ServerScriptService").Map.La
 ModuleDirectory.Map.MapDataFactory = game:GetService("ServerScriptService").Map.MapDataFactory
 ModuleDirectory.Map.MapBuilder = game:GetService("ServerScriptService").Map.MapBuilder
 ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.MapGenerator
+ModuleDirectory.ServerHitBoxManager = game:GetService("ServerScriptService").Gameplay.ServerHitBoxManager
+ModuleDirectory.KickManager = game:GetService("ServerScriptService").KickManager
+
+ModuleDirectory.SnowballAmmoPickup = game:GetService("ServerScriptService").Throwable.SnowballAmmoPickup
 
 ModuleDirectory.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
 

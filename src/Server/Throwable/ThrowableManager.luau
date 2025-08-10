@@ -18,7 +18,7 @@ local gravityTable: { [string]: Vector3 } = {}
 local velocityTable: { [string]: Vector3 } = {}
 
 local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult) -> () } = {}
-local rayParams = RaycastParams.new()
+local defaultRayParams = RaycastParams.new()
 
 -- Debug and cast settings
 local DEBUG = false
@@ -38,9 +38,9 @@ function ThrowableManager.init(): nil
 end
 
 function ThrowableManager.onLoaded(): nil
-    rayParams.FilterType = Enum.RaycastFilterType.Include
-    rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks" , 4) }
-    rayParams.IgnoreWater = true
+    defaultRayParams.FilterType = Enum.RaycastFilterType.Include
+    defaultRayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks" , 4) }
+    defaultRayParams.IgnoreWater = true
 end
 
 function ThrowableManager.mainLoop(dt: number): nil
@@ -68,7 +68,7 @@ function ThrowableManager.mainLoop(dt: number): nil
         local orient = direction.Magnitude > 0 and direction.Unit or Vector3.new(0, 0, 1)
         local castCFrame = CFrame.new(center, center + orient)
         local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
-        local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction, rayParams)
+        local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction, defaultRayParams)
 
         if oldPos.Y < -100 then
             ThrowableManager.removeThrowable(uid)
@@ -104,7 +104,7 @@ local function updateClients(newThrowable: Throwable.Throwable)
     RemoteEventHandler.FireOnAllClients("NEW_THROWABLE", dataToSend)
 end
 
-function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _type: string): string
+function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _type: string , playerOwner : Player?): string
     assert(typeof(position) == "Vector3", "ThrowableManager.newThrowable: 'position' must be a Vector3")
     assert(typeof(direction) == "Vector3", "ThrowableManager.newThrowable: 'direction' must be a Vector3")
     assert(typeof(_type) == "string" and _type ~= "", "ThrowableManager.newThrowable: '_type' must be a non-empty string")
@@ -118,6 +118,7 @@ function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _t
         position = position,
         velocity = velocity,
         typeName = _type,
+        owner = playerOwner
     }
     loadedThrowables[uid] = new
 

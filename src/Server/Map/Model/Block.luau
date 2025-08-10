@@ -67,6 +67,7 @@ function Block.new(config: BlockConfig?): Block
 	self.Part.CanTouch = true
 	self.Part.CanQuery = true
 	self.Part.Transparency = 0
+	--self.Part.CollisionGroup = "CG_BLOCK"
 	self.Part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
 	self.Part.Color = Materials[materialName].Color
 	self.Part.Material = Materials[materialName].Material
@@ -130,6 +131,7 @@ function Block:Destroy(): nil
 		self.Part.CanCollide = false
 		self.Part.CanQuery = false
 		self.Part.CanTouch = false
+		--self.Part.CollisionGroup = "Default"
 		PartPool.add(self.Part)
 	end
 

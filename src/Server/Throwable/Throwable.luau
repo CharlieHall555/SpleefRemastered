@@ -6,6 +6,7 @@ export type Throwable = {
     direction: Vector3,
     velocity: Vector3,
     typeName : string,
+    owner : Player
 }
 
 return Throwable

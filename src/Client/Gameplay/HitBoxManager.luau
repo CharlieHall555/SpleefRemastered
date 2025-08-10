@@ -2,7 +2,7 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-local HitBoxManager = {}
+local ClientHitBoxManager = {}
 
 local tagCallback = {}
 
@@ -21,6 +21,7 @@ local function createPlayerHitbox()
     hitbox.Name = "CentralHitbox"
     hitbox.Size = Vector3.new(2, 6, 2) -- adjust to desired player volume
     hitbox.Transparency = 0.5
+    hitbox.Color = Color3.new(0.035294, 0.635294, 0.788235)
     hitbox.Anchored = false
     hitbox.CanCollide = false
     hitbox.Massless = true
@@ -63,15 +64,15 @@ local function weldToCharacter(hitbox, character)
     weld.Parent = hitbox
 end
 
-function HitBoxManager.setUpCallback(tagName: string, callback : (otherPart : Instance) -> nil)
+function ClientHitBoxManager.setUpCallback(tagName: string, callback : (otherPart : Instance) -> nil)
     -- stub: local-side callback logic can be implemented here if needed
     tagCallback[tagName] = callback
 end
 
-function HitBoxManager.init()
+function ClientHitBoxManager.init()
     -- Ensure single hitbox exists
     local hitbox = createPlayerHitbox()
-    HitBoxManager.hitbox = hitbox
+    ClientHitBoxManager.hitbox = hitbox
 
     local function attachToCharacter(character)
         weldToCharacter(hitbox, character)
@@ -106,4 +107,4 @@ function HitBoxManager.init()
     end)
 end
 
-return HitBoxManager
+return ClientHitBoxManager

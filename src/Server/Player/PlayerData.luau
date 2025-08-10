@@ -1,4 +1,7 @@
 local Players = game:GetService("Players")
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local KickManager = require(ModuleDirectory.KickManager)
+
 
 local ProfileTemplate = {
     onboardingStep = 0,
@@ -19,7 +22,7 @@ function PlayerData.setCallback(fn : (playerWhoLoaded : Player) -> (nil))
     callback = fn
 end
 
-function PlayerData.onPlayerAdded(player: Player)
+function PlayerData.onPlayerAdded(player: Player? )
     local userId = player.UserId
     if profiles[userId] or loading[userId] then
         return
@@ -36,7 +39,7 @@ function PlayerData.onPlayerAdded(player: Player)
             loading[userId] = nil
             warn("Could not load user profile, user kicked.")
             if player.Parent == Players then
-                player:Kick("Could not load profile.")
+                KickManager.safeKick(player , "Could not load user profile, try again later.")
             end
             return
         end
@@ -47,7 +50,7 @@ function PlayerData.onPlayerAdded(player: Player)
             profiles[userId] = nil
             loading[userId] = nil
             if player.Parent == Players then
-                player:Kick()
+                KickManager.safeKick(player , "User profile release, Possibly joined from another place?")
             end
         end)
 

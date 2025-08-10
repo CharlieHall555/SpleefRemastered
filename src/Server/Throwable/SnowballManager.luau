@@ -9,12 +9,23 @@ local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local SnowballManager = {}
 local RoundSystem = require(ModuleDirectory.RoundSystem)
 local AmmoManager = require(ModuleDirectory.AmmoManager)
+local ServerHitBoxManager = require(ModuleDirectory.ServerHitBoxManager)
+local SnowballAmmoPickup = require(ModuleDirectory.SnowballAmmoPickup)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
 function SnowballManager.init()
 	RemoteEventHandler.newEventConnection("CREATE_SNOWBALL", SnowballManager.createSnowballFor)
 	ThrowableManager.registerOnHit("snowball" , SnowballManager.onHit)
+
+	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(player , otherPart)
+
+		AmmoManager.incrementAmmo(player , 1)
+		local snowballId = otherPart:GetAttribute("id")
+		SnowballAmmoPickup.remove(snowballId)
+		
+	end)
+
 end
 
 function SnowballManager.onHit(throwable : Throwable.Throwable , hit : RaycastResult)

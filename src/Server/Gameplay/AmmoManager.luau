@@ -75,7 +75,7 @@ function AmmoManager.startRegenLoop()
                 local player = Players:GetPlayerByUserId(userId)
                 if player then
                     local serverTime = workspace:GetServerTimeNow()
-                    RemoteEventHandler.FireOnClient(player, serverTime,"AMMO_REGEN", newAmmo)
+                    RemoteEventHandler.FireOnClient(player,"AMMO_REGEN" ,serverTime, newAmmo)
                 end
             end
 

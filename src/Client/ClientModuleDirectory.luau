@@ -18,6 +18,10 @@ ModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
 ModuleDirectory.GUI.Intermission = Root.GUI.Intermission
 ModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
 
+ModuleDirectory.GlobalVariables = Root.GlobalVariables
+
+ModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
+
 -- Gameplay
 ModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
 ModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
@@ -25,6 +29,7 @@ ModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandle
 ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
 ModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
+ModuleDirectory.SystemMessage = Root.SystemMessage
 
 -- State Management
 ModuleDirectory.StateChangeManager = Root.StateChangeManager
