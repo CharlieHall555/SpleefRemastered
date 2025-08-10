@@ -3,6 +3,7 @@ local QueryLoaded = game:GetService("ReplicatedStorage"):WaitForChild("QueryLoad
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Player = game.Players.LocalPlayer
 local loadingScreen = Player.PlayerGui:WaitForChild("Loading")
+local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 
 local isServerLoaded = false
 while isServerLoaded == false do
@@ -14,7 +15,6 @@ end
 local ClientLoader = require(Root.Core.ClientLoader)
 ClientLoader.init()
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
-RemoteEventHandler.FireOnServer("PLAYER_LOADED")
 
 local ProfileLoaded = false
 while ProfileLoaded == false do
@@ -23,10 +23,13 @@ while ProfileLoaded == false do
 	task.wait(0.1)
 end
 
+ClientLoader.profileLoaded()
+
 pcall(function()
 	loadingScreen.removeEvent:Fire()
 end)
 
+RemoteEventHandler.FireOnServer("PLAYER_LOADED")
 
 local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTracker)
 
@@ -46,11 +49,17 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 			return
 		end
 
+		if ClientAmmoTracker.getAmmo() <= 0 then
+			warn("outof ammo throw snowball: missing HumanoidRootPart for", player)
+			return
+		end
+
 		local playerPosition = headPart.Position
 
 		local targetPosition = mouse.Hit.p
 		local direction = (targetPosition - playerPosition).Unit
 
+		ClientAmmoTracker.predictIncrement(-1)
 		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
 	end
 end)

@@ -6,7 +6,7 @@ return {
 
     INTERMISSION_TIME = 5,
     REQUIRED_PLAYERS = 1,
-    MAXIMUM_ROUND_TIME = 20,
+    MAXIMUM_ROUND_TIME = 60,
     ROUND_TIME = 10,
     PLAYERS_TO_END = 0,
     PREPARING_TIME = 5,
@@ -27,6 +27,6 @@ return {
 
     STARTING_AMMO = 10,
     MAX_AMMO = 10,
-    AMMO_REGEN = 0.1
+    AMMO_REGEN_INTERVAL = 1
 
 }

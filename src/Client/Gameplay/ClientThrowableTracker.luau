@@ -88,7 +88,11 @@ function ClientThrowableTracker.pollPing()
                     table.remove(pingSamples, 1)
                 end
 
-                INTERPOLATION_OFFSET = average(pingSamples) / 2
+				if RunService:IsStudio() then
+					INTERPOLATION_OFFSET = 0.2 -- remove in production
+				else
+                	INTERPOLATION_OFFSET = average(pingSamples) / 2
+				end
             end)
 
             if not success then

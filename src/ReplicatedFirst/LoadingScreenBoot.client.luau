@@ -8,6 +8,14 @@ LoadingScreen.Parent = localPlayer:WaitForChild("PlayerGui")
 local Spinner = LoadingScreen.Loading:WaitForChild("Spinner")
 local LoadingFrame = LoadingScreen:WaitForChild("Loading")
 
+local LoadingMessage : TextLabel = LoadingFrame:WaitForChild("LoadingMessage")
+
+local Messages = {
+    "Packing snowballs",
+    "Sweeping the arena floor",
+    "Counting snowflakes"
+}
+
 -- Spin settings
 local SPIN_TIME = 1 -- seconds per full rotation
 
@@ -55,3 +63,53 @@ Remove.Event:Connect(function()
     fadeOut()
     LoadingScreen:Destroy()
 end)
+
+-- rotating loading messages + dot animation
+local running = true
+local currentBase = Messages[1]
+local dotCount = 0
+
+local function updateLabel()
+	if not running or not LoadingMessage or not LoadingMessage.Parent then return end
+	LoadingMessage.Text = string.format("%s%s", currentBase, string.rep(".", dotCount))
+end
+
+-- stop loops if the screen is removed
+LoadingScreen.AncestryChanged:Connect(function(_, parent)
+	if not parent then
+		running = false
+	end
+end)
+
+-- also stop when we fade out
+local oldFadeOut = fadeOut
+fadeOut = function()
+	running = false
+	oldFadeOut()
+end
+
+-- rotate the base message every 3s
+task.spawn(function()
+	local i = 1
+	while running do
+		currentBase = Messages[i]
+		i = (i % #Messages) + 1
+		-- keep the current message for ~3 seconds, dots will animate separately
+		for _ = 1, 30 do
+			if not running then break end
+			task.wait(0.1)
+		end
+	end
+end)
+
+-- animate dots: "", ".", "..", "..." cycling every ~0.35s
+task.spawn(function()
+	dotCount = 0
+	while running do
+		dotCount = (dotCount % 3) + 1
+		updateLabel()
+		task.wait(0.35)
+	end
+end)
+
+updateLabel()

@@ -18,7 +18,9 @@ local serverStateMappings = {
 
 local IntermissionGUI 
 
-function Intermission.init()
+function Intermission.onProfileLoaded()
+
+    print("igu1")
 
     IntermissionGUI = GUI.IntermissionHud
     IntermissionGUI.Parent = localPlayer.PlayerGui

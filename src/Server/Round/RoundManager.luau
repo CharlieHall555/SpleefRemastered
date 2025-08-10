@@ -65,6 +65,7 @@ end
 
 local function onRoundPreparing(currentRound)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
+	AmmoManager.startRegenLoop()
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ACTIVE")
 end

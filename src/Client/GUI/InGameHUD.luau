@@ -6,94 +6,84 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local GUI = game:GetService("ReplicatedStorage"):WaitForChild("GUIAssets")
 local localPlayer = game.Players.LocalPlayer
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 
 local maxRoundTime = 0
 local ammo = 0
 local maxammo = 0
 
-local InGameHUDGUI 
+local InGameHUDGUI
 
-function InGameHUD.init()
+function InGameHUD.onProfileLoaded()
+	InGameHUDGUI = GUI.InGameHud
+	InGameHUDGUI.Parent = localPlayer.PlayerGui
+	InGameHUDGUI.Enabled = (ClientStateTracker.getState() == "ACTIVE")
 
-    InGameHUDGUI = GUI.InGameHud
-    InGameHUDGUI.Parent = localPlayer.PlayerGui
-    InGameHUDGUI.Enabled = (ClientStateTracker.getState() == "ACTIVE")
+	ClientStateTracker.connectActive(function()
+		InGameHUDGUI.Enabled = true
+	end)
 
-    ClientStateTracker.connectActive(function()
+	ClientStateTracker.connectIntermission(function()
+		InGameHUDGUI.Enabled = false
+	end)
 
-        InGameHUDGUI.Enabled = true
-        
-    end)
+	ClientStateTracker.connectRoundStarting(function()
+		InGameHUDGUI.Enabled = false
+	end)
 
-    ClientStateTracker.connectIntermission(function()
+	ClientStateTracker.connectServerStateChange(function(newState)
+		if newState == "PREPARING" then
+			InGameHUDGUI.Main.State.Visible = true
+			InGameHUDGUI.Main.State.Text = "Prepare"
+			InGameHUDGUI.Main.State.Fire1.Visible = false
+			InGameHUDGUI.Main.State.Fire2.Visible = false
+		elseif newState == "ACTIVE" then
+			InGameHUDGUI.Main.State.Visible = false
+			InGameHUDGUI.Ammo.Visible = true
+		end
+	end)
 
-        InGameHUDGUI.Enabled = false
+	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH", function(player)
+		InGameHUDGUI.Main.State.Visible = true
+		InGameHUDGUI.Main.State.Text = "Sudden Death"
+		InGameHUDGUI.Main.State.Fire1.Visible = true
+		InGameHUDGUI.Main.State.Fire2.Visible = true
+	end)
 
-    end)
+	ClientAmmoTracker.setOnMaxAmmoChanged(function(maxammo)
+		InGameHUDGUI.Ammo.Count.Text = 0 .. " / " .. maxammo
+	end)
 
-     ClientStateTracker.connectRoundStarting(function()
+	ClientAmmoTracker.setOnAmmoChanged(function(newAmmo, maxammo)
+		InGameHUDGUI.Ammo.Count.Text = newAmmo .. " / " .. maxammo
+	end)
 
-        InGameHUDGUI.Enabled = false
-        
-    end)
+    ClientAmmoTracker.setOnRegenProgressChanged(function(newProgress , maxProgress)
+		InGameHUDGUI.Ammo.Regen.Fillable.Size = UDim2.fromScale(newProgress / maxProgress , 1) 
 
-    ClientStateTracker.connectServerStateChange(function(newState)
-        
-        if newState == "PREPARING" then
-            InGameHUDGUI.Main.State.Visible = true
-            InGameHUDGUI.Main.State.Text = "Prepare"
-            InGameHUDGUI.Main.State.Fire1.Visible = false
-            InGameHUDGUI.Main.State.Fire2.Visible = false
-        elseif newState == "ACTIVE" then
-            InGameHUDGUI.Main.State.Visible = false
-            InGameHUDGUI.Ammo.Visible = true
+        if InGameHUDGUI.Ammo.Regen.Fillable.Size.X.Scale <= 0.01 then
+            InGameHUDGUI.Ammo.Regen.Fillable.UIStroke.Enabled = false
+        else
+            InGameHUDGUI.Ammo.Regen.Fillable.UIStroke.Enabled = true
         end
-            
-    end)
+	end)
 
-    RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH" , function(player)
-        
-        InGameHUDGUI.Main.State.Visible = true
-        InGameHUDGUI.Main.State.Text = "Sudden Death"
-        InGameHUDGUI.Main.State.Fire1.Visible = true
-        InGameHUDGUI.Main.State.Fire2.Visible = true
-
-
-
-
-    end) 
-
-    RemoteEventHandler.newEventConnection("SET_MAX_AMMO" , function(amount)
-        
-        maxammo = amount
-        InGameHUDGUI.Ammo.Count.Text = ammo .. " / " .. maxammo
-
-    end)
-
-    RemoteEventHandler.newEventConnection("AMMO_CHANGED" , function(amount)
-        
-        ammo = amount
-        InGameHUDGUI.Ammo.Count.Text = ammo .. " / " .. maxammo
-
-    end)
-
-    RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED" , function(time)
-        if ClientStateTracker.getServerState() == "PREPARING" then
-            InGameHUDGUI.Main.Timer.Text =  math.max(0 , math.floor(time))
-        end
-    end)
-
-    RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED" , function(time)
-        if ClientStateTracker.getServerState() == "ACTIVE" then
-            InGameHUDGUI.Main.Timer.Text =  math.max(0 , math.floor(time))
-        end
-    end)
-
-    RemoteEventHandler.newEventConnection("ROUND_TIMER_STARTED" , function(time)
-        maxRoundTime = time
-    end)
+	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
+		if ClientStateTracker.getServerState() == "PREPARING" then
+			InGameHUDGUI.Main.Timer.Text = math.max(0, math.floor(time))
+		end
+	end)
     
-end
 
+	RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED", function(time)
+		if ClientStateTracker.getServerState() == "ACTIVE" then
+			InGameHUDGUI.Main.Timer.Text = math.max(0, math.floor(time))
+		end
+	end)
+
+	RemoteEventHandler.newEventConnection("ROUND_TIMER_STARTED", function(time)
+		maxRoundTime = time
+	end)
+end
 
 return InGameHUD
