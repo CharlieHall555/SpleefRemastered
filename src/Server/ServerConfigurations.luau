@@ -51,6 +51,6 @@ return {
     RESPAWN_TIME = 1,                   -- Time to respawn after elimination
     MAX_AMMO_PICKUPS = 10,
     AMMO_SPAWN_GAP = 5,
-    AMMO_PICKUP_LIFETIME = 10,
+    AMMO_PICKUP_LIFETIME = 30,
     AMMO_PICKUP_VALUE = 10
 }

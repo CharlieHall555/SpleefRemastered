@@ -72,6 +72,7 @@ function Block.new(config: BlockConfig?): Block
 	self.Part.Color = Materials[materialName].Color
 	self.Part.Material = Materials[materialName].Material
 	self.Part.Anchored = true
+	self.Part.Shape = Enum.PartType.Block
 	self.Part.Parent = game.Workspace.Blocks
 	self.Part:AddTag("Block")
 	self.Part:SetAttribute("Id", self.Id)

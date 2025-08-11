@@ -22,8 +22,9 @@ function SnowballManager.init()
 	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(player , otherPart)
 		local snowballId = otherPart:GetAttribute("Id")
 		local pickup = SnowballAmmoPickup.get(snowballId or -1)
-		AmmoManager.incrementAmmo(player , (pickup or {}).increment or 1)
-		AmmoPickupManager.onAmmoPickup(snowballId)
+		print("pickup" , pickup)
+		local increment = (pickup or {}).increment or 1
+		AmmoManager.incrementAmmo(player ,increment)
 		SnowballAmmoPickup.remove(snowballId)
 		
 	end)
