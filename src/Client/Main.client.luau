@@ -47,12 +47,14 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 		local rootPart = character:FindFirstChild("HumanoidRootPart")
 		local headPart = character:FindFirstChild("Head")
 		if not rootPart then
-			warn("Cannot throw snowball: missing HumanoidRootPart for", player)
+			return
+		end
+
+		if character:FindFirstChild("Shovel") == nil then
 			return
 		end
 
 		if ClientAmmoTracker.getAmmo() <= 0 then
-			warn("outof ammo throw snowball: missing HumanoidRootPart for", player)
 			return
 		end
 

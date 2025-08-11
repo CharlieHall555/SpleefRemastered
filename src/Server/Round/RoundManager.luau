@@ -14,31 +14,14 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Leaderstats = require(ModuleDirectory.Player.Leaderstats)
 local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
 local AmmoPickupManager = require(ModuleDirectory.Gameplay.AmmoPickupManager)
+local ToolManager = require(ModuleDirectory.Gameplay.ToolManager)
 local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
+local MapSaves = require(ModuleDirectory.Map.Saves)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 local LobbySpawn
-
-local testMapParams: MapDataFactory.MapDataCreationParams = {
-	layerSeperation = 50,
-	originPosition = Vector3.new(0, 0, 0),
-	layerParams = {
-		{
-			size = Vector2.new(20, 20),
-			shape = "Circle",
-		},
-		{
-			size = Vector2.new(26, 26),
-			shape = "Circle",
-		},
-		{
-			size = Vector2.new(35, 35),
-			shape = "Circle",
-		},
-	},
-}
 
 local SuddenDeathTimer = Timer.new()
 
@@ -58,7 +41,7 @@ end
 
 local function onRoundStarting(currentRound: RoundSystem.Round)
 	print(currentRound)
-	currentMap = MapGenerator.generate(testMapParams)
+	currentMap = MapGenerator.generate(MapSaves.TestMap)
 	task.wait(1)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 end
@@ -74,6 +57,7 @@ end
 local function onRoundEnding(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
+	ToolManager.reset()
 	AmmoPickupManager.cleanup()
 	AmmoManager.reset()
 	BlockFactory.stopAllTweens()
@@ -98,11 +82,12 @@ local function onRoundIntermission(currentRound)
 	print("hi!")
 end
 
-function RoundManager.getCurrentMap() : {}?
+function RoundManager.getCurrentMap(): {}?
 	return currentMap
 end
 
 local function onRoundActive(currentRound)
+	ToolManager.giveTools(currentRound.startingPlayers)
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
 	AmmoPickupManager.start(currentMap)
 end
@@ -110,7 +95,7 @@ end
 function RoundManager.init(): nil
 	TeleportManager.setCallback(onTeleportFail)
 	SuddenDeathTimer.Callback = function(currentT)
-		RemoteEventHandler.FireOnAllClients("SUDDEN_DEATH_TIMER_CHANGED" , currentT)
+		RemoteEventHandler.FireOnAllClients("SUDDEN_DEATH_TIMER_CHANGED", currentT)
 	end
 	SuddenDeathTimer.EndCallback = onSuddenDeathTimerEnd
 	RoundSystem.connectStarting(onRoundStarting)

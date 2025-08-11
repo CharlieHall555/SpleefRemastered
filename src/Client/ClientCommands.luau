@@ -31,10 +31,10 @@ function ClientCommands.init()
     muteCommand.Triggered:Connect(muteSound)
 
     local toggleSnowballAnimations = Instance.new("TextChatCommand" , commandsFolder)
-    muteCommand.Name = "toggleSnowballAnim"
-    muteCommand.PrimaryAlias = "/toggleSnowballAnims"
-    muteCommand.AutocompleteVisible = true
-    muteCommand.Triggered:Connect(snowBallAnims)
+    toggleSnowballAnimations.Name = "toggleSnowballAnim"
+    toggleSnowballAnimations.PrimaryAlias = "/toggleSnowballAnims"
+    toggleSnowballAnimations.AutocompleteVisible = true
+    toggleSnowballAnimations.Triggered:Connect(snowBallAnims)
 
     local toggleSnowballAnimations = Instance.new("TextChatCommand" , commandsFolder)
 

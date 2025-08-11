@@ -16,21 +16,17 @@ export type layerOutput = {
 
 export type MapData = {
 	originPosition: Vector3,
-	layerSeperation: number,
 	layersToGenerate: { layerOutput },
 }
 
 local MapDataFactory = {}
 
 function MapDataFactory.create(params: MapDataCreationParams): MapData
-	local separation = params.layerSeperation
 	local origin = params.originPosition
 	local outputs: { any } = {}
 
-    print(separation)
-
 	for i, planeParams in ipairs(params.layerParams) do
-		local height = origin.Y + separation * (i - 1)
+		local height = origin.Y + planeParams.seperation * (i - 1)
 		-- Calculate worldPosition so each layer is centered at origin X,Z
 		local worldPosition = Vector3.new(origin.X, height, origin.Z)
 
@@ -49,7 +45,6 @@ function MapDataFactory.create(params: MapDataCreationParams): MapData
 	end
 
 	return {
-		layerSeparation = separation,
 		layersToGenerate = outputs,
 		originPosition = origin,
 	}

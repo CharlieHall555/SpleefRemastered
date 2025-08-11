@@ -24,6 +24,16 @@ local localPlayer = game.Players.LocalPlayer
 
 local rayParams = RaycastParams.new()
 
+local function computePosition(startPos: Vector3, vel: Vector3, gravity: Vector3, t: number, result: Vector3?)
+	-- result param allows reuse of an existing Vector3 if you want to go all-in on zero-allocation
+	local pos = startPos + vel * t + 0.5 * gravity * t * t
+	if result then
+		-- If reusing, set components instead of creating a new Vector3
+		result = Vector3.new(pos.X, pos.Y, pos.Z)
+		return result
+	end
+	return pos
+end
 
 local gravityTable: { [string]: Vector3 } = {}
 local throwables: { [string]: Throwable } = {}
@@ -134,17 +144,14 @@ function ClientThrowableTracker.mainLoop(dt: number)
 		local dtPrev = oldDisplay - throwable.launchTime
 		local dtNow = newDisplay - throwable.launchTime
 
-		local prevPos = throwable.startPosition + throwable.initialVelocity * dtPrev + 0.5 * gravity * dtPrev * dtPrev
-		local newPos = throwable.startPosition + throwable.initialVelocity * dtNow + 0.5 * gravity * dtNow * dtNow
-
-		-- raycast for collision between prev and new
+		local prevPos = computePosition(throwable.startPosition, throwable.initialVelocity, gravity, dtPrev)
+		local newPos = computePosition(throwable.startPosition, throwable.initialVelocity, gravity, dtNow)
 		local direction = newPos - prevPos
 		local result = workspace:Raycast(prevPos, direction, rayParams)
 
 		if newPos.Y < -100 then
 			ClientThrowableTracker.removeThrowable(uid)
 		elseif result then
-			print("client hit")
 			local hitFunc = typeHitFunctions[throwable.type]
             if hitFunc then
                 hitFunc(throwable, result)

@@ -11,8 +11,8 @@ return {
     --//====================================================
     --// Game / Round Core Settings
     --//====================================================
-    REQUIRED_PLAYERS = 2,              -- Players needed to start a round
-    PLAYERS_TO_END = 1,                -- Players left to trigger end
+    REQUIRED_PLAYERS = 1,              -- Players needed to start a round
+    PLAYERS_TO_END = 0,                -- Players left to trigger end
     INTERMISSION_TIME = 5,             -- Time between rounds
     PREPARING_TIME = 5,                -- Pre-round prep time
     ROUND_TIME = 100,                   -- Normal round duration
@@ -45,12 +45,12 @@ return {
     --//====================================================
     --// Ammo System
     --//====================================================
-    STARTING_AMMO = 10,                -- Ammo given at start
-    MAX_AMMO = 10,                     -- Ammo cap
-    AMMO_REGEN_INTERVAL = 1,           -- Time between ammo regen ticks (s)
+    STARTING_AMMO = 30,                -- Ammo given at start
+    MAX_AMMO = 30,                     -- Ammo cap
+    AMMO_REGEN_INTERVAL = 0.5,           -- Time between ammo regen ticks (s)
     RESPAWN_TIME = 1,                   -- Time to respawn after elimination
-    MAX_AMMO_PICKUPS = 10,
+    MAX_AMMO_PICKUPS = 15,
     AMMO_SPAWN_GAP = 5,
     AMMO_PICKUP_LIFETIME = 30,
-    AMMO_PICKUP_VALUE = 10
+    AMMO_PICKUP_VALUE = 30
 }

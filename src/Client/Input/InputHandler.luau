@@ -23,7 +23,6 @@ end
 function InputHandler.queueInput(input: InputObject, data: any?)
     local code: Enum.KeyCode? = nil
     if input.UserInputType == Enum.UserInputType.Keyboard then
-        print("keycode")
         code = input.KeyCode
     end
     table.insert(inputQueue, {

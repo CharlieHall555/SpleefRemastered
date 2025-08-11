@@ -22,7 +22,7 @@ local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult) -> () }
 local defaultRayParams = RaycastParams.new()
 
 -- Debug and cast settings
-local DEBUG = true
+local DEBUG = false
 local CAST_RADIUS = 0.1 -- half-width of the swept box for collision checks
 
 local function generateUID(): string
@@ -81,7 +81,6 @@ function ThrowableManager.mainLoop(dt: number): nil
         if oldPos.Y < -100 then
             ThrowableManager.removeThrowable(uid)
         elseif hit then
-            print("server hit " , hit.Instance)
             if DEBUG then
                 local stamp = Instance.new("Part")
                 stamp.Size = Vector3.new(1, 1, 1)

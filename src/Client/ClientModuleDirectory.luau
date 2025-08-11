@@ -22,6 +22,7 @@ ClientModuleDirectory.GUI.Intermission = Root.GUI.Intermission
 ClientModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
 ClientModuleDirectory.GlobalVariables = Root.GlobalVariables
 ClientModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
+ClientModuleDirectory.ClientToolManager = Root.Gameplay.ClientToolManager
 
 -- Gameplay
 ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender

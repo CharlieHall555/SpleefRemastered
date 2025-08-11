@@ -41,6 +41,7 @@ ModuleDirectory.Map = {}
 ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Map.Model.Block
 ModuleDirectory.Map.Layer = game:GetService("ServerScriptService").Map.Model.Layer
 ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
+ModuleDirectory.Map.Saves = game:GetService("ServerScriptService").Map.MapSaves
 
 -- Factories
 ModuleDirectory.Map.BlockFactory = game:GetService("ServerScriptService").Map.BlockFactory
@@ -61,6 +62,7 @@ ModuleDirectory.Gameplay.ServerHitBoxManager = game:GetService("ServerScriptServ
 ModuleDirectory.Gameplay.KickManager = game:GetService("ServerScriptService").KickManager
 ModuleDirectory.Gameplay.SnowballAmmoPickup = game:GetService("ServerScriptService").Throwable.SnowballAmmoPickup
 ModuleDirectory.Gameplay.AmmoPickupManager = game:GetService("ServerScriptService").Gameplay.AmmoPickupManager
+ModuleDirectory.Gameplay.ToolManager = game:GetService("ServerScriptService").Gameplay.ToolManager
 
 --//====================================================
 --// Player Systems
