@@ -20,12 +20,10 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ThrowableData = require(ClientModuleDirectory.ThrowableData)
 local VectorUtil = require(ClientModuleDirectory.VectorUtil)
 local ThrowableDefinitions = require(ClientModuleDirectory.ThrowableDefinitions)
-local Debris = game:GetService("Debris")
 local localPlayer = game.Players.LocalPlayer
 
 local rayParams = RaycastParams.new()
-rayParams.FilterType = Enum.RaycastFilterType.Include
-rayParams.IgnoreWater = true
+
 
 local gravityTable: { [string]: Vector3 } = {}
 local throwables: { [string]: Throwable } = {}
@@ -41,7 +39,7 @@ end
 local _nextId = 0
 local function generateUID(): string
 	_nextId += 1
-	return "t_" .. tostring(_nextId)
+	return "c_" .. tostring(_nextId)
 end
 
 -- How far behind the actual position we start the visual interpolation (in seconds)
@@ -61,7 +59,14 @@ function ClientThrowableTracker.init()
 end
 
 function ClientThrowableTracker.onLoaded()
-	rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks") }
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	rayParams.IgnoreWater = true
+	rayParams.CollisionGroup = "CG_GAMEPLAY"
+	rayParams.FilterDescendantsInstances = { localPlayer.Character }
+
+	localPlayer.CharacterAdded:Connect(function(new_character)
+		rayParams.FilterDescendantsInstances = { new_character }
+	end)
 end
 
 local function average(table)
@@ -109,7 +114,8 @@ function ClientThrowableTracker.receiveFromServer(data: ThrowableData.ThrowableD
 	local velocity = VectorUtil.DeserializeVector3(data.v)
 	local typeName = data.t
 	local launchTime = data.s
-	ClientThrowableTracker.newThrowable(startPosition, velocity, typeName, launchTime)
+	local uid = data.uid
+	ClientThrowableTracker.newThrowable(startPosition, velocity, typeName, launchTime , uid)
 end
 
 function ClientThrowableTracker.mainLoop(dt: number)
@@ -138,6 +144,7 @@ function ClientThrowableTracker.mainLoop(dt: number)
 		if newPos.Y < -100 then
 			ClientThrowableTracker.removeThrowable(uid)
 		elseif result then
+			print("client hit")
 			local hitFunc = typeHitFunctions[throwable.type]
             if hitFunc then
                 hitFunc(throwable, result)
@@ -153,7 +160,8 @@ function ClientThrowableTracker.newThrowable(
 	startPosition: Vector3,
 	initialVelocity: Vector3,
 	typeName: string,
-	launchTime: number
+	launchTime: number,
+	given_uid : number?
 ): string
 	local g = newTable[typeName]
 	local part
@@ -188,7 +196,7 @@ function ClientThrowableTracker.newThrowable(
 	part.Position = currentPos
 
 	-- store throwable state
-	local uid = generateUID()
+	local uid = given_uid or generateUID()
 	throwables[uid] = {
 		uid = uid,
 		startPosition = startPosition,

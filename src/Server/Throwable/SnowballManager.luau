@@ -85,7 +85,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 
 	_lastSnowballFired[userId] = now
 	AmmoManager.incrementAmmo(player , -1)
-	ThrowableManager.newThrowable(spawnPosition, direction, "snowball")
+	ThrowableManager.newThrowable(spawnPosition, direction, "snowball" , player)
 end
 
 return SnowballManager

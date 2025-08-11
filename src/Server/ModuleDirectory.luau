@@ -4,6 +4,7 @@ local ModuleDirectory = {}
 ModuleDirectory.ServerEventHandler = game:GetService("ServerScriptService").Core.ServerEventHandler
 ModuleDirectory.ValueBinder = game:GetService("ServerScriptService").Core.ValueBinder
 ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
+ModuleDirectory.Setup = game:GetService("ServerScriptService").Core.Setup
 
 --//====================================================
 --// Round System
@@ -23,7 +24,7 @@ ModuleDirectory.Round.SuddenDeath = game:GetService("ServerScriptService").Round
 --// Throwable System
 --//====================================================
 
-ModuleDirectory.Thorwable = {}
+ModuleDirectory.Throwable = {}
 ModuleDirectory.Throwable.Throwable = game:GetService("ServerScriptService").Throwable.Throwable
 ModuleDirectory.Throwable.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
 ModuleDirectory.Throwable.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData

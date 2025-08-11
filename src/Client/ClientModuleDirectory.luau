@@ -1,50 +1,48 @@
 -- Client Module Directory
 local Root = script.Parent
-local ModuleDirectory = {}
+local ClientModuleDirectory = {}
 
 -- Core
-ModuleDirectory.ClientEventHandler = Root.Core.ClientEventHandler
-ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
+ClientModuleDirectory.ClientEventHandler = Root.Core.ClientEventHandler
+ClientModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
 
 -- Configuration
-ModuleDirectory.Config = Root.ClientConfigurations
-ModuleDirectory.Throwable.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
-ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
+ClientModuleDirectory.Config = Root.ClientConfigurations
+ClientModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
+ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
 -- GUI
-ModuleDirectory.GUI = {}
-ModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
-ModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
-ModuleDirectory.GUI.Intermission = Root.GUI.Intermission
-ModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
-
-ModuleDirectory.GlobalVariables = Root.GlobalVariables
-
-ModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
+ClientModuleDirectory.GUI = {}
+ClientModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
+ClientModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
+ClientModuleDirectory.GUI.Intermission = Root.GUI.Intermission
+ClientModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
+ClientModuleDirectory.GlobalVariables = Root.GlobalVariables
+ClientModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
 
 -- Gameplay
-ModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
-ModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
-ModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
-ModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
-ModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
-ModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
-ModuleDirectory.SystemMessage = Root.SystemMessage
+ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
+ClientModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
+ClientModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
+ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
+ClientModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
+ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
+ClientModuleDirectory.SystemMessage = Root.SystemMessage
 
 -- State Management
-ModuleDirectory.StateChangeManager = Root.StateChangeManager
-ModuleDirectory.ClientStateTracker = Root.ClientStateTracker
+ClientModuleDirectory.StateChangeManager = Root.StateChangeManager
+ClientModuleDirectory.ClientStateTracker = Root.ClientStateTracker
 
 -- Utilities (Client)
-ModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
-ModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
-ModuleDirectory.InputHandler = Root.Input.InputHandler
-ModuleDirectory.ClientCommands = Root.ClientCommands
+ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
+ClientModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
+ClientModuleDirectory.InputHandler = Root.Input.InputHandler
+ClientModuleDirectory.ClientCommands = Root.ClientCommands
 
 
 
 -- Utilities (Shared)
-ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
-ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
+ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
+ClientModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 
-return ModuleDirectory
+return ClientModuleDirectory

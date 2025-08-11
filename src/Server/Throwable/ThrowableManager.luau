@@ -6,6 +6,7 @@ local Throwable = require(ModuleDirectory.Throwable.Throwable)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local ThrowableDefinitions = require(ModuleDirectory.ThrowableDefinitions)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local PlayerRaycastParamsHandler = require(ModuleDirectory.Throwable.PlayerRaycastParamsHandler)
 
 local ThrowableManager = {}
 
@@ -21,7 +22,7 @@ local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult) -> () }
 local defaultRayParams = RaycastParams.new()
 
 -- Debug and cast settings
-local DEBUG = false
+local DEBUG = true
 local CAST_RADIUS = 0.1 -- half-width of the swept box for collision checks
 
 local function generateUID(): string
@@ -38,9 +39,11 @@ function ThrowableManager.init(): nil
 end
 
 function ThrowableManager.onLoaded(): nil
-    defaultRayParams.FilterType = Enum.RaycastFilterType.Include
-    defaultRayParams.FilterDescendantsInstances = { workspace:WaitForChild("Blocks" , 4) }
+    defaultRayParams.FilterType = Enum.RaycastFilterType.Exclude
+    defaultRayParams.FilterDescendantsInstances = { }
     defaultRayParams.IgnoreWater = true
+    defaultRayParams.RespectCanCollide = false
+    defaultRayParams.CollisionGroup = "CG_GAMEPLAY"
 end
 
 function ThrowableManager.mainLoop(dt: number): nil
@@ -68,11 +71,17 @@ function ThrowableManager.mainLoop(dt: number): nil
         local orient = direction.Magnitude > 0 and direction.Unit or Vector3.new(0, 0, 1)
         local castCFrame = CFrame.new(center, center + orient)
         local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
-        local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction, defaultRayParams)
+        local rayParms = PlayerRaycastParamsHandler.get(th.owner)
+        if rayParms == nil then
+            rayParms = defaultRayParams
+            warn("no ray params")
+        end
+        local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction , rayParms)
 
         if oldPos.Y < -100 then
             ThrowableManager.removeThrowable(uid)
         elseif hit then
+            print("server hit " , hit.Instance)
             if DEBUG then
                 local stamp = Instance.new("Part")
                 stamp.Size = Vector3.new(1, 1, 1)

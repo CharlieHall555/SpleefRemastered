@@ -6,18 +6,13 @@ local ServerHitBoxManager = {}
 
 local tagCallback = {}
 
--- Single reusable hitbox
-local sharedHitbox
+
 
 local characterAddedConnections : {[number] : RBXScriptConnection} = {}
 local hitBoxes : {[number] : Part} = {}
 
 -- Creates the hitbox part (only once)
 local function createPlayerHitbox()
-	if sharedHitbox then
-		return sharedHitbox
-	end
-
 	local hitbox = Instance.new("Part")
 	hitbox.Name = "CentralHitbox"
 	hitbox.Size = Vector3.new(2, 6, 2) -- adjust to desired player volume
@@ -27,14 +22,12 @@ local function createPlayerHitbox()
 	hitbox.CanCollide = false
 	hitbox.Massless = true
 	hitbox.CastShadow = false
-	--hitbox.CollisionGroup = "CG_PLAYER_HITBOX"
+	hitbox.CollisionGroup = "CG_GAMEPLAY"
 	hitbox.CanQuery = true
 	hitbox.CanTouch = true
 	hitbox.TopSurface = Enum.SurfaceType.Smooth
 	hitbox.BottomSurface = Enum.SurfaceType.Smooth
 	hitbox.Parent = workspace -- initial parent; will be reparented when attached
-
-	sharedHitbox = hitbox
 	return hitbox
 end
 

@@ -71,6 +71,7 @@ local function onRoundPreparing(currentRound)
 end
 
 local function onRoundEnding(currentRound)
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
 	AmmoManager.reset()
 	BlockFactory.stopAllTweens()
@@ -93,7 +94,6 @@ end
 
 local function onRoundIntermission(currentRound)
 	print("hi!")
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 end
 
 local function onRoundActive(currentRound)

@@ -1,177 +1,111 @@
+-- raycast params will just exclude the player's character; everything else will collide.
+-- raycast params collision group is "CH_GAMEPLAY"
+
 local Players = game:GetService("Players")
-local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local PhysicsService = game:GetService("PhysicsService")
 
 local PlayerRaycastParamsHandler = {}
 
-local BlockFolder = nil
+local COLLISION_GROUP = "CG_GAMEPLAY"
 
-type TargetConns = {
-    added: RBXScriptConnection?,
-    removing: RBXScriptConnection?
-}
+local cache: { [number]: RaycastParams } = {}
+local _characterConnections: { [number]: RBXScriptConnection } = {}
 
-type OwnerState = {
-    rp: RaycastParams,
-    ignores: { Instance },
-    ownerConns: { added: RBXScriptConnection?, removing: RBXScriptConnection? },
-    targets: { [number]: TargetConns }
-}
-
-local _stateByUserId: { [number]: OwnerState } = {}
-
-local function _rebuildFilter(state: OwnerState)
-    state.rp.FilterDescendantsInstances = state.ignores
+local function ensureCollisionGroup()
+	local exists = false
+	for _, g in ipairs(PhysicsService:GetRegisteredCollisionGroups()) do
+		if g.name == COLLISION_GROUP then
+			exists = true
+			break
+		end
+	end
+	if not exists then
+		pcall(function()
+			PhysicsService:RegisterCollisionGroup(COLLISION_GROUP)
+		end)
+	end
 end
 
-local function _ensureState(owner: Player): OwnerState
-    local uid = owner.UserId
-    local state = _stateByUserId[uid]
-    if state then
-        return state
-    end
-
-    local rp = RaycastParams.new()
-    rp.FilterType = Enum.RaycastFilterType.Exclude
-    rp.IgnoreWater = true
-    --rp.CollisionGroup = "CG_THROW_RAYCAST"
-
-    state = {
-        rp = rp,
-        ignores = {BlockFolder},
-        ownerConns = { added = nil, removing = nil },
-        targets = {}
-    }
-    _stateByUserId[uid] = state
-
-    state.ownerConns.added = owner.CharacterAdded:Connect(function(char)
-        table.insert(state.ignores, char)
-        _rebuildFilter(state)
-    end)
-
-    state.ownerConns.removing = owner.CharacterRemoving:Connect(function(char)
-        for i = #state.ignores, 1, -1 do
-            if state.ignores[i] == char then
-                table.remove(state.ignores, i)
-            end
-        end
-        _rebuildFilter(state)
-    end)
-
-    if owner.Character then
-        table.insert(state.ignores, owner.Character)
-        _rebuildFilter(state)
-    end
-
-    return state
+local function newParams(): RaycastParams
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = {}
+	params.CollisionGroup = COLLISION_GROUP
+	return params
 end
 
-local function _disconnectTarget(state: OwnerState, targetUserId: number)
-    local t = state.targets[targetUserId]
-    if not t then
-        return
-    end
-    if t.added then
-        t.added:Disconnect()
-    end
-    if t.removing then
-        t.removing:Disconnect()
-    end
-    state.targets[targetUserId] = nil
+local function setCharacterAsExclude(player: Player)
+	local params = cache[player.UserId]
+	if not params then
+		return
+	end
+	local character = player.Character
+	if character and character.Parent then
+		params.FilterDescendantsInstances = { character }
+	else
+		params.FilterDescendantsInstances = {}
+	end
 end
 
-local function _removeInstanceFromIgnores(state: OwnerState, inst: Instance)
-    for i = #state.ignores, 1, -1 do
-        if state.ignores[i] == inst then
-            table.remove(state.ignores, i)
-        end
-    end
+function PlayerRaycastParamsHandler.playerJoined(player: Player): nil
+	ensureCollisionGroup()
+
+	local params = cache[player.UserId]
+	if not params then
+		params = newParams()
+		cache[player.UserId] = params
+	end
+
+	if _characterConnections[player.UserId] then
+		_characterConnections[player.UserId]:Disconnect()
+		_characterConnections[player.UserId] = nil
+	end
+
+	_characterConnections[player.UserId] = player.CharacterAdded:Connect(function()
+		setCharacterAsExclude(player)
+	end)
+
+	setCharacterAsExclude(player)
 end
 
-local function _cleanupOwner(owner: Player)
-    local uid = owner.UserId
-    local state = _stateByUserId[uid]
-    if not state then
-        return
-    end
-
-    for _, conns in pairs(state.targets) do
-        if conns.added then
-            conns.added:Disconnect()
-        end
-        if conns.removing then
-            conns.removing:Disconnect()
-        end
-    end
-    state.targets = {}
-
-    if state.ownerConns.added then
-        state.ownerConns.added:Disconnect()
-    end
-    if state.ownerConns.removing then
-        state.ownerConns.removing:Disconnect()
-    end
-
-    _stateByUserId[uid] = nil
+function PlayerRaycastParamsHandler.playerLeft(player: Player): nil
+	PlayerRaycastParamsHandler.cleanup(player)
 end
 
-function PlayerRaycastParamsHandler.onLoaded()
-    BlockFolder = workspace:WaitForChild("Blocks", 4)
-    assert(BlockFolder, "BlockFolder missing, Should be present under workspace.")
+function PlayerRaycastParamsHandler.onLoaded(): nil
+	ensureCollisionGroup()
 
-    RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-        _ensureState(player)
-    end)
+	for _, p in ipairs(Players:GetPlayers()) do
+		PlayerRaycastParamsHandler.playerJoined(p)
+	end
 
-    Players.PlayerRemoving:Connect(function(player: Player)
-        -- if this player is an owner, clean their state
-        _cleanupOwner(player)
+	Players.PlayerAdded:Connect(function(p)
+		PlayerRaycastParamsHandler.playerJoined(p)
+	end)
 
-        -- if this player is a tracked target, remove their character from all owners' ignores
-        for _, state in pairs(_stateByUserId) do
-            _disconnectTarget(state, player.UserId)
-            if player.Character then
-                _removeInstanceFromIgnores(state, player.Character)
-                _rebuildFilter(state)
-            end
-        end
-    end)
+	Players.PlayerRemoving:Connect(function(p)
+		PlayerRaycastParamsHandler.playerLeft(p)
+	end)
 end
 
-function PlayerRaycastParamsHandler.get(owner: Player): RaycastParams
-    local state = _ensureState(owner)
-    return state.rp
+function PlayerRaycastParamsHandler.get(player: Player): RaycastParams?
+	if player == nil then
+		return nil
+	end
+	return cache[player.UserId]
 end
 
-function PlayerRaycastParamsHandler.excludePlayers(owner: Player, players: { Player }): nil
-    local state = _ensureState(owner)
+function PlayerRaycastParamsHandler.cleanup(player: Player): nil?
+	local uid = player.UserId
 
-    for _, target in ipairs(players) do
-        -- reset existing tracking for this target
-        _disconnectTarget(state, target.UserId)
+	if _characterConnections[uid] then
+		_characterConnections[uid]:Disconnect()
+		_characterConnections[uid] = nil
+	end
 
-        local conns: TargetConns = { added = nil, removing = nil }
-        state.targets[target.UserId] = conns
-
-        conns.added = target.CharacterAdded:Connect(function(char)
-            table.insert(state.ignores, char)
-            _rebuildFilter(state)
-        end)
-
-        conns.removing = target.CharacterRemoving:Connect(function(char)
-            _removeInstanceFromIgnores(state, char)
-            _rebuildFilter(state)
-        end)
-
-        if target.Character then
-            table.insert(state.ignores, target.Character)
-            _rebuildFilter(state)
-        end
-    end
-end
-
-function PlayerRaycastParamsHandler.reset(owner: Player): nil
-    _cleanupOwner(owner)
+	if cache[uid] then
+		cache[uid] = nil
+	end
 end
 
 return PlayerRaycastParamsHandler

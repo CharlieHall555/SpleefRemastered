@@ -1,32 +1,52 @@
 return {
-    PARTS_PER_FRAME = 50,
-    INITIAL_PART_POOL = 50,
 
-    BLOCK_SIZE = 5,
+    --//====================================================
+    --// Performance / Part Pooling
+    --//====================================================
+    PARTS_PER_FRAME = 50,              -- Max parts processed each frame
+    INITIAL_PART_POOL = 50,            -- Initial pooled parts
+    MAX_PARTS_PER_FRAME_PER_LAYER = 25,-- Max parts per frame per map layer
+    BLOCK_SIZE = 5,                    -- Size of a block in studs
 
-    INTERMISSION_TIME = 5,
-    REQUIRED_PLAYERS = 1,
-    MAXIMUM_ROUND_TIME = 60,
-    ROUND_TIME = 10,
-    PLAYERS_TO_END = 0,
-    PREPARING_TIME = 5,
+    --//====================================================
+    --// Game / Round Core Settings
+    --//====================================================
+    REQUIRED_PLAYERS = 2,              -- Players needed to start a round
+    PLAYERS_TO_END = 1,                -- Players left to trigger end
+    INTERMISSION_TIME = 5,             -- Time between rounds
+    PREPARING_TIME = 5,                -- Pre-round prep time
+    ROUND_TIME = 100,                   -- Normal round duration
+    MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
 
-    TELEPORT_RETRIES = 1,
-    TELEPORT_RETRY_DELAY = 1,
+    --//====================================================
+    --// Teleportation Settings
+    --//====================================================
+    TELEPORT_RETRIES = 1,              -- Retry attempts if teleport fails
+    TELEPORT_RETRY_DELAY = 1,          -- Delay between teleport retries (s)
 
-    SNOWBALL_DISTANCE_THRESHOLD = 10,
-    SNOWBALL_COOLDOWN = 0.02,
-    
+    --//====================================================
+    --// Snowball Mechanics
+    --//====================================================
+    SNOWBALL_DISTANCE_THRESHOLD = 10,  -- Max hit detection distance
+    SNOWBALL_COOLDOWN = 0.02,          -- Time between throws (s)
 
-    UNRESPONSIVE_CLIENT_THRESHOLD = 2,
+    --//====================================================
+    --// Client Responsiveness
+    --//====================================================
+    UNRESPONSIVE_CLIENT_THRESHOLD = 2, -- Seconds before marking a client unresponsive
 
-    SUDDEN_DEATH_DELAY = 0.5,
-    SUDDEN_DEATH_BLOCKS_CHOSEN = 5,
-    SLOW_FALL_TIME = 2,
-    MAX_PARTS_PER_FRAME_PER_LAYER = 25,
+    --//====================================================
+    --// Sudden Death Settings
+    --//====================================================
+    SUDDEN_DEATH_DELAY = 0.5,          -- Delay before sudden death starts
+    SUDDEN_DEATH_BLOCKS_CHOSEN = 5,    -- Blocks removed per sudden death tick
+    SLOW_FALL_TIME = 2,                -- Time for blocks to fall slowly
 
-    STARTING_AMMO = 10,
-    MAX_AMMO = 10,
-    AMMO_REGEN_INTERVAL = 1
-
+    --//====================================================
+    --// Ammo System
+    --//====================================================
+    STARTING_AMMO = 10,                -- Ammo given at start
+    MAX_AMMO = 10,                     -- Ammo cap
+    AMMO_REGEN_INTERVAL = 1,           -- Time between ammo regen ticks (s)
+    RESPAWN_TIME = 1,                   -- Time to respawn after elimination
 }

@@ -7,11 +7,13 @@ local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local SuddenDeath = {}
 
 function SuddenDeath.start(map: Map.Map): nil
+	local Delay = Config.SUDDEN_DEATH_DELAY
+	local BlocksChosen = Config.SUDDEN_DEATH_BLOCKS_CHOSEN
 	task.spawn(function()
 		while RoundSystem.getState() == "ACTIVE" do
-			task.wait(Config.SUDDEN_DEATH_DELAY)
+			task.wait(Delay)
 
-			for _ = 1, Config.SUDDEN_DEATH_BLOCKS_CHOSEN do
+			for _ = 1, BlocksChosen do
 				SuddenDeath.destroyRandomBlock(map)
 			end
 		end

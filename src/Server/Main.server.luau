@@ -13,14 +13,6 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 
 local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 
-task.spawn(function()
-	while true do
-		task.wait(1)
-		SnowballAmmoPickup.new(Vector3.new(math.random(-100, 100), 107, math.random(-100, 100)
-))
-	end
-end)
-
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 RoundSystem.main()
 
