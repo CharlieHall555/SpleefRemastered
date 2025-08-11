@@ -8,7 +8,7 @@ ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").Remote
 
 -- Configuration
 ModuleDirectory.Config = Root.ClientConfigurations
-ModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
+ModuleDirectory.Throwable.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
 -- GUI

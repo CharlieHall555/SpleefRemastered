@@ -1,7 +1,7 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Map = require(ModuleDirectory.Map.Map)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local RoundSystem = require(ModuleDirectory.RoundSystem)
+local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 
 local SuddenDeath = {}

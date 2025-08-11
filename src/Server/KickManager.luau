@@ -1,6 +1,6 @@
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlayerPositionTracker = require(ModuleDirectory.PlayerPositionTracker)
+local PlayerPositionTracker = require(ModuleDirectory.Player.PlayerPositionTracker)
 
 local KickManager = {}
 

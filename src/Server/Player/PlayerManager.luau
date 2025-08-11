@@ -1,8 +1,8 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
-local Leaderstats = require(ModuleDirectory.Leaderstats)
-local PlayerData = require(ModuleDirectory.PlayerData)
+local Leaderstats = require(ModuleDirectory.Player.Leaderstats)
+local PlayerData = require(ModuleDirectory.Player.PlayerData)
 
 local PlayerManager = {}
 

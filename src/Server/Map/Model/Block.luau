@@ -29,7 +29,7 @@ export type Block = {
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PartPool = require(ModuleDirectory.PartPool)
-local Materials = require(ModuleDirectory.Materials)
+local Materials = require(ModuleDirectory.Resources.Materials)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local TweenService = game:GetService("TweenService")

@@ -1,6 +1,6 @@
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local RoundSystem = require(ModuleDirectory.RoundSystem)
+local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Players = game:GetService("Players")
 

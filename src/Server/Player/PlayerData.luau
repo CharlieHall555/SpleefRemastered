@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local KickManager = require(ModuleDirectory.KickManager)
+local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 
 
 local ProfileTemplate = {

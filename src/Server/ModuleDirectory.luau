@@ -3,70 +3,96 @@ local ModuleDirectory = {}
 -- Core Scripts
 ModuleDirectory.ServerEventHandler = game:GetService("ServerScriptService").Core.ServerEventHandler
 ModuleDirectory.ValueBinder = game:GetService("ServerScriptService").Core.ValueBinder
+ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
 
--- Model Inventory
---ModuleDirectory.Container = game:GetService("ServerScriptService").Model.Inventory.Container
---ModuleDirectory.Slot = game:GetService("ServerScriptService").Model.Inventory.Slot
+--//====================================================
+--// Round System
+--//====================================================
 
-ModuleDirectory.PlayerPool = game:GetService("ServerScriptService").Round.PlayerPool
-ModuleDirectory.PlayersInGame = game:GetService("ServerScriptService").Round.PlayersInGame
-ModuleDirectory.PlayerDeathDetector = game:GetService("ServerScriptService").Round.PlayerDeathDetector
-ModuleDirectory.TeleportManager = game:GetService("ServerScriptService").Round.TeleportManager
-ModuleDirectory.RoundManager = game:GetService("ServerScriptService").Round.RoundManager
-ModuleDirectory.PlayerPositionTracker = game:GetService("ServerScriptService").Gameplay.PlayerPositionTracker
-ModuleDirectory.WinnerDetection = game:GetService("ServerScriptService").Round.WinnerDetection
+ModuleDirectory.Round = {}
+ModuleDirectory.Round.PlayerPool = game:GetService("ServerScriptService").Round.PlayerPool
+ModuleDirectory.Round.PlayersInGame = game:GetService("ServerScriptService").Round.PlayersInGame
+ModuleDirectory.Round.PlayerDeathDetector = game:GetService("ServerScriptService").Round.PlayerDeathDetector
+ModuleDirectory.Round.TeleportManager = game:GetService("ServerScriptService").Round.TeleportManager
+ModuleDirectory.Round.RoundManager = game:GetService("ServerScriptService").Round.RoundManager
+ModuleDirectory.Round.WinnerDetection = game:GetService("ServerScriptService").Round.WinnerDetection
+ModuleDirectory.Round.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
+ModuleDirectory.Round.SuddenDeath = game:GetService("ServerScriptService").Round.SuddenDeath
 
-ModuleDirectory.Throwable = game:GetService("ServerScriptService").Throwable.Throwable
-ModuleDirectory.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
-ModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
-ModuleDirectory.AmmoManager = game:GetService("ServerScriptService").Gameplay.AmmoManager
-ModuleDirectory.PlayerRaycastParamsHandler = game:GetService("ServerScriptService").Throwable.PlayerRaycastParmsHandler
+--//====================================================
+--// Throwable System
+--//====================================================
 
+ModuleDirectory.Thorwable = {}
+ModuleDirectory.Throwable.Throwable = game:GetService("ServerScriptService").Throwable.Throwable
+ModuleDirectory.Throwable.ThrowableManager = game:GetService("ServerScriptService").Throwable.ThrowableManager
+ModuleDirectory.Throwable.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
+ModuleDirectory.Throwable.AmmoManager = game:GetService("ServerScriptService").Gameplay.AmmoManager
+ModuleDirectory.Throwable.PlayerRaycastParamsHandler = game:GetService("ServerScriptService").Throwable.PlayerRaycastParmsHandler
+ModuleDirectory.Throwable.SnowballManager = game:GetService("ServerScriptService").Throwable.SnowballManager
 
--- Map Generation System
+--//====================================================
+--// Map System
+--//====================================================
+
 ModuleDirectory.Map = {}
+-- Models
 ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Map.Model.Block
 ModuleDirectory.Map.Layer = game:GetService("ServerScriptService").Map.Model.Layer
 ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
-ModuleDirectory.Map.BlockFactory = game:GetService("ServerScriptService").Map.BlockFactory
 
+-- Factories
+ModuleDirectory.Map.BlockFactory = game:GetService("ServerScriptService").Map.BlockFactory
 ModuleDirectory.Map.PlaneFactory = game:GetService("ServerScriptService").Map.PlaneFactory
 ModuleDirectory.Map.LayerFactory = game:GetService("ServerScriptService").Map.LayerFactory
 ModuleDirectory.Map.MapDataFactory = game:GetService("ServerScriptService").Map.MapDataFactory
+
+-- Builders / Generators
 ModuleDirectory.Map.MapBuilder = game:GetService("ServerScriptService").Map.MapBuilder
 ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.MapGenerator
-ModuleDirectory.ServerHitBoxManager = game:GetService("ServerScriptService").Gameplay.ServerHitBoxManager
-ModuleDirectory.KickManager = game:GetService("ServerScriptService").KickManager
 
-ModuleDirectory.SnowballAmmoPickup = game:GetService("ServerScriptService").Throwable.SnowballAmmoPickup
+--//====================================================
+--// Gameplay Managers
+--//====================================================
+ModuleDirectory.Gameplay = {}
 
-ModuleDirectory.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
+ModuleDirectory.Gameplay.ServerHitBoxManager = game:GetService("ServerScriptService").Gameplay.ServerHitBoxManager
+ModuleDirectory.Gameplay.KickManager = game:GetService("ServerScriptService").KickManager
+ModuleDirectory.Gameplay.SnowballAmmoPickup = game:GetService("ServerScriptService").Throwable.SnowballAmmoPickup
 
-ModuleDirectory.SnowballManager = game:GetService("ServerScriptService").Throwable.SnowballManager
-ModuleDirectory.SuddenDeath = game:GetService("ServerScriptService").Round.SuddenDeath
+--//====================================================
+--// Player Systems
+--//====================================================
+ModuleDirectory.Player = {}
+ModuleDirectory.Player.PlayerData = game:GetService("ServerScriptService").Player.PlayerData
+ModuleDirectory.Player.Leaderstats = game:GetService("ServerScriptService").Player.Leaderstats
+ModuleDirectory.Player.PlayerManager = game:GetService("ServerScriptService").Player.PlayerManager
+ModuleDirectory.Player.PlayerPositionTracker = game:GetService("ServerScriptService").Player.PlayerPositionTracker
 
--- Model Player
-ModuleDirectory.PlayerData = game:GetService("ServerScriptService").Player.PlayerData
-ModuleDirectory.Leaderstats = game:GetService("ServerScriptService").Player.Leaderstats
-ModuleDirectory.PlayerManager = game:GetService("ServerScriptService").Player.PlayerManager
-
--- Utilities
+--//====================================================
+--// Utilities
+--//====================================================
 ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ModuleDirectory.Timer = game:GetService("ReplicatedStorage").Utilities.Timer
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
--- Resources
-ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Materials
+--//====================================================
+--// Utilities
+--//====================================================
+ModuleDirectory.Resources = {}
+ModuleDirectory.Resources.Materials = game:GetService("ServerScriptService").Resources.Materials
 
 -- Loaded Assets
 ModuleDirectory.LoadedBlocks = game:GetService("ServerScriptService").Loaded.Block
 ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Layer
 
+--//====================================================
+--// Analytics
+--//====================================================
 ModuleDirectory.Analytics = {}
 ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
 
 -- Remote Handlers
-ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
 
 return ModuleDirectory

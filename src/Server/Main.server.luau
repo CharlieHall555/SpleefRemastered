@@ -11,7 +11,7 @@ serverLoaded = true
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 
-local SnowballAmmoPickup = require(ModuleDirectory.SnowballAmmoPickup)
+local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 
 task.spawn(function()
 	while true do
@@ -21,6 +21,6 @@ task.spawn(function()
 	end
 end)
 
-local RoundSystem = require(ModuleDirectory.RoundSystem)
+local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 RoundSystem.main()
 

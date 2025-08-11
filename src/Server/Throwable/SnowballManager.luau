@@ -1,16 +1,16 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local ThrowableManager = require(ModuleDirectory.ThrowableManager)
-local Throwable = require(ModuleDirectory.Throwable)
+local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
+local Throwable = require(ModuleDirectory.Throwable.Throwable)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Block = require(ModuleDirectory.Map.Block)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local SnowballManager = {}
-local RoundSystem = require(ModuleDirectory.RoundSystem)
-local AmmoManager = require(ModuleDirectory.AmmoManager)
-local ServerHitBoxManager = require(ModuleDirectory.ServerHitBoxManager)
-local SnowballAmmoPickup = require(ModuleDirectory.SnowballAmmoPickup)
+local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
+local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
+local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
