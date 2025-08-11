@@ -17,6 +17,10 @@ local _childAddedConn: RBXScriptConnection? = nil
 local _childRemovedConn: RBXScriptConnection? = nil
 local _enabled = true
 
+local SPIN_TIME = 3
+local BOB_HEIGHT = 0.5
+local BOB_TIME = 1
+
 local function _stopForPart(part: BasePart)
     local rec = _tweensByPart[part]
     if not rec then
@@ -79,7 +83,7 @@ local function _animatePart(part: BasePart)
     local angle = Instance.new("NumberValue")
     angle.Value = 0
 
-    local spinInfo = TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, math.huge, false, 0)
+    local spinInfo = TweenInfo.new(SPIN_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, math.huge, false, 0)
     local spinTween = TweenService:Create(angle, spinInfo, { Value = 360 })
 
     local angleConn: RBXScriptConnection
@@ -96,8 +100,8 @@ local function _animatePart(part: BasePart)
     spinTween:Play()
 
     local startPos = part.Position
-    local bobGoal = { Position = Vector3.new(startPos.X, startPos.Y + 0.4, startPos.Z) }
-    local bobInfo = TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, math.huge, true, 0)
+    local bobGoal = { Position = Vector3.new(startPos.X, startPos.Y + BOB_HEIGHT, startPos.Z) }
+    local bobInfo = TweenInfo.new(BOB_TIME, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, math.huge, true, 0)
     local bobTween = TweenService:Create(part, bobInfo, bobGoal)
     bobTween:Play()
 

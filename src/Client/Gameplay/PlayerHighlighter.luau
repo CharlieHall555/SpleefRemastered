@@ -13,7 +13,8 @@ function PlayerHighlighter.init()
     highlightTemplate = game:GetService("ReplicatedStorage"):WaitForChild("HighlightTemplate")
 
     RemoteEventHandler.newEventConnection("HIGHLIGHT_PLAYERS" , function(players)
-        print(players)
+        print("HIGHLIGHT PLAYERS" , players)
+        PlayerHighlighter.highlightPlayers(players)
     end)
 
 end

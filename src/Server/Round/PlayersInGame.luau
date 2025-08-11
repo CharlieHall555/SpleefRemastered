@@ -62,4 +62,14 @@ function PlayersInGame.clear(): nil
     end
 end
 
+function PlayersInGame.init()
+
+    game.Players.PlayerRemoving:Connect(function(player : Player)
+        
+        PlayersInGame.removePlayer(player)
+
+    end)
+    
+end
+
 return PlayersInGame

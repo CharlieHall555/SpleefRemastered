@@ -11,7 +11,10 @@ ClientModuleDirectory.Config = Root.ClientConfigurations
 ClientModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
 ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
+ClientModuleDirectory.MiscBindings = Root.MiscBindings
+
 -- GUI
+
 ClientModuleDirectory.GUI = {}
 ClientModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
 ClientModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings

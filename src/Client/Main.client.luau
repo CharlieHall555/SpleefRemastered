@@ -74,7 +74,8 @@ print(binding1)
 
 HitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(otherPart : Part)
 	
-	ClientAmmoTracker.predictIncrement(1)
+	local increment = otherPart:GetAttribute("Increment") or 1
+	ClientAmmoTracker.predictIncrement(increment)
 	otherPart.Transparency = 1
 
 end)
@@ -83,7 +84,7 @@ local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestruction
 
 ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThrowableTracker.Throwable , hit)
 	if hit.Instance and hit.Instance:IsA("Part") then
-		
+		--redudant client side destruction prediciton became to hard to sync so stopped work for now.
 		--ClientDestructionHandler.destroyBlock(hit.Instance)
 
 	end

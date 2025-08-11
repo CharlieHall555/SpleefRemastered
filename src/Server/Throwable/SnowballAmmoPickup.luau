@@ -1,10 +1,12 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PartPool = require(ModuleDirectory.PartPool)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local Config = game:GetService("ServerScriptService").ServerConfigurations
 
 export type SnowBallPickup = {
     part: Part,
     position: Vector3,
+    increment : number,
     id: number
 }
 
@@ -51,7 +53,7 @@ local function _createPart(id : number): Part
     part:AddTag("SNOWBALL_AMMO")
     part:SetAttribute("id" , id)
     part.CastShadow = false
-    part.Size = Vector3.new(1, 1, 1)
+    part.Size = Vector3.new(2, 2, 2)
     part.Material = Enum.Material.Snow
     part.Shape = Enum.PartType.Ball
     part.Color = Color3.fromRGB(255, 255, 255)
@@ -66,8 +68,6 @@ function SnowballAmmoPickup.reset() : nil
         SnowballAmmoPickup.remove(id)
     end
 
-
-
 end
 
 function SnowballAmmoPickup.init(): nil
@@ -75,7 +75,7 @@ function SnowballAmmoPickup.init(): nil
     table.clear(Loaded)
 end
 
-function SnowballAmmoPickup.new(spawnPosition: Vector3): nil
+function SnowballAmmoPickup.new(spawnPosition: Vector3): number
     local container = _ensureContainer()
     local id = _newId()
 
@@ -83,13 +83,23 @@ function SnowballAmmoPickup.new(spawnPosition: Vector3): nil
 
     part.CFrame = CFrame.new(spawnPosition)
     part.Parent = container
-    part:SetAttribute("PickupId", id)
+    local increment = Config.AMMO_PICKUP_VALUE or 1
+    part:SetAttribute("Increment" , increment)
+    part:SetAttribute("Id", id)
 
     Loaded[id] = {
         part = part,
         position = spawnPosition,
-        id = id
+        id = id,
+        increment = Config.increment
     }
+
+    return id
+
+end
+
+function SnowballAmmoPickup.get(id: number): SnowBallPickup?
+    return Loaded[id]
 
 end
 

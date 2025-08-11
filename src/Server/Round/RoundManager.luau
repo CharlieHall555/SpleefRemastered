@@ -13,7 +13,7 @@ local WinnerDetection = require(ModuleDirectory.Round.WinnerDetection)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Leaderstats = require(ModuleDirectory.Player.Leaderstats)
 local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
-
+local AmmoPickupManager = require(ModuleDirectory.Gameplay.AmmoPickupManager)
 local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
@@ -64,6 +64,7 @@ local function onRoundStarting(currentRound: RoundSystem.Round)
 end
 
 local function onRoundPreparing(currentRound)
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "HIGHLIGHT_PLAYERS", currentRound.startingPlayers)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
 	AmmoManager.startRegenLoop()
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
@@ -73,6 +74,7 @@ end
 local function onRoundEnding(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
+	AmmoPickupManager.cleanup()
 	AmmoManager.reset()
 	BlockFactory.stopAllTweens()
 	local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
@@ -96,9 +98,13 @@ local function onRoundIntermission(currentRound)
 	print("hi!")
 end
 
+function RoundManager.getCurrentMap() : {}?
+	return currentMap
+end
+
 local function onRoundActive(currentRound)
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "HIGHLIGHT_PLAYERS", currentRound.startingPlayers)
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
+	AmmoPickupManager.start(currentMap)
 end
 
 function RoundManager.init(): nil

@@ -49,4 +49,8 @@ return {
     MAX_AMMO = 10,                     -- Ammo cap
     AMMO_REGEN_INTERVAL = 1,           -- Time between ammo regen ticks (s)
     RESPAWN_TIME = 1,                   -- Time to respawn after elimination
+    MAX_AMMO_PICKUPS = 10,
+    AMMO_SPAWN_GAP = 5,
+    AMMO_PICKUP_LIFETIME = 10,
+    AMMO_PICKUP_VALUE = 10
 }

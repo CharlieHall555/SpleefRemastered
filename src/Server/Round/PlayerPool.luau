@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
@@ -21,6 +22,11 @@ function PlayerPool.init(): nil
     RemoteEventHandler.newEventConnection("PLAYER_REQUEST_LEAVE_POOL", function(player: Player)
         PlayerPool.removeFromPool(player)
     end)
+
+    Players.PlayerRemoving:Connect(function(player : Player)
+        PlayerPool.removeFromPool(player)
+    end)
+    
 end
 
 function PlayerPool.getActivePool(): { Player }
