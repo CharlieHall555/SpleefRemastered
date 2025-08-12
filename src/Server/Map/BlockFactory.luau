@@ -5,6 +5,8 @@ local Block = require(ModuleDirectory.Map.Block)
 local Layer = require(ModuleDirectory.Map.Layer)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local LoadedLayers = require(ModuleDirectory.LoadedLayers)
+local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
+local ObstacleFactory = require(ModuleDirectory.Map.ObstacleFactory)
 
 local BlockFactory = {
     _activeTweens = {}
@@ -15,14 +17,14 @@ function BlockFactory.create(config: Block.BlockConfig): Block.Block
     return newBlock
 end
 
-function BlockFactory.destroyById(blockId: number): nil
+function BlockFactory.destroyById(blockId: number , player : Player?): nil
     local block = LoadedBlocks[blockId]
     if block then
-        BlockFactory.destroy(block)
+        BlockFactory.destroy(block , player)
     end
 end
 
-function BlockFactory.destroy(block: Block.Block): nil
+function BlockFactory.destroy(block: Block.Block , player : Player?): nil
     -- cancel any active tween for this block
     local tween = BlockFactory._activeTweens[block]
     if tween then
@@ -34,8 +36,13 @@ function BlockFactory.destroy(block: Block.Block): nil
     if parentGridId then
         local parentGrid: Layer.Layer? = LoadedLayers[parentGridId]
         if parentGrid then
+            BlockDestructionTracker.blockDestroyed(block._blockId , player)
             parentGrid:removeBlock(block)
         end
+    end
+    if block:getObstacle() then
+        ObstacleFactory.removeObstacle(block)
+        block:setObstacle(nil)
     end
     block:Destroy()
 end

@@ -8,7 +8,9 @@ export type PlaneCreationParams = {
     size: Vector2,
     shape: "Circle" | "Square" | "Override",
     tileMap: ({ [number]: { [number]: Tile } })?,
-    seperation : number
+    height : number,
+    spwans_ammo : boolean,
+    material : string,
 }
 
 export type PlaneData = { [number]: { [number]: PlaceInfo } }

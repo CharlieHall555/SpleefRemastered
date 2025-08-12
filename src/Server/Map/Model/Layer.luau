@@ -16,6 +16,9 @@ export type Layer = {
     getRandomBlock: (self: Layer) -> Block.Block?,
     destroy: (self: Layer) -> nil,
     isEmpty: (self: Layer) -> boolean,
+    getSpawnsAmmo : (self : Layer) -> boolean,
+    setpawnsAmmo : (self : Layer , value : boolean) -> nil,
+
 }
 
 local nextLayerId = 0
@@ -31,6 +34,7 @@ function Layer.new(originPosition: Vector3, size: Vector2): Layer
     self.OriginPosition = originPosition
     self.Blocks = {}
     self.TileMap = {}
+    self.spawnsAmmo = false
 
     for x = 1, size.X do
         self.TileMap[x] = {}
@@ -50,6 +54,14 @@ end
 
 function Layer:getBlock(position: Vector2): Block.Block?
     return (self.TileMap[position.X] and self.TileMap[position.X][position.Y]) or nil
+end
+
+function Layer:setSpawnsAmmo(value : boolean)
+    self.spawnsAmmo = value
+end
+
+function Layer:getSpawnsAmmo() : boolean
+    return self.spawnsAmmo
 end
 
 function Layer:removeBlock(block: Block.Block): nil

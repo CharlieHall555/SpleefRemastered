@@ -25,8 +25,8 @@ function MapDataFactory.create(params: MapDataCreationParams): MapData
 	local origin = params.originPosition
 	local outputs: { any } = {}
 
-	for i, planeParams in ipairs(params.layerParams) do
-		local height = origin.Y + planeParams.seperation * (i - 1)
+	for i, planeParams : PlaneFactory.PlaneCreationParams in ipairs(params.layerParams) do
+		local height = origin.Y + planeParams.height
 		-- Calculate worldPosition so each layer is centered at origin X,Z
 		local worldPosition = Vector3.new(origin.X, height, origin.Z)
 
@@ -35,6 +35,8 @@ function MapDataFactory.create(params: MapDataCreationParams): MapData
 		local planeInfo = PlaneFactory.create(clonedParams)
 		local layerParams: LayerFactory.LayerCreationParams = {
 			worldPosition = worldPosition,
+			layerMaterial = planeParams.material,
+			spawns_ammo = planeParams.spwans_ammo or false
 		}
 
 		table.insert(outputs, {

@@ -1,63 +1,99 @@
 local CustomMaterials = {}
 
-CustomMaterials.Materials = {"Sand" , "Mud" , "Grass" , "Obsidian"}
+local validMateirals = {}
 
-CustomMaterials.Sand = {}
-CustomMaterials.Sand.Material = Enum.Material.Sand
-CustomMaterials.Sand.Color = Color3.new(0.811765, 0.67451, 0.4)
+export type CustomMaterial = {
+    material : string,
+    color : Color3
+}
 
-CustomMaterials.Mud = {}
-CustomMaterials.Mud.Material = Enum.Material.Mud
-CustomMaterials.Mud.Color = Color3.new(0.333333, 0.215686, 0.207843)
+materials = {}
+materials.sand = {
+    material = Enum.Material.Sand,
+    color = Color3.new(0.811765, 0.67451, 0.4)
+}
 
-CustomMaterials.Obsidian = {}
-CustomMaterials.Obsidian.Color = Color3.fromRGB(98, 37, 209)
-CustomMaterials.Obsidian.Material = Enum.Material.CrackedLava
+materials.mud = {
+    material = Enum.Material.Mud,
+    color = Color3.new(0.333333, 0.215686, 0.207843)
+}
 
-CustomMaterials.Grass = {}
-CustomMaterials.Grass.Color = Color3.fromRGB(52, 142, 64)
-CustomMaterials.Grass.Material = Enum.Material.Grass
+materials.obsidian = {
+    material = Enum.Material.CrackedLava,
+    color = Color3.fromRGB(98, 37, 209)
+}
 
-CustomMaterials.Stone = {}
-CustomMaterials.Stone.Color = Color3.fromRGB(75, 75, 75)
-CustomMaterials.Stone.Material = Enum.Material.Slate
+materials.grass = {
+    material = Enum.Material.Grass,
+    color = Color3.fromRGB(52, 142, 64)
+}
 
-CustomMaterials.Snow = {}
-CustomMaterials.Snow.Color = Color3.fromRGB(221, 221, 221)
-CustomMaterials.Snow.Material = Enum.Material.Snow
+materials.grass_light = {
+    material = Enum.Material.Grass,
+    color = Color3.fromRGB(46, 224, 69)
+}
 
-CustomMaterials["Plastic-Yellow"] = {}
-CustomMaterials["Plastic-Yellow"].Material = Enum.Material.SmoothPlastic
-CustomMaterials["Plastic-Yellow"].Color = Color3.new(0.839216, 0.729412, 0.113725)
+materials.stone = {
+    material = Enum.Material.Slate,
+    color = Color3.fromRGB(75, 75, 75)
+}
 
-CustomMaterials["Plastic-Blue"] = {}
-CustomMaterials["Plastic-Blue"].Material = Enum.Material.SmoothPlastic
-CustomMaterials["Plastic-Blue"].Color = Color3.new(0.156863, 0.392157, 0.827451)
+materials.snow = {
+    material = Enum.Material.Snow,
+    color = Color3.fromRGB(221, 221, 221)
+}
 
-CustomMaterials["Plastic-Red"] = {}
-CustomMaterials["Plastic-Red"].Material = Enum.Material.SmoothPlastic
-CustomMaterials["Plastic-Red"].Color = Color3.new(1, 0.282353, 0.188235)
+materials.plastic_yellow = {
+    material = Enum.Material.SmoothPlastic,
+    color = Color3.new(0.839216, 0.729412, 0.113725)
+}
 
-CustomMaterials["Plastic-Green"] = {}
-CustomMaterials["Plastic-Green"].Material = Enum.Material.SmoothPlastic
-CustomMaterials["Plastic-Green"].Color = Color3.new(0.305882, 0.615686, 0.454902)
+materials.plastic_blue = {
+    material = Enum.Material.SmoothPlastic,
+    color = Color3.new(0.156863, 0.392157, 0.827451)
+}
 
-CustomMaterials["Pink-Sand"] = {}
-CustomMaterials["Pink-Sand"].Material = Enum.Material.Sand
-CustomMaterials["Pink-Sand"].Color = Color3.new(0.858824, 0.568627, 0.898039)
+materials.plastic_red = {
+    material = Enum.Material.SmoothPlastic,
+    color = Color3.new(1, 0.282353, 0.188235)
+}
 
-CustomMaterials["Sand-Blue"] = {}
-CustomMaterials["Sand-Blue"].Material = Enum.Material.Sand
-CustomMaterials["Sand-Blue"].Color = Color3.new(0.188235, 0.470588, 1)
+materials.plastic_green = {
+    material = Enum.Material.SmoothPlastic,
+    color = Color3.new(0.305882, 0.615686, 0.454902)
+}
 
-CustomMaterials["Sand-Red"] = {}
-CustomMaterials["Sand-Red"].Material = Enum.Material.Sand
-CustomMaterials["Sand-Red"].Color = Color3.new(0.847059, 0.227451, 0.160784)
+materials.pink_sand = {
+    material = Enum.Material.Sand,
+    color = Color3.new(0.858824, 0.568627, 0.898039)
+}
 
-CustomMaterials["Sand-Green"] = {}
-CustomMaterials["Sand-Green"].Material = Enum.Material.Sand
-CustomMaterials["Sand-Green"].Color = Color3.new(0.333333, 0.666667, 0.498039)
+materials.sand_blue = {
+    material = Enum.Material.Sand,
+    color = Color3.new(0.188235, 0.470588, 1)
+}
+
+materials.sand_red = {
+    material = Enum.Material.Sand,
+    color = Color3.new(0.847059, 0.227451, 0.160784)
+}
+
+materials.sand_green = {
+    material = Enum.Material.Sand,
+    color = Color3.new(0.333333, 0.666667, 0.498039)
+}
 
 
+function CustomMaterials.init()
+
+    for eachKey , _ in materials do
+        table.insert(validMateirals , eachKey)
+    end
+
+end
+
+function CustomMaterials.get(name : string) : CustomMaterial?
+    return materials[name]
+end
 
 return CustomMaterials

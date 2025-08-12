@@ -1,5 +1,7 @@
 export type LayerCreationParams = {
     worldPosition: Vector3,
+    layerMaterial : string,
+    spwansAmmo : boolean
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
@@ -7,6 +9,7 @@ local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
 local Layer = require(ModuleDirectory.Map.Layer)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+local ObstacleFactory = require(ModuleDirectory.Map.ObstacleFactory)
 
 --Config.MAX_PARTS_PER_FRAME_PER_LAYER
 
@@ -33,6 +36,7 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
     )
 
     local layerInstance = Layer.new(center, Vector2.new(width, height))
+    layerInstance:setSpawnsAmmo(params.spwansAmmo)
 
     local count = 0
 
@@ -45,11 +49,15 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
                     0,
                     (y - 1) * blockSize
                 )
-                local blk = BlockFactory.create()
+                local blk = BlockFactory.create(
+                    {material = params.layerMaterial}
+                )
                 blk:setWorldPosition(worldPos)
                 blk:setLayerPosition(Vector2.new(x, y))
                 blk:setParentLayerId(layerInstance._id)
                 layerInstance:addBlock(blk, Vector2.new(x, y))
+                --blk:setObstacle(ObstacleFactory.newObstacle(blk , "IronRock"))
+
                 count += 1
                 if count > Config.MAX_PARTS_PER_FRAME_PER_LAYER then
                     task.wait()

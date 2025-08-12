@@ -25,14 +25,18 @@ export type Block = {
 	setWorldPosition: (self: Block, newWorldPosition: Vector3) -> nil,
 	getWorldPosition: (self: Block) -> Vector3,
 	Destroy: (self: Block) -> nil,
+	getObstacle : (self : Block) -> ({})?,
+	setObstacle : (self : Block , newObstacle : {}) -> nil
+
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PartPool = require(ModuleDirectory.PartPool)
-local Materials = require(ModuleDirectory.Resources.Materials)
+local Materials = require(ModuleDirectory.Materials)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local TweenService = game:GetService("TweenService")
+
 
 local Block = {}
 Block.__index = Block
@@ -45,11 +49,13 @@ function Block.init(): nil
 	BlocksFolder.Parent = game.Workspace
 end
 
-function Block.new(config: BlockConfig?): Block
-	config = config or {}
-	local materialName = config.Type or "Sand"
-	local shape = config.Shape
-	local regenerates = config.Regenerates or false
+function Block.new(blockConfig: BlockConfig?): Block
+	blockConfig = blockConfig or {}
+	local materialName = blockConfig.material or "sand"
+	local shape = blockConfig.Shape
+	local regenerates = blockConfig.Regenerates or false
+
+	local materialDef : Materials.CustomMaterial = Materials.get(materialName)
 
 	local self = setmetatable({}, Block)
 
@@ -58,7 +64,7 @@ function Block.new(config: BlockConfig?): Block
 	Counter += 1
 	self._blockId = self.Id
 	self._LayerId = nil
-	self.Type = config.Type
+	self.Type = blockConfig.material
 
 	-- take or create part
 	self.Part = PartPool.take() or Instance.new("Part")
@@ -69,8 +75,8 @@ function Block.new(config: BlockConfig?): Block
 	self.Part.Transparency = 0
 	self.Part.CollisionGroup = "CG_BLOCKS"
 	self.Part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
-	self.Part.Color = Materials[materialName].Color
-	self.Part.Material = Materials[materialName].Material
+	self.Part.Color = materialDef.color
+	self.Part.Material = materialDef.material
 	self.Part.Anchored = true
 	self.Part.Shape = Enum.PartType.Block
 	self.Part.Parent = game.Workspace.Blocks
@@ -101,13 +107,14 @@ function Block:setParentLayerId(parentLayerId: number): nil
 	self._LayerId = parentLayerId
 end
 
-function Block:setObstacle(obstacle: any)
-	self.Obstacle = obstacle
-	obstacle:setParentBlock(self)
+function Block:getObstacle() : {}?
+	return self.Obstacle
 end
 
-function Block:RemoveObstacle()
-	self.Obstacle = nil
+function Block:setObstacle(new : {}) : nil
+
+	self.Obstacle = new
+	
 end
 
 function Block:setWorldPosition(newWorldPosition: Vector3): nil

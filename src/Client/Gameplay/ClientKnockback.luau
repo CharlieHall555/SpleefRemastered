@@ -5,6 +5,7 @@ local player = game.Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
 local localPlayer = game.Players.LocalPlayer
 local ClientKnockback = {}
+local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
 
 local HIGHLIGHT_NAME = "HitFlash"
 local FLASH_TIME = 0.25
@@ -89,7 +90,12 @@ function ClientKnockback.init()
         end)
     end)
 
-    RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player)
+    RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player) -- and sound
+
+        if playerTarget and playerTarget.Character then
+            SoundPlayer.queuePositionalSound("rbxassetid://146163534" , playerTarget.Character.PrimaryPart.Position)
+        end
+        
         if not playerTarget or playerTarget == localPlayer then
             return
         end

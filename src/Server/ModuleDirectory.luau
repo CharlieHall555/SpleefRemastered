@@ -42,12 +42,14 @@ ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Map.Model.Blo
 ModuleDirectory.Map.Layer = game:GetService("ServerScriptService").Map.Model.Layer
 ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
 ModuleDirectory.Map.Saves = game:GetService("ServerScriptService").Map.MapSaves
+ModuleDirectory.Map.Obstacle = game:GetService("ServerScriptService").Map.Model.Obstacle
 
 -- Factories
 ModuleDirectory.Map.BlockFactory = game:GetService("ServerScriptService").Map.BlockFactory
 ModuleDirectory.Map.PlaneFactory = game:GetService("ServerScriptService").Map.PlaneFactory
 ModuleDirectory.Map.LayerFactory = game:GetService("ServerScriptService").Map.LayerFactory
 ModuleDirectory.Map.MapDataFactory = game:GetService("ServerScriptService").Map.MapDataFactory
+ModuleDirectory.Map.ObstacleFactory = game:GetService("ServerScriptService").Map.ObstacleFactory
 
 -- Builders / Generators
 ModuleDirectory.Map.MapBuilder = game:GetService("ServerScriptService").Map.MapBuilder
@@ -58,6 +60,7 @@ ModuleDirectory.Map.MapGenerator = game:GetService("ServerScriptService").Map.Ma
 --//====================================================
 ModuleDirectory.Gameplay = {}
 
+ModuleDirectory.Gameplay.BlockDestructionTracker = game:GetService("ServerScriptService").Gameplay.BlockDestructionTracker
 ModuleDirectory.Gameplay.ServerHitBoxManager = game:GetService("ServerScriptService").Gameplay.ServerHitBoxManager
 ModuleDirectory.Gameplay.KickManager = game:GetService("ServerScriptService").KickManager
 ModuleDirectory.Gameplay.SnowballAmmoPickup = game:GetService("ServerScriptService").Throwable.SnowballAmmoPickup
@@ -97,6 +100,8 @@ ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Lay
 --//====================================================
 ModuleDirectory.Analytics = {}
 ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
+
+ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Materials
 
 -- Remote Handlers
 
