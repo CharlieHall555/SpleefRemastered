@@ -64,8 +64,7 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 
 		local playerPosition = headPart.Position
 
-		local targetPosition = mouse.Hit.p
-		local direction = (targetPosition - playerPosition).Unit
+		local direction = (mouse.Hit.Position - headPart.Position).Unit
 
 		ClientAmmoTracker.predictIncrement(-1)
 		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)

@@ -49,8 +49,7 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3)
 
     markHit(player.UserId)
 
-    local power = 17000
-    RemoteEventHandler.FireOnClient(player, "KNOCKBACK", dir, power)
+    RemoteEventHandler.FireOnClient(player, "KNOCKBACK", dir, Config.KNOCKBACK_POWER)
     RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION", player)
 
     print(player.DisplayName .. " hIT")
