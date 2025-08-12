@@ -88,7 +88,7 @@ function ClientThrowableTracker.init()
     for eachType, def in ThrowableDefinitions do
         gravityTable[eachType] = Vector3.new(0, -def.gravity, 0)
     end
-    RunService.RenderStepped:Connect(ClientThrowableTracker.mainLoop)
+    RunService.PostSimulation:Connect(ClientThrowableTracker.mainLoop)
     RemoteEventHandler.newEventConnection("NEW_THROWABLE", ClientThrowableTracker.receiveFromServer)
     RemoteEventHandler.newEventConnection("DELETE_THROWABLE", ClientThrowableTracker.removeThrowable)
     ClientThrowableTracker.pollPing()
@@ -217,7 +217,6 @@ function ClientThrowableTracker.newThrowable(
         part.Shape = Enum.PartType.Ball
         part.Anchored = true
         part.CanCollide = false
-        part.Transparency = 0
         part.Parent = workspace
         warn("Had to generate new part")
     end

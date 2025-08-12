@@ -18,17 +18,17 @@ local snowballTemplate: Part
 local snowballDump: { Part } = {}
 local counter = 1 -- our own counter, avoids #table problems
 
+local pool: {Part} = {}
+
+
 -- helper to push to pool
 local function pushPart(p: Part)
-	table.insert(snowballDump , p)
+	pool[#pool + 1] = p 
 end
 
 -- helper to pop from pool
 local function popPart(): Part?
-	local p = snowballDump[counter]
-	snowballDump[counter] = nil
-	counter += 1
-	return p
+	return table.remove(pool)
 end
 
 function SnowballPool.init()
@@ -61,14 +61,16 @@ function SnowballPool.take(): Part?
 	if part then
 		return part
 	end
-
+	print("newone")
 	-- Pool empty, create a new one
 	local newPart = snowballTemplate:Clone()
 	newPart.CastShadow = false
-	newPart.Anchored = true
+	newPart.Anchored = true -- consistent baseline
 	newPart.CanCollide = false
 	newPart.CanQuery = true
 	newPart.CanTouch = false
+	newPart.Position = farAway
+	newPart.Parent = game.Workspace
 	return newPart
 end
 
