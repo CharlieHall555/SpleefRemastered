@@ -34,7 +34,6 @@ local function emitAmmoIfChanged()
 	if predictedAmmo ~= _lastAmmo then
 		_lastAmmo = predictedAmmo
 		if _onAmmoChanged then
-            print("_onAmmoChanged")
 			_onAmmoChanged(predictedAmmo , maxAmmo)
 		end
 	end

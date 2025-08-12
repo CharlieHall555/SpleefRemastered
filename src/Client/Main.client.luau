@@ -4,7 +4,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Player = game.Players.LocalPlayer
 local loadingScreen = Player.PlayerGui:WaitForChild("Loading")
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
-
+local VectorUtil = require(ClientModuleDirectory.VectorUtil)
 
 local isServerLoaded = false
 while isServerLoaded == false do
@@ -101,4 +101,3 @@ local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
 local n = 0
 
 local SystemMessage = require(ClientModuleDirectory.SystemMessage)
-	

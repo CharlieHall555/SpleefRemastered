@@ -71,11 +71,7 @@ function ThrowableManager.mainLoop(dt: number): nil
         local orient = direction.Magnitude > 0 and direction.Unit or Vector3.new(0, 0, 1)
         local castCFrame = CFrame.new(center, center + orient)
         local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
-        local rayParms = PlayerRaycastParamsHandler.get(th.owner)
-        if rayParms == nil then
-            rayParms = defaultRayParams
-            warn("no ray params")
-        end
+        local rayParms = PlayerRaycastParamsHandler.get(th.owner) or defaultRayParams
         local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction , rayParms)
 
         if oldPos.Y < -100 then
@@ -148,6 +144,6 @@ end
 function ThrowableManager.removeThrowable(uid: string): nil
     RemoteEventHandler.FireOnAllClients("DELETE_THROWABLE", uid)
     loadedThrowables[uid] = nil
-end
+end 
 
 return ThrowableManager

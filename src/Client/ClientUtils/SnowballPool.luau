@@ -10,10 +10,26 @@ local root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(root.ClientModuleDirectory)
 local Config = require(ClientModuleDirectory.Config)
 
+local farAway = Vector3.new(1000000,0,0)
+
 local SnowballPool = {}
 
 local snowballTemplate: Part
 local snowballDump: { Part } = {}
+local counter = 1 -- our own counter, avoids #table problems
+
+-- helper to push to pool
+local function pushPart(p: Part)
+	table.insert(snowballDump , p)
+end
+
+-- helper to pop from pool
+local function popPart(): Part?
+	local p = snowballDump[counter]
+	snowballDump[counter] = nil
+	counter += 1
+	return p
+end
 
 function SnowballPool.init()
 	snowballTemplate = game:GetService("ReplicatedStorage").Resources:WaitForChild("SnowballTemplate")
@@ -24,10 +40,13 @@ function SnowballPool.init()
 			partCount += 1
 			local newPart = snowballTemplate:Clone()
 			newPart.CastShadow = false
-			newPart.Anchored = false
-			newPart.CanCollide = true
-			newPart.Parent = nil
-			table.insert(snowballDump, newPart)
+			newPart.Anchored = true -- consistent baseline
+			newPart.CanCollide = false
+			newPart.CanQuery = true
+			newPart.CanTouch = false
+			newPart.Position = farAway
+			newPart.Parent = game.Workspace
+			pushPart(newPart)
 
 			if partCount >= Config.PARTS_PER_FRAME then
 				task.wait()
@@ -38,28 +57,29 @@ function SnowballPool.init()
 end
 
 function SnowballPool.take(): Part?
-	local part = snowballDump[1]
+	local part = popPart()
 	if part then
-		table.remove(snowballDump, 1)
-		return part
-	else
-		part = snowballTemplate:Clone()
-		part.CastShadow = false
-		part.Anchored = true
-		part.CanCollide = false
-		part.Parent = nil
 		return part
 	end
-	return nil
+
+	-- Pool empty, create a new one
+	local newPart = snowballTemplate:Clone()
+	newPart.CastShadow = false
+	newPart.Anchored = true
+	newPart.CanCollide = false
+	newPart.CanQuery = true
+	newPart.CanTouch = false
+	return newPart
 end
 
 function SnowballPool.add(part: Part)
-	part.Velocity = Vector3.zero
-	part.RotVelocity = Vector3.zero
+	-- Reset minimal state needed for reuse
+	part.Position = farAway
 	part.Anchored = true
 	part.CanCollide = false
-	part.Parent = nil
-	table.insert(snowballDump, part)
+	part.CanQuery = true
+	part.CanTouch = false
+	pushPart(part)
 end
 
 return SnowballPool
