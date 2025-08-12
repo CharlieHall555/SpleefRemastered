@@ -23,7 +23,6 @@ ClientModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
 ClientModuleDirectory.GlobalVariables = Root.GlobalVariables
 ClientModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
 ClientModuleDirectory.ClientToolManager = Root.Gameplay.ClientToolManager
-
 -- Gameplay
 ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
 ClientModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
@@ -32,6 +31,7 @@ ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ClientModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
 ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.SystemMessage = Root.SystemMessage
+ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 
 -- State Management
 ClientModuleDirectory.StateChangeManager = Root.StateChangeManager

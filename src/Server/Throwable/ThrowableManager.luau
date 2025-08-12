@@ -7,6 +7,7 @@ local VectorUtil = require(ModuleDirectory.VectorUtil)
 local ThrowableDefinitions = require(ModuleDirectory.ThrowableDefinitions)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerRaycastParamsHandler = require(ModuleDirectory.Throwable.PlayerRaycastParamsHandler)
+local KnockBackManager = require(ModuleDirectory.Gameplay.KnockBackManager)
 
 local ThrowableManager = {}
 
@@ -131,6 +132,10 @@ function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _t
 end
 
 function ThrowableManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult?): nil
+    if hit.Instance:HasTag("PLAYER_HITBOX") then
+        KnockBackManager.hitHitbox(hit.Instance , throwable.direction)
+        return
+    end
     local f = typeHitFunctions[throwable.typeName]
     if f and hit then
         f(throwable, hit)

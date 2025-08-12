@@ -6,107 +6,126 @@ local ServerHitBoxManager = {}
 
 local tagCallback = {}
 
+local _characterAddedConnections: {[number]: RBXScriptConnection} = {}
+local _touchedConnections: {[number]: RBXScriptConnection} = {}
+local _hitBoxes: {[number]: Part} = {}
 
-
-local characterAddedConnections : {[number] : RBXScriptConnection} = {}
-local hitBoxes : {[number] : Part} = {}
-
--- Creates the hitbox part (only once)
-local function createPlayerHitbox()
-	local hitbox = Instance.new("Part")
-	hitbox.Name = "CentralHitbox"
-	hitbox.Size = Vector3.new(2, 6, 2) -- adjust to desired player volume
-	hitbox.Transparency = 0.5
-	hitbox.Color = Color3.new(0.145098, 0.839215, 0.050980)
-	hitbox.Anchored = false
-	hitbox.CanCollide = false
-	hitbox.Massless = true
-	hitbox.CastShadow = false
-	hitbox.CollisionGroup = "CG_GAMEPLAY"
-	hitbox.CanQuery = true
-	hitbox.CanTouch = true
-	hitbox.TopSurface = Enum.SurfaceType.Smooth
-	hitbox.BottomSurface = Enum.SurfaceType.Smooth
-	hitbox.Parent = workspace -- initial parent; will be reparented when attached
-	return hitbox
+local function createPlayerHitbox(): Part
+    local hitbox = Instance.new("Part")
+    hitbox.Name = "CentralHitbox"
+    hitbox.Size = Vector3.new(2, 6, 2)
+    hitbox.Transparency = 0.5
+    hitbox.Color = Color3.new(0.145098, 0.839215, 0.050980)
+    hitbox.Anchored = false
+    hitbox.CanCollide = false
+    hitbox.Massless = true
+    hitbox.CastShadow = false
+	hitbox:AddTag("PLAYER_HITBOX")
+    hitbox.CollisionGroup = "CG_GAMEPLAY"
+    hitbox.CanQuery = true
+    hitbox.CanTouch = true
+    hitbox.TopSurface = Enum.SurfaceType.Smooth
+    hitbox.BottomSurface = Enum.SurfaceType.Smooth
+    hitbox.Parent = workspace
+    return hitbox
 end
 
--- Welds the hitbox to the character's HumanoidRootPart so it follows cleanly
-local function weldToCharacter(hitbox, character)
-	local hrp = character:WaitForChild("HumanoidRootPart", 5)
-	if not hrp then
-		warn("Failed to find HumanoidRootPart to weld hitbox to")
-		return
-	end
+local function weldToCharacter(hitbox: Part, character: Model)
+    local hrp = character:WaitForChild("HumanoidRootPart", 5)
+    if not hrp then
+        warn("Failed to find HumanoidRootPart to weld hitbox to")
+        return
+    end
 
-	-- Reparent the hitbox under the character for cleanliness
-	hitbox.Parent = character
-	hitbox.Anchored = false
+    hitbox.Parent = character
+    hitbox.Anchored = false
+    hitbox.CFrame = hrp.CFrame
 
-	-- Position it to match
-	hitbox.CFrame = hrp.CFrame
+    for _, child in ipairs(hitbox:GetChildren()) do
+        if child:IsA("WeldConstraint") then
+            child:Destroy()
+        end
+    end
 
-	-- Remove any existing welds on the hitbox
-	for _, child in ipairs(hitbox:GetChildren()) do
-		if child:IsA("WeldConstraint") then
-			child:Destroy()
-		end
-	end
-
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = hitbox
-	weld.Part1 = hrp
-	weld.Parent = hitbox
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = hitbox
+    weld.Part1 = hrp
+    weld.Parent = hitbox
 end
 
-function ServerHitBoxManager.setUpCallback(tagName: string, callback: (player : Player , otherPart: Instance) -> nil)
-	tagCallback[tagName] = callback
+local function cleanupPlayer(player: Player)
+    local uid = player.UserId
+
+    local touchConn = _touchedConnections[uid]
+    if touchConn then
+        touchConn:Disconnect()
+        _touchedConnections[uid] = nil
+    end
+
+    local charConn = _characterAddedConnections[uid]
+    if charConn then
+        charConn:Disconnect()
+        _characterAddedConnections[uid] = nil
+    end
+
+    local hitbox = _hitBoxes[uid]
+    if hitbox then
+        if hitbox.Parent then
+            hitbox.Parent = nil
+        end
+        hitbox:Destroy()
+        _hitBoxes[uid] = nil
+    end
+end
+
+function ServerHitBoxManager.setUpCallback(tagName: string, callback: (player: Player, otherPart: Instance) -> nil)
+    tagCallback[tagName] = callback
 end
 
 function ServerHitBoxManager.init()
-	-- Ensure single hitbox exists
+    RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
+        -- ensure previous state is cleared if re-fired
+        cleanupPlayer(player)
 
-	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player)
-        hitBoxes[player.UserId] = createPlayerHitbox()
-        local hitbox = hitBoxes[player.UserId]
+        local uid = player.UserId
+        local hitbox = createPlayerHitbox()
+        _hitBoxes[uid] = hitbox
 
-		if player.Character then
-			weldToCharacter(hitbox, player.Character)
-		end
-
-		characterAddedConnections[player.UserId] = player.CharacterAdded:Connect(function(character)
-			weldToCharacter(hitbox,character)
-
-			character.Humanoid.Died:Once(function()
-				hitbox.Anchored = true
-				hitbox.Parent = nil
-			end)
-		end)
-
-		hitbox.Touched:Connect(function(otherPart)
-			local tags = otherPart:GetTags()
-			for _, each in tags do
-				local f = tagCallback[each]
-				if f then
-					f(player , otherPart)
-				end
-			end
-		end)
-	end)
-
-    Players.PlayerRemoving:Connect(function(player)
-        
-        if characterAddedConnections[player.UserId] then
-            characterAddedConnections[player.UserId]:Disconnect()
+        if player.Character then
+            weldToCharacter(hitbox, player.Character)
         end
 
-        if hitBoxes[player.UserId] then
-             hitBoxes[player.UserId]:Destroy()
-        end
+        _characterAddedConnections[uid] = player.CharacterAdded:Connect(function(character)
+            weldToCharacter(hitbox, character)
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Died:Once(function()
+                    -- detach and stop receiving touches on death
+                    local tConn = _touchedConnections[uid]
+                    if tConn then
+                        tConn:Disconnect()
+                        _touchedConnections[uid] = nil
+                    end
+                    hitbox.Anchored = true
+                    hitbox.Parent = nil
+                end)
+            end
+        end)
 
-
+        _touchedConnections[uid] = hitbox.Touched:Connect(function(otherPart: BasePart)
+            local tags = otherPart:GetTags()
+            for _, each in tags do
+                local f = tagCallback[each]
+                if f then
+                    f(player, otherPart)
+                end
+            end
+        end)
     end)
 
+    Players.PlayerRemoving:Connect(function(player: Player)
+        cleanupPlayer(player)
+    end)
 end
 
 return ServerHitBoxManager

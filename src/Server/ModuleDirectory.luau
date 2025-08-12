@@ -63,6 +63,7 @@ ModuleDirectory.Gameplay.KickManager = game:GetService("ServerScriptService").Ki
 ModuleDirectory.Gameplay.SnowballAmmoPickup = game:GetService("ServerScriptService").Throwable.SnowballAmmoPickup
 ModuleDirectory.Gameplay.AmmoPickupManager = game:GetService("ServerScriptService").Gameplay.AmmoPickupManager
 ModuleDirectory.Gameplay.ToolManager = game:GetService("ServerScriptService").Gameplay.ToolManager
+ModuleDirectory.Gameplay.KnockBackManager = game:GetService("ServerScriptService").Gameplay.KnockbackManager
 
 --//====================================================
 --// Player Systems
