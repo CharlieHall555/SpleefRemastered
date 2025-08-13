@@ -18,7 +18,7 @@ local function isAirborne(h: Humanoid): boolean
 		or s == Enum.HumanoidStateType.FallingDown
 end
 
-local AIR_MULTIPLIER = 0.2
+local AIR_MULTIPLIER = 0.000000001
 local HIGHLIGHT_NAME = "HitFlash"
 local FLASH_TIME = 0.25
 local HOLD_TIME = 0.05

@@ -24,6 +24,9 @@ ClientModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
 ClientModuleDirectory.GlobalVariables = Root.GlobalVariables
 ClientModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
 ClientModuleDirectory.ClientToolManager = Root.Gameplay.ClientToolManager
+ClientModuleDirectory.Transition = Root.GUI.Transition
+
+
 -- Gameplay
 ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
 ClientModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
@@ -49,5 +52,6 @@ ClientModuleDirectory.ClientCommands = Root.ClientCommands
 -- Utilities (Shared)
 ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ClientModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
+
 
 return ClientModuleDirectory

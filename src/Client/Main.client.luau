@@ -38,6 +38,7 @@ local InputHandler = require(ClientModuleDirectory.InputHandler)
 local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
+local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
 
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -56,14 +57,6 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 			return
 		end
 
-		if ClientAmmoTracker.getAmmo() <= 0 then
-			return
-		end
-
-		if ClientStateTracker.getServerState() ~= "ACTIVE" then
-			return
-		end
-
 		local selectedBlock = ClientBlockSelector.getSelected() 
 
 		if selectedBlock then
@@ -73,6 +66,16 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 			return
 		end
 
+		if ClientAmmoTracker.getAmmo() <= 0 then
+			SoundPlayer.playSound("rbxassetid://9125655693")
+			return
+		end
+
+		if ClientStateTracker.getServerState() ~= "ACTIVE" then
+			return
+		end
+
+	
 		local playerPosition = headPart.Position
 
 		local direction = (mouse.Hit.Position - headPart.Position).Unit

@@ -18,6 +18,7 @@ local ToolManager = require(ModuleDirectory.Gameplay.ToolManager)
 local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
 local MapSaves = require(ModuleDirectory.Map.Saves)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local ServerStatus = require(ModuleDirectory.ServerStatus)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -42,13 +43,12 @@ end
 
 local function onRoundStarting(currentRound: RoundSystem.Round)
 	print(currentRound)
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 	currentMap = MapGenerator.generate(MapSaves.TestMap)
 	task.wait(1)
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 
-	for _ , each in currentRound.startingPlayers do
-		Onboarding.action(each , "JOINED_ROUND")
-
+	for _, each in currentRound.startingPlayers do
+		Onboarding.action(each, "JOINED_ROUND")
 	end
 end
 
@@ -56,8 +56,17 @@ local function onRoundPreparing(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "HIGHLIGHT_PLAYERS", currentRound.startingPlayers)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
 	AmmoManager.startRegenLoop()
-	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), Vector3.new(0, 150, 0))
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ACTIVE")
+
+	for _, eachPlayer in PlayersInGame.getActivePlayers() do
+		local topLayer = currentMap:getTopLayer()
+		local randomBlock = topLayer:getRandomBlock()
+		local Position = Vector3.new(0, 150, 0)
+		if randomBlock then
+			Position = randomBlock.Part.Position + Vector3.new(0, 15, 0)
+		end
+		TeleportManager.teleport(eachPlayer, Position)
+	end
 end
 
 local function onRoundEnding(currentRound)
@@ -67,17 +76,20 @@ local function onRoundEnding(currentRound)
 	AmmoPickupManager.cleanup()
 	AmmoManager.reset()
 	BlockFactory.stopAllTweens()
-	local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
-	print(Winner)
-	Onboarding.action(Winner , "WON")
-	if Winner then
-		PlayerData.incrementWins(Winner, 1)
-		print(PlayerData.getWins(Winner))
-		Leaderstats.updateStat(Winner, "Wins", PlayerData.getWins(Winner))
-		RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName)
-	else
-		print("No winner")
+	if ServerStatus.get() == "OK" then
+		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
+		print(Winner)
+		Onboarding.action(Winner, "WON")
+		if Winner then
+			PlayerData.incrementWins(Winner, 1)
+			print(PlayerData.getWins(Winner))
+			Leaderstats.updateStat(Winner, "Wins", PlayerData.getWins(Winner))
+			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName)
+		else
+			print("No winner")
+		end
 	end
+
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
 	task.wait()
 	currentMap:Destroy()

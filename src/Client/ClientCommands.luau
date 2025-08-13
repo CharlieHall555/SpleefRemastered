@@ -36,6 +36,7 @@ local function toggleHitboxVisible()
 end
 
 function ClientCommands.init()
+    print("bbb")
     
     local commandsFolder = Instance.new("Folder" , TextChatService) 
     commandsFolder.Name = "Commands"

@@ -5,6 +5,7 @@ ModuleDirectory.ServerEventHandler = game:GetService("ServerScriptService").Core
 ModuleDirectory.ValueBinder = game:GetService("ServerScriptService").Core.ValueBinder
 ModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
 ModuleDirectory.Setup = game:GetService("ServerScriptService").Core.Setup
+ModuleDirectory.ServerStatus = game:GetService("ServerScriptService").ServerStatus
 
 --//====================================================
 --// Round System

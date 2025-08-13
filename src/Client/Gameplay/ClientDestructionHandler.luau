@@ -2,6 +2,7 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local LocalPlayer = game.Players.LocalPlayer
 
 local REINSTATEMENT_THRESHOLD = 0.5
 
@@ -11,31 +12,39 @@ local _awaitingConfirmation: { [number]: Part } = {}
 local ClientDestructionHandler = {}
 
 function ClientDestructionHandler.predictBlockDestroy(block: Part)
-    local blockId = block:GetAttribute("Id")
-    if not blockId then
-        return
-    end
-    block.Transparency = 1
-    _awaitingConfirmation[blockId] = block
+	local blockId = block:GetAttribute("Id")
+	if not blockId then
+		return
+	end
+	block.Transparency = 1
+	_awaitingConfirmation[blockId] = block
 
-    task.delay(REINSTATEMENT_THRESHOLD, function()
-        local pendingBlock = _awaitingConfirmation[blockId]
-        if pendingBlock and pendingBlock.Parent then
-            pendingBlock.Transparency = 0
-        end
-        _awaitingConfirmation[blockId] = nil
-    end)
+	task.delay(REINSTATEMENT_THRESHOLD, function()
+		local pendingBlock = _awaitingConfirmation[blockId]
+		if pendingBlock and pendingBlock.Parent then
+			pendingBlock.Transparency = 0
+		end
+		_awaitingConfirmation[blockId] = nil
+	end)
 end
 
 function ClientDestructionHandler:init()
-    RemoteEventHandler.newEventConnection("BLOCK_DESTROY_CONFIRMATION", function(blockId: number, type : string , pos : Vector3)
-        ClientDestructionHandler.receiveDestroyedBlock(blockId , type , pos)
-    end)
+	RemoteEventHandler.newEventConnection("BLOCK_DESTROY_CONFIRMATION",ClientDestructionHandler.receiveDestroyedBlock)
 end
 
-function ClientDestructionHandler.receiveDestroyedBlock(blockId: number , type : string , blockWorldPosition : Vector3)
+function ClientDestructionHandler.receiveDestroyedBlock(
+	blockId: number,
+	type: string,
+	blockWorldPosition: Vector3,
+	player: Player?,
+	method: string?
+)
+    print(player , LocalPlayer)
     _awaitingConfirmation[blockId] = nil
-    SoundPlayer.queuePositionalSound("rbxassetid://18568754795", blockWorldPosition , {volume = 0.3})
+    if player == LocalPlayer and method == "spade" then
+        SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })
+    end
+	
 end
 
 return ClientDestructionHandler

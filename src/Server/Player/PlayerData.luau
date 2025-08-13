@@ -5,13 +5,13 @@ local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 
 local ProfileTemplate = {
     onboardingStep = 0,
-    onboardingComplete = "false",
+    onboardingComplete = false,
     wins = 0
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
 
-local ProfileStore = ProfileService.GetProfileStore("TestDatabase", ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore("TestDatabase4", ProfileTemplate)
 
 local profiles: { [number]: any } = {}
 local loading: { [number]: boolean } = {}

@@ -18,28 +18,33 @@ local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire times
 
 function SnowballManager.init()
 	RemoteEventHandler.newEventConnection("CREATE_SNOWBALL", SnowballManager.createSnowballFor)
-	ThrowableManager.registerOnHit("snowball" , SnowballManager.onHit)
+	ThrowableManager.registerOnHit("snowball", SnowballManager.onHit)
 
-	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(player , otherPart)
+	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO", function(player, otherPart)
 		local snowballId = otherPart:GetAttribute("Id")
 		local pickup = SnowballAmmoPickup.get(snowballId or -1)
-		print("pickup" , pickup)
+		print("pickup", pickup)
 		local increment = (pickup or {}).increment or 1
-		AmmoManager.incrementAmmo(player ,increment)
+		AmmoManager.incrementAmmo(player, increment)
 		SnowballAmmoPickup.remove(snowballId)
-		
 	end)
-
 end
 
-function SnowballManager.onHit(throwable : Throwable.Throwable , hit : RaycastResult)
+function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult)
 	print("hit " .. hit.Instance.Name)
 	local blockId = hit.Instance:GetAttribute("Id")
 	if blockId then
-		local block : Block.Block = LoadedBlocks[blockId]
+		local block: Block.Block = LoadedBlocks[blockId]
 		local blockPosition = hit.Instance.Position
-		BlockFactory.destroyById(blockId , throwable.owner)
-		RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , block.Type , blockPosition)
+		BlockFactory.destroyById(blockId, throwable.owner)
+		RemoteEventHandler.FireOnAllClients(
+			"BLOCK_DESTROY_CONFIRMATION",
+			blockId,
+			block.Type,
+			blockPosition,
+			throwable.owner,
+			"shovel"
+		)
 	end
 end
 
@@ -51,7 +56,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	if AmmoManager.getAmmo(player) < 1 then
 		return
 	end
-	
+
 	if not playerPosition or not direction then
 		warn("Snowball creation failed: missing position or direction for", player)
 		return
@@ -87,10 +92,10 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 		return
 	end
 
-	Onboarding.action(player , "SHOT")
+	Onboarding.action(player, "SHOT")
 	_lastSnowballFired[userId] = now
-	AmmoManager.incrementAmmo(player , -1)
-	ThrowableManager.newThrowable(spawnPosition, direction, "snowball" , player)
+	AmmoManager.incrementAmmo(player, -1)
+	ThrowableManager.newThrowable(spawnPosition, direction, "snowball", player)
 end
 
 return SnowballManager

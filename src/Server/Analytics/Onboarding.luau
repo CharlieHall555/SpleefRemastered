@@ -3,7 +3,11 @@ local Players = game:GetService("Players")
 
 local Onboarding = {}
 
+local callback : ((player : Player , newStep : number) -> nil)?
+
 export type Action = "JOINED_GAME" | "JOINED_ROUND" | "SHOT" | "BROKEN_BLOCK" | "WON"
+
+local numberOfSteps = 5
 
 export type Progress = {
     step: number,
@@ -71,6 +75,11 @@ local function logStep(player: Player, stepNumber: number, stepName: string, cus
     end)
     if not ok then
         warn("[Onboarding] Failed to log onboarding funnel step:", err)
+    else
+        if callback then
+            print(stepNumber)
+            callback(player , stepNumber)
+        end
     end
 end
 
@@ -141,5 +150,15 @@ function Onboarding.cleanUpUser(player: Player)
     end
     _progressByUserId[player.UserId] = nil
 end
+
+function Onboarding.setCallback(fn : (player : Player , newStep : number) -> nil)
+    callback = fn
+end
+
+function Onboarding.getNumberOfSteps() : number
+    return numberOfSteps
+end
+
+
 
 return Onboarding
