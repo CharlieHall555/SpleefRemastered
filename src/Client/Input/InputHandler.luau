@@ -19,7 +19,7 @@ export type EndAction = {
 
 local InputHandler = {}
 local inputQueue: { InputAction } = {}
-local endQueue: { InputAction } = {}
+local endQueue: { EndAction } = {}
 local startBindings: { [Enum.UserInputType]: { [string]: (InputAction) -> () } } = {}
 local endBindings: { [Enum.UserInputType]: { [string]: (InputAction) -> () } } = {}
 
@@ -74,7 +74,8 @@ end
 
 
 function InputHandler.queueInput(input: InputObject, data: any?)
-	inputStartTimes[input] = tick()
+	print("start!")
+	inputStartTimes[input] = time()
 	table.insert(inputQueue, {
 		input = input,
 		keyCode = input.KeyCode,
@@ -83,7 +84,8 @@ function InputHandler.queueInput(input: InputObject, data: any?)
 end
 
 function InputHandler.queueEnd(input: EndAction, data: any?)
-	local endTime = tick()
+	print("end!")
+	local endTime = time()
 	local length = endTime - (inputStartTimes[input] or endTime)
 	inputStartTimes[input] = nil
 	table.insert(endQueue, {
@@ -158,6 +160,7 @@ end
 
 
 function InputHandler.init()
+	print("init inputhandler")
 	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessed)
 		if gameProcessed then
 			return
@@ -180,7 +183,7 @@ function InputHandler.init()
 		InputHandler.queueEnd(input, data)
 	end)
 
-	RunService.RenderStepped:Connect(InputHandler.processInputs)
+	RunService.RenderStepped:Connect(processInputs)
 end
 
 return InputHandler

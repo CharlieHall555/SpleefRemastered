@@ -17,6 +17,7 @@ function ClientDestructionHandler.predictBlockDestroy(block: Part)
 		return
 	end
 	block.Transparency = 1
+	SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", block.Position, { volume = 0.5 })
 	_awaitingConfirmation[blockId] = block
 
 	task.delay(REINSTATEMENT_THRESHOLD, function()
@@ -42,7 +43,9 @@ function ClientDestructionHandler.receiveDestroyedBlock(
     print(player , LocalPlayer)
     _awaitingConfirmation[blockId] = nil
     if player == LocalPlayer and method == "spade" then
-        SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })
+		--SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })
+	elseif method == "snowball" then
+		SoundPlayer.queuePositionalSound("rbxassetid://9119310655", blockWorldPosition, { volume = 0.75  , playbackSpeed = 1.2})
     end
 	
 end

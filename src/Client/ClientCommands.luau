@@ -6,18 +6,13 @@ local HttpService = game:GetService("HttpService")
 local TextChatService = game:GetService("TextChatService")
 local ClientSnowballAnimator = require(ClientModuleDirectory.ClientSnowballAnimator)
 local HitboxManager = require(ClientModuleDirectory.HitBoxManager)
+local TapDebugView = require(ClientModuleDirectory.TapDebugView)
 
 local ClientCommands = {}
 
 local function muteSound(originTextSource: TextSource, unfilteredText: string)
 
     SoundPlayer.setInMuted(not SoundPlayer.getIsMuted())
-
-end
-
-local function snowBallAnims(originTextSource: TextSource, unfilteredText: string)
-
-    ClientSnowballAnimator.toggle()
 
 end
 
@@ -51,13 +46,19 @@ function ClientCommands.init()
     toggleSnowballAnimations.Name = "toggleSnowballAnim"
     toggleSnowballAnimations.PrimaryAlias = "/toggleSnowballAnims"
     toggleSnowballAnimations.AutocompleteVisible = true
-    toggleSnowballAnimations.Triggered:Connect(snowBallAnims)
+    toggleSnowballAnimations.Triggered:Connect(ClientSnowballAnimator.toggle)
 
     local toggleSnowballAnimations = Instance.new("TextChatCommand" , commandsFolder)
     toggleSnowballAnimations.Name = "toggleHitboxVisible"
     toggleSnowballAnimations.PrimaryAlias = "/toggleHitboxVisible"
     toggleSnowballAnimations.AutocompleteVisible = true
     toggleSnowballAnimations.Triggered:Connect(toggleHitboxVisible)
+
+     local toggleTapDebug = Instance.new("TextChatCommand" , commandsFolder)
+    toggleTapDebug.Name = "toggleTapDebug"
+    toggleTapDebug.PrimaryAlias = "/toggleTapDebug"
+    toggleTapDebug.AutocompleteVisible = true
+    toggleTapDebug.Triggered:Connect(TapDebugView.toggle)
 
 end
 

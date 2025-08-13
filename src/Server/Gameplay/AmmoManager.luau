@@ -91,7 +91,7 @@ function AmmoManager.setUp(players: { Player })
             AmmoStore[player.UserId] = starting
             _regenProgress[player.UserId] = 0
             RemoteEventHandler.FireOnClient(player, "SET_MAX_AMMO", Config.MAX_AMMO)
-            RemoteEventHandler.FireOnClient(player, "AMMO_CHANGED", Config.MAX_AMMO)
+            RemoteEventHandler.FireOnClient(player, "AMMO_CHANGED", starting)
         end
     end
 end

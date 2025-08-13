@@ -83,6 +83,7 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3 , o
 	player.part.Position = position
 
 	player.sound.Volume = options.volume or 0.5 
+	player.sound.PlaybackSpeed = options.playbackSpeed or 1
 	-- set sound asset
 	if not soundId:match("^rbxassetid://") then
 		player.sound.SoundId = "rbxassetid://" .. soundId

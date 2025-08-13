@@ -128,6 +128,8 @@ function RoundSystem.processEvent(eventToProcess: EventContext): nil
         if eventToProcess.name == "STARTUP_COMPLETE" then
             if #PlayersInGame.getActivePlayers() >= Config.REQUIRED_PLAYERS then
                 RoundSystem.changeState("PREPARING")
+            else
+                RoundSystem.changeState("ENDING")
             end
         end
     elseif state == "PREPARING" then

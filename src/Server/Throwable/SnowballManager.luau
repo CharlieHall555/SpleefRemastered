@@ -43,7 +43,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 			block.Type,
 			blockPosition,
 			throwable.owner,
-			"shovel"
+			"snowball"
 		)
 	end
 end

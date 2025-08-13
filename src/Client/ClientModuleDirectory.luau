@@ -25,7 +25,8 @@ ClientModuleDirectory.GlobalVariables = Root.GlobalVariables
 ClientModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
 ClientModuleDirectory.ClientToolManager = Root.Gameplay.ClientToolManager
 ClientModuleDirectory.Transition = Root.GUI.Transition
-
+ClientModuleDirectory.ActionHandler = Root.Input.ActionHandler
+ClientModuleDirectory.PlatformDetector = Root.Input.PlatformDetector
 
 -- Gameplay
 ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
@@ -48,6 +49,9 @@ ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 ClientModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
 ClientModuleDirectory.InputHandler = Root.Input.InputHandler
 ClientModuleDirectory.ClientCommands = Root.ClientCommands
+ClientModuleDirectory.TapDebugView = Root.DebugTools.TapDebugView
+
+ClientModuleDirectory.test = Root.testModule
 
 -- Utilities (Shared)
 ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool

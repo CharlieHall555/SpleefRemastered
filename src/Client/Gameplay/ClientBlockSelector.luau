@@ -2,18 +2,16 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local MouseIcon = require(ClientModuleDirectory.MouseIcon)
 local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
-
+local PlatformDetector = (require(ClientModuleDirectory.PlatformDetector))
 local ClientBlockSelector = {}
+local GuiService = game:GetService("GuiService")
 
-local enabled = true
+local enabled = false
 
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
-
-
 local Camera: Camera?
-local BlockHighlightTemplate: Highlight?
 local highlight: Highlight?
 
 local localPlayer = game.Players.LocalPlayer
@@ -24,7 +22,7 @@ selectionRaycast.FilterType = Enum.RaycastFilterType.Exclude
 selectionRaycast.FilterDescendantsInstances = {}
 
 local RAYCAST_MAX = 300
-local MAX_SELECTION_DISTANCE = 16
+local MAX_SELECTION_DISTANCE = 25
 
 local selectedBlock: Part?
 local _renderConn: RBXScriptConnection?
@@ -50,6 +48,30 @@ local function withinDistance(p: Vector3): boolean
     return (hrp.Position - p).Magnitude <= MAX_SELECTION_DISTANCE
 end
 
+function ClientBlockSelector.getMobileSelected(tapPos: Vector2): Instance?
+    local camera = workspace.CurrentCamera
+    if not camera then return nil end
+
+    local inset = GuiService:GetGuiInset()
+    local viewportPos = tapPos + Vector2.new(inset.X, inset.Y)
+
+    local unitRay = camera:ViewportPointToRay(viewportPos.X, viewportPos.Y)
+
+    selectionRaycast.FilterType = Enum.RaycastFilterType.Exclude
+    selectionRaycast.FilterDescendantsInstances = { game.Players.LocalPlayer.Character }
+
+    local result = workspace:Raycast(unitRay.Origin, unitRay.Direction * 1000, selectionRaycast)
+    if result then
+
+        if withinDistance(result.Position) then
+            return result.Instance
+        end
+    end
+
+    return nil
+end
+
+
 local function focus(part: Part): nil
     MouseIcon.shovel()
     selectedBlock = part
@@ -58,14 +80,12 @@ local function focus(part: Part): nil
         highlight.Enabled = true
         return
     end
-    if not BlockHighlightTemplate then
+    if not highlight then
         return
     end
-    local h = BlockHighlightTemplate:Clone()
-    h.Adornee = part
-    h.Enabled = true
-    h.Parent = game.Players.LocalPlayer.PlayerGui
-    highlight = h
+    highlight.Adornee = part
+    highlight.Enabled = true
+
 end
 
 local function unfocus(): nil
@@ -107,10 +127,13 @@ local function step()
 end
 
 function ClientBlockSelector.init()
-    BlockHighlightTemplate = game:GetService("ReplicatedStorage"):WaitForChild("BlockHighlight", 5) :: Highlight?
-    assert(BlockHighlightTemplate, "BlockHighlight missing in ReplicatedStorage")
+    highlight = game:GetService("ReplicatedStorage"):WaitForChild("BlockHighlight", 5) :: Highlight?
+    assert(highlight, "BlockHighlight missing in ReplicatedStorage")
+    highlight.Parent = game.Players.LocalPlayer.PlayerGui
+    highlight.Enabled = false
 
-    ClientBlockSelector.enable()
+ 
+    
 end
 
 function ClientBlockSelector.onLoaded()
@@ -119,7 +142,12 @@ function ClientBlockSelector.onLoaded()
         _renderConn:Disconnect()
         _renderConn = nil
     end
+    
     _renderConn = RunService.RenderStepped:Connect(step)
+
+    if PlatformDetector.getPlatform() == "PC" then
+        ClientBlockSelector.enable()
+    end
 end
 
 function ClientBlockSelector.getSelected(): Part?
