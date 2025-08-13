@@ -5,12 +5,13 @@ local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 
 local ProfileTemplate = {
     onboardingStep = 0,
-    onboardingComplete = "true",
+    onboardingComplete = "false",
     wins = 0
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
-local ProfileStore = ProfileService.GetProfileStore("PlayerData", ProfileTemplate)
+
+local ProfileStore = ProfileService.GetProfileStore("TestDatabase", ProfileTemplate)
 
 local profiles: { [number]: any } = {}
 local loading: { [number]: boolean } = {}
@@ -108,6 +109,10 @@ function PlayerData.incrementWins(player: Player, amount: number): nil
         return
     end
     profile.Data.wins = (profile.Data.wins or 0) + amount
+end
+
+function PlayerData.getProfile(player: Player) : {}
+    return profiles[player.UserId]
 end
 
 return PlayerData

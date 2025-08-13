@@ -17,6 +17,7 @@ local AmmoPickupManager = require(ModuleDirectory.Gameplay.AmmoPickupManager)
 local ToolManager = require(ModuleDirectory.Gameplay.ToolManager)
 local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
 local MapSaves = require(ModuleDirectory.Map.Saves)
+local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -44,6 +45,11 @@ local function onRoundStarting(currentRound: RoundSystem.Round)
 	currentMap = MapGenerator.generate(MapSaves.TestMap)
 	task.wait(1)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
+
+	for _ , each in currentRound.startingPlayers do
+		Onboarding.action(each , "JOINED_ROUND")
+
+	end
 end
 
 local function onRoundPreparing(currentRound)
@@ -63,6 +69,7 @@ local function onRoundEnding(currentRound)
 	BlockFactory.stopAllTweens()
 	local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
 	print(Winner)
+	Onboarding.action(Winner , "WON")
 	if Winner then
 		PlayerData.incrementWins(Winner, 1)
 		print(PlayerData.getWins(Winner))

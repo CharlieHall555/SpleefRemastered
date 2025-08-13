@@ -1,4 +1,5 @@
 local AnalyticsService = game:GetService("AnalyticsService")
+local Players = game:GetService("Players")
 
 local Onboarding = {}
 
@@ -75,6 +76,8 @@ end
 
 function Onboarding.init()
     table.clear(_progressByUserId)
+
+    Players.PlayerRemoving:Connect(Onboarding.cleanUpUser)
 end
 
 function Onboarding.registerUser(player: Player, previousStep: number?)
@@ -95,7 +98,11 @@ function Onboarding.action(player: Player, newAction: Action, customFields: { [s
         return
     end
 
-    local progress = getOrCreateProgress(player.UserId)
+    local progress = _progressByUserId[player.UserId]
+    if progress == nil then
+        print("user not registered for noboarding")
+        return
+    end
     local field = ACTION_TO_FIELD[newAction]
     local stepNumber = ACTION_TO_STEP_NUMBER[newAction]
     local stepName = ACTION_TO_STEP_NAME[newAction] or ("Step " .. tostring(stepNumber))

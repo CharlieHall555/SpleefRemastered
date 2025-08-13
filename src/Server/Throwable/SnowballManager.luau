@@ -12,6 +12,7 @@ local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 local AmmoPickupManager = require(ModuleDirectory.Gameplay.AmmoPickupManager)
+local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
@@ -86,6 +87,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 		return
 	end
 
+	Onboarding.action(player , "SHOT")
 	_lastSnowballFired[userId] = now
 	AmmoManager.incrementAmmo(player , -1)
 	ThrowableManager.newThrowable(spawnPosition, direction, "snowball" , player)

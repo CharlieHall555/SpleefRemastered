@@ -62,7 +62,7 @@ local function showCustomCursor(assetId: string)
 
 	local gui = getGui()
 	if not activeIcon then
-		activeIcon = mouseTemplate:Clone()
+		activeIcon = mouseTemplate
 		activeIcon.Name = "CustomMouseIcon"
 		activeIcon.AnchorPoint = Vector2.new(0.5, 0.5)
 		activeIcon.BackgroundTransparency = 1
@@ -71,6 +71,7 @@ local function showCustomCursor(assetId: string)
 	end
 
 	activeIcon.Image = assetId
+    activeIcon.Visible = true
 	UserInputService.MouseIconEnabled = false -- hide system cursor
 	startFollowing()
 end
@@ -79,7 +80,7 @@ local function clearCustomCursor()
 	UserInputService.MouseIconEnabled = true
 	UserInputService.MouseIcon = "" -- restore default
 	if activeIcon then
-		activeIcon:Destroy()
+		activeIcon.Visible = false
 		activeIcon = nil
 	end
 	stopFollowing()

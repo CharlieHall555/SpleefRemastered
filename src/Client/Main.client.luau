@@ -115,4 +115,3 @@ local SystemMessage = require(ClientModuleDirectory.SystemMessage)
 
 local MouseIcon = require(ClientModuleDirectory.MouseIcon)
 
-MouseIcon.shovel()

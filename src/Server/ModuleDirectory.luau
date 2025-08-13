@@ -68,6 +68,7 @@ ModuleDirectory.Gameplay.AmmoPickupManager = game:GetService("ServerScriptServic
 ModuleDirectory.Gameplay.ToolManager = game:GetService("ServerScriptService").Gameplay.ToolManager
 ModuleDirectory.Gameplay.KnockBackManager = game:GetService("ServerScriptService").Gameplay.KnockbackManager
 ModuleDirectory.Gameplay.BlockDestruction = game:GetService("ServerScriptService").Gameplay.BlockDestruction
+ModuleDirectory.Gameplay.LavaManager = game:GetService("ServerScriptService").Gameplay.LavaManager
 
 --//====================================================
 --// Player Systems
@@ -101,6 +102,7 @@ ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Lay
 --//====================================================
 ModuleDirectory.Analytics = {}
 ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
+ModuleDirectory.Analytics.Main = game:GetService("ServerScriptService").Analytics.AnalyticsMain
 
 ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Materials
 

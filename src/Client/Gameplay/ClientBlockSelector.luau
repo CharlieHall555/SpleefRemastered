@@ -1,7 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local MouseIcon = require(ClientModuleDirectory.MouseIcon)
-
+local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
 
 local ClientBlockSelector = {}
 
@@ -24,7 +24,7 @@ selectionRaycast.FilterType = Enum.RaycastFilterType.Exclude
 selectionRaycast.FilterDescendantsInstances = {}
 
 local RAYCAST_MAX = 300
-local MAX_SELECTION_DISTANCE = 20
+local MAX_SELECTION_DISTANCE = 16
 
 local selectedBlock: Part?
 local _renderConn: RBXScriptConnection?
@@ -94,7 +94,7 @@ local function step()
     local ray = getMouseRay()
     local result = workspace:Raycast(ray.Origin, ray.Direction, selectionRaycast)
 
-    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) then
+    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) and ClientToolManager.isToolEquipped() then
         local hitPart = result.Instance :: Part
         if hitPart ~= selectedBlock then
             focus(hitPart)

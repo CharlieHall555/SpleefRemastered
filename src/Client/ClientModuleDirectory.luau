@@ -34,7 +34,7 @@ ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.SystemMessage = Root.SystemMessage
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
-
+ClientModuleDirectory.ClientLavaManager = Root.ClientLavaManager
 
 -- State Management
 ClientModuleDirectory.StateChangeManager = Root.StateChangeManager
@@ -45,8 +45,6 @@ ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 ClientModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
 ClientModuleDirectory.InputHandler = Root.Input.InputHandler
 ClientModuleDirectory.ClientCommands = Root.ClientCommands
-
-
 
 -- Utilities (Shared)
 ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool

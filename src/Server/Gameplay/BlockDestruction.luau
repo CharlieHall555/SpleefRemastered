@@ -48,7 +48,7 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
     end
 
     BlockFactory.destroyById(blockId , player)
-	AmmoManager.incrementAmmo(player , 1)
+	AmmoManager.incrementAmmo(player , 5)
     RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , blockToDestroy , blockPosition)
     
 end

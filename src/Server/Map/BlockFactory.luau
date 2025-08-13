@@ -7,6 +7,8 @@ local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local LoadedLayers = require(ModuleDirectory.LoadedLayers)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
 local ObstacleFactory = require(ModuleDirectory.Map.ObstacleFactory)
+local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+
 
 local BlockFactory = {
     _activeTweens = {}
@@ -44,6 +46,11 @@ function BlockFactory.destroy(block: Block.Block , player : Player?): nil
         ObstacleFactory.removeObstacle(block)
         block:setObstacle(nil)
     end
+
+    if player then
+        Onboarding:action(player , "BROKEN_BLOCK")
+    end
+
     block:Destroy()
 end
 

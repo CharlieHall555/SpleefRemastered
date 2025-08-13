@@ -13,7 +13,9 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local SnowballManger = require(ModuleDirectory.Throwable.SnowballManager)
 local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
-
+local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local PlayerData = require(ModuleDirectory.Player.PlayerData)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 RoundSystem.main()
