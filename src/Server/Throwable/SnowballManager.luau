@@ -37,6 +37,11 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 		local block: Block.Block = LoadedBlocks[blockId]
 		local blockPosition = hit.Instance.Position
 		BlockFactory.destroyById(blockId, throwable.owner)
+		
+		if throwable.owner then
+			Onboarding.action(throwable.owner , "SNOWBALL_BROKEN_BLOCK")
+		end
+
 		RemoteEventHandler.FireOnAllClients(
 			"BLOCK_DESTROY_CONFIRMATION",
 			blockId,

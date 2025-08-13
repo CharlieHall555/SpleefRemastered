@@ -1,3 +1,7 @@
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local PlayerSessionVariables = require(ModuleDirectory.Player.SessionVariables)
+
+
 local AnalyticsService = game:GetService("AnalyticsService")
 local Players = game:GetService("Players")
 
@@ -5,7 +9,7 @@ local Onboarding = {}
 
 local callback : ((player : Player , newStep : number) -> nil)?
 
-export type Action = "JOINED_GAME" | "JOINED_ROUND" | "SHOT" | "BROKEN_BLOCK" | "WON"
+export type Action = "JOINED_GAME" | "JOINED_ROUND" | "SHOT" | "SNOWBALL_BROKEN_BLOCK" | "WON" | "SPADE_BROKEN_BLOCK"
 
 local numberOfSteps = 5
 
@@ -13,8 +17,9 @@ export type Progress = {
     step: number,
     hasJoinedGame: boolean,
     hasJoinedRound: boolean,
+    hasBrokenBlockWithSpade : boolean,
     hasShot: boolean,
-    hasBrokenBlock: boolean,
+    hasBrokenBlockWithSnowball: boolean,
     hasWon: boolean
 }
 
@@ -24,8 +29,9 @@ local _progressByUserId: { [number]: Progress } = {}
 local ACTION_TO_FIELD: { [Action]: string } = {
     JOINED_GAME = "hasJoinedGame",
     JOINED_ROUND = "hasJoinedRound",
+    SPADE_BROKEN_BLOCK = "hasBrokenBlockWithSpade",
     SHOT = "hasShot",
-    BROKEN_BLOCK = "hasBrokenBlock",
+    SNOWBALL_BROKEN_BLOCK = "hasBrokenBlockWithSnowball",
     WON = "hasWon"
 }
 
@@ -33,8 +39,9 @@ local ACTION_TO_FIELD: { [Action]: string } = {
 local ACTION_TO_STEP_NAME: { [Action]: string } = {
     JOINED_GAME = "Joined Game",
     JOINED_ROUND = "Joined Round",
+    SPADE_BROKEN_BLOCK = "Broke Block With Spade",
     SHOT = "First Shot",
-    BROKEN_BLOCK = "Broke Block",
+    SNOWBALL_BROKEN_BLOCK = "Broke Block With Snowball",
     WON = "Won Round"
 }
 
@@ -42,9 +49,10 @@ local ACTION_TO_STEP_NAME: { [Action]: string } = {
 local ACTION_TO_STEP_NUMBER: { [Action]: number } = {
     JOINED_GAME = 1,
     JOINED_ROUND = 2,
-    SHOT = 3,
-    BROKEN_BLOCK = 4,
-    WON = 5
+    SPADE_BROKEN_BLOCK = 3,
+    SHOT = 4,
+    SNOWBALL_BROKEN_BLOCK = 5,
+    WON = 6
 }
 
 local function getOrCreateProgress(userId: number, defaultStep: number?): Progress
@@ -76,6 +84,8 @@ local function logStep(player: Player, stepNumber: number, stepName: string, cus
     if not ok then
         warn("[Onboarding] Failed to log onboarding funnel step:", err)
     else
+        print(player , stepNumber , stepNumber)
+
         if callback then
             print(stepNumber)
             callback(player , stepNumber)
@@ -106,6 +116,7 @@ function Onboarding.action(player: Player, newAction: Action, customFields: { [s
     if not player or not player.Parent then
         return
     end
+    customFields = customFields or {}
 
     local progress = _progressByUserId[player.UserId]
     if progress == nil then
@@ -129,6 +140,8 @@ function Onboarding.action(player: Player, newAction: Action, customFields: { [s
             progress.step = stepNumber
         end
 
+        local SessionVariables = PlayerSessionVariables.get(player) or {}
+        customFields.platform = SessionVariables.platform or "UNKNOWN"
         logStep(player, stepNumber, stepName, customFields)
     end
 end

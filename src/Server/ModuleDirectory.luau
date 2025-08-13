@@ -79,6 +79,7 @@ ModuleDirectory.Player.PlayerData = game:GetService("ServerScriptService").Playe
 ModuleDirectory.Player.Leaderstats = game:GetService("ServerScriptService").Player.Leaderstats
 ModuleDirectory.Player.PlayerManager = game:GetService("ServerScriptService").Player.PlayerManager
 ModuleDirectory.Player.PlayerPositionTracker = game:GetService("ServerScriptService").Player.PlayerPositionTracker
+ModuleDirectory.Player.SessionVariables = game:GetService("ServerScriptService").Player.PlayerSessionVariables
 
 --//====================================================
 --// Utilities

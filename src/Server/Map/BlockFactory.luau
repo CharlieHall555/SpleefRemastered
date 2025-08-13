@@ -47,9 +47,6 @@ function BlockFactory.destroy(block: Block.Block , player : Player?): nil
         block:setObstacle(nil)
     end
 
-    if player then
-        Onboarding:action(player , "BROKEN_BLOCK")
-    end
 
     block:Destroy()
 end

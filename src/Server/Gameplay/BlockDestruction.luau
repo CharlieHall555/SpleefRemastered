@@ -49,6 +49,11 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
 
     BlockFactory.destroyById(blockId , player)
 	AmmoManager.incrementAmmo(player , 5)
+
+	if player.owner then
+		Onboarding.action(player.owner , "SPADE_BROKEN_BLOCK")
+	end
+
     RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , blockToDestroy , blockPosition , player , "spade")
     
 end
