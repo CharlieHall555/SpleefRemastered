@@ -36,6 +36,8 @@ local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTrac
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local InputHandler = require(ClientModuleDirectory.InputHandler)
 local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
+local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
+local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
 
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -62,12 +64,22 @@ local binding1 = InputHandler.bindAction(Enum.UserInputType.MouseButton1, functi
 			return
 		end
 
+		local selectedBlock = ClientBlockSelector.getSelected() 
+
+		if selectedBlock then
+			local id = selectedBlock:GetAttribute("Id")
+			RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
+			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
+			return
+		end
+
 		local playerPosition = headPart.Position
 
 		local direction = (mouse.Hit.Position - headPart.Position).Unit
 
-		ClientAmmoTracker.predictIncrement(-1)
+		--ClientAmmoTracker.predictIncrement(-1)
 		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
+
 	end
 end)
 
@@ -76,7 +88,7 @@ print(binding1)
 HitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(otherPart : Part)
 	
 	local increment = otherPart:GetAttribute("Increment") or 1
-	ClientAmmoTracker.predictIncrement(increment)
+	--ClientAmmoTracker.predictIncrement(increment)
 	otherPart.Transparency = 1
 
 end)
@@ -100,3 +112,7 @@ local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
 local n = 0
 
 local SystemMessage = require(ClientModuleDirectory.SystemMessage)
+
+local MouseIcon = require(ClientModuleDirectory.MouseIcon)
+
+MouseIcon.shovel()

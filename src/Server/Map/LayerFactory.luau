@@ -21,9 +21,9 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
     assert(params.worldPosition, "Params missing worldPosition argument.")
     assert(plane, "Plane data missing.")
 
-    local width     = #plane
-    local height    = #plane[1]
-    local center    = params.worldPosition
+    local width = #plane
+    local height = #plane[1]
+    local center = params.worldPosition
     local blockSize = Config.BLOCK_SIZE
 
     -- Calculate the top-left corner so layer is centered on 'center'

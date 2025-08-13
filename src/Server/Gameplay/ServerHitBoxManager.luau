@@ -14,7 +14,7 @@ local function createPlayerHitbox(): Part
     local hitbox = Instance.new("Part")
     hitbox.Name = "CentralHitbox"
     hitbox.Size = Vector3.new(2, 6, 2)
-    hitbox.Transparency = 0.5
+    hitbox.Transparency = 1
     hitbox.Color = Color3.new(0.145098, 0.839215, 0.050980)
     hitbox.Anchored = false
     hitbox.CanCollide = false

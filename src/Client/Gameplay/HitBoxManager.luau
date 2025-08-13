@@ -20,7 +20,7 @@ local function createPlayerHitbox()
     local hitbox = Instance.new("Part")
     hitbox.Name = "CentralHitbox"
     hitbox.Size = Vector3.new(2, 6, 2) -- adjust to desired player volume
-    hitbox.Transparency = 0.5
+    hitbox.Transparency = 1
     hitbox.Color = Color3.new(0.035294, 0.635294, 0.788235)
     hitbox.Anchored = false
     hitbox.CanCollide = false
@@ -105,6 +105,12 @@ function ClientHitBoxManager.init()
         end
 
     end)
+end
+
+function ClientHitBoxManager.getHitbox() : Part?
+
+    return sharedHitbox
+    
 end
 
 return ClientHitBoxManager

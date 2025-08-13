@@ -10,7 +10,7 @@ local _awaitingConfirmation: { [number]: Part } = {}
 
 local ClientDestructionHandler = {}
 
-function ClientDestructionHandler.destroyBlock(block: Part)
+function ClientDestructionHandler.predictBlockDestroy(block: Part)
     local blockId = block:GetAttribute("Id")
     if not blockId then
         return
@@ -35,7 +35,7 @@ end
 
 function ClientDestructionHandler.receiveDestroyedBlock(blockId: number , type : string , blockWorldPosition : Vector3)
     _awaitingConfirmation[blockId] = nil
-    SoundPlayer.queuePositionalSound("rbxassetid://18568754795", blockWorldPosition)
+    SoundPlayer.queuePositionalSound("rbxassetid://18568754795", blockWorldPosition , {volume = 0.3})
 end
 
 return ClientDestructionHandler

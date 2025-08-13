@@ -4,6 +4,10 @@ export type SpatialSoundPlayer = {
 	inUse: boolean,
 }
 
+export type SoundOptions = {
+	volume : number,
+}
+
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Config = require(ClientModuleDirectory.Config)
@@ -61,7 +65,8 @@ function SoundPlayer.init()
 	end)
 end
 
-function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3): nil
+function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3 , options : SoundOptions): nil
+	options = options or {}
 	-- if no free players, queue request
 	if #idlePlayers == 0 then
 		table.insert(queuedSounds, { soundId = soundId, position = position })
@@ -69,7 +74,7 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3): n
 	end
 
 	-- take one from idle
-	local player = table.remove(idlePlayers, 1)
+	local player : SpatialSoundPlayer = table.remove(idlePlayers, 1)
 	player.inUse = true
 	table.insert(activePlayers, player)
 
@@ -77,6 +82,7 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3): n
 	player.part.Parent = Workspace
 	player.part.Position = position
 
+	player.sound.Volume = options.volume or 0.5 
 	-- set sound asset
 	if not soundId:match("^rbxassetid://") then
 		player.sound.SoundId = "rbxassetid://" .. soundId
@@ -103,10 +109,12 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3): n
 	end)
 end
 
-function SoundPlayer.playSound(soundId: string): nil
+function SoundPlayer.playSound(soundId: string , options): nil
+	options = options or {}
 	-- always play immediately without pooling
 	local sound = Instance.new("Sound")
 	sound.Parent = SoundService
+	sound.Volume = options.volume or 0.5
 
 	if not soundId:match("^rbxassetid://") then
 		sound.SoundId = "rbxassetid://" .. soundId

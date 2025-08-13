@@ -30,6 +30,8 @@ return {
     SNOWBALL_DISTANCE_THRESHOLD = 10,  -- Max hit detection distance
     SNOWBALL_COOLDOWN = 0.02,          -- Time between throws (s)
 
+    BLOCK_DESTROY_THRESHOLD = 30, --for standard click breaks
+
     --//====================================================
     --// Client Responsiveness
     --//====================================================
@@ -47,8 +49,8 @@ return {
     --//====================================================
     STARTING_AMMO = 30,                -- Ammo given at start
     MAX_AMMO = 30,                     -- Ammo cap
-    AMMO_REGEN_INTERVAL = 0.5,           -- Time between ammo regen ticks (s)
-    RESPAWN_TIME = 1,                   -- Time to respawn after elimination
+    AMMO_REGEN_INTERVAL = 2,           -- Time between ammo regen ticks (s)
+    RESPAWN_TIME = 1,                   -- Roblox Time to respawn after elimination
     MAX_AMMO_PICKUPS = 15,
     AMMO_SPAWN_GAP = 5,
     AMMO_PICKUP_LIFETIME = 30,

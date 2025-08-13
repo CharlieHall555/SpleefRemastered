@@ -2,8 +2,10 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local HttpService = game:GetService("HttpService")
 local TextChatService = game:GetService("TextChatService")
 local ClientSnowballAnimator = require(ClientModuleDirectory.ClientSnowballAnimator)
+local HitboxManager = require(ClientModuleDirectory.HitBoxManager)
 
 local ClientCommands = {}
 
@@ -16,6 +18,20 @@ end
 local function snowBallAnims(originTextSource: TextSource, unfilteredText: string)
 
     ClientSnowballAnimator.toggle()
+
+end
+
+local function toggleHitboxVisible()
+    local hitbox = HitboxManager.getHitbox()
+    if hitbox then
+        
+        if hitbox.Transparency < 1 then
+            hitbox.Transparency = 1
+        else
+            hitbox.Transparency = 0.5
+        end
+
+    end
 
 end
 
@@ -37,6 +53,10 @@ function ClientCommands.init()
     toggleSnowballAnimations.Triggered:Connect(snowBallAnims)
 
     local toggleSnowballAnimations = Instance.new("TextChatCommand" , commandsFolder)
+    toggleSnowballAnimations.Name = "toggleHitboxVisible"
+    toggleSnowballAnimations.PrimaryAlias = "/toggleHitboxVisible"
+    toggleSnowballAnimations.AutocompleteVisible = true
+    toggleSnowballAnimations.Triggered:Connect(toggleHitboxVisible)
 
 end
 

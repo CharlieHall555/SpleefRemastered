@@ -12,7 +12,7 @@ function MiscBindings.init()
     
     RemoteEventHandler.newEventConnection("PLAYER_DIED" , function(playerWhoDied : Player)
         
-        SoundPlayer.playSound(lightning)
+        SoundPlayer.playSound(lightning , {volume = 0.3})
 
     end)
 

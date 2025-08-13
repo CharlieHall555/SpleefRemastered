@@ -7,6 +7,18 @@ local localPlayer = game.Players.LocalPlayer
 local ClientKnockback = {}
 local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
 
+local function isAirborne(h: Humanoid): boolean
+	-- FloorMaterial is the fast/typical check; state checks are a fallback
+	if h.FloorMaterial == Enum.Material.Air then
+		return true
+	end
+	local s = h:GetState()
+	return s == Enum.HumanoidStateType.Freefall
+		or s == Enum.HumanoidStateType.Jumping
+		or s == Enum.HumanoidStateType.FallingDown
+end
+
+local AIR_MULTIPLIER = 0.2
 local HIGHLIGHT_NAME = "HitFlash"
 local FLASH_TIME = 0.25
 local HOLD_TIME = 0.05
@@ -67,12 +79,15 @@ function ClientKnockback.init()
         if character == nil then
             return
         end
-        local rootPart = character:FindFirstChild("HumanoidRootPart")
-        if not rootPart then
-            return
-        end
-        print("hiitttt")
 
+		local rootPart = character:FindFirstChild("HumanoidRootPart")
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if not rootPart or not humanoid then return end
+
+        local finalPower = power
+		if isAirborne(humanoid) then
+			finalPower *= AIR_MULTIPLIER
+		end
         -- Create an impulse force for knockback
         local knockbackForce = Instance.new("VectorForce")
         knockbackForce.Name = "KnockbackForce"

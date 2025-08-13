@@ -14,6 +14,7 @@ ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage"
 ClientModuleDirectory.MiscBindings = Root.MiscBindings
 
 -- GUI
+ClientModuleDirectory.MouseIcon = Root.MouseIcon
 
 ClientModuleDirectory.GUI = {}
 ClientModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
@@ -32,6 +33,8 @@ ClientModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
 ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.SystemMessage = Root.SystemMessage
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
+ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
+
 
 -- State Management
 ClientModuleDirectory.StateChangeManager = Root.StateChangeManager

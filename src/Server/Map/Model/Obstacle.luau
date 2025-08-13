@@ -36,7 +36,7 @@ function Obstacle.new(ObstacleName: string): Obstacle
     Counter += 1
 	self.hitbox = self.model.Hitbox
 	self.hitbox:AddTag("Obstacle")
-	self.hitbox.CollisionGroup = "CG_BLOCK"
+	self.hitbox.CollisionGroup = "CG_BLOCKS"
 
 	self.model:SetAttribute("Id", self.Id)
 
