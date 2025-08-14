@@ -123,7 +123,7 @@ function RoundManager.init(): nil
 	RoundSystem.connectIntermission(onRoundIntermission)
 	RoundSystem.connectActive(onRoundActive)
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
-	LobbySpawn = game.Workspace:WaitForChild("SpawnLocation")
+	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
 end
 
 function RoundManager.onPlayerDeath(playerWhoDied: Player)

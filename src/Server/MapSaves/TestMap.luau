@@ -1,11 +1,11 @@
 return {
-    originPosition = Vector3.new(0, 0, 0),
+    background = "Background1",
 	layerParams = {
 		-- Layer 1: Random "islands" style
 		{
 			height = 0,
-			size = Vector2.new(20, 20),
-			shape = "Override",
+			size = Vector2.new(35, 35),
+			shape = "Checked_Odd",
             spawns_ammo = true,
             material = "grass_light",
             tileMap = {
@@ -35,8 +35,8 @@ return {
 		-- Layer 2: Solid Circle
 		{
 			height = 0,
-			size = Vector2.new(20, 20),
-			shape = "Override",
+			size = Vector2.new(35, 35),
+			shape = "Checked_Even",
             material = "grass",
             tileMap = {
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
@@ -63,8 +63,8 @@ return {
 		},
         {
 			height = 30,
-			size = Vector2.new(20, 20),
-			shape = "Override",
+			size = Vector2.new(35, 35),
+			shape = "Checked_Odd",
             material = "grass_light",
             tileMap = {
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
@@ -93,8 +93,8 @@ return {
 		-- Layer 2: Solid Circle
 		{
 			height = 30,
-			size = Vector2.new(20, 20),
-			shape = "Override",
+			size = Vector2.new(35, 35),
+			shape = "Checked_Even",
             material = "grass",
             tileMap = {
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
@@ -121,8 +121,8 @@ return {
 		},
          {
 			height = 60,
-			size = Vector2.new(20, 20),
-			shape = "Override",
+			size = Vector2.new(35, 35),
+			shape = "Checked_Odd",
             material = "grass_light",
             tileMap = {
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
@@ -151,8 +151,8 @@ return {
 		-- Layer 2: Solid Circle
 		{
 			height = 60,
-			size = Vector2.new(20, 20),
-			shape = "Override",
+			size = Vector2.new(35, 35),
+			shape = "Checked_Even",
             material = "grass",
             tileMap = {
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },

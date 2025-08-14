@@ -6,7 +6,7 @@ export type Tile = "PLACE" | "EMPTY"
 
 export type PlaneCreationParams = {
     size: Vector2,
-    shape: "Circle" | "Square" | "Override",
+    shape: "Circle" | "Square" | "Override" | "Checked_Even" | "Checked_Odd",
     tileMap: ({ [number]: { [number]: Tile } })?,
     height : number,
     spwans_ammo : boolean,
@@ -60,6 +60,24 @@ function PlaneFactory.create(params: PlaneCreationParams): PlaneData
             planeGrid[x] = {}
             for y, tile in pairs(col) do
                 planeGrid[x][y] = { place = (tile == "PLACE") }
+            end
+        end
+
+    elseif shape == "Checked_Even" then
+        for x = 1, width do
+            planeGrid[x] = {}
+            for y = 1, height do
+                local isEven = ((x + y) % 2) == 0
+                planeGrid[x][y] = { place = isEven }
+            end
+        end
+
+    elseif shape == "Checked_Odd" then
+        for x = 1, width do
+            planeGrid[x] = {}
+            for y = 1, height do
+                local isOdd = ((x + y) % 2) == 1
+                planeGrid[x][y] = { place = isOdd }
             end
         end
 

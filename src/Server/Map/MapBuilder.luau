@@ -6,13 +6,11 @@ local Map = require(ModuleDirectory.Map.Map)
 local MapBuilder = {}
 
 function MapBuilder.build(param: MapDataFactory.MapData): Map.Map
-    print(param)
     local layers = param.layersToGenerate
     local origin = param.originPosition
 
     local map = Map.new(origin)
     for _, layerOutput in ipairs(layers) do
-        print(layerOutput)
         local Layer = LayerFactory.create(layerOutput.layerParams, layerOutput.planeInfo)
         map:addLayer(Layer)
         task.wait()

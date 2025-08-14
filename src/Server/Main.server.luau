@@ -20,8 +20,3 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 RoundSystem.main()
 
-	
-while true do
-	ThrowableManager.newThrowable(game.Workspace.SpawnLocation.Position + Vector3.new(0 ,10 ,0), Vector3.new(0,-1, 0) , "snowball")
-	task.wait()
-end

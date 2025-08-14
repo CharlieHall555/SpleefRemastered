@@ -11,7 +11,7 @@ local ProfileTemplate = {
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
 
-local ProfileStore = ProfileService.GetProfileStore("TestDatabase5", ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore("TestDatabase6", ProfileTemplate)
 
 local profiles: { [number]: any } = {}
 local loading: { [number]: boolean } = {}

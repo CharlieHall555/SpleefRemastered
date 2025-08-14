@@ -28,71 +28,75 @@ rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true
 rayParams.CollisionGroup = "CG_BLOCK_SELECTION"
 
-function ActionHandler.mainAttack(action)
+function ActionHandler.canAttack(action)
 	local data = action.data
 
 	if tick() - lastClickTime < HIT_COOLDOWN then
-		return
+		return false
 	end
 	lastClickTime = tick()
 
-	local character = player.Character or player.CharacterAdded:Wait()
-	local rootPart = character:FindFirstChild("HumanoidRootPart")
-	local headPart = character:FindFirstChild("Head")
-	if not rootPart then
+	local character = player.Character
+	if not character then
 		return
 	end
-
+	local rootPart = character:FindFirstChild("HumanoidRootPart")
+	local headPart = character:FindFirstChild("Head")
+	if (not rootPart) or not headPart then
+		return false
+	end
 	if ClientStateTracker.getState() ~= "ACTIVE" then
-		return
+		return false
 	end
 
 	if not character:FindFirstChild("Shovel") then
-		return
+		return false
 	end
+end
 
-	local selectedBlock
+function ActionHandler.getSelected(action)
 	if PlatformDetector.getPlatform() == "PC" then
-		print("pc")
 		selectedBlock = ClientBlockSelector.getSelected()
 	else
 		local tapPosition = Vector2.new(action.input.Position.X, action.input.Position.Y)
 		selectedBlock = ClientBlockSelector.getMobileSelected(tapPosition)
 	end
+end
 
-	if selectedBlock then
-		local id = selectedBlock:GetAttribute("Id")
-		RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
-		ClientDestructionHandler.predictBlockDestroy(selectedBlock)
-		return
-	end
-
-	if ClientAmmoTracker.getAmmo() <= 0 then
-		SoundPlayer.playSound("rbxassetid://9125655693")
-		return
-	end
-
-	if ClientStateTracker.getServerState() ~= "ACTIVE" then
-		return
-	end
-
-	local direction = nil
-	-- MOUSE HIT X AND Y = action.input.Position.X , action.input.Position.Y
+function ActionHandler.getDirection(action, headPart: Part)
 	if PlatformDetector.getPlatform() == "PC" then
-		direction = (mouse.Hit.Position - headPart.Position).Unit
+		return (mouse.Hit.Position - headPart.Position).Unit
 	elseif PlatformDetector.getPlatform() == "MOBILE" then
 		local tapPos = Vector2.new(action.input.Position.X, action.input.Position.Y)
-
 		local unitRay = game.Workspace.CurrentCamera:ViewportPointToRay(tapPos.X, tapPos.Y)
-
 		local targetPos = unitRay.Origin + unitRay.Direction * 1000
-
-		direction = (targetPos - headPart.Position).Unit
+		return (targetPos - headPart.Position).Unit
 	end
-	local playerPosition = headPart.Position
+end
 
-	--ClientAmmoTracker.predictIncrement(-1)
-	RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
+function ActionHandler.mainAttack(action)
+	if ActionHandler.canAttack(action) then
+		local character = player.Character
+		local headPart = character:FindFirstChild("Head")
+
+		local selectedBlock = ActionHandler.getSelected(action)
+
+		if selectedBlock then -- destroy with spade
+			local id = selectedBlock:GetAttribute("Id")
+			RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
+			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
+		else -- shoot
+			if ClientAmmoTracker.getAmmo() <= 0 then
+				SoundPlayer.playSound("rbxassetid://9125655693")
+				return
+			end
+		end
+
+		local direction = ActionHandler.getDirection(action, headPart)
+		local playerPosition = headPart.Position
+		--ClientAmmoTracker.predictIncrement(-1)
+		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
+	end
 end
 
 return ActionHandler

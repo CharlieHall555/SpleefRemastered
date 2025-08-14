@@ -5,14 +5,14 @@ return {
     --//====================================================
     PARTS_PER_FRAME = 50,              -- Max parts processed each frame
     INITIAL_PART_POOL = 50,            -- Initial pooled parts
-    MAX_PARTS_PER_FRAME_PER_LAYER = 25,-- Max parts per frame per map layer
+    MAX_PARTS_PER_FRAME_PER_LAYER = 65,-- Max parts per frame per map layer
     BLOCK_SIZE = 5,                    -- Size of a block in studs
 
     --//====================================================
     --// Game / Round Core Settings
     --//====================================================
-    REQUIRED_PLAYERS = 1,              -- Players needed to start a round
-    PLAYERS_TO_END = 0,                -- Players left to trigger end
+    REQUIRED_PLAYERS = 2,              -- Players needed to start a round
+    PLAYERS_TO_END = 1,                -- Players left to trigger end
     INTERMISSION_TIME = 5,             -- Time between rounds
     PREPARING_TIME = 5,                -- Pre-round prep time
     ROUND_TIME = 100,                   -- Normal round duration

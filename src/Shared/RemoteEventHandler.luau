@@ -1,14 +1,3 @@
-export type RemoteEventHandler = {
-	removeConnection: (eventName: string, uid: string) -> nil,
-	newEventConnection: (eventName: string, callback: (player: Player, ...any) -> any?) -> string,
-	FireOnClient: (player: Player, eventName: string, ...any) -> nil,
-	FireOnClients: (list: { Player }, eventName: string, ...any) -> nil,
-	FireOnAllClients: (eventName: string, ...any) -> nil,
-	FireOnServer: (eventName: string, ...any) -> nil,
-	InvokeOnServer: (eventName: string, ...any) -> ...any,
-	init: () -> nil,
-}
-
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -103,7 +92,13 @@ function RemoteEventHandler.init(): nil
 				return
 			end 
 			for _, fn in pairs(connections) do
-				fn(player, table.unpack(args or {}))
+	
+				local s , e = pcall(function()
+					fn(player, table.unpack(args or {}))
+				end)
+				if s == false then
+					warn("Caught Error with " .. eventName .. " : " .. tostring(e))
+				end
 			end
 		end)
 
@@ -112,7 +107,14 @@ function RemoteEventHandler.init(): nil
 			assert(connections, "Synchronous connection by name not set up for " .. eventName)
 			local results = {}
 			for _, fn in pairs(connections) do
-				table.insert(results, fn(player, table.unpack(args or {})))
+				
+				local s , e = pcall(function()
+					table.insert(results, fn(player, table.unpack(args or {})))
+				end)
+				if s == false then
+					warn("Caught Error with " .. eventName .. " : " .. tostring(e))
+					return
+				end
 			end
 			return table.unpack(results)
 		end
@@ -128,7 +130,12 @@ function RemoteEventHandler.init(): nil
 				return
 			end
 			for _, fn in pairs(connections) do
-				fn(table.unpack(args or {}))
+				local s , e = pcall(function()
+					fn(table.unpack(args or {}))
+				end)
+				if s == false then
+					warn("Caught Error with " .. eventName .. " : " .. tostring(e))
+				end
 			end
 		end)
 	end

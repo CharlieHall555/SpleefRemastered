@@ -50,6 +50,7 @@ ClientModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
 ClientModuleDirectory.InputHandler = Root.Input.InputHandler
 ClientModuleDirectory.ClientCommands = Root.ClientCommands
 ClientModuleDirectory.TapDebugView = Root.DebugTools.TapDebugView
+ClientModuleDirectory.howToPlayGUI = Root.GUI.HowToPlay
 
 ClientModuleDirectory.test = Root.testModule
 

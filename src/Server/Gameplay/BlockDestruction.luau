@@ -6,6 +6,7 @@ local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local Config =require(game:GetService("ServerScriptService").ServerConfigurations)
 local Block = require(ModuleDirectory.Map.Block)
 local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
+local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 
 local BlockDestruction = {}
 
@@ -50,10 +51,9 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
     BlockFactory.destroyById(blockId , player)
 	AmmoManager.incrementAmmo(player , 5)
 
-	if player.owner then
-		Onboarding.action(player.owner , "SPADE_BROKEN_BLOCK")
+	if player then
+		Onboarding.action(player , "SPADE_BROKEN_BLOCK")
 	end
-
     RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , blockToDestroy , blockPosition , player , "spade")
     
 end
