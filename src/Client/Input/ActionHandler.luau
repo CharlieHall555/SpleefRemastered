@@ -3,7 +3,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Player = game.Players.LocalPlayer
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
-local InputHandler = require(ClientModuleDirectory.InputHandler)
+local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
@@ -11,6 +11,7 @@ local player = game.Players.LocalPlayer
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local mouse = player:GetMouse()
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local InGameHUD = require(ClientModuleDirectory.Gui.InGameHUD)
 local UserInputService
 
 local ActionHandler = {}
@@ -22,6 +23,7 @@ end
 
 local lastClickTime = 0
 local HIT_COOLDOWN = 0.1
+local out_count = 0
 
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -90,8 +92,15 @@ function ActionHandler.mainAttack(action)
 			return
 		else -- shoot
 			if ClientAmmoTracker.getAmmo() <= 0 then
+				out_count += 1
+				if out_count >= 7 then
+					InGameHUD.showHint()
+				end
+				
 				SoundPlayer.playSound("rbxassetid://9125655693")
 				return
+			else
+				out_count = 0
 			end
 		end
 

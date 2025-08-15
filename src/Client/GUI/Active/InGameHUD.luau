@@ -92,4 +92,22 @@ function InGameHUD.onProfileLoaded()
 	end)
 end
 
+local hintCooldown
+function InGameHUD.showHint()
+
+	task.spawn(function()
+
+		if hintCooldown == false then
+			hintCooldown = true
+			InGameHUDGUI.Hint.Visible = true
+			task.wait(5)
+			InGameHUDGUI.Hint.Visible = false
+			task.wait(1)
+			hintCooldown = false
+		end
+	
+	end)
+	
+end
+
 return InGameHUD

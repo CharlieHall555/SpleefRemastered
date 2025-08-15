@@ -25,7 +25,7 @@ ClientModuleDirectory.Gui.Intermission = Root.Gui.Intermission.Intermission
 ClientModuleDirectory.Gui.InGameHUD = Root.Gui.Active.InGameHUD
 ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
 ClientModuleDirectory.Gui.HowToPlay = Root.Gui.Intermission.HowToPlay
-ClientModuleDirectory.Gui.MouseIcon = Root.MouseIcon
+ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
 
 --//====================================================
@@ -49,7 +49,7 @@ ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
-ClientModuleDirectory.ClientLavaManager = Root.ClientLavaManager
+ClientModuleDirectory.ClientLavaManager = Root.Gameplay.ClientLavaManager
 
 
 
@@ -57,6 +57,7 @@ ClientModuleDirectory.ClientLavaManager = Root.ClientLavaManager
 --// Chat
 --//====================================================
 
+ClientModuleDirectory.Chat = {}
 ClientModuleDirectory.Chat.SystemMessage = Root.Chat.SystemMessage
 ClientModuleDirectory.Chat.ClientCommands = Root.Chat.SystemMessage
 
@@ -70,13 +71,14 @@ ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 --// Sound
 --//====================================================
 
+ClientModuleDirectory.Sound = {}
 ClientModuleDirectory.Sound.SoundPlayer = Root.Sound.SoundPlayer
 
 --//====================================================
 --// Debug Tools
 --//====================================================
 
-ClientModuleDirectory.test = Root.DebugToolstestModule
+ClientModuleDirectory.test = Root.DebugTools.testModule
 ClientModuleDirectory.TapDebugView = Root.DebugTools.TapDebugView
 
 --//====================================================

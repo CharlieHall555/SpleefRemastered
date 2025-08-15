@@ -2,7 +2,7 @@ local Player = game.Players.LocalPlayer
 local Root = Player.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local GuiService = game:GetService("GuiService")
-local InputHandler = require(ClientModuleDirectory.InputHandler)
+local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
 local Debris = game:GetService("Debris")
 
 local TapDebugView = {}
