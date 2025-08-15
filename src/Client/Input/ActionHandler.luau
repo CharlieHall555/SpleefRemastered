@@ -52,14 +52,16 @@ function ActionHandler.canAttack(action)
 	if not character:FindFirstChild("Shovel") then
 		return false
 	end
+
+	return true
 end
 
 function ActionHandler.getSelected(action)
 	if PlatformDetector.getPlatform() == "PC" then
-		selectedBlock = ClientBlockSelector.getSelected()
+		return ClientBlockSelector.getSelected()
 	else
 		local tapPosition = Vector2.new(action.input.Position.X, action.input.Position.Y)
-		selectedBlock = ClientBlockSelector.getMobileSelected(tapPosition)
+		return ClientBlockSelector.getMobileSelected(tapPosition)
 	end
 end
 

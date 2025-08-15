@@ -17,6 +17,7 @@ ClientModuleDirectory.MiscBindings = Root.MiscBindings
 ClientModuleDirectory.MouseIcon = Root.MouseIcon
 
 ClientModuleDirectory.GUI = {}
+ClientModuleDirectory.GUI.InivteGUI = Root.GUI.InviteGui
 ClientModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
 ClientModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
 ClientModuleDirectory.GUI.Intermission = Root.GUI.Intermission
