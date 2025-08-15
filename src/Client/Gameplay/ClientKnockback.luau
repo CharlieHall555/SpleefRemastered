@@ -5,7 +5,7 @@ local player = game.Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
 local localPlayer = game.Players.LocalPlayer
 local ClientKnockback = {}
-local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local function getMass(char: Model)
 	local o = 0

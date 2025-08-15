@@ -3,14 +3,6 @@
 --//====================================================
 
 local LogHandler = {}
---//====================================================
---// Imports / Services
---//====================================================
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Root = LocalPlayer.PlayerScripts
-local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 
 --//====================================================
 --// Local Variables / Constants

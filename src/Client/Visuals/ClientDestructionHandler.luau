@@ -1,7 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
-local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local LocalPlayer = game.Players.LocalPlayer
 
 local REINSTATEMENT_THRESHOLD = 0.5

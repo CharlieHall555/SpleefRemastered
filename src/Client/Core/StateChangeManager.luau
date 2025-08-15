@@ -1,9 +1,9 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
-local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
+local AlertSystem = require(ClientModuleDirectory.Gui.AlertSystem)
 local PlayerHighlighter = require(ClientModuleDirectory.PlayerHighlighter)
-local SystemMessage = require(ClientModuleDirectory.SystemMessage)
+local SystemMessage = require(ClientModuleDirectory.Chat.SystemMessage)
 
 local StateChangeManager = {}
 

@@ -1,8 +1,8 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
-local MouseIcon = require(ClientModuleDirectory.MouseIcon)
+local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
 local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
-local PlatformDetector = (require(ClientModuleDirectory.PlatformDetector))
+local PlatformDetector = (require(ClientModuleDirectory.Input.PlatformDetector))
 local ClientBlockSelector = {}
 local GuiService = game:GetService("GuiService")
 

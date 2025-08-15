@@ -1,7 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
-local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
+local AlertSystem = require(ClientModuleDirectory.Gui.AlertSystem)
 
 local AlertSystemBindings = {}
 

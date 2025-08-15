@@ -1,7 +1,7 @@
 
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
-local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local HttpService = game:GetService("HttpService")
 local TextChatService = game:GetService("TextChatService")
 local ClientSnowballAnimator = require(ClientModuleDirectory.ClientSnowballAnimator)

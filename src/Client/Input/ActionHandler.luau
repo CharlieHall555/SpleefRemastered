@@ -6,11 +6,11 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local InputHandler = require(ClientModuleDirectory.InputHandler)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
-local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local player = game.Players.LocalPlayer
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local mouse = player:GetMouse()
-local PlatformDetector = require(ClientModuleDirectory.PlatformDetector)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService
 
 local ActionHandler = {}
@@ -87,6 +87,7 @@ function ActionHandler.mainAttack(action)
 			local id = selectedBlock:GetAttribute("Id")
 			RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
 			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
+			return
 		else -- shoot
 			if ClientAmmoTracker.getAmmo() <= 0 then
 				SoundPlayer.playSound("rbxassetid://9125655693")

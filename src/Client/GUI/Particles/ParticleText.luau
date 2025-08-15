@@ -50,13 +50,13 @@ end
 function ParticleText.onLoaded(): nil
     if didLoad == false then
         didLoad = true
-        particleTextTemplate = game:GetService("ReplicatedStorage").GuiAssets.Particles:WaitForChild("ParticleText") :: TextLabel
+        particleTextTemplate = game:GetService("ReplicatedStorage").GUIAssets.Particles:WaitForChild("ParticleText") :: TextLabel
         RunService.PreRender:Connect(ParticleText.mainLoop)
     end
 end
 
-function ParticleText.new(parentView: GuiObject, text: number, origin: Vector2, speed: Vector2, gravity: number?, size: UDim2?, lifeTime: number?): ParticleText
-    local newParticleText = particleTextTemplate:Clone()
+function ParticleText.new(parentView: GuiObject, text: string , Image : string, origin: Vector2, speed: Vector2, gravity: number?, size: UDim2?, lifeTime: number?): ParticleText
+    local newParticleText = {}
     setmetatable(newParticleText, ParticleText)
 
     newParticleText.Id = counter
@@ -66,16 +66,22 @@ function ParticleText.new(parentView: GuiObject, text: number, origin: Vector2, 
     local fadeDelay = 0.25 * textLifeTime
     local fadeInfo = TweenInfo.new(textLifeTime - fadeDelay, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, fadeDelay)
 
+    newParticleText.Root = particleTextTemplate:Clone()
+    newParticleText.Root.Parent = parentView
     newParticleText.Root.Text = tostring(text)
     newParticleText.SpawnTime = time()
     newParticleText.DestroyTime = newParticleText.SpawnTime + textLifeTime
     newParticleText.Speed = speed
-    newParticleText.Root.Position = UDim2.fromScale(origin.X, origin.Y)
-    newParticleText.Root.TextColor3 = Color3.fromRGB(math.random(1, 255), math.random(1, 255), math.random(1, 255))
+    newParticleText.Root.Position = UDim2.fromOffset(origin.X, origin.Y)
+    newParticleText.Root.TextColor3 = Color3.fromRGB(255,255,255)
+    newParticleText.Root.Image.Image = Image or ""
 
     local fadeTweenText = TweenService:Create(newParticleText.Root, fadeInfo, { TextTransparency = 1 })
     local fadeTweenStroke = TweenService:Create(newParticleText.Root.UIStroke, fadeInfo, { Transparency = 1 })
+    local fadeTweenImage = TweenService:Create(newParticleText.Root.Image, fadeInfo, { ImageTransparency = 1 })
+
     fadeTweenText:Play()
+    fadeTweenImage:Play()
     fadeTweenStroke:Play()
 
     if size then
@@ -90,13 +96,22 @@ end
 
 function ParticleText:loop(dt: number)
     local pos = self.Root.Position
-    self.Root.Position = UDim2.fromScale(pos.X.Scale + (self.Speed.X * dt), pos.Y.Scale + (-self.Speed.Y * dt))
+    self.Root.Position = UDim2.fromOffset(pos.X.Offset + (self.Speed.X * dt), pos.Y.Offset + (-self.Speed.Y * dt))
     self.Speed += Vector2.new(0, self.Gravity or TEXT_GRAVITY)
 
     if time() > self.DestroyTime then
         loadedParticleText[self.Id] = nil
         self:Destroy()
     end
+end
+
+function ParticleText:Destroy()
+    if self.Root then
+        self.Root:Destroy()
+        self.Root = nil
+    end
+    loadedParticleText[self.Id] = nil
+    setmetatable(self, nil)
 end
 
 return ParticleText

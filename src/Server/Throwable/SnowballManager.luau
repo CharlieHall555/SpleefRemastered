@@ -26,6 +26,7 @@ function SnowballManager.init()
 		print("pickup", pickup)
 		local increment = (pickup or {}).increment or 1
 		AmmoManager.incrementAmmo(player, increment)
+		RemoteEventHandler.FireOnClient(player ,"AMMO_GAINED", increment)
 		SnowballAmmoPickup.remove(snowballId)
 	end)
 end
@@ -100,6 +101,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	Onboarding.action(player, "SHOT")
 	_lastSnowballFired[userId] = now
 	AmmoManager.incrementAmmo(player, -1)
+	
 	ThrowableManager.newThrowable(spawnPosition, direction, "snowball", player)
 end
 

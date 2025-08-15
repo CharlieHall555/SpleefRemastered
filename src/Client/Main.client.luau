@@ -6,7 +6,7 @@ local Player = game.Players.LocalPlayer
 local loadingScreen = Player.PlayerGui:WaitForChild("Loading")
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 local VectorUtil = require(ClientModuleDirectory.VectorUtil)
-local PlatformDetector = require(ClientModuleDirectory.PlatformDetector)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 
 local isServerLoaded = false
@@ -40,7 +40,7 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
-local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local player = game.Players.LocalPlayer
 
@@ -63,13 +63,13 @@ ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThr
 	end
 end)
 
-local SoundPlayer = require(ClientModuleDirectory.SoundPlayer)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
-local AlertSystem = require(ClientModuleDirectory.GUI.AlertSystem)
+local AlertSystem = require(ClientModuleDirectory.Gui.AlertSystem)
 
 local n = 0
 
-local SystemMessage = require(ClientModuleDirectory.SystemMessage)
+local SystemMessage = require(ClientModuleDirectory.Chat.SystemMessage)
 
-local MouseIcon = require(ClientModuleDirectory.MouseIcon)
+local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
 

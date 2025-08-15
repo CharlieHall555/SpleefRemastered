@@ -2,62 +2,95 @@
 local Root = script.Parent
 local ClientModuleDirectory = {}
 
--- Core
+--//====================================================
+--// Core
+--//====================================================
 ClientModuleDirectory.ClientEventHandler = Root.Core.ClientEventHandler
 ClientModuleDirectory.RemoteEventHandler = game:GetService("ReplicatedStorage").RemoteEventHandler
-
--- Configuration
 ClientModuleDirectory.Config = Root.ClientConfigurations
-ClientModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
-ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
+ClientModuleDirectory.StateChangeManager = Root.Core.StateChangeManager
+ClientModuleDirectory.ClientStateTracker = Root.Core.ClientStateTracker
 
 ClientModuleDirectory.MiscBindings = Root.MiscBindings
 
--- GUI
-ClientModuleDirectory.MouseIcon = Root.MouseIcon
+--//====================================================
+--// GUI
+--//====================================================
 
-ClientModuleDirectory.GUI = {}
-ClientModuleDirectory.GUI.InivteGUI = Root.GUI.InviteGui
-ClientModuleDirectory.GUI.AlertSystem = Root.GUI.AlertSystem
-ClientModuleDirectory.AlertSystemBindings = Root.GUI.AlertSystemBindings
-ClientModuleDirectory.GUI.Intermission = Root.GUI.Intermission
-ClientModuleDirectory.GUI.InGameHUD = Root.GUI.InGameHUD
-ClientModuleDirectory.GlobalVariables = Root.GlobalVariables
+ClientModuleDirectory.Gui = {}
+ClientModuleDirectory.Gui.InivteGUI = Root.Gui.Intermission.InviteGui
+ClientModuleDirectory.Gui.AlertSystem = Root.Gui.AlertSystem.AlertSystem
+ClientModuleDirectory.Gui.AlertSystemBindings = Root.Gui.AlertSystem.AlertSystemBindings
+ClientModuleDirectory.Gui.Intermission = Root.Gui.Intermission.Intermission
+ClientModuleDirectory.Gui.InGameHUD = Root.Gui.Active.InGameHUD
+ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
+ClientModuleDirectory.Gui.HowToPlay = Root.Gui.Intermission.HowToPlay
+ClientModuleDirectory.Gui.MouseIcon = Root.MouseIcon
+ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
+
+--//====================================================
+--// Input Handler
+--//====================================================
+ClientModuleDirectory.Input = {}
+ClientModuleDirectory.Input.InputHandler = Root.Input.InputHandler
+ClientModuleDirectory.Input.ActionHandler = Root.Input.ActionHandler
+ClientModuleDirectory.Input.PlatformDetector = Root.Input.PlatformDetector
+
+--//====================================================
+--// Gameplay
+--//====================================================
 ClientModuleDirectory.ClientSnowballAnimator = Root.Gameplay.ClientSnowballAnimator
-ClientModuleDirectory.ClientToolManager = Root.Gameplay.ClientToolManager
-ClientModuleDirectory.Transition = Root.GUI.Transition
-ClientModuleDirectory.ActionHandler = Root.Input.ActionHandler
-ClientModuleDirectory.PlatformDetector = Root.Input.PlatformDetector
-
--- Gameplay
-ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
-ClientModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
-ClientModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
-ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ClientModuleDirectory.PlayerHighlighter = Root.Gameplay.PlayerHighlighter
+ClientModuleDirectory.ClientDestructionHandler = Root.Gameplay.ClientDestructionHandler
+ClientModuleDirectory.ClientThrowableTracker = Root.Gameplay.ClientThrowableTracker
+ClientModuleDirectory.ClientToolManager = Root.Gameplay.ClientToolManager
+ClientModuleDirectory.PlayerPositionSender = Root.Gameplay.PlayerPositionSender
+ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
-ClientModuleDirectory.SystemMessage = Root.SystemMessage
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
 ClientModuleDirectory.ClientLavaManager = Root.ClientLavaManager
 
--- State Management
-ClientModuleDirectory.StateChangeManager = Root.StateChangeManager
-ClientModuleDirectory.ClientStateTracker = Root.ClientStateTracker
 
--- Utilities (Client)
+
+--//====================================================
+--// Chat
+--//====================================================
+
+ClientModuleDirectory.Chat.SystemMessage = Root.Chat.SystemMessage
+ClientModuleDirectory.Chat.ClientCommands = Root.Chat.SystemMessage
+
+--//====================================================
+--// Client Utilities
+--//====================================================
+
 ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
-ClientModuleDirectory.SoundPlayer = Root.Sound.SoundPlayer
-ClientModuleDirectory.InputHandler = Root.Input.InputHandler
-ClientModuleDirectory.ClientCommands = Root.ClientCommands
+
+--//====================================================
+--// Sound
+--//====================================================
+
+ClientModuleDirectory.Sound.SoundPlayer = Root.Sound.SoundPlayer
+
+--//====================================================
+--// Debug Tools
+--//====================================================
+
+ClientModuleDirectory.test = Root.DebugToolstestModule
 ClientModuleDirectory.TapDebugView = Root.DebugTools.TapDebugView
-ClientModuleDirectory.howToPlayGUI = Root.GUI.HowToPlay
 
-ClientModuleDirectory.test = Root.testModule
+--//====================================================
+--// Shared Utilities
+--//====================================================
 
--- Utilities (Shared)
 ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ClientModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 
+--//====================================================
+--// Resources Handler
+--//====================================================
+
+ClientModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
+ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 
 return ClientModuleDirectory

@@ -50,6 +50,8 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
 
     BlockFactory.destroyById(blockId , player)
 	AmmoManager.incrementAmmo(player , 5)
+	RemoteEventHandler.FireOnClient(player ,"AMMO_GAINED",  5)
+
 
 	if player then
 		Onboarding.action(player , "SPADE_BROKEN_BLOCK")
