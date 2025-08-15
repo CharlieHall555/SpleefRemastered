@@ -52,10 +52,16 @@ function InGameHUD.onProfileLoaded()
 
 	ClientAmmoTracker.setOnMaxAmmoChanged(function(maxammo)
 		InGameHUDGUI.Ammo.Count.Text = 0 .. " / " .. maxammo
+		InGameHUDGUI.Ammo.OutOfAmmo.Visible = true
 	end)
 
 	ClientAmmoTracker.setOnAmmoChanged(function(newAmmo, maxammo)
 		InGameHUDGUI.Ammo.Count.Text = newAmmo .. " / " .. maxammo
+		if newAmmo == 0 then
+			InGameHUDGUI.Ammo.OutOfAmmo.Visible = true
+		else
+			InGameHUDGUI.Ammo.OutOfAmmo.Visible = false
+		end
 	end)
 
     ClientAmmoTracker.setOnRegenProgressChanged(function(newProgress , maxProgress)

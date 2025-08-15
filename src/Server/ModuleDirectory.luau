@@ -88,6 +88,7 @@ ModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPo
 ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ModuleDirectory.Timer = game:GetService("ReplicatedStorage").Utilities.Timer
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
+ModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilities.LogHandler
 
 --//====================================================
 --// Utilities
