@@ -36,7 +36,7 @@ function MapDataFactory.create(params: MapDataCreationParams): MapData
 		local layerParams: LayerFactory.LayerCreationParams = {
 			worldPosition = worldPosition,
 			layerMaterial = planeParams.material,
-			spawns_ammo = planeParams.spwans_ammo or false
+			spawnsAmmo = planeParams.spawnsAmmo or false
 		}
 
 		table.insert(outputs, {

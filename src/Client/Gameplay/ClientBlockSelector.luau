@@ -78,6 +78,7 @@ local function focus(part: Part): nil
     if highlight then
         highlight.Adornee = part
         highlight.Enabled = true
+        highlight.Parent = part
         return
     end
     if not highlight then
@@ -85,6 +86,7 @@ local function focus(part: Part): nil
     end
     highlight.Adornee = part
     highlight.Enabled = true
+    highlight.Parent = part
 
 end
 
@@ -94,6 +96,7 @@ local function unfocus(): nil
     if highlight then
         highlight.Enabled = false
         highlight.Adornee = nil
+        highlight.Parent = nil
     end
 end
 
@@ -129,10 +132,9 @@ end
 function ClientBlockSelector.init()
     highlight = game:GetService("ReplicatedStorage"):WaitForChild("BlockHighlight", 5) :: Highlight?
     assert(highlight, "BlockHighlight missing in ReplicatedStorage")
-    highlight.Parent = game.Players.LocalPlayer.PlayerGui
+    highlight.Parent = nil
     highlight.Enabled = false
-
- 
+    
     
 end
 

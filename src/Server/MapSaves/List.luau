@@ -5,7 +5,8 @@ local MapSaves = game:GetService("ServerScriptService").MapSaves
 export type MapSaves = { [number]: MapDataFactory.MapDataCreationParams }
 
 local MapSaves = {
-	TestMap = require(MapSaves.TestMap)
+	Grasslands = require(MapSaves.Grasslands),
+	Icefields = require(MapSaves.Icefields),
 }
 
 

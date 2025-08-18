@@ -7,7 +7,7 @@ return {
 			size = Vector2.new(35, 35),
 			shape = "Checked_Odd",
             spawns_ammo = true,
-            material = "grass_light",
+            material = "ice",
             tileMap = {
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
@@ -37,7 +37,7 @@ return {
 			height = 0,
 			size = Vector2.new(35, 35),
 			shape = "Checked_Even",
-            material = "grass",
+            material = "snow",
             tileMap = {
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
@@ -64,8 +64,9 @@ return {
         {
 			height = 30,
 			size = Vector2.new(35, 35),
+            spawnsAmmo = true,
 			shape = "Checked_Odd",
-            material = "grass_light",
+            material = "ice",
             tileMap = {
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
@@ -95,7 +96,7 @@ return {
 			height = 30,
 			size = Vector2.new(35, 35),
 			shape = "Checked_Even",
-            material = "grass",
+            material = "snow",
             tileMap = {
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
@@ -123,7 +124,8 @@ return {
 			height = 60,
 			size = Vector2.new(35, 35),
 			shape = "Checked_Odd",
-            material = "grass_light",
+            material = "ice",
+            spawnsAmmo = true,
             tileMap = {
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
@@ -153,7 +155,7 @@ return {
 			height = 60,
 			size = Vector2.new(35, 35),
 			shape = "Checked_Even",
-            material = "grass",
+            material = "snow",
             tileMap = {
                 { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },

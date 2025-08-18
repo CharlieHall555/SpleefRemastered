@@ -44,7 +44,7 @@ end
 local function onRoundStarting(currentRound: RoundSystem.Round)
 	print(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
-	currentMap = MapGenerator.generate(MapSaves.TestMap)
+	currentMap = MapGenerator.generate(MapSaves.Grasslands	)
 	task.wait(1)
 
 	for _, each in currentRound.startingPlayers do

@@ -1,0 +1,183 @@
+return {
+    background = "Grasslands",
+	layerParams = {
+		-- Layer 1: Random "islands" style
+		{
+			height = 0,
+			size = Vector2.new(35, 35),
+			shape = "Checked_Odd",
+            spawns_ammo = true,
+            material = "grass_light",
+            tileMap = {
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" }
+            }
+		},
+
+		-- Layer 2: Solid Circle
+		{
+			height = 0,
+			size = Vector2.new(35, 35),
+			shape = "Checked_Even",
+            material = "grass",
+            tileMap = {
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" }
+            }
+		},
+        {
+			height = 30,
+			size = Vector2.new(35, 35),
+            spawnsAmmo = true,
+			shape = "Checked_Odd",
+            material = "grass_light",
+            tileMap = {
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" }
+            }
+		},
+
+		-- Layer 2: Solid Circle
+		{
+			height = 30,
+			size = Vector2.new(35, 35),
+			shape = "Checked_Even",
+            material = "grass",
+            tileMap = {
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" }
+            }
+		},
+         {
+			height = 60,
+			size = Vector2.new(35, 35),
+			shape = "Checked_Odd",
+            material = "grass_light",
+            spawnsAmmo = true,
+            tileMap = {
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" }
+            }
+		},
+
+		-- Layer 2: Solid Circle
+		{
+			height = 60,
+			size = Vector2.new(35, 35),
+			shape = "Checked_Even",
+            material = "grass",
+            tileMap = {
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },
+                { "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE" },
+                { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" }
+            }
+		},
+    }
+}

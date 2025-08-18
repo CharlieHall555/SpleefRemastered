@@ -92,7 +92,7 @@ function InGameHUD.onProfileLoaded()
 	end)
 end
 
-local hintCooldown
+local hintCooldown = false
 function InGameHUD.showHint()
 
 	task.spawn(function()

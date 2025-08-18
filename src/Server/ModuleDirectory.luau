@@ -42,7 +42,7 @@ ModuleDirectory.Map = {}
 ModuleDirectory.Map.Block = game:GetService("ServerScriptService").Map.Model.Block
 ModuleDirectory.Map.Layer = game:GetService("ServerScriptService").Map.Model.Layer
 ModuleDirectory.Map.Map = game:GetService("ServerScriptService").Map.Model.Map
-ModuleDirectory.Map.Saves = game:GetService("ServerScriptService").Map.MapSaves
+ModuleDirectory.Map.Saves = game:GetService("ServerScriptService").MapSaves.List
 ModuleDirectory.Map.Obstacle = game:GetService("ServerScriptService").Map.Model.Obstacle
 
 -- Factories
@@ -94,7 +94,7 @@ ModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilities.LogH
 --// Utilities
 --//====================================================
 ModuleDirectory.Resources = {}
-ModuleDirectory.Resources.Materials = game:GetService("ServerScriptService").Resources.Materials
+ModuleDirectory.Resources.Materials = game:GetService("ServerScriptService").MapSaves.Materials
 
 -- Loaded Assets
 ModuleDirectory.LoadedBlocks = game:GetService("ServerScriptService").Loaded.Block
@@ -106,8 +106,6 @@ ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Lay
 ModuleDirectory.Analytics = {}
 ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
 ModuleDirectory.Analytics.Main = game:GetService("ServerScriptService").Analytics.AnalyticsMain
-
-ModuleDirectory.Materials = game:GetService("ServerScriptService").Resources.Materials
 
 -- Remote Handlers
 

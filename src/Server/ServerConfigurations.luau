@@ -11,11 +11,11 @@ return {
     --//====================================================
     --// Game / Round Core Settings
     --//====================================================
-    REQUIRED_PLAYERS = 1,              -- Players needed to start a round
-    PLAYERS_TO_END = 0,                -- Players left to trigger end
-    INTERMISSION_TIME = 5,             -- Time between rounds
-    PREPARING_TIME = 5,                -- Pre-round prep time
-    ROUND_TIME = 100,                   -- Normal round duration
+    REQUIRED_PLAYERS = 2,              -- Players needed to start a round
+    PLAYERS_TO_END = 1,                -- Players left to trigger end
+    INTERMISSION_TIME = 8,             -- Time between rounds
+    PREPARING_TIME = 8,                -- Pre-round prep time
+    ROUND_TIME = 80,                   -- Normal round duration
     MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
 
     --//====================================================
@@ -40,8 +40,13 @@ return {
     --//====================================================
     --// Sudden Death Settings
     --//====================================================
-    SUDDEN_DEATH_DELAY = 0.5,          -- Delay before sudden death starts
-    SUDDEN_DEATH_BLOCKS_CHOSEN = 5,    -- Blocks removed per sudden death tick
+    MIN_SUDDEN_DEATH_DELAY = 0.5,          -- Delay before sudden death starts
+    START_SUDDEN_DEATH_DELAY = 3,
+    SUDDEN_DEATH_DELAY_DECREASE = 0.2,
+    START_SUDDEN_DEATH_BLOCKS_CHOSEN = 5,    -- Blocks removed per sudden death tick
+    MAX_SUDDEN_DEATH_BLOCKS_CHOSEN = 30,
+    SUDDEN_DEATH_BLOCKS_CHOSEN_INCREASE = 3,
+
     SLOW_FALL_TIME = 2,                -- Time for blocks to fall slowly
 
     --//====================================================

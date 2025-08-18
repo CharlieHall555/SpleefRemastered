@@ -43,6 +43,11 @@ materials.snow = {
     color = Color3.fromRGB(221, 221, 221)
 }
 
+materials.ice = {
+    material = Enum.Material.Ice,
+    color = Color3.fromRGB(19, 181, 226)
+}
+
 materials.plastic_yellow = {
     material = Enum.Material.SmoothPlastic,
     color = Color3.new(0.839216, 0.729412, 0.113725)
