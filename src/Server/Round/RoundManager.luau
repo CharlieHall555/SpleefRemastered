@@ -19,6 +19,7 @@ local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
 local MapSaves = require(ModuleDirectory.Map.Saves)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local ServerStatus = require(ModuleDirectory.ServerStatus)
+local MapSelection = require(ModuleDirectory.Round.MapSelection)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -38,13 +39,11 @@ end
 local function onSuddenDeathTimerEnd()
 	SuddenDeath.start(currentMap)
 	RemoteEventHandler.FireOnAllClients("START_SUDDEN_DEATH")
-	print("startSuddenDeath")
 end
 
 local function onRoundStarting(currentRound: RoundSystem.Round)
-	print(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
-	currentMap = MapGenerator.generate(MapSaves.Grasslands	)
+	currentMap = MapGenerator.generate(MapSaves[MapSelection.getNextMap()])
 	task.wait(1)
 
 	for _, each in currentRound.startingPlayers do
@@ -78,11 +77,9 @@ local function onRoundEnding(currentRound)
 	BlockFactory.stopAllTweens()
 	if ServerStatus.get() == "OK" then
 		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
-		print(Winner)
 		Onboarding.action(Winner, "WON")
 		if Winner then
 			PlayerData.incrementWins(Winner, 1)
-			print(PlayerData.getWins(Winner))
 			Leaderstats.updateStat(Winner, "Wins", PlayerData.getWins(Winner))
 			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName)
 		else
@@ -98,7 +95,6 @@ local function onRoundEnding(currentRound)
 end
 
 local function onRoundIntermission(currentRound)
-	print("hi!")
 end
 
 function RoundManager.getCurrentMap(): {}?

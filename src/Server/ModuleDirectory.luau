@@ -20,6 +20,8 @@ ModuleDirectory.Round.RoundManager = game:GetService("ServerScriptService").Roun
 ModuleDirectory.Round.WinnerDetection = game:GetService("ServerScriptService").Round.WinnerDetection
 ModuleDirectory.Round.RoundSystem = game:GetService("ServerScriptService").Round.RoundSystem
 ModuleDirectory.Round.SuddenDeath = game:GetService("ServerScriptService").Round.SuddenDeath
+ModuleDirectory.Round.MapSelection = game:GetService("ServerScriptService").Round.MapSelection
+
 
 --//====================================================
 --// Throwable System

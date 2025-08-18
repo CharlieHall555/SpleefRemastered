@@ -6,6 +6,7 @@ export type Map = {
     OriginPosition: Vector3,
     Layers: { Layer.Layer },
     Count: number,
+    background : Model?,
 
     new: (originPosition: Vector3) -> Map,
     addLayer: (self: Map, Layer: Layer.Layer ) -> nil,
@@ -50,6 +51,9 @@ end
 
 
 function Map:Destroy()
+    if self.background then
+        self.background:Destroy()
+    end
     for _ , each in self.Layers do
         
         for _, blk in ipairs(table.clone(each.Blocks)) do

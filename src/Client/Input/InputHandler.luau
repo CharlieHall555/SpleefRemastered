@@ -74,7 +74,6 @@ end
 
 
 function InputHandler.queueInput(input: InputObject, data: any?)
-	print("start!")
 	inputStartTimes[input] = time()
 	table.insert(inputQueue, {
 		input = input,
@@ -84,7 +83,6 @@ function InputHandler.queueInput(input: InputObject, data: any?)
 end
 
 function InputHandler.queueEnd(input: EndAction, data: any?)
-	print("end!")
 	local endTime = time()
 	local length = endTime - (inputStartTimes[input] or endTime)
 	inputStartTimes[input] = nil
@@ -160,7 +158,6 @@ end
 
 
 function InputHandler.init()
-	print("init inputhandler")
 	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessed)
 		if gameProcessed then
 			return

@@ -1,5 +1,5 @@
 return {
-    background = "Background1",
+    background = "Icefields",
 	layerParams = {
 		-- Layer 1: Random "islands" style
 		{

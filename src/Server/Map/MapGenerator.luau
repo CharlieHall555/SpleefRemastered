@@ -28,7 +28,9 @@ function MapGenerator.generate(params : MapDataFactory.MapDataCreationParams) : 
 
     local MapData = MapDataFactory.create(params)
     print("generate complete.")
-    return MapBuilder.build(MapData)
+    local map = MapBuilder.build(MapData)
+    map.background = newBackground
+    return map
 
 end
 
