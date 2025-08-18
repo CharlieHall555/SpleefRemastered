@@ -11,7 +11,6 @@ local player = game.Players.LocalPlayer
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local mouse = player:GetMouse()
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
-local InGameHUD = require(ClientModuleDirectory.Gui.InGameHUD)
 local UserInputService
 
 local ActionHandler = {}
@@ -94,7 +93,7 @@ function ActionHandler.mainAttack(action)
 			if ClientAmmoTracker.getAmmo() <= 0 then
 				out_count += 1
 				if out_count >= 7 then
-					InGameHUD.showHint()
+					--InGameHUD.showHint()
 				end
 				
 				SoundPlayer.playSound("rbxassetid://9125655693")

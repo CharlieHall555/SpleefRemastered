@@ -18,11 +18,14 @@ ClientModuleDirectory.MiscBindings = Root.MiscBindings
 --//====================================================
 
 ClientModuleDirectory.Gui = {}
+ClientModuleDirectory.Gui.Screens = Root.Gui.Screens
 ClientModuleDirectory.Gui.InivteGUI = Root.Gui.Intermission.InviteGui
 ClientModuleDirectory.Gui.AlertSystem = Root.Gui.AlertSystem.AlertSystem
 ClientModuleDirectory.Gui.AlertSystemBindings = Root.Gui.AlertSystem.AlertSystemBindings
-ClientModuleDirectory.Gui.Intermission = Root.Gui.Intermission.Intermission
-ClientModuleDirectory.Gui.InGameHUD = Root.Gui.Active.InGameHUD
+ClientModuleDirectory.Gui.RoundStatus = Root.Gui.Active.Status
+ClientModuleDirectory.Gui.Ammo = Root.Gui.Active.Ammo
+ClientModuleDirectory.Gui.IntermissionStatus = Root.Gui.Intermission.Status
+
 ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
 ClientModuleDirectory.Gui.HowToPlay = Root.Gui.Intermission.HowToPlay
 ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon

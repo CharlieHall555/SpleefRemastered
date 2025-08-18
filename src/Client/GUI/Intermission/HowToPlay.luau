@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local GUIAssets = game:GetService("ReplicatedStorage").GUIAssets
+local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 local Debris = game:GetService("Debris")
 
 local HowToPlay = {}
@@ -13,7 +13,7 @@ function HowToPlay.onProfileLoaded()
 
     task.spawn(function()
         task.wait(0.5)
-        howToPlayGUI = GUIAssets:WaitForChild("HowToPlay")
+        howToPlayGUI = GuiAssets:WaitForChild("HowToPlay")
         if howToPlayGUI then
             howToPlayGUI.Parent = player.PlayerGui.General
 

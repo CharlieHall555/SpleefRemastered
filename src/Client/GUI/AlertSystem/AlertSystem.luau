@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local GUIAssets = game:GetService("ReplicatedStorage").GUIAssets
+local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 
 local AlertSystem = {}
 
@@ -14,7 +14,7 @@ local _alertQueue: { Frame }
 function AlertSystem.init()
 	_alertQueue = {}
 
-	_alertStackGui = GUIAssets:WaitForChild("AlertStackGui", 4)
+	_alertStackGui = GuiAssets:WaitForChild("AlertStackGui", 4)
 	assert(_alertStackGui, "AlertStackGui not found")
 
     _alertStackGui.Parent = player.PlayerGui:WaitForChild("General")

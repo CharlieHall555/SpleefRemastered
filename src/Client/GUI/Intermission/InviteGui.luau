@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Root = LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
-local GUIAssets = game:GetService("ReplicatedStorage").GUIAssets
+local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
@@ -63,7 +63,7 @@ end
 local function startUp()
 	canInvite = SocialService:CanSendCallInviteAsync(LocalPlayer)
 
-	InivteGUI = GUIAssets:WaitForChild("InviteFriend", 5)
+	InivteGUI = GuiAssets:WaitForChild("InviteFriend", 5)
 	if InivteGUI == nil then
 		error("Invite GUI Missing.")
 		return

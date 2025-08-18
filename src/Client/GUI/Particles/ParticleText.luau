@@ -50,7 +50,7 @@ end
 function ParticleText.onLoaded(): nil
     if didLoad == false then
         didLoad = true
-        particleTextTemplate = game:GetService("ReplicatedStorage").GUIAssets.Particles:WaitForChild("ParticleText") :: TextLabel
+        particleTextTemplate = game:GetService("ReplicatedStorage").GuiAssets.Particles:WaitForChild("ParticleText") :: TextLabel
         RunService.PreRender:Connect(ParticleText.mainLoop)
     end
 end

@@ -1,7 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local LocalPlayer = game.Players.LocalPlayer
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
-local GUIAssets = game:GetService("ReplicatedStorage").GUIAssets
+local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local TransitionFrame: Frame?
@@ -17,7 +17,7 @@ local current: Tween?
 local Transition = {}
 
 function Transition.onLoaded()
-	TransitionFrame = GUIAssets:WaitForChild("TransitionFrame", 6)
+	TransitionFrame = GuiAssets:WaitForChild("TransitionFrame", 6)
 	assert(TransitionFrame, "TransitionFrame Missing.")
 
 	TransitionFrame.Parent = LocalPlayer.PlayerGui.General

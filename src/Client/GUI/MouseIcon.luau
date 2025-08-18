@@ -88,7 +88,7 @@ end
 
 function MouseIcon.onLoaded() -- runs on program start
 	print("yy")
-	mouseTemplate = ReplicatedStorage:WaitForChild("GUIAssets"):WaitForChild("MouseTemplate") :: ImageLabel
+	mouseTemplate = ReplicatedStorage:WaitForChild("GuiAssets"):WaitForChild("MouseTemplate") :: ImageLabel
 	mouse = player:GetMouse() -- fix casing; kept for compatibility if you need it elsewhere
 end
 
