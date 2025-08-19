@@ -69,6 +69,8 @@ ClientModuleDirectory.Chat.ClientCommands = Root.Chat.SystemMessage
 --//====================================================
 
 ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
+ClientModuleDirectory.ParticlePlayer = Root.Visuals.ParticlePlayer
+ClientModuleDirectory.EmitterDefs = Root.ClientUtils.EmitterDefs
 
 --//====================================================
 --// Sound

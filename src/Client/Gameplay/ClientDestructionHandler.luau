@@ -3,6 +3,8 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local LocalPlayer = game.Players.LocalPlayer
+local ParticlePlayer = require(ClientModuleDirectory.ParticlePlayer)
+
 
 local REINSTATEMENT_THRESHOLD = 0.5
 
@@ -44,6 +46,7 @@ function ClientDestructionHandler.receiveDestroyedBlock(
     _awaitingConfirmation[blockId] = nil
     if player == LocalPlayer and method == "spade" then
 		--SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })
+		ParticlePlayer.queueEmission("PARTICLE_DESTROY_GRASS" , blockWorldPosition , 12)
 	elseif method == "snowball" then
 		SoundPlayer.queuePositionalSound("rbxassetid://9119310655", blockWorldPosition, { volume = 0.75  , playbackSpeed = 1.2})
     end
