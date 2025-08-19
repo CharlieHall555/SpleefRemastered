@@ -51,7 +51,7 @@ end
 
 function Block.new(blockConfig: BlockConfig?): Block
 	blockConfig = blockConfig or {}
-	local materialName = blockConfig.material or "sand"
+	local materialName = blockConfig.material or "grass"
 	local shape = blockConfig.Shape
 	local regenerates = blockConfig.Regenerates or false
 
@@ -82,6 +82,7 @@ function Block.new(blockConfig: BlockConfig?): Block
 	self.Part.Parent = game.Workspace.Blocks
 	self.Part:AddTag("Block")
 	self.Part:SetAttribute("Id", self.Id)
+	self.Part:SetAttribute("Type" , blockConfig.material)
 
 	-- config
 	self.Shape = shape

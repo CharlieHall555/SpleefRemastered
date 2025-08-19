@@ -1,6 +1,9 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
+local Root = game.Players.LocalPlayer.PlayerScripts
+local ClientModuleDirectory = require(Root.ClientModuleDirectory)
+local SystemChat = ClientModuleDirectory.Chat.SystemMessage
 
 local AlertSystem = {}
 

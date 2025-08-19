@@ -7,6 +7,9 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local ParticleText = require(ClientModuleDirectory.Gui.ParticleText)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService = game:GetService("UserInputService")
+local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
+
+
 
 local lastMousePos
 

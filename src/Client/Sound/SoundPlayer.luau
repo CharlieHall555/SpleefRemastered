@@ -21,11 +21,19 @@ local SoundPlayer = {}
 local activePlayers: { SpatialSoundPlayer } = {}
 local idlePlayers: { SpatialSoundPlayer } = {}
 local queuedSounds: { { soundId: string, position: Vector3 } } = {}
+local playingSounds : {[number] : Sound} = {}
 
+local counter = 0
 local isMuted = false
 
 function SoundPlayer.setInMuted(value: boolean): nil
 	isMuted = value
+
+	if isMuted == false then
+		for _ , eachSound : Sound in playingSounds do
+			eachSound:Stop()
+		end
+	end
 end
 
 function SoundPlayer.getIsMuted(): boolean
@@ -110,12 +118,24 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3 , o
 	end)
 end
 
-function SoundPlayer.playSound(soundId: string , options): nil
+function SoundPlayer.endSound(playerId : number): nil
+	-- always play immediately without pooling
+	local sound = playingSounds[playerId]
+	if sound then
+		sound:Stop()
+	end
+end
+
+function SoundPlayer.playSound(soundId: string , options): number
 	options = options or {}
 	-- always play immediately without pooling
 	local sound = Instance.new("Sound")
 	sound.Parent = SoundService
 	sound.Volume = options.volume or 0.5
+	sound.Looped = options.looped or false
+	sound:SetAttribute("playerId" , counter)
+	playingSounds[counter] = sound
+	counter += 1
 
 	if not soundId:match("^rbxassetid://") then
 		sound.SoundId = "rbxassetid://" .. soundId
@@ -129,7 +149,10 @@ function SoundPlayer.playSound(soundId: string , options): nil
 
 	sound.Ended:Connect(function()
 		sound:Destroy()
+		playingSounds[sound:GetAttribute("playerId")] = nil
 	end)
+
+	return sound
 end
 
 return SoundPlayer

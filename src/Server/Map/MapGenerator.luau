@@ -31,6 +31,7 @@ function MapGenerator.generate(params : MapDataFactory.MapDataCreationParams) : 
     print("generate complete.")
     local map = MapBuilder.build(MapData)
     map.background = newBackground
+    newBackground.Name = "background"
     LavaManager.setLava(newBackground:FindFirstChild("Lava"))
     return map
 

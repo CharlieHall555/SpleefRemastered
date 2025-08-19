@@ -20,6 +20,9 @@ function ClientDestructionHandler.predictBlockDestroy(block: Part)
 	end
 	block.Transparency = 1
 	SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", block.Position, { volume = 0.5 })
+	local blockType = block:GetAttribute("Type") or "grass"
+	ParticlePlayer.queueEmission(blockType , block.Position , 12)
+
 	_awaitingConfirmation[blockId] = block
 
 	task.delay(REINSTATEMENT_THRESHOLD, function()
@@ -46,8 +49,8 @@ function ClientDestructionHandler.receiveDestroyedBlock(
     _awaitingConfirmation[blockId] = nil
     if player == LocalPlayer and method == "spade" then
 		--SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })
-		ParticlePlayer.queueEmission("PARTICLE_DESTROY_GRASS" , blockWorldPosition , 12)
 	elseif method == "snowball" then
+		ParticlePlayer.queueEmission("PARTICLE_SNOWBALL" , blockWorldPosition + Vector3.new(0 , 3 , 0) , 12)
 		SoundPlayer.queuePositionalSound("rbxassetid://9119310655", blockWorldPosition, { volume = 0.75  , playbackSpeed = 1.2})
     end
 	

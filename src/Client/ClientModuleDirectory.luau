@@ -52,7 +52,6 @@ ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
-ClientModuleDirectory.ClientLavaManager = Root.Gameplay.ClientLavaManager
 
 
 
@@ -69,8 +68,15 @@ ClientModuleDirectory.Chat.ClientCommands = Root.Chat.SystemMessage
 --//====================================================
 
 ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
+
+
+--//====================================================
+--// Visuals
+--//====================================================
+
 ClientModuleDirectory.ParticlePlayer = Root.Visuals.ParticlePlayer
-ClientModuleDirectory.EmitterDefs = Root.ClientUtils.EmitterDefs
+ClientModuleDirectory.EmitterDefs = Root.Visuals.EmitterDefs
+ClientModuleDirectory.ClientLavaManager = Root.Visuals.ClientLavaManager
 
 --//====================================================
 --// Sound
