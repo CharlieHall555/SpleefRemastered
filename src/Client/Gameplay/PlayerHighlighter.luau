@@ -12,7 +12,7 @@ local highlights : {Highlight} = {}
 function PlayerHighlighter.init()
     highlightTemplate = game:GetService("ReplicatedStorage"):WaitForChild("HighlightTemplate")
 
-    RemoteEventHandler.newEventConnection("HIGHLIGHT_PLAYERS" , function(players)
+    RemoteEventHandler.newEventConnection("SEND_STARTING_PLAYERS" , function(players)
         print("HIGHLIGHT PLAYERS" , players)
         PlayerHighlighter.highlightPlayers(players)
     end)

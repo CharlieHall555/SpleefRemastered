@@ -7,6 +7,7 @@ local TextChatService = game:GetService("TextChatService")
 local ClientSnowballAnimator = require(ClientModuleDirectory.ClientSnowballAnimator)
 local HitboxManager = require(ClientModuleDirectory.HitBoxManager)
 local TapDebugView = require(ClientModuleDirectory.TapDebugView)
+local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
 
 local ClientCommands = {}
 
@@ -48,17 +49,29 @@ function ClientCommands.init()
     toggleSnowballAnimations.AutocompleteVisible = true
     toggleSnowballAnimations.Triggered:Connect(ClientSnowballAnimator.toggle)
 
-    local toggleSnowballAnimations = Instance.new("TextChatCommand" , commandsFolder)
-    toggleSnowballAnimations.Name = "toggleHitboxVisible"
-    toggleSnowballAnimations.PrimaryAlias = "/toggleHitboxVisible"
-    toggleSnowballAnimations.AutocompleteVisible = true
-    toggleSnowballAnimations.Triggered:Connect(toggleHitboxVisible)
+    local toggleHitboxVisibleC = Instance.new("TextChatCommand" , commandsFolder)
+    toggleHitboxVisibleC.Name = "toggleHitboxVisible"
+    toggleHitboxVisibleC.PrimaryAlias = "/toggleHitboxVisible"
+    toggleHitboxVisibleC.AutocompleteVisible = true
+    toggleHitboxVisibleC.Triggered:Connect(toggleHitboxVisible)
 
-     local toggleTapDebug = Instance.new("TextChatCommand" , commandsFolder)
+    local toggleTapDebug = Instance.new("TextChatCommand" , commandsFolder)
     toggleTapDebug.Name = "toggleTapDebug"
     toggleTapDebug.PrimaryAlias = "/toggleTapDebug"
     toggleTapDebug.AutocompleteVisible = true
     toggleTapDebug.Triggered:Connect(TapDebugView.toggle)
+
+    local toggleSpectate = Instance.new("TextChatCommand" , commandsFolder)
+    toggleSpectate.Name = "toggleSpectate"
+    toggleSpectate.PrimaryAlias = "/toggleSpectate"
+    toggleSpectate.AutocompleteVisible = true
+    toggleSpectate.Triggered:Connect(SpectateController.toggle)
+
+    local spectateNext = Instance.new("TextChatCommand" , commandsFolder)
+    spectateNext.Name = "spectateNext"
+    spectateNext.PrimaryAlias = "/spectateNext"
+    spectateNext.AutocompleteVisible = true
+    spectateNext.Triggered:Connect(SpectateController.nextIndex)
 
 end
 

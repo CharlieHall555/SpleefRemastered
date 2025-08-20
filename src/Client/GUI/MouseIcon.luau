@@ -104,4 +104,8 @@ function MouseIcon.reset()
 	clearCustomCursor()
 end
 
+function MouseIcon.hide()
+	UserInputService.MouseIconEnabled = false
+end
+
 return MouseIcon

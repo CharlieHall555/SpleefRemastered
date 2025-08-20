@@ -61,7 +61,7 @@ ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
 
 ClientModuleDirectory.Chat = {}
 ClientModuleDirectory.Chat.SystemMessage = Root.Chat.SystemMessage
-ClientModuleDirectory.Chat.ClientCommands = Root.Chat.SystemMessage
+ClientModuleDirectory.Chat.ClientCommands = Root.Chat.ClientCommands
 
 --//====================================================
 --// Client Utilities
@@ -69,6 +69,7 @@ ClientModuleDirectory.Chat.ClientCommands = Root.Chat.SystemMessage
 
 ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 
+ClientModuleDirectory.SpectateController = Root.Gameplay.Spectate.SpectateController
 
 --//====================================================
 --// Visuals
@@ -77,6 +78,11 @@ ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 ClientModuleDirectory.ParticlePlayer = Root.Visuals.ParticlePlayer
 ClientModuleDirectory.EmitterDefs = Root.Visuals.EmitterDefs
 ClientModuleDirectory.ClientLavaManager = Root.Visuals.ClientLavaManager
+
+ClientModuleDirectory.Spectate= {}
+ClientModuleDirectory.Spectate.Ghost = Root.Spectate.Ghost
+ClientModuleDirectory.Spectate.FreecamMode = Root.Spectate.FreecamMode
+ClientModuleDirectory.Spectate.Controller = Root.Spectate.SpectateController    
 
 --//====================================================
 --// Sound

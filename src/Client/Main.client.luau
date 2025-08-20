@@ -73,3 +73,7 @@ local SystemMessage = require(ClientModuleDirectory.Chat.SystemMessage)
 
 local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
 
+local Ghost = require(ClientModuleDirectory.Spectate.Ghost)
+
+
+local freecam = require(ClientModuleDirectory.Spectate.FreecamMode)

@@ -54,12 +54,11 @@ local function processInputs()
 					cb(action)
 				end
 			end
-		else
-			local handlers = startBindings[action.input.UserInputType]
-			if handlers then
-				for _, cb in pairs(handlers) do
-					cb(action)
-				end
+		end
+		local handlers = startBindings[action.input.UserInputType]
+		if handlers then
+			for _, cb in pairs(handlers) do
+				cb(action)
 			end
 		end
 	end

@@ -52,10 +52,10 @@ local function onRoundStarting(currentRound: RoundSystem.Round)
 end
 
 local function onRoundPreparing(currentRound)
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "HIGHLIGHT_PLAYERS", currentRound.startingPlayers)
+	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "SEND_STARTING_PLAYERS", currentRound.startingPlayers)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
 	AmmoManager.startRegenLoop()
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ACTIVE")
+	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "CHANGE_STATE", "ACTIVE")
 
 	for _, eachPlayer in PlayersInGame.getActivePlayers() do
 		local topLayer = currentMap:getTopLayer()
@@ -102,7 +102,7 @@ function RoundManager.getCurrentMap(): {}?
 end
 
 local function onRoundActive(currentRound)
-	ToolManager.giveTools(currentRound.startingPlayers)
+	ToolManager.giveTools(PlayersInGame.getActivePlayers())
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
 	AmmoPickupManager.start(currentMap)
 end
