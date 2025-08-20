@@ -22,12 +22,16 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local ProfileLoaded = false
 while ProfileLoaded == false do
-	ProfileLoaded = RemoteEventHandler.InvokeOnServer("QUERY_PROFILE_LOAD")
+	ProfileLoaded = RemoteEventHandler.InvokeOnServer("QUERY_PROFILE_LOAD" , 1)
 	print("profileload" , ProfileLoaded)
 	task.wait(0.1)
 end
 
 ClientLoader.profileLoaded()
+
+
+local ButtonUtilities = require(ClientModuleDirectory.Gui.ButtonUtilities)
+ButtonUtilities.parseRoot()
 
 pcall(function()
 	loadingScreen.removeEvent:Fire()

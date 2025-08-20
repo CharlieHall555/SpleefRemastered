@@ -12,7 +12,7 @@ local serverStateMappings = {
     STARTING = "Round Starting",
     WAITING = "Waiting for players",
     ENDING = "Round Ending",
-    PREPARING = "Round Active",
+    PREPARING = "Preparing",
     ACTIVE = "Round Active"
 }
 
@@ -33,6 +33,26 @@ function StatusGui.onProfileLoaded()
     RemoteEventHandler.newEventConnection("INTERMISSION_TIMER_CHANGED" , function(newValue)
         
         if ClientStateTracker.getState() == "INTERMISSION" then
+            
+            Status.Timer.Text = math.max(math.floor(newValue) , 0)
+
+        end
+
+    end)
+
+    RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED" , function(newValue)
+        
+        if ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "PREPARING" then
+            
+            Status.Timer.Text = math.max(math.floor(newValue) , 0)
+
+        end
+
+    end)
+
+    RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED" , function(newValue)
+        
+        if ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "ACTIVE" then
             
             Status.Timer.Text = math.max(math.floor(newValue) , 0)
 

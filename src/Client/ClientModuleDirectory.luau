@@ -25,11 +25,16 @@ ClientModuleDirectory.Gui.AlertSystemBindings = Root.Gui.AlertSystem.AlertSystem
 ClientModuleDirectory.Gui.RoundStatus = Root.Gui.Active.Status
 ClientModuleDirectory.Gui.Ammo = Root.Gui.Active.Ammo
 ClientModuleDirectory.Gui.IntermissionStatus = Root.Gui.Intermission.Status
+ClientModuleDirectory.Gui.ButtonUtilities = Root.Gui.ButtonUtilities
+
+ClientModuleDirectory.Gui.PCSettingsWidget = Root.Gui.Settings.PCSettingsWidget
 
 ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
 ClientModuleDirectory.Gui.HowToPlay = Root.Gui.Intermission.HowToPlay
 ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
+
+ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 
 --//====================================================
 --// Input Handler

@@ -1,3 +1,6 @@
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+
 local PlayersInGame = {}
 PlayersInGame.__index = PlayersInGame
 
@@ -67,6 +70,12 @@ function PlayersInGame.init()
     game.Players.PlayerRemoving:Connect(function(player : Player)
         
         PlayersInGame.removePlayer(player)
+
+    end)
+
+    RemoteEventHandler.newEventConnection("QUERY_ALIVE" , function(player)
+        
+        return PlayersInGame.getActivePlayers()
 
     end)
     

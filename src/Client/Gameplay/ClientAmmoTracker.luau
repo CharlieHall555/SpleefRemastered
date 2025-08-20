@@ -96,7 +96,7 @@ local function ensureHeartbeat()
 end
 
 function ClientAmmoTracker.init(): nil
-	AMMO_REGEN_INTERVAL = RemoteEventHandler.InvokeOnServer("QUERY_AMMO_REGEN_INTERVAL") or 2
+	AMMO_REGEN_INTERVAL = RemoteEventHandler.InvokeOnServer("QUERY_AMMO_REGEN_INTERVAL" , 2) or 2
 	emitProgressIfChanged()
 	ensureHeartbeat()
 

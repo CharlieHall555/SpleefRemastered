@@ -4,6 +4,8 @@ local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local GUISpectateControls = require(ClientModuleDirectory.Gui.SpectateControls)
+local LocalPlayer = Players.LocalPlayer
 
 local SpectateController = {}
 
@@ -15,6 +17,26 @@ local currentIndex: number? = nil
 local currentTarget: Player? = nil
 local camera: Camera? = nil
 local charDestroyedConnection: RBXScriptConnection? = nil
+
+local function setUpGuiConnections()
+    
+    GUISpectateControls.connectOnExit(function()
+        SpectateController.exit()
+    end)
+
+    GUISpectateControls.connectOnBack(function()
+        SpectateController.previousIndex()
+    end)
+
+    GUISpectateControls.connectOnNext(function()
+        SpectateController.nextIndex()
+    end)
+
+    GUISpectateControls.connectOnCelebrate(function()
+        SpectateController.exit()
+    end)
+
+end
 
 local function bindIndex(index: number, list: {})
     local n = #list
@@ -35,8 +57,7 @@ local function setCameraToLocal()
     if not camera then
         return
     end
-    local lp = Players.LocalPlayer
-    local char = lp.Character or lp.CharacterAdded:Wait()
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
     local hum = char:FindFirstChildOfClass("Humanoid")
     camera.CameraType = Enum.CameraType.Custom
     if hum then
@@ -72,6 +93,7 @@ local function setTarget(player: Player): boolean
 
     camera.CameraType = Enum.CameraType.Follow
     camera.CameraSubject = hum
+    GUISpectateControls.setPlayerSpectating(player.Name)
 
     currentTarget = player
     return true
@@ -116,7 +138,7 @@ local function removePlayer(player: Player)
 end
 
 local function canEnterSpecate(): boolean
-    return ClientStateTracker.getServerState() == "ACTIVE" and ClientStateTracker.getState() == "INTERMISSION"
+    return (ClientStateTracker.getServerState() == "ACTIVE" or ClientStateTracker.getServerState() == "PREPARING") and ClientStateTracker.getState() == "INTERMISSION"
 end
 
 local function setUpHardExits()
@@ -134,6 +156,10 @@ local function setUpHardExits()
             SpectateController.exit()
         end
     end)
+
+    LocalPlayer.CharacterAdded:Connect(function(character)
+        SpectateController.exit()
+    end)
 end
 
 function SpectateController.onLoaded()
@@ -148,27 +174,30 @@ function SpectateController.onLoaded()
     RemoteEventHandler.newEventConnection("PLAYER_DIED", function(player: Player)
         removePlayer(player)
     end)
+
+    setUpGuiConnections()
 end
 
 function SpectateController.enter(): nil
-	print("enter")
     if enabled then
-		print("already enabled")
         return
     end
 
     if not canEnterSpecate() then
-		print("cannot enter spectate")
+        return
+    end
+
+    if #playersAlive == 0 then
+        playersAlive = RemoteEventHandler.InvokeOnServer("QUERY_ALIVE" , 2)
+    end
+
+    if #playersAlive == 0 then
+		print("no players alive")
         return
     end
 
     enabled = true
-
-    if #playersAlive == 0 then
-        enabled = false
-		print("no players alive")
-        return
-    end
+    GUISpectateControls.show()
 
     currentIndex = currentIndex or 1
     currentIndex = bindIndex(currentIndex, playersAlive)
@@ -198,6 +227,7 @@ function SpectateController.exit(): nil
     end
 
     enabled = false
+    GUISpectateControls.hide()
     clearCharConn()
     currentTarget = nil
     currentIndex = nil

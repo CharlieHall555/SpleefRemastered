@@ -1,3 +1,5 @@
+return {} --[[
+
 local TweenService = game:GetService("TweenService")
 
 type TweenRecord = {
@@ -257,4 +259,4 @@ function ClientSnowballAnimator.toggle(enabled: boolean?)
     end
 end
 
-return ClientSnowballAnimator
+return ClientSnowballAnimator]]

@@ -1,3 +1,5 @@
+--potential bug with double fireing of cached events?
+
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -73,12 +75,39 @@ function RemoteEventHandler.FireOnServer(eventName: string, ...): nil
 	ASynchronousBridge:FireServer(eventName, args)
 end
 
-function RemoteEventHandler.InvokeOnServer(eventName: string, ...): ...any
+function RemoteEventHandler.InvokeOnServer(eventName: string, timeout: number?, ...): ...any
 	if IsServer then
 		error("Failed to invoke: " .. eventName .. ". Cannot call InvokeOnServer on server.")
 	end
+
+	timeout = timeout or 5 -- default 5s
 	local args = { ... }
-	return SynchronousBridge:InvokeServer(eventName, args)
+
+	local remoteFunction = SynchronousBridge
+
+	local result
+	local done = false
+
+	task.spawn(function()
+		local success, response = pcall(function()
+			return remoteFunction:InvokeServer(eventName, args)
+		end)
+		if success then
+			result = response
+		end
+		done = true
+	end)
+
+	local start = os.clock()
+	while not done and os.clock() - start < timeout do
+		task.wait()
+	end
+
+	if not done then
+		return nil
+	end
+
+	return result
 end
 
 function RemoteEventHandler.init(): nil

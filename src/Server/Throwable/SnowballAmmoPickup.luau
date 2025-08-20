@@ -114,6 +114,8 @@ function SnowballAmmoPickup.remove(id: number): nil
     pickup.part:RemoveTag("SNOWBALL_AMMO")
     pickup.part:SetAttribute("Increment" , nil)
     pickup.part:SetAttribute("Id" , nil)
+    pickup.part.Transparency = 1
+    pickup.part.Position = Vector3.new(0 , 10000 , 0)
     PartPool.add(pickup.part)
     Loaded[id] = nil
 

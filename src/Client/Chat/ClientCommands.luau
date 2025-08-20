@@ -47,7 +47,7 @@ function ClientCommands.init()
     toggleSnowballAnimations.Name = "toggleSnowballAnim"
     toggleSnowballAnimations.PrimaryAlias = "/toggleSnowballAnims"
     toggleSnowballAnimations.AutocompleteVisible = true
-    toggleSnowballAnimations.Triggered:Connect(ClientSnowballAnimator.toggle)
+    --toggleSnowballAnimations.Triggered:Connect(ClientSnowballAnimator.toggle)
 
     local toggleHitboxVisibleC = Instance.new("TextChatCommand" , commandsFolder)
     toggleHitboxVisibleC.Name = "toggleHitboxVisible"

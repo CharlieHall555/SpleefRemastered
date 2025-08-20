@@ -13,7 +13,7 @@ function ValueGetter.init(): nil
 	EventHandler.newEventConnection("UpdateValue", ValueGetter.setValue)
 
 	ClientEventHandler.newEventConnection("ClientLoaded", function()
-		local SharedJson, ValuesJson = EventHandler.InvokeOnServer("GetStartingValues")
+		local SharedJson, ValuesJson = EventHandler.InvokeOnServer("GetStartingValues" , 3)
 		local SharedValues = HTTPService:JSONDecode(SharedJson)
 
 		ValueTable = HTTPService:JSONDecode(ValuesJson)
@@ -34,7 +34,7 @@ end
 
 function ValueGetter.refreshValue(ValueName: string): nil
 	local CurrentValue = ValueTable[ValueName]
-	local RefreshValue = EventHandler.InvokeOnServer("RefreshValue")
+	local RefreshValue = EventHandler.InvokeOnServer("RefreshValue" , 3)
 
 	if CurrentValue ~= RefreshValue then
 		ValueGetter.setValue(ValueName, RefreshValue)

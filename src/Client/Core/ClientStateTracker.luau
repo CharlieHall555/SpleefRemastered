@@ -46,6 +46,12 @@ function ClientStateTracker.init(): nil
 	ClientStateTracker.changeState("INTERMISSION")
 	RemoteEventHandler.newEventConnection("CHANGE_STATE", ClientStateTracker.receivedStateChange)
 	RemoteEventHandler.newEventConnection("SEND_SERVER_STATE", ClientStateTracker.setServerState)
+
+	local gotState = RemoteEventHandler.InvokeOnServer("QUERY_SERVER_STATE" , 2)
+	if gotState and serverState == nil then
+		ClientStateTracker.setServerState(gotState)
+	end
+
 end
 
 function ClientStateTracker.receivedStateChange(newState: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION"): nil

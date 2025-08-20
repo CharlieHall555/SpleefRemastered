@@ -50,6 +50,10 @@ function ActionHandler.canAttack(action)
 		return false
 	end
 
+	if ClientStateTracker.getServerState() ~= "ACTIVE" then
+		return false
+	end
+
 	if not character:FindFirstChild("Shovel") then
 		return false
 	end

@@ -71,7 +71,7 @@ end
 local function onRoundEnding(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
-	ToolManager.reset()
+	--ToolManager.reset()
 	AmmoPickupManager.cleanup()
 	AmmoManager.reset()
 	BlockFactory.stopAllTweens()
@@ -102,7 +102,7 @@ function RoundManager.getCurrentMap(): {}?
 end
 
 local function onRoundActive(currentRound)
-	ToolManager.giveTools(PlayersInGame.getActivePlayers())
+	--ToolManager.giveTools(PlayersInGame.getActivePlayers())
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
 	AmmoPickupManager.start(currentMap)
 end
@@ -120,6 +120,10 @@ function RoundManager.init(): nil
 	RoundSystem.connectActive(onRoundActive)
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
+
+	RemoteEventHandler.newEventConnection("QUERY_SERVER_STATE" , function(player)
+		return RoundSystem.getState()
+	end)
 end
 
 function RoundManager.onPlayerDeath(playerWhoDied: Player)
