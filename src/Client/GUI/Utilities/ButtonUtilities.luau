@@ -4,6 +4,17 @@ local PlayerGui = game.Players.LocalPlayer.PlayerGui
 
 
 local ButtonUtilities = {}
+ 
+function ButtonUtilities.setGreyed(buttonRoot : Frame , value : boolean)
+
+    local greyScreen = buttonRoot:FindFirstChild("GreyScreen")
+    if greyScreen then
+        greyScreen.Visible = value
+    else
+        print("no grey screen")
+    end
+    
+end
 
 function ButtonUtilities.setUpButton(buttonRoot : Frame)
 
@@ -42,7 +53,8 @@ function ButtonUtilities.parseRoot()
 
     end
 
-
 end
+
+
 
 return ButtonUtilities

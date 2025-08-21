@@ -6,9 +6,13 @@ local PlatformDetector = {}
 
 function PlatformDetector.init()
     local UserInputService = game:GetService("UserInputService")
+    local RunService = game:GetService("RunService")
+
 
 
     if UserInputService.TouchEnabled and UserInputService.KeyboardEnabled == false then
+        platform = "MOBILE"
+    elseif UserInputService.TouchEnabled and RunService:IsStudio() then
         platform = "MOBILE"
     elseif UserInputService.GamepadEnabled == true and UserInputService.MouseEnabled == false and UserInputService.KeyboardEnabled == true then
         platform = "CONSOLE"

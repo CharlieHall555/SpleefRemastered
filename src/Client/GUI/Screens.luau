@@ -11,6 +11,7 @@ local Screens = {}
 Screens.general = nil
 Screens.gameHUD = nil
 Screens.intermissionHUD = nil
+Screens.touchControls = nil
 
 function Screens.init()
 
@@ -19,6 +20,7 @@ function Screens.init()
     Screens.general = playerGui:WaitForChild("General")
     Screens.gameHUD = playerGui:WaitForChild("InGameHud")
     Screens.intermissionHUD = playerGui:WaitForChild("IntermissionHud")
+    Screens.touchControls = playerGui:WaitForChild("CustomTouchControls")
 
     Screens.gameHUD.Enabled = (ClientStateTracker.getState() == "ACTIVE")
     Screens.intermissionHUD.Enabled = not Screens.gameHUD.Enabled

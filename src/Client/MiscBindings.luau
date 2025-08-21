@@ -8,6 +8,10 @@ local ParticleText = require(ClientModuleDirectory.Gui.ParticleText)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService = game:GetService("UserInputService")
 local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local lastMousePos
 
@@ -39,6 +43,26 @@ function MiscBindings.init()
 
 			ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), lastMousePos, opts)
 		end
+	end)
+
+	ClientStateTracker.connectActive(function()
+		
+		if PlatformDetector.getPlatform() == "MOBILE" then
+			
+			MobileCamera.enable()
+
+		end
+
+	end)
+
+	ClientStateTracker.connectIntermission(function()
+		
+		if PlatformDetector.getPlatform() == "MOBILE" then
+			
+			MobileCamera.disable()
+
+		end
+
 	end)
 end
 

@@ -8,8 +8,10 @@ local localPlayer = game.Players.LocalPlayer
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 
-local AmmoGui
+local AmmoGui : Frame?
 
 function Ammo.onProfileLoaded()
 	AmmoGui = GuiAssets:WaitForChild("InGame"):WaitForChild("Ammo")
@@ -29,17 +31,19 @@ function Ammo.onProfileLoaded()
 		end
 	end)
 
-    ClientAmmoTracker.setOnRegenProgressChanged(function(newProgress , maxProgress)
-		AmmoGui.Regen.Fillable.Size = UDim2.fromScale(newProgress / maxProgress , 1) 
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		
+		AmmoGui.AnchorPoint = Vector2.new(AmmoGui.AnchorPoint.X , 1)
+		local touchButtonsGui = TouchButtons.getGui()
+		
+		local yScale = touchButtonsGui.Position.Y.Scale - touchButtonsGui.Size.Y.Scale
 
-        if AmmoGui.Regen.Fillable.Size.X.Scale <= 0.01 then
-            AmmoGui.Regen.Fillable.UIStroke.Enabled = false
-        else
-            AmmoGui.Regen.Fillable.UIStroke.Enabled = true
-        end
-	end)
+		print("yscale" , yScale)
 
-	
+		AmmoGui.Position = UDim2.new(UDim.new(1 , -20) , UDim.new(yScale , 0))
+
+	end
+
 end
 
 

@@ -26,13 +26,6 @@ end
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 UserProfile.loadProfile()
 ClientLoader.profileLoaded()
-print("wins" , UserProfile.getValue("wins"))
-
-UserProfile.setOnUpdateCallback(function(valueName, newValue)
-	
-	print("wins" , valueName , newValue)
-
-end , "wins")
 
 local ButtonUtilities = require(ClientModuleDirectory.Gui.ButtonUtilities)
 ButtonUtilities.parseRoot()
@@ -87,3 +80,4 @@ local freecam = require(ClientModuleDirectory.Spectate.FreecamMode)
 
 local cheerEffect = require(ClientModuleDirectory.CheerEffect)
 
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)

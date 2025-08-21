@@ -6,6 +6,8 @@ local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local StarterGui = game:GetService("StarterGui")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+local CelebrationTracker = require(ClientModuleDirectory.Spectate.CelebrationTracker)
+local ButtonUtilities = require(ClientModuleDirectory.Gui.ButtonUtilities)
 
 local SpectateGui: Frame
 
@@ -45,7 +47,7 @@ function Controls.onProfileLoaded()
 	playerName = SpectateGui.SpectatingPlayer.Label
 
 	celebrateButton.Activated:Connect(function(inputObject, clickCount)
-		if onCelebrate and canClick() then
+		if onCelebrate and canClick() and CelebrationTracker.hasCelebrated() == false then
 			lastClicked = tick()
 			onCelebrate()
 		end
@@ -74,6 +76,20 @@ function Controls.onProfileLoaded()
 			onExit()
 		end
 	end)
+
+	ClientStateTracker.connectServerStateChange(function(newState : string)
+		
+		if newState == "STARTING" then
+			ButtonUtilities.setGreyed(celebrateButton.Parent , false)
+		end
+
+	end)
+
+	CelebrationTracker.setOnCelebrate(function()
+		ButtonUtilities.setGreyed(celebrateButton.Parent , true)
+	end)
+		
+
 end
 
 function Controls.setPlayerSpectating(name: string)

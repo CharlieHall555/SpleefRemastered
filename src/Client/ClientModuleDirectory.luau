@@ -25,8 +25,14 @@ ClientModuleDirectory.Gui.AlertSystemBindings = Root.Gui.AlertSystem.AlertSystem
 ClientModuleDirectory.Gui.RoundStatus = Root.Gui.Active.Status
 ClientModuleDirectory.Gui.Ammo = Root.Gui.Active.Ammo
 ClientModuleDirectory.Gui.IntermissionStatus = Root.Gui.Intermission.Status
-ClientModuleDirectory.Gui.ButtonUtilities = Root.Gui.ButtonUtilities
+ClientModuleDirectory.Gui.ButtonUtilities = Root.Gui.Utilities.ButtonUtilities
+ClientModuleDirectory.Gui.ToolBarUtilities = Root.Gui.Utilities.ToolBarUtilities
+ClientModuleDirectory.Gui.ScaleUtilities = Root.Gui.Utilities.ScaleUtilities
+ClientModuleDirectory.Gui.SpectateButton = Root.Gui.Spectate.SpectateButton
 
+ClientModuleDirectory.Gui.TouchButtons = Root.Gui.Input.TouchButtons
+
+ClientModuleDirectory.Gui.CrossHair = Root.Gui.Input.CrossHair
 ClientModuleDirectory.Gui.PCSettingsWidget = Root.Gui.Settings.PCSettingsWidget
 
 ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
@@ -43,6 +49,9 @@ ClientModuleDirectory.Input = {}
 ClientModuleDirectory.Input.InputHandler = Root.Input.InputHandler
 ClientModuleDirectory.Input.ActionHandler = Root.Input.ActionHandler
 ClientModuleDirectory.Input.PlatformDetector = Root.Input.PlatformDetector
+ClientModuleDirectory.Input.MobileCamera = Root.Input.MobileCamera
+ClientModuleDirectory.Input.MobileCameraMovement = Root.Input.MobileCameraMovement
+ClientModuleDirectory.Input.MobileControls = Root.Input.MobileControls
 
 --//====================================================
 --// Gameplay
@@ -79,7 +88,7 @@ ClientModuleDirectory.Chat.ClientCommands = Root.Chat.ClientCommands
 
 ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 
-ClientModuleDirectory.SpectateController = Root.Gameplay.Spectate.SpectateController
+
 
 --//====================================================
 --// Visuals
@@ -93,7 +102,8 @@ ClientModuleDirectory.CheerEffect = Root.Visuals.CheerEffect
 ClientModuleDirectory.Spectate= {}
 ClientModuleDirectory.Spectate.Ghost = Root.Spectate.Ghost
 ClientModuleDirectory.Spectate.FreecamMode = Root.Spectate.FreecamMode
-ClientModuleDirectory.Spectate.Controller = Root.Spectate.SpectateController    
+ClientModuleDirectory.Spectate.Controller = Root.Spectate.SpectateController
+ClientModuleDirectory.Spectate.CelebrationTracker = Root.Spectate.CelebrationTracker
 
 --//====================================================
 --// Sound

@@ -13,15 +13,19 @@ local mouse = player:GetMouse()
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService
 
+local camera : Camera? = nil
+
 local ActionHandler = {}
 
 function ActionHandler.init()
 	local binding1 = InputHandler.bindActionStart(Enum.UserInputType.MouseButton1, ActionHandler.mainAttack)
-	local binding2 = InputHandler.bindActionEnd(Enum.UserInputType.Touch, ActionHandler.mainAttack)
+	--local binding2 = InputHandler.bindActionEnd(Enum.UserInputType.Touch, ActionHandler.mainAttack)
 end
 
 local lastClickTime = 0
 local HIT_COOLDOWN = 0.1
+local RAY_MAX = 1000
+
 local out_count = 0
 
 local rayParams = RaycastParams.new()
@@ -29,8 +33,14 @@ rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true
 rayParams.CollisionGroup = "CG_BLOCK_SELECTION"
 
-function ActionHandler.canAttack(action)
-	local data = action.data
+local function ensureCamera(): Camera?
+    if not camera or camera.Parent == nil then
+        camera = workspace.CurrentCamera
+    end
+    return camera
+end
+
+function ActionHandler.canAttack()
 
 	if tick() - lastClickTime < HIT_COOLDOWN then
 		return false
@@ -61,32 +71,46 @@ function ActionHandler.canAttack(action)
 	return true
 end
 
-function ActionHandler.getSelected(action)
-	if PlatformDetector.getPlatform() == "PC" then
-		return ClientBlockSelector.getSelected()
-	else
-		local tapPosition = Vector2.new(action.input.Position.X, action.input.Position.Y)
-		return ClientBlockSelector.getMobileSelected(tapPosition)
+function ActionHandler.getDirection(_action, headPart: Part): Vector3
+	local cam = ensureCamera()
+	if not cam then
+		return Vector3.new(0, 0, -1)
 	end
-end
 
-function ActionHandler.getDirection(action, headPart: Part)
+	local aimPoint: Vector3?
+
 	if PlatformDetector.getPlatform() == "PC" then
-		return (mouse.Hit.Position - headPart.Position).Unit
-	elseif PlatformDetector.getPlatform() == "MOBILE" then
-		local tapPos = Vector2.new(action.input.Position.X, action.input.Position.Y)
-		local unitRay = game.Workspace.CurrentCamera:ViewportPointToRay(tapPos.X, tapPos.Y)
-		local targetPos = unitRay.Origin + unitRay.Direction * 1000
-		return (targetPos - headPart.Position).Unit
+		if mouse and mouse.Hit then
+			aimPoint = mouse.Hit.Position
+		end
 	end
+
+	if not aimPoint then
+		-- Use center-screen ray (works for MOBILE and PC fallback)
+		local viewport = cam.ViewportSize
+		local center = viewport * 0.5
+		local unitRay = cam:ViewportPointToRay(center.X, center.Y)
+		local result = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
+		if result then
+			aimPoint = result.Position
+		else
+			aimPoint = unitRay.Origin + unitRay.Direction * RAY_MAX
+		end
+	end
+
+	local fromHead = (aimPoint - headPart.Position)
+	if fromHead.Magnitude <= 1e-6 then
+		return cam.CFrame.LookVector.Unit
+	end
+	return fromHead.Unit
 end
 
 function ActionHandler.mainAttack(action)
-	if ActionHandler.canAttack(action) then
+	if ActionHandler.canAttack() then
 		local character = player.Character
 		local headPart = character:FindFirstChild("Head")
 
-		local selectedBlock = ActionHandler.getSelected(action)
+		local selectedBlock =ClientBlockSelector.getSelected()
 
 		if selectedBlock then -- destroy with spade
 			local id = selectedBlock:GetAttribute("Id")
