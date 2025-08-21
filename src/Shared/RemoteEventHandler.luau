@@ -133,7 +133,7 @@ function RemoteEventHandler.init(): nil
 
 		SynchronousBridge.OnServerInvoke = function(player, eventName, args)
 			local connections = EventConnectionsCache[eventName]
-			assert(connections, "Synchronous connection by name not set up for " .. eventName)
+			assert(connections, "Synchronous connection by name not set up for " .. (tostring(eventName) or "NIL"))
 			local results = {}
 			for _, fn in pairs(connections) do
 				
@@ -151,7 +151,8 @@ function RemoteEventHandler.init(): nil
 		ASynchronousBridge.OnClientEvent:Connect(function(eventName, args)
 			local connections = EventConnectionsCache[eventName]
 			if not connections then
-				warn("No event function set up for " .. eventName)
+				print(eventName)
+				warn("No event function set up for " .. (tostring(eventName) or "NIL"))
 				if not MissedEventCache[eventName] then
 					MissedEventCache[eventName] = {}
 				end

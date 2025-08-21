@@ -3,6 +3,8 @@ local PartPool = require(ModuleDirectory.PartPool)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
+
+
 export type SnowBallPickup = {
     part: Part,
     position: Vector3,
@@ -10,9 +12,10 @@ export type SnowBallPickup = {
     id: number
 }
 
-local Loaded: { [number]: SnowBallPickup } = {}
-
 local SnowballAmmoPickup = {}
+
+local Loaded: { [number]: SnowBallPickup } = {}
+local snowballAmmoTemplate : Model 
 
 local _container: Folder? = nil
 local _nextId = 0
@@ -39,26 +42,6 @@ local function _ensureContainer(): Folder
     return _container
 end
 
-local function _createPart(id : number): Part
-    local part = PartPool.take()
-    if not part then
-        part = Instance.new("Part")
-    end
-
-    part.Name = "SnowballPickup"
-    part.Anchored = true
-    part.CanCollide = false
-    part.CanQuery = true
-    part.CanTouch = true
-    part.CastShadow = false
-    part.Size = Vector3.new(2, 2, 2)
-    part.Material = Enum.Material.Snow
-    part.Shape = Enum.PartType.Ball
-    part.Color = Color3.fromRGB(255, 255, 255)
-    part.Transparency = 0
-
-    return part
-end
 
 function SnowballAmmoPickup.reset() : nil
 
@@ -70,6 +53,7 @@ end
 
 function SnowballAmmoPickup.init(): nil
     _ensureContainer()
+    snowballAmmoTemplate = game:GetService("ReplicatedStorage"):WaitForChild("Resources"):WaitForChild("AmmoTemplate")
     table.clear(Loaded)
 end
 
@@ -77,8 +61,7 @@ function SnowballAmmoPickup.new(spawnPosition: Vector3): number
     local container = _ensureContainer()
     local id = _newId()
 
-    local part = _createPart(id)
-
+    local part = snowballAmmoTemplate:Clone()
     part.CFrame = CFrame.new(spawnPosition)
     local increment = Config.AMMO_PICKUP_VALUE or 1
     part:AddTag("SNOWBALL_AMMO")
@@ -111,12 +94,7 @@ function SnowballAmmoPickup.remove(id: number): nil
     if pickup.part and pickup.part.Parent then
         pickup.part.Parent = nil
     end
-    pickup.part:RemoveTag("SNOWBALL_AMMO")
-    pickup.part:SetAttribute("Increment" , nil)
-    pickup.part:SetAttribute("Id" , nil)
-    pickup.part.Transparency = 1
-    pickup.part.Position = Vector3.new(0 , 10000 , 0)
-    PartPool.add(pickup.part)
+    pickup.part:Destroy()
     Loaded[id] = nil
 
 end

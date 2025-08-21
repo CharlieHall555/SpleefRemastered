@@ -9,72 +9,93 @@ export type ParticleText = {
     Speed: Vector2,
     Gravity: number?,
     init: (self: ParticleText) -> nil,
-    new: (parentView: GuiObject, text: number, origin: Vector2, speed: Vector2, gravity: number?, size: UDim2?, lifeTime: number?) -> ParticleText,
+    new: (parent: GuiObject, text: string, origin: Vector2, opts: ParticleTextOptions?) -> ParticleText,
     loop: (self: ParticleText, dt: number) -> nil,
     Destroy: (self: ParticleText) -> nil
 }
 
+export type ParticleTextOptions = {
+    color: Color3?,
+    image: string?,
+    speed: Vector2?,
+    gravity: number?,
+    size: UDim2?,
+    lifeTime: number?
+}
+
 local ParticleText = {}
 ParticleText.__index = ParticleText
+
 --//====================================================
 --// Imports / Services
 --//====================================================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local LocalPlayer = Players.LocalPlayer
+
 --//====================================================
 --// Local Variables / Constants
 --//====================================================
 local didLoad = false
-
 local TEXT_GRAVITY = -0.05
 local DEFAULT_TEXT_LIFETIME = 1.5
+local DEFAULT_COLOR = Color3.fromRGB(255, 255, 255)
 
 local particleTextTemplate: TextLabel
 local counter = 0
+local loadedParticleText: { [number]: ParticleText } = {}
 
-local loadedParticleText = {}
 --//====================================================
 --// Local Function
 --//====================================================
 
-function ParticleText.mainLoop(dt) : nil
-    
-    for _ , each in loadedParticleText do
+function ParticleText.mainLoop(dt: number)
+    for _, each in loadedParticleText do
         each:loop(dt)
     end
-
 end
 
 function ParticleText.onLoaded(): nil
-    if didLoad == false then
+    if not didLoad then
         didLoad = true
         particleTextTemplate = game:GetService("ReplicatedStorage").GuiAssets.Particles:WaitForChild("ParticleText") :: TextLabel
         RunService.PreRender:Connect(ParticleText.mainLoop)
     end
 end
 
-function ParticleText.new(parentView: GuiObject, text: string , Image : string, origin: Vector2, speed: Vector2, gravity: number?, size: UDim2?, lifeTime: number?): ParticleText
-    local newParticleText = {}
-    setmetatable(newParticleText, ParticleText)
+function ParticleText.new(parent: GuiObject, text: string, origin: Vector2, opts: ParticleTextOptions?): ParticleText
+    local newParticleText = setmetatable({}, ParticleText)
 
-    newParticleText.Id = counter
     counter += 1
+    newParticleText.Id = counter
 
-    local textLifeTime = lifeTime or DEFAULT_TEXT_LIFETIME
-    local fadeDelay = 0.25 * textLifeTime
-    local fadeInfo = TweenInfo.new(textLifeTime - fadeDelay, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, fadeDelay)
+    local options = opts or {}
+    local lifeTime = options.lifeTime or DEFAULT_TEXT_LIFETIME
+    local gravity = options.gravity or TEXT_GRAVITY
+    local speed = options.speed or Vector2.new(0, 50) -- default gentle upward drift
+    local color = options.color or DEFAULT_COLOR
+    local image = options.image or ""
+    local size = options.size
+
+    newParticleText.SpawnTime = time()
+    newParticleText.DestroyTime = newParticleText.SpawnTime + lifeTime
+    newParticleText.Speed = speed
+    newParticleText.Gravity = gravity
 
     newParticleText.Root = particleTextTemplate:Clone()
-    newParticleText.Root.Parent = parentView
-    newParticleText.Root.Text = tostring(text)
-    newParticleText.SpawnTime = time()
-    newParticleText.DestroyTime = newParticleText.SpawnTime + textLifeTime
-    newParticleText.Speed = speed
+    newParticleText.Root.Parent = parent
+    newParticleText.Root.Text = text
     newParticleText.Root.Position = UDim2.fromOffset(origin.X, origin.Y)
-    newParticleText.Root.TextColor3 = Color3.fromRGB(255,255,255)
-    newParticleText.Root.Image.Image = Image or ""
+    newParticleText.Root.TextColor3 = color
+    newParticleText.Root.Image.Image = image
+
+    if size then
+        newParticleText.Root.Size = size
+    end
+
+    -- fade out tweens
+    local fadeDelay = 0.25 * lifeTime
+    local fadeInfo = TweenInfo.new(lifeTime - fadeDelay, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, fadeDelay)
 
     local fadeTweenText = TweenService:Create(newParticleText.Root, fadeInfo, { TextTransparency = 1 })
     local fadeTweenStroke = TweenService:Create(newParticleText.Root.UIStroke, fadeInfo, { Transparency = 1 })
@@ -84,14 +105,8 @@ function ParticleText.new(parentView: GuiObject, text: string , Image : string, 
     fadeTweenImage:Play()
     fadeTweenStroke:Play()
 
-    if size then
-        newParticleText.Root.Size = size
-    end
-
-    newParticleText.Gravity = gravity
     loadedParticleText[newParticleText.Id] = newParticleText
-
-    return newParticleText :: ParticleText
+    return newParticleText
 end
 
 function ParticleText:loop(dt: number)

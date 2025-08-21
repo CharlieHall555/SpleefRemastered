@@ -83,6 +83,7 @@ ClientModuleDirectory.SpectateController = Root.Gameplay.Spectate.SpectateContro
 ClientModuleDirectory.ParticlePlayer = Root.Visuals.ParticlePlayer
 ClientModuleDirectory.EmitterDefs = Root.Visuals.EmitterDefs
 ClientModuleDirectory.ClientLavaManager = Root.Visuals.ClientLavaManager
+ClientModuleDirectory.CheerEffect = Root.Visuals.CheerEffect
 
 ClientModuleDirectory.Spectate= {}
 ClientModuleDirectory.Spectate.Ghost = Root.Spectate.Ghost

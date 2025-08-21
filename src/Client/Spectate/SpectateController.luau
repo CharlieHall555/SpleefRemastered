@@ -7,9 +7,11 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local GUISpectateControls = require(ClientModuleDirectory.Gui.SpectateControls)
 local LocalPlayer = Players.LocalPlayer
 
+
 local SpectateController = {}
 
 local playersAlive: { Player } = {}
+
 
 local enabled = false
 
@@ -33,7 +35,9 @@ local function setUpGuiConnections()
     end)
 
     GUISpectateControls.connectOnCelebrate(function()
-        SpectateController.exit()
+        if currentTarget then
+            RemoteEventHandler.FireOnServer("REQUEST_CHEER" , currentTarget)
+        end
     end)
 
 end

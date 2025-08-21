@@ -114,7 +114,7 @@ function ServerHitBoxManager.init()
 
         _touchedConnections[uid] = hitbox.Touched:Connect(function(otherPart: BasePart)
             local tags = otherPart:GetTags()
-            for _, each in tags do
+            for _, each in ipairs(tags) do
                 local f = tagCallback[each]
                 if f then
                     f(player, otherPart)

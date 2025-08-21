@@ -63,7 +63,6 @@ ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThr
 	if hit.Instance and hit.Instance:IsA("Part") then
 		--redudant client side destruction prediciton became to hard to sync so stopped work for now.
 		--ClientDestructionHandler.destroyBlock(hit.Instance)
-
 	end
 end)
 
@@ -81,3 +80,6 @@ local Ghost = require(ClientModuleDirectory.Spectate.Ghost)
 
 
 local freecam = require(ClientModuleDirectory.Spectate.FreecamMode)
+
+local cheerEffect = require(ClientModuleDirectory.CheerEffect)
+

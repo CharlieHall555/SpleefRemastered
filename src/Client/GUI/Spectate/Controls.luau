@@ -3,26 +3,38 @@ local Controls = {}
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
+local StarterGui = game:GetService("StarterGui")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
-local SpectateGui : Frame
+local SpectateGui: Frame
 
-local onExit : (() -> ())?
-local onCelebrate : (() -> ())?
-local onBack : (() -> ())?
-local onNext : (() -> ())?
+local BUTTON_COOLDOWN = 0.1
+local lastClicked = 0
 
-local nextButton : TextButton?
-local backButton : TextButton?
-local exitButton : TextButton?
-local celebrateButton : TextButton?
+local onExit: (() -> ())?
+local onCelebrate: (() -> ())?
+local onBack: (() -> ())?
+local onNext: (() -> ())?
 
-local playerName : TextLabel?
+local nextButton: TextButton?
+local backButton: TextButton?
+local exitButton: TextButton?
+local celebrateButton: TextButton?
+
+local playerName: TextLabel?
+
+local function canClick()
+	if tick() - lastClicked > BUTTON_COOLDOWN then
+		return true
+	else
+		return false
+	end
+end
 
 function Controls.onProfileLoaded()
 	SpectateGui = GuiAssets:WaitForChild("Spectate"):WaitForChild("SpectateControls")
-    SpectateGui.Visible = false
+	SpectateGui.Visible = false
 	SpectateGui.Parent = Screens.intermissionHUD
 
 	celebrateButton = SpectateGui.Celebrate.Clickable
@@ -33,68 +45,67 @@ function Controls.onProfileLoaded()
 	playerName = SpectateGui.SpectatingPlayer.Label
 
 	celebrateButton.Activated:Connect(function(inputObject, clickCount)
-		if onCelebrate then
+		if onCelebrate and canClick() then
+			lastClicked = tick()
 			onCelebrate()
 		end
 	end)
 
 	nextButton.Activated:Connect(function(inputObject, clickCount)
-		if onNext then
+		if onNext and canClick() then
+			lastClicked = tick()
+
 			onNext()
 		end
 	end)
 
 	backButton.Activated:Connect(function(inputObject, clickCount)
-		if onBack then
+		if onBack and canClick() then
+			lastClicked = tick()
+
 			onBack()
 		end
 	end)
 
 	exitButton.Activated:Connect(function(inputObject, clickCount)
-		if onExit then
+		if onExit and canClick() then
+			lastClicked = tick()
+
 			onExit()
 		end
 	end)
-
-
 end
 
-function Controls.setPlayerSpectating(name : string)
+function Controls.setPlayerSpectating(name: string)
 	name = name or "None"
-	
-	playerName.Text = name
 
+	playerName.Text = name
 end
 
 function Controls.show()
-
 	SpectateGui.Visible = true
-
+	game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 end
 
 function Controls.hide()
-
 	SpectateGui.Visible = false
-	
+	game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
 end
 
-function Controls.connectOnExit(fn : () -> ())
+function Controls.connectOnExit(fn: () -> ())
 	onExit = fn
 end
 
-function Controls.connectOnBack(fn : () -> ())
+function Controls.connectOnBack(fn: () -> ())
 	onBack = fn
 end
 
-function Controls.connectOnCelebrate(fn : () -> ())
+function Controls.connectOnCelebrate(fn: () -> ())
 	onCelebrate = fn
 end
 
-function Controls.connectOnNext(fn : () -> ())
+function Controls.connectOnNext(fn: () -> ())
 	onNext = fn
 end
-
-
-
 
 return Controls

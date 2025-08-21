@@ -9,13 +9,11 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService = game:GetService("UserInputService")
 local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
 
-
-
 local lastMousePos
 
 UserInputService.InputChanged:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		lastMousePos = input.Position 
+		lastMousePos = input.Position
 	end
 end)
 
@@ -28,20 +26,18 @@ function MiscBindings.init()
 		SoundPlayer.playSound(lightning, { volume = 0.3 })
 	end)
 
-	RemoteEventHandler.newEventConnection("AMMO_GAINED", function(Amount)
+	RemoteEventHandler.newEventConnection("AMMO_GAINED", function(amount: number)
 		if PlatformDetector.getPlatform() == "PC" and lastMousePos then
-			local RandomXSpeed = ((math.random() - 0.5) / 5)
-			local RandomYSpeed = 1
+			local randomX = (math.random() - 0.5) / 5
+			local randomY = 1
 
-			Amount = "+" .. tostring(Amount)
+			local opts = {
+				image = "rbxassetid://91214120728139",
+				speed = Vector2.new(randomX, randomY),
+				color = Color3.fromRGB(255, 255, 255), -- optional highlight color
+			}
 
-			local newText = ParticleText.new(
-				LocalPlayer.PlayerGui.General,
-				Amount,
-				"rbxassetid://91214120728139",
-				lastMousePos,
-				Vector2.new(RandomXSpeed, RandomYSpeed)
-			)
+			ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), lastMousePos, opts)
 		end
 	end)
 end

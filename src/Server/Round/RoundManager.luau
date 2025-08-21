@@ -20,6 +20,8 @@ local MapSaves = require(ModuleDirectory.Map.Saves)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local ServerStatus = require(ModuleDirectory.ServerStatus)
 local MapSelection = require(ModuleDirectory.Round.MapSelection)
+local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
+
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -87,6 +89,7 @@ local function onRoundEnding(currentRound)
 		end
 	end
 
+	BlockDestructionTracker.reset()
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
 	task.wait()
 	currentMap:Destroy()

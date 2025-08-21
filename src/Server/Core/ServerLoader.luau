@@ -1,68 +1,64 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-
 local EventHandler = require(ModuleDirectory.ServerEventHandler)
 
 local ServerLoader = {}
-
 local loaded = {}
 
-local function loadTable(tableToLoad : {}) : nil
-	
-	for ModuleName, EachModulePath in tableToLoad do
-		print(ModuleName , EachModulePath)
-		local success, result = pcall(function()
-			if type(EachModulePath) == "table" then
-				loadTable(EachModulePath)
-				return nil
+-- Phase 1: require everything (recursively) and call init() once per module.
+local function requireAll(tbl)
+	for ModuleName, EachModulePath in pairs(tbl) do
+		if type(EachModulePath) == "table" then
+			requireAll(EachModulePath)
+		else
+			print(ModuleName, EachModulePath)
+			local ok, result = pcall(require, EachModulePath)
+			if not ok then
+				error(("Module: %s failed to load, Reason: %s"):format(ModuleName, result))
 			end
-			return require(EachModulePath)
-		end)
 
-		if success == false then
-			error("Module: " ..ModuleName .. " failed to load, Reason : " ..result)
-			return
-		end
+			if result ~= nil then
+				if loaded[ModuleName] then
+					warn(("Duplicate module name '%s' – overwriting previous entry."):format(ModuleName))
+				end
 
-		if result == nil then continue end 
-		
-		local EachModule = result
-		loaded[ModuleName] = EachModule
+				loaded[ModuleName] = result
+				print("Required " .. ModuleName)
 
-        print("Required " .. ModuleName)
-		local init_fun = EachModule["init"]
-		if init_fun then
-			init_fun()
-		else
-			warn(ModuleName .. " Missing .init() method.")
+				local init_fun = result.init
+				if type(init_fun) == "function" then
+					init_fun()
+				else
+					warn(ModuleName .. " missing .init() method.")
+				end
+			end
 		end
 	end
-	for ModuleName , EachModule in loaded do
-		
-		local loaded_fun = EachModule["onLoaded"]
-		if loaded_fun then
-			loaded_fun()
-		else
-			warn(ModuleName .. " Missing .onLoaded() method.")
-		end
-	
-	end
-
 end
 
 function ServerLoader.init()
+	-- Phase 1: require & init
+	requireAll(ModuleDirectory)
 
-	loadTable(ModuleDirectory)
-
-	for _, EachModule in loaded do
-		local loaded_fun = EachModule["onLoad"]
-		if loaded_fun then
-			loaded_fun()
+	-- Phase 2: call onLoaded() exactly once per module (no recursion here)
+	for ModuleName, EachModule in pairs(loaded) do
+		local onLoaded = EachModule.onLoaded
+		if type(onLoaded) == "function" then
+			onLoaded()
+		else
+			warn(ModuleName .. " missing .onLoaded() method.")
 		end
 	end
 
-	EventHandler.FireEvent("ClientLoaded")
-	print("[CLIENT] all modules loaded.")
+	-- Optional final pass: onLoad() if you really need a third phase
+	for ModuleName, EachModule in pairs(loaded) do
+		local onLoad = EachModule.onLoad
+		if type(onLoad) == "function" then
+			onLoad()
+		end
+	end
+
+	EventHandler.FireEvent("Server Loaded")
+	print("[SERVER] all modules loaded.")
 end
 
 return ServerLoader
-

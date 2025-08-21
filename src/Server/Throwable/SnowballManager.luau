@@ -21,6 +21,7 @@ function SnowballManager.init()
 	ThrowableManager.registerOnHit("snowball", SnowballManager.onHit)
 
 	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO", function(player, otherPart)
+		print("HIITTT")
 		local snowballId = otherPart:GetAttribute("Id")
 		local pickup = SnowballAmmoPickup.get(snowballId or -1)
 		print("pickup", pickup)

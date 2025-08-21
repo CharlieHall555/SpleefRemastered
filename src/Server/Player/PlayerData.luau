@@ -6,6 +6,8 @@ local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 local ProfileTemplate = {
     onboardingStep = 0,
     onboardingComplete = false,
+    xp = 0,
+    level = 0,
     wins = 0
 }
 
@@ -114,5 +116,33 @@ end
 function PlayerData.getProfile(player: Player) : {}
     return profiles[player.UserId]
 end
+
+function PlayerData.getXP(player: Player): number
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return 0
+    end
+    return profile.Data.xp or 0
+end
+
+function PlayerData.setXP(player: Player, newValue: number): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return
+    end
+    profile.Data.xp = newValue
+end
+
+function PlayerData.incrementXP(player: Player, amount: number): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return
+    end
+    profile.Data.xp = (profile.Data.xp or 0) + amount
+end
+
 
 return PlayerData
