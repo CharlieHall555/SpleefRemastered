@@ -58,7 +58,12 @@ ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
 
+--//====================================================
+--// Profile
+--//====================================================
 
+ClientModuleDirectory.Profile = {}
+ClientModuleDirectory.Profile.UserProfile = Root.Profile.UserProfile
 
 --//====================================================
 --// Chat

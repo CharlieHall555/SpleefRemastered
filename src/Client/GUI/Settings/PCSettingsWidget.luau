@@ -33,9 +33,9 @@ function PCSettingsWidget.onLoaded()
 
 
 	if SoundPlayer.getIsMuted() then
-		soundIcon.Image = soundOnImage
-	else
 		soundIcon.Image = soundOffImage
+	else
+		soundIcon.Image = soundOnImage
 	end
 
 	

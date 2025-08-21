@@ -1,13 +1,9 @@
 local Root = script.Parent
-local GuiService = game:GetService("GuiService")
 local QueryLoaded = game:GetService("ReplicatedStorage"):WaitForChild("QueryLoaded")
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Player = game.Players.LocalPlayer
 local loadingScreen = Player.PlayerGui:WaitForChild("Loading")
-local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
-local VectorUtil = require(ClientModuleDirectory.VectorUtil)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
-
 
 local isServerLoaded = false
 while isServerLoaded == false do
@@ -27,8 +23,16 @@ while ProfileLoaded == false do
 	task.wait(0.1)
 end
 
+local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+UserProfile.loadProfile()
 ClientLoader.profileLoaded()
+print("wins" , UserProfile.getValue("wins"))
 
+UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	
+	print("wins" , valueName , newValue)
+
+end , "wins")
 
 local ButtonUtilities = require(ClientModuleDirectory.Gui.ButtonUtilities)
 ButtonUtilities.parseRoot()
