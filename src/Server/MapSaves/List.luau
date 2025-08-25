@@ -7,6 +7,7 @@ export type MapSaves = { [number]: MapDataFactory.MapDataCreationParams }
 local MapSaves = {
 	Grasslands = require(MapSaves.Grasslands),
 	Icefields = require(MapSaves.Icefields),
+	Desert = require(MapSaves.Desert)
 }
 
 

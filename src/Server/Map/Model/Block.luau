@@ -75,8 +75,8 @@ function Block.new(blockConfig: BlockConfig?): Block
 	self.Part.Transparency = 0
 	self.Part.CollisionGroup = "CG_BLOCKS"
 	self.Part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
-	self.Part.Color = materialDef.color
-	self.Part.Material = materialDef.material
+	self.Part.Color = (materialDef.color or Color3.fromRGB(187, 47, 187))
+	self.Part.Material = materialDef.material or Enum.Material.Plastic
 	self.Part.Anchored = true
 	self.Part.Shape = Enum.PartType.Block
 	self.Part.Parent = game.Workspace.Blocks

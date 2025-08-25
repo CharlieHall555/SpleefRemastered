@@ -35,14 +35,14 @@ function RoundStatus.onProfileLoaded()
 
     	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getServerState() == "PREPARING" then
-			StatusGUI.Timer.Text = math.max(0, math.floor(time))
+			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
 		end
 	end)
     
 
 	RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getServerState() == "ACTIVE" then
-			StatusGUI.Timer.Text = math.max(0, math.floor(time))
+			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
 		end
 	end)
 

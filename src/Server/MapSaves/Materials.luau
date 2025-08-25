@@ -10,7 +10,12 @@ export type CustomMaterial = {
 materials = {}
 materials.sand = {
     material = Enum.Material.Sand,
-    color = Color3.new(0.811765, 0.67451, 0.4)
+    color = Color3.fromRGB(177, 139, 79)
+}
+
+materials.sandstone = {
+    material = Enum.Material.Sandstone,
+    color = Color3.fromRGB(130, 94, 49)
 }
 
 materials.mud = {
@@ -98,7 +103,7 @@ function CustomMaterials.init()
 end
 
 function CustomMaterials.get(name : string) : CustomMaterial?
-    return materials[name]
+    return materials[name] or {}
 end
 
 return CustomMaterials
