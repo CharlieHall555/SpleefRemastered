@@ -5,25 +5,74 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local Player = game.Players.LocalPlayer
 local ToolBarUtilities = require(ClientModuleDirectory.Gui.ToolBarUtilities)
+local ScaleUtilities = require(ClientModuleDirectory.Gui.ScaleUtilities)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
-local SpectateButton : Frame
+local SpectateButtonGUI : Frame
+local SpectateButtonClickable : TextButton
+local UIScale : UIScale
+
+local onClick : (() -> ())?= nil
+
+local BUTTON_MIN = 50
 
 local SpectateButton = {}
 
-function SpectateButton.onLoaded()
-    SpectateButton = GuiAssets:WaitForChild("Spectate"):WaitForChild("SpectateButton")
-    SpectateButton.Parent = Screens.intermissionHUD
-    SpectateButton.Visible = true
-    local AnchorPoint = ToolBarUtilities.hotBarAnchorPoint(true)
-    if AnchorPoint == nil then
-        print("NOOO")
-        AnchorPoint = 0.7
+function SpectateButton.onProfileLoaded()
+    SpectateButtonGUI = GuiAssets:WaitForChild("Spectate"):WaitForChild("SpectateButton")
+    SpectateButtonGUI.Parent = Screens.intermissionHUD
+    SpectateButtonClickable = SpectateButtonGUI:WaitForChild("Clickable")
+    SpectateButtonGUI.Visible = ClientStateTracker.getServerState() == "ACTIVE"
+    UIScale = SpectateButtonGUI:WaitForChild("UIScale")
+    local AnchorPoint = ToolBarUtilities.hotBarAnchorPoint() or 0.7
+    SpectateButtonGUI.Position = UDim2.new(
+        UDim.new(SpectateButtonGUI.Position.X.Scale , 0), 
+        UDim.new(AnchorPoint - 0.1 , 0) 
+    )
+
+    SpectateButton.onResize()
+
+    ClientStateTracker.connectServerStateChange(function(newState : string)
+            if newState == "ACTIVE" then
+            SpectateButton.show()
+        else
+            SpectateButton.hide()
+        end
+    
+    end)
+
+    SpectateButtonClickable.Activated:Connect(function(inputObject, clickCount)
+        if onClick then
+            onClick()
+        end
+    end)
+end
+
+function SpectateButton.connectOnClick(fn : () -> ()?)
+    onClick = fn
+end
+
+function SpectateButton.onResize()
+
+    if SpectateButtonGUI.AbsoluteSize.Y <= BUTTON_MIN then
+        
+        local newScale = ScaleUtilities.scaleForTargetOffset(
+            SpectateButtonGUI.AbsoluteSize.Y,
+            50,
+            UIScale.Scale
+        )
+
     end
-    SpectateButton.Size = UDim2.fromScale(SpectateButton.Size.X.Scale , AnchorPoint)
+    
 end
 
 function SpectateButton.show()
-    SpectateButton.Visible = true
+    if ClientStateTracker.getServerState() == "ACTIVE" then
+        SpectateButton.Visible = true
+    else
+        print("couldnt show")
+    end
+    
 end
 
 function SpectateButton.getGui()
@@ -32,6 +81,7 @@ end
 
 
 function SpectateButton.hide()
+    print("hide spectate button")
     SpectateButton.Visible = false
 end
 

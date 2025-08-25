@@ -4,6 +4,7 @@ local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local Player = game.Players.LocalPlayer
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local HIGHLIGHT_COLOR = Color3.fromRGB(241, 241, 241)
 local DARK_COLOR = Color3.fromRGB(37, 37, 37)
@@ -65,6 +66,7 @@ function TouchButtons.onLoaded()
 		touchButtonsGui.Visible = true
 		-- touchButtonsGui.Visible = (PlatformDetector.getPlatform() == "MOBILE")
 
+
 		actionButtonBg = touchButtonsGui.ActionButton
 		jumpButtonBg = touchButtonsGui.JumpButton
 
@@ -76,6 +78,8 @@ function TouchButtons.onLoaded()
 
 		setHighlighted(actionButtonBg, actionButtonImage, false)
 		setHighlighted(jumpButtonBg, jumpButtonImage, false)
+
+		TouchButtons.setVisibleActionButton(ClientStateTracker.getState == "ACTIVE")
 
 		actionButtonClickable.InputBegan:Connect(function(input)
 			if isTouch(input) then
@@ -138,7 +142,7 @@ function TouchButtons.setActionCallback(fn: (() -> ())?)
 end
 
 function TouchButtons.setVisibleActionButton(value: boolean): nil
-	actionButtonBg.Visible = false
+	actionButtonBg.Visible = value
 end
 
 function TouchButtons.getGui()

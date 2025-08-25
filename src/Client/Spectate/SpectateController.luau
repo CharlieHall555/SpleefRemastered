@@ -6,7 +6,7 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local GUISpectateControls = require(ClientModuleDirectory.Gui.SpectateControls)
 local LocalPlayer = Players.LocalPlayer
-
+local EnterSpectateButton = require(ClientModuleDirectory.Gui.SpectateButton)
 
 local SpectateController = {}
 
@@ -38,6 +38,10 @@ local function setUpGuiConnections()
         if currentTarget then
             RemoteEventHandler.FireOnServer("REQUEST_CHEER" , currentTarget)
         end
+    end)
+
+    EnterSpectateButton.connectOnClick(function()
+        SpectateController.enter()
     end)
 
 end
@@ -201,6 +205,7 @@ function SpectateController.enter(): nil
     end
 
     enabled = true
+    --EnterSpectateButton.hide()
     GUISpectateControls.show()
 
     currentIndex = currentIndex or 1
@@ -232,6 +237,8 @@ function SpectateController.exit(): nil
 
     enabled = false
     GUISpectateControls.hide()
+    --EnterSpectateButton.show()
+
     clearCharConn()
     currentTarget = nil
     currentIndex = nil

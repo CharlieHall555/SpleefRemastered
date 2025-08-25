@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 
 local connections = {}
 
-local onDeathCallback = nil
+local onDeathCallback : (player : Player , wasAlive : boolean) -> () = nil
 local PlayerDeathDetector = {}
 
 export type playerDeathRecord = {
@@ -33,8 +33,10 @@ function PlayerDeathDetector.init()
 end
 
 local function onDied(player)
+	local wasAlive = false
     print(player.Name .. " died")
     if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "PREPARING" then
+		wasAlive = PlayersInGame.isAlive(player) or false
         PlayersInGame.removePlayer(player)
 
         playerDeathCache[player.UserId] = {
@@ -43,7 +45,7 @@ local function onDied(player)
         }
     end
     if onDeathCallback then
-        onDeathCallback(player)
+        onDeathCallback(player , wasAlive)
     end
 end
 
@@ -83,7 +85,7 @@ function PlayerDeathDetector.clearCache()
 	end
 end
 
-function PlayerDeathDetector.setCallback(func: (player: Player) -> ())
+function PlayerDeathDetector.setCallback(func: (player : Player , wasAlive : boolean) -> ())
 	onDeathCallback = func
 end
 

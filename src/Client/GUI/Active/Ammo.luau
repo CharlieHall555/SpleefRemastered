@@ -40,7 +40,8 @@ function Ammo.onProfileLoaded()
 
 		print("yscale" , yScale)
 
-		AmmoGui.Position = UDim2.new(UDim.new(1 , -20) , UDim.new(yScale , 0))
+		AmmoGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(yScale , 0))
+		AmmoGui.UIScale.Scale = 1.2
 
 	end
 

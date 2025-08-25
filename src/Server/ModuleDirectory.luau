@@ -72,6 +72,7 @@ ModuleDirectory.Gameplay.ToolManager = game:GetService("ServerScriptService").Ga
 ModuleDirectory.Gameplay.KnockBackManager = game:GetService("ServerScriptService").Gameplay.KnockbackManager
 ModuleDirectory.Gameplay.BlockDestruction = game:GetService("ServerScriptService").Gameplay.BlockDestruction
 ModuleDirectory.Gameplay.LavaManager = game:GetService("ServerScriptService").Gameplay.LavaManager
+ModuleDirectory.Gameplay.ClearLobby = game:GetService("ServerScriptService").Gameplay.ClearLobby
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 

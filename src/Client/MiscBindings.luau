@@ -9,6 +9,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService = game:GetService("UserInputService")
 local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
@@ -50,6 +51,7 @@ function MiscBindings.init()
 		if PlatformDetector.getPlatform() == "MOBILE" then
 			
 			MobileCamera.enable()
+			TouchButtons.setVisibleActionButton(true)
 
 		end
 
@@ -60,6 +62,8 @@ function MiscBindings.init()
 		if PlatformDetector.getPlatform() == "MOBILE" then
 			
 			MobileCamera.disable()
+			TouchButtons.setVisibleActionButton(false)
+			
 
 		end
 

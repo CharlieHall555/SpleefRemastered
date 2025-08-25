@@ -21,6 +21,7 @@ local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local ServerStatus = require(ModuleDirectory.ServerStatus)
 local MapSelection = require(ModuleDirectory.Round.MapSelection)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
+local ClearLobby = require(ModuleDirectory.Gameplay.ClearLobby)
 
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
@@ -108,6 +109,7 @@ local function onRoundActive(currentRound)
 	--ToolManager.giveTools(PlayersInGame.getActivePlayers())
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
 	AmmoPickupManager.start(currentMap)
+	ClearLobby.clear()
 end
 
 function RoundManager.init(): nil
@@ -129,9 +131,11 @@ function RoundManager.init(): nil
 	end)
 end
 
-function RoundManager.onPlayerDeath(playerWhoDied: Player)
+function RoundManager.onPlayerDeath(playerWhoDied: Player , wasAlive : boolean)
 	RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
-	RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied)
+	if wasAlive then
+		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied)
+	end
 end
 
 return RoundManager
