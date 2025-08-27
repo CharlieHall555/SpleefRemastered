@@ -205,7 +205,7 @@ function SpectateController.enter(): nil
     end
 
     enabled = true
-    --EnterSpectateButton.hide()
+    EnterSpectateButton.hide()
     GUISpectateControls.show()
 
     currentIndex = currentIndex or 1
@@ -237,7 +237,7 @@ function SpectateController.exit(): nil
 
     enabled = false
     GUISpectateControls.hide()
-    --EnterSpectateButton.show()
+    EnterSpectateButton.show()
 
     clearCharConn()
     currentTarget = nil

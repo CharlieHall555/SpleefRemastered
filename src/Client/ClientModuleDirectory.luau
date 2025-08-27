@@ -29,6 +29,8 @@ ClientModuleDirectory.Gui.ButtonUtilities = Root.Gui.Utilities.ButtonUtilities
 ClientModuleDirectory.Gui.ToolBarUtilities = Root.Gui.Utilities.ToolBarUtilities
 ClientModuleDirectory.Gui.ScaleUtilities = Root.Gui.Utilities.ScaleUtilities
 ClientModuleDirectory.Gui.SpectateButton = Root.Gui.Spectate.SpectateButton
+ClientModuleDirectory.Gui.MobileSettingsButton = Root.Gui.Settings.MobileSettingsButton
+ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSettingsWidget
 
 ClientModuleDirectory.Gui.TouchButtons = Root.Gui.Input.TouchButtons
 

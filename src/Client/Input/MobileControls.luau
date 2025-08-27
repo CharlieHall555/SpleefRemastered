@@ -7,6 +7,7 @@ local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local LocalPlayer = Players.LocalPlayer
 local ActionHandler = require(ClientModuleDirectory.Input.ActionHandler)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
+local Controls 
 
 local JUMP_COOLDOWN = 0.05 -- Reduced from 0.2 for better responsiveness
 local GROUND_CHECK_DISTANCE = 4 -- Raycast distance for ground detection
@@ -29,7 +30,7 @@ local function isOnGround(): boolean
 	end
 
 	-- Raycast downward to check for ground
-	local raycastParams = RaycastParams.new()
+	--[[local raycastParams = RaycastParams.new()
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 	raycastParams.FilterDescendantsInstances = {character}
 
@@ -37,9 +38,9 @@ local function isOnGround(): boolean
 		humanoidRootPart.Position,
 		Vector3.new(0, -GROUND_CHECK_DISTANCE, 0),
 		raycastParams
-	)
+	)]]--
 
-	return raycastResult ~= nil
+	return true
 end
 
 local function canJump(): boolean
@@ -55,8 +56,7 @@ local function canJump(): boolean
 
 	-- Check if humanoid is in a jumpable state
 	local state = humanoid:GetState()
-	if state == Enum.HumanoidStateType.Freefall or 
-	   state == Enum.HumanoidStateType.Flying or 
+	if state == Enum.HumanoidStateType.Freefall or  
 	   state == Enum.HumanoidStateType.Jumping then
 		return false
 	end
@@ -95,6 +95,8 @@ end
 
 function MobileControls.onProfileLoaded()
 	print("MobileControls Loaded")
+	Controls = require(LocalPlayer.PlayerScripts.PlayerModule):GetControls()
+	print(Controls)
 	if PlatformDetector.getPlatform() == "MOBILE" then
 		TouchButtons.setJumpCallback(onJumpPressed)
 		TouchButtons.setActionCallback(ActionHandler.mainAttack)

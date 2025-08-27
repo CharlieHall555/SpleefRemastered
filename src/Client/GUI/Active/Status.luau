@@ -33,7 +33,12 @@ function RoundStatus.onProfileLoaded()
 		StatusGUI.State.Fire2.Visible = true
 	end)
 
-    	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
+	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED" , function(aliveNow : number , maxAlive : number)
+		StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
+
+	end)
+
+    RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getServerState() == "PREPARING" then
 			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
 		end

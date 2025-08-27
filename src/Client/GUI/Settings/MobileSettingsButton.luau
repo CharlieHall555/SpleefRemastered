@@ -5,6 +5,8 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 
+local MobileSettingsWidget = require(ClientModuleDirectory.Gui.MobileSettingsWidget)
+
 local MobileSettingsButton = {}
 
 local ButtonGUI: Frame?
@@ -19,6 +21,9 @@ function MobileSettingsButton.onLoaded()
 	ButtonGUI = GuiAssets:WaitForChild("Settings"):WaitForChild("SettingsButton")
 	ButtonGUI.Visible = true
 	ButtonGUI.Parent = Screens.touchControls
+	ButtonGUI.Clickable.Activated:Connect(function(inputObject, clickCount)
+		MobileSettingsWidget.show()
+	end)
 
 end
 

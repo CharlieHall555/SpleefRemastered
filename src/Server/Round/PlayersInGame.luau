@@ -24,7 +24,7 @@ function PlayersInGame.isAlive(player: Player): boolean
     return false
 end
 
-function PlayersInGame.addPlayer(player: Player): nil
+function PlayersInGame.addPlayer(player: Player , fireOnChangeCallback : boolean?): nil
     -- Prevent duplicates
     for _, p in ipairs(activePlayers) do
         if p == player then
@@ -32,7 +32,7 @@ function PlayersInGame.addPlayer(player: Player): nil
         end
     end
     table.insert(activePlayers, player)
-    if onChange then
+    if onChange and fireOnChangeCallback then
         onChange(activePlayers)
     end
 end

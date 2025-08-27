@@ -10,6 +10,7 @@ local UserInputService = game:GetService("UserInputService")
 local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
+local SpectateButton = require(ClientModuleDirectory.Gui.SpectateButton)
 
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
@@ -53,6 +54,24 @@ function MiscBindings.init()
 			MobileCamera.enable()
 			TouchButtons.setVisibleActionButton(true)
 
+		end
+
+	end)
+
+	ClientStateTracker.connectServerStateChange(function(newState)
+		
+		if newState == "ACTIVE" and ClientStateTracker.getState() == "INTERMISSION" then
+			SpectateButton.show()
+		elseif newState == "INTERMISSION" then
+			SpectateButton.hide()
+		end
+
+	end)
+
+	ClientStateTracker.connectIntermission(function()
+		
+		if ClientStateTracker.getServerState() == "ACTIVE" then
+			SpectateButton.show()
 		end
 
 	end)

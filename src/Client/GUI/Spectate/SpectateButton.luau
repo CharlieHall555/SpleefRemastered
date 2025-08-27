@@ -24,7 +24,7 @@ function SpectateButton.onProfileLoaded()
     SpectateButtonClickable = SpectateButtonGUI:WaitForChild("Clickable")
     SpectateButtonGUI.Visible = ClientStateTracker.getServerState() == "ACTIVE"
     UIScale = SpectateButtonGUI:WaitForChild("UIScale")
-    local AnchorPoint = ToolBarUtilities.hotBarAnchorPoint() or 0.7
+    local AnchorPoint = 0.8 --ToolBarUtilities.hotBarAnchorPoint() or 0.7
     SpectateButtonGUI.Position = UDim2.new(
         UDim.new(SpectateButtonGUI.Position.X.Scale , 0), 
         UDim.new(AnchorPoint - 0.1 , 0) 
@@ -67,22 +67,17 @@ function SpectateButton.onResize()
 end
 
 function SpectateButton.show()
-    if ClientStateTracker.getServerState() == "ACTIVE" then
-        SpectateButton.Visible = true
-    else
-        print("couldnt show")
-    end
-    
+    SpectateButtonGUI.Visible = true
 end
 
-function SpectateButton.getGui()
-    return SpectateButton
+function SpectateButton.getGui() : Frame
+    return SpectateButtonGUI
 end
 
 
 function SpectateButton.hide()
     print("hide spectate button")
-    SpectateButton.Visible = false
+    SpectateButtonGUI.Visible = false
 end
 
 return SpectateButton

@@ -168,8 +168,15 @@ function RoundSystem.onSTARTING()
         gamemode = "Spleef",
     }
     for _, player in ipairs(PlayerPool.getActivePool()) do
-        PlayersInGame.addPlayer(player)
+        PlayersInGame.addPlayer(player , false)
     end
+
+    RemoteEventHandler.FireOnAllClients(
+        "PLAYERS_IN_GAME_CHANGED",
+        #PlayersInGame.getActivePlayers(),
+        #currentRound.startingPlayers
+    )
+
 end
 
 function RoundSystem.onPREPARING()
@@ -225,6 +232,8 @@ end
 
 function RoundSystem.onActivePoolChange(playersInActive: { Player })
     RoundSystem.queueEvent(buildEventContext("ACTIVE_POOL_CHANGED"))
+
+    RemoteEventHandler.FireOnAllClients("PLAYERS_IN_GAME_CHANGED" , #playersInActive , #currentRound.startingPlayers)
 end
 
 function RoundSystem.connectStarting(fn: (Round) -> ())

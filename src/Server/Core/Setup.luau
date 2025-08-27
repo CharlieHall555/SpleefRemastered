@@ -13,6 +13,7 @@ function SetUp.init()
     StarterPlayer.CameraMaxZoomDistance = Config.MAX_ZOOM
     StarterPlayer.CharacterWalkSpeed = 21
     StarterPlayer.CharacterJumpPower = 60
+    StarterPlayer.AutoJumpEnabled = false
 
     if RunService:IsStudio() then
         

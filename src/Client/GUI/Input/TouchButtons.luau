@@ -35,7 +35,7 @@ TouchButtons.__index = TouchButtons
 
 local function destroyDefaultJump()
 	pcall(function()
-		Player.PlayerGui.TouchGui.TouchControlFrame.JumpButton:Destroy()
+		Player.PlayerGui.TouchGui.TouchControlFrame.JumpButton.Visible = false
 	end)
 end
 
