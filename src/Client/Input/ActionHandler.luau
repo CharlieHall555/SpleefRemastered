@@ -19,7 +19,6 @@ local ActionHandler = {}
 
 function ActionHandler.init()
 	local binding1 = InputHandler.bindActionStart(Enum.UserInputType.MouseButton1, ActionHandler.mainAttack)
-	--local binding2 = InputHandler.bindActionEnd(Enum.UserInputType.Touch, ActionHandler.mainAttack)
 end
 
 local lastClickTime = 0

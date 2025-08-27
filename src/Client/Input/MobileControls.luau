@@ -7,10 +7,14 @@ local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local LocalPlayer = Players.LocalPlayer
 local ActionHandler = require(ClientModuleDirectory.Input.ActionHandler)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
-local Controls 
+local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
+
+local Controls
 
 local JUMP_COOLDOWN = 0.05 -- Reduced from 0.2 for better responsiveness
 local GROUND_CHECK_DISTANCE = 4 -- Raycast distance for ground detection
+
+local TAP_LENGTH = 0.15 -- 150ms
 
 local lastJumpTime = 0
 local jumpBufferTime = 0
@@ -38,7 +42,8 @@ local function isOnGround(): boolean
 		humanoidRootPart.Position,
 		Vector3.new(0, -GROUND_CHECK_DISTANCE, 0),
 		raycastParams
-	)]]--
+	)]]
+	--
 
 	return true
 end
@@ -56,8 +61,7 @@ local function canJump(): boolean
 
 	-- Check if humanoid is in a jumpable state
 	local state = humanoid:GetState()
-	if state == Enum.HumanoidStateType.Freefall or  
-	   state == Enum.HumanoidStateType.Jumping then
+	if state == Enum.HumanoidStateType.Freefall or state == Enum.HumanoidStateType.Jumping then
 		return false
 	end
 
@@ -85,11 +89,10 @@ end
 
 local function onJumpPressed()
 	local now = os.clock()
-	
+
 	if attemptJump() then
 		return
 	end
-
 end
 
 
@@ -108,6 +111,12 @@ function MobileControls.onProfileLoaded()
 				TouchButtons.setActionToSnowballIcon()
 			end
 		end
+
+		local binding2 = InputHandler.bindActionEnd(Enum.UserInputType.Touch, function(action: InputHandler.InputAction)
+			if action.length < TAP_LENGTH then
+				ActionHandler.mainAttack()
+			end
+		end)
 	end
 end
 

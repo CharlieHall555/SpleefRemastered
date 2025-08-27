@@ -54,6 +54,7 @@ ClientModuleDirectory.Input.PlatformDetector = Root.Input.PlatformDetector
 ClientModuleDirectory.Input.MobileCamera = Root.Input.MobileCamera
 ClientModuleDirectory.Input.MobileCameraMovement = Root.Input.MobileCameraMovement
 ClientModuleDirectory.Input.MobileControls = Root.Input.MobileControls
+ClientModuleDirectory.Input.AimAssistController = Root.Input.AimAssistController
 
 --//====================================================
 --// Gameplay

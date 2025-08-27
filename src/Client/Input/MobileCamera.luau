@@ -2,6 +2,7 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local CrossHair = require(ClientModuleDirectory.Gui.CrossHair)
+local AimAssistController = require(ClientModuleDirectory.Input.AimAssistController)
 
 local LocalPlayer = game.Players.LocalPlayer
 local RunService = game:GetService("RunService")
@@ -18,11 +19,15 @@ local enabled = false
 local BASE_DIST = 7
 local MIN_ZOOM = 3
 local MAX_ZOOM = 14
-local SHOULDER_X = 3
+local SHOULDER_X = 4
 local HEIGHT = 2
 local SMOOTHNESS = 35
 local PITCH_MIN = math.rad(-75)
 local PITCH_MAX = math.rad(75)
+
+-- aim assist
+local AIM_ASSIST_ENABLED = true
+local AIM_ASSIST_GAIN = 3 -- scales suggested deltas per second
 
 -- runtime state
 local _pitch = 0
@@ -71,6 +76,17 @@ local function cameraStep(dt: number)
         return
     end
 
+    local currentCamCF = _lastCF or cam.CFrame
+
+    if AIM_ASSIST_ENABLED then
+        local suggestion = AimAssistController.aimSuggestion(currentCamCF)
+        if suggestion then
+            local gain = AIM_ASSIST_GAIN * math.clamp(suggestion.strength or 0, 0, 1) * dt
+            _pendingYawDelta += (suggestion.deltaYaw or 0) * gain
+            _pitch = math.clamp(_pitch + (suggestion.deltaPitch or 0) * gain, PITCH_MIN, PITCH_MAX)
+        end
+    end
+
     if _pendingYawDelta ~= 0 then
         applyYawToCharacter(_pendingYawDelta)
         _pendingYawDelta = 0
@@ -95,6 +111,11 @@ function MobileCamera.init()
     _sensitivityY = 0.011
 
     gameSettings["RotationType"] = Enum.RotationType.MovementRelative
+
+    if AIM_ASSIST_ENABLED then
+        AimAssistController.init()
+    end
+
     LocalPlayer.CharacterAdded:Connect(function(character)
         local humanoid = character:WaitForChild("Humanoid", 2)
         if humanoid and enabled then
