@@ -27,7 +27,7 @@ local celebrateButton: TextButton?
 local playerName: TextLabel?
 
 local function canClick()
-	if tick() - lastClicked > BUTTON_COOLDOWN then
+	if time() - lastClicked > BUTTON_COOLDOWN then
 		return true
 	else
 		return false
@@ -48,14 +48,14 @@ function Controls.onProfileLoaded()
 
 	celebrateButton.Activated:Connect(function(inputObject, clickCount)
 		if onCelebrate and canClick() and CelebrationTracker.hasCelebrated() == false then
-			lastClicked = tick()
+			lastClicked = time()
 			onCelebrate()
 		end
 	end)
 
 	nextButton.Activated:Connect(function(inputObject, clickCount)
 		if onNext and canClick() then
-			lastClicked = tick()
+			lastClicked = time()
 
 			onNext()
 		end
@@ -63,7 +63,7 @@ function Controls.onProfileLoaded()
 
 	backButton.Activated:Connect(function(inputObject, clickCount)
 		if onBack and canClick() then
-			lastClicked = tick()
+			lastClicked = time()
 
 			onBack()
 		end
@@ -71,7 +71,7 @@ function Controls.onProfileLoaded()
 
 	exitButton.Activated:Connect(function(inputObject, clickCount)
 		if onExit and canClick() then
-			lastClicked = tick()
+			lastClicked = time()
 
 			onExit()
 		end

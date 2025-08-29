@@ -1,16 +1,17 @@
---potential bug with double fireing of cached events?
-
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local SynchronousBridge = ReplicatedStorage:WaitForChild("Synchronous")
-local ASynchronousBridge = ReplicatedStorage:WaitForChild("Asynchronous")
-local UnrelaibleASynchronousBridge = ReplicatedStorage:WaitForChild("UnreliableAsynchronous")
+local SynchronousBridge: RemoteFunction = ReplicatedStorage:WaitForChild("Synchronous")
+local ASynchronousBridge: RemoteEvent = ReplicatedStorage:WaitForChild("Asynchronous")
+-- Note: variable name kept as provided for compatibility (typo included).
+local UnrelaibleASynchronousBridge: RemoteEvent = ReplicatedStorage:WaitForChild("UnreliableAsynchronous")
+
 local IsServer = RunService:IsServer()
 
-local EventConnectionsCache: { [string]: { [string]: (player: Player, ...any) -> any? } } = {}
+type ConnectionMap = { [string]: (player: Player, ...any) -> any? }
+local EventConnectionsCache: { [string]: ConnectionMap } = {}
 local MissedEventCache: { [string]: { any } } = {}
 
 local RemoteEventHandler = {}
@@ -44,6 +45,9 @@ function RemoteEventHandler.removeConnection(eventName: string, uid: string): ni
 	end
 end
 
+-- =========================
+-- Reliable fire helpers
+-- =========================
 function RemoteEventHandler.FireOnClient(player: Player, eventName: string, ...): nil
 	if not IsServer then
 		error("Failed to fire: " .. eventName .. ". Cannot call FireOnClient on client.")
@@ -76,6 +80,44 @@ function RemoteEventHandler.FireOnServer(eventName: string, ...): nil
 	ASynchronousBridge:FireServer(eventName, args)
 end
 
+-- =========================
+-- Unreliable fire helpers
+-- =========================
+function RemoteEventHandler.FireUnreliableOnClient(player: Player, eventName: string, ...): nil
+	if not IsServer then
+		error("Failed to fire (unreliable): " .. eventName .. ". Cannot call FireUnreliableOnClient on client.")
+	end
+	local args = { ... }
+	UnrelaibleASynchronousBridge:FireClient(player, eventName, args)
+end
+
+function RemoteEventHandler.FireUnreliableOnClients(list: { Player }, eventName: string, ...): nil
+	for _, eachPlayer in ipairs(list) do
+		RemoteEventHandler.FireUnreliableOnClient(eachPlayer, eventName, ...)
+	end
+end
+
+function RemoteEventHandler.FireUnreliableOnAllClients(eventName: string, ...): nil
+	if not IsServer then
+		error("Failed to fire (unreliable): " .. eventName .. ". Cannot call FireUnreliableOnAllClients on client.")
+	end
+	local args = { ... }
+	for _, player in ipairs(Players:GetPlayers()) do
+		UnrelaibleASynchronousBridge:FireClient(player, eventName, args)
+	end
+end
+
+function RemoteEventHandler.FireUnreliableOnServer(eventName: string, ...): nil
+	if IsServer then
+		error("Failed to fire (unreliable): " .. eventName .. ". Cannot call FireUnreliableOnServer on server.")
+	end
+	local args = { ... }
+	UnrelaibleASynchronousBridge:FireServer(eventName, args)
+end
+
+-- =========================
+-- Synchronous (Invoke) API
+-- =========================
 function RemoteEventHandler.InvokeOnServer(eventName: string, timeout: number?, ...): ...any
 	if IsServer then
 		error("Failed to invoke: " .. eventName .. ". Cannot call InvokeOnServer on server.")
@@ -83,7 +125,6 @@ function RemoteEventHandler.InvokeOnServer(eventName: string, timeout: number?, 
 
 	timeout = timeout or 5 -- default 5s
 	local args = { ... }
-
 	local remoteFunction = SynchronousBridge
 
 	local result
@@ -111,25 +152,59 @@ function RemoteEventHandler.InvokeOnServer(eventName: string, timeout: number?, 
 	return result
 end
 
+-- =========================
+-- Init and shared dispatch
+-- =========================
+local function dispatchToConnections_Server(player: Player, eventName: string, argsArray: { any }?)
+	local connections = EventConnectionsCache[eventName]
+	if connections == nil then
+		warn("Event connection by name not set up for " .. tostring(eventName))
+		return
+	end
+	for _, fn in pairs(connections) do
+		local ok, err = pcall(function()
+			fn(player, table.unpack(argsArray or {}))
+		end)
+		if not ok then
+			warn("Caught Error with " .. tostring(eventName) .. " : " .. tostring(err))
+		end
+	end
+end
+
+local function dispatchToConnections_Client(eventName: string, argsArray: { any }?)
+	local connections = EventConnectionsCache[eventName]
+	if not connections then
+		warn("No event function set up for " .. tostring(eventName))
+		if not MissedEventCache[eventName] then
+			MissedEventCache[eventName] = {}
+		end
+		table.insert(MissedEventCache[eventName], argsArray)
+		return
+	end
+	for _, fn in pairs(connections) do
+		local ok, err = pcall(function()
+			-- client-side callbacks do not have a Player param
+			fn(table.unpack(argsArray or {}))
+		end)
+		if not ok then
+			warn("Caught Error with " .. tostring(eventName) .. " : " .. tostring(err))
+		end
+	end
+end
+
 function RemoteEventHandler.init(): nil
 	assert(ASynchronousBridge, "Missing remote event 'Asynchronous'")
 	assert(SynchronousBridge, "Missing function event 'Synchronous'")
+	assert(UnrelaibleASynchronousBridge, "Missing remote event 'UnreliableAsynchronous'")
+
 	if IsServer then
+		-- Reliable path
 		ASynchronousBridge.OnServerEvent:Connect(function(player, eventName, args)
-			local connections = EventConnectionsCache[eventName]
-			if connections == nil then
-				warn("Event connection by name not set up for " .. eventName)
-				return
-			end 
-			for _, fn in pairs(connections) do
-	
-				local s , e = pcall(function()
-					fn(player, table.unpack(args or {}))
-				end)
-				if s == false then
-					warn("Caught Error with " .. eventName .. " : " .. tostring(e))
-				end
-			end
+			dispatchToConnections_Server(player, eventName, args)
+		end)
+		-- Unreliable path (same dispatch table)
+		UnrelaibleASynchronousBridge.OnServerEvent:Connect(function(player, eventName, args)
+			dispatchToConnections_Server(player, eventName, args)
 		end)
 
 		SynchronousBridge.OnServerInvoke = function(player, eventName, args)
@@ -137,37 +212,24 @@ function RemoteEventHandler.init(): nil
 			assert(connections, "Synchronous connection by name not set up for " .. (tostring(eventName) or "NIL"))
 			local results = {}
 			for _, fn in pairs(connections) do
-				
-				local s , e = pcall(function()
+				local ok, err = pcall(function()
 					table.insert(results, fn(player, table.unpack(args or {})))
 				end)
-				if s == false then
-					warn("Caught Error with " .. eventName .. " : " .. tostring(e))
+				if not ok then
+					warn("Caught Error with " .. tostring(eventName) .. " : " .. tostring(err))
 					return
 				end
 			end
 			return table.unpack(results)
 		end
 	else
+		-- Reliable path
 		ASynchronousBridge.OnClientEvent:Connect(function(eventName, args)
-			local connections = EventConnectionsCache[eventName]
-			if not connections then
-				print(eventName)
-				warn("No event function set up for " .. (tostring(eventName) or "NIL"))
-				if not MissedEventCache[eventName] then
-					MissedEventCache[eventName] = {}
-				end
-				table.insert(MissedEventCache[eventName], args)
-				return
-			end
-			for _, fn in pairs(connections) do
-				local s , e = pcall(function()
-					fn(table.unpack(args or {}))
-				end)
-				if s == false then
-					warn("Caught Error with " .. eventName .. " : " .. tostring(e))
-				end
-			end
+			dispatchToConnections_Client(eventName, args)
+		end)
+		-- Unreliable path (same dispatch table)
+		UnrelaibleASynchronousBridge.OnClientEvent:Connect(function(eventName, args)
+			dispatchToConnections_Client(eventName, args)
 		end)
 	end
 end

@@ -18,8 +18,8 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local ProfileLoaded = false
 while ProfileLoaded == false do
-	ProfileLoaded = RemoteEventHandler.InvokeOnServer("QUERY_PROFILE_LOAD" , 1)
-	print("profileload" , ProfileLoaded)
+	ProfileLoaded = RemoteEventHandler.InvokeOnServer("QUERY_PROFILE_LOAD", 1)
+	print("profileload", ProfileLoaded)
 	task.wait(0.1)
 end
 
@@ -34,7 +34,7 @@ pcall(function()
 	loadingScreen.removeEvent:Fire()
 end)
 
-RemoteEventHandler.FireOnServer("PLAYER_LOADED" , PlatformDetector.getPlatform())
+RemoteEventHandler.FireOnServer("PLAYER_LOADED", PlatformDetector.getPlatform())
 
 local ClientThrowableTracker = require(ClientModuleDirectory.ClientThrowableTracker)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
@@ -45,18 +45,16 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local player = game.Players.LocalPlayer
 
-HitBoxManager.setUpCallback("SNOWBALL_AMMO" , function(otherPart : Part)
-	
+HitBoxManager.setUpCallback("SNOWBALL_AMMO", function(otherPart: Part)
 	local increment = otherPart:GetAttribute("Increment") or 1
-    SoundPlayer.playSound("rbxassetid://18919192805" , {volume = 0.4})
+	SoundPlayer.playSound("rbxassetid://18919192805", { volume = 0.4 })
 	--ClientAmmoTracker.predictIncrement(increment)
 	otherPart.Transparency = 1
-
 end)
 
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
 
-ClientThrowableTracker.registerOnHit("snowball" , function(throwable : ClientThrowableTracker.Throwable , hit)
+ClientThrowableTracker.registerOnHit("snowball", function(throwable: ClientThrowableTracker.Throwable, hit)
 	if hit.Instance and hit.Instance:IsA("Part") then
 		--redudant client side destruction prediciton became to hard to sync so stopped work for now.
 		--ClientDestructionHandler.destroyBlock(hit.Instance)
@@ -75,9 +73,9 @@ local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
 
 local Ghost = require(ClientModuleDirectory.Spectate.Ghost)
 
-
 local freecam = require(ClientModuleDirectory.Spectate.FreecamMode)
 
 local cheerEffect = require(ClientModuleDirectory.CheerEffect)
 
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+

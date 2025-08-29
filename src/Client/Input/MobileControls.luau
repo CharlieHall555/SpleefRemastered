@@ -65,7 +65,7 @@ local function canJump(): boolean
 		return false
 	end
 
-	local now = os.clock()
+	local now = time()
 	local cooldownPassed = (now - lastJumpTime) >= JUMP_COOLDOWN
 	local onGround = isOnGround()
 
@@ -80,7 +80,7 @@ local function attemptJump()
 
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if humanoid and canJump() then
-		lastJumpTime = os.clock()
+		lastJumpTime = time()
 		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 		return true
 	end
@@ -88,7 +88,7 @@ local function attemptJump()
 end
 
 local function onJumpPressed()
-	local now = os.clock()
+	local now = time()
 
 	if attemptJump() then
 		return

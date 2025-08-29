@@ -30,6 +30,10 @@ function BlockDestructionTracker.getBlocksDestroyedByPlayer(playerOrUserId: Play
     return list
 end
 
+function BlockDestructionTracker.getDestroyRecord(blockId: number): DestroyRecord?
+    return destroyCache[blockId]
+end
+
 function BlockDestructionTracker.blockDestroyed(blockId: number, player: Player?)
     if destroyCache[blockId] then
         -- already recorded; ignore duplicates
@@ -53,7 +57,5 @@ function BlockDestructionTracker.blockDestroyed(blockId: number, player: Player?
         list[#list + 1] = blockId
     end
 end
-
--- Friendly alias with corrected spelling
 
 return BlockDestructionTracker

@@ -23,6 +23,7 @@ local MapSelection = require(ModuleDirectory.Round.MapSelection)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
 local ClearLobby = require(ModuleDirectory.Gameplay.ClearLobby)
 local WinBadgeHandler = require(ModuleDirectory.Badges.WinBadgeHandler)
+local KnockbackTracker = require(ModuleDirectory.Gameplay.KnockbackTracker)
 
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
@@ -93,6 +94,7 @@ local function onRoundEnding(currentRound)
 		end
 	end
 
+	KnockbackTracker.reset()
 	BlockDestructionTracker.reset()
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
 	task.wait()

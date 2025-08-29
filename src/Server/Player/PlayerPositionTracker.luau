@@ -65,7 +65,7 @@ function PlayerPositionTracker.init(): nil
 		local uid = player.UserId
 
 		cache[uid] = newPosition
-		lastUpdateTime[uid] = tick()
+		lastUpdateTime[uid] = time()
 
 		-- If previously marked unresponsive, restore ownership
 		if unresponsivePlayers[uid] then
@@ -74,7 +74,7 @@ function PlayerPositionTracker.init(): nil
 	end)
 
 	RunService.Heartbeat:Connect(function(deltaT)
-		local now = tick()
+		local now = time()
 		for playerId, lastTime in pairs(lastUpdateTime) do
 			local timeDelta = now - lastTime
 			if timeDelta > UNRESPONSIVE_THRESHOLD then

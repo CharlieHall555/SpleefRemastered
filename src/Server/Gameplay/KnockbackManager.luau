@@ -4,6 +4,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+local KnockbackTracker = require(ModuleDirectory.Gameplay.KnockbackTracker)
 
 local lastHitCache: { [number]: number } = {}
 
@@ -32,7 +33,7 @@ function KnockBackManager.init()
     end)
 end
 
-function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3)
+function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3 , fromPlayer : Player?)
     local char = hitBox.Parent
     if not char then
         return
@@ -49,6 +50,7 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3)
 
     markHit(player.UserId)
 
+    KnockbackTracker.newKnockback(fromPlayer , player)
     RemoteEventHandler.FireOnClient(player, "KNOCKBACK", dir, Config.KNOCKBACK_POWER)
     RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION", player)
 

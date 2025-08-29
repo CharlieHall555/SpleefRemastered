@@ -17,7 +17,7 @@ function PlayerPositionSender.init()
             pos = nil
         end
 
-        RemoteEventHandler.FireOnServer("UpdatePlayerPosition" , pos)
+        RemoteEventHandler.FireUnreliableOnServer("UpdatePlayerPosition" , pos)
 
     end)
 

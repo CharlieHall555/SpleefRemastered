@@ -19,7 +19,7 @@ local _tokens: { [number]: number } = {}
 local _lastRefillAt: { [number]: number } = {}
 
 local function _refillTokens(userId: number)
-	local now = os.clock()
+	local now = time()
 	local last = _lastRefillAt[userId] or now
 	local elapsed = now - last
 	local ratePerSec = MAX_CALLS_PER_MINUTE_PER_PLAYER / 60

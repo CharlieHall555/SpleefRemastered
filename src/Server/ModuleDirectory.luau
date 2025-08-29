@@ -73,6 +73,9 @@ ModuleDirectory.Gameplay.KnockBackManager = game:GetService("ServerScriptService
 ModuleDirectory.Gameplay.BlockDestruction = game:GetService("ServerScriptService").Gameplay.BlockDestruction
 ModuleDirectory.Gameplay.LavaManager = game:GetService("ServerScriptService").Gameplay.LavaManager
 ModuleDirectory.Gameplay.ClearLobby = game:GetService("ServerScriptService").Gameplay.ClearLobby
+ModuleDirectory.Gameplay.TouchedBlockTracker = game:GetService("ServerScriptService").Gameplay.TouchedBlockTracker
+ModuleDirectory.Gameplay.KnockbackTracker = game:GetService("ServerScriptService").Gameplay.KnockbackTracker
+ModuleDirectory.Gameplay.EliminationTracker = game:GetService("ServerScriptService").Gameplay.EliminationTracker
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 

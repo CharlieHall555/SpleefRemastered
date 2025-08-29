@@ -8,6 +8,8 @@ local SetUp = {}
 
 function SetUp.init()
  
+    
+
     Players.RespawnTime = Config.RESPAWN_TIME
     
     StarterPlayer.CameraMaxZoomDistance = Config.MAX_ZOOM

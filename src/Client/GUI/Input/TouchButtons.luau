@@ -44,7 +44,7 @@ local function isTouch(input: InputObject): boolean
 end
 
 local function canActivate(lastTime: number): boolean
-	return tick() - lastTime >= BUTTON_COOLDOWN
+	return time() - lastTime >= BUTTON_COOLDOWN
 end
 
 local function setHighlighted(bg: Frame, img: ImageLabel, highlighted: boolean)
@@ -107,7 +107,7 @@ function TouchButtons.onLoaded()
 
 		jumpButtonClickable.Activated:Connect(function()
 			if canActivate(lastJumpTime) then
-				lastJumpTime = tick()
+				lastJumpTime = time()
 				if onJump then
 					onJump()
 				end
@@ -116,7 +116,7 @@ function TouchButtons.onLoaded()
 
 		actionButtonClickable.Activated:Connect(function()
 			if canActivate(lastActionTime) then
-				lastActionTime = tick()
+				lastActionTime = time()
 				if onAction then
 					onAction()
 				end

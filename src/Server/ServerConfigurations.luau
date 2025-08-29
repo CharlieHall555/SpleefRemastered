@@ -60,7 +60,7 @@ return {
     STARTING_AMMO = 0,                -- Ammo given at start
     MAX_AMMO = 20,                     -- Ammo cap
     AMMO_REGEN_INTERVAL = 100000,           -- Time between ammo regen ticks (s)
-    RESPAWN_TIME = 1,                   -- Roblox Time to respawn after elimination
+    RESPAWN_TIME = 0.5,                   -- Roblox Time to respawn after elimination
 
 
     AMMO_PICKUP_VALUE = 20,

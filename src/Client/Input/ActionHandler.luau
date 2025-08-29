@@ -41,10 +41,10 @@ end
 
 function ActionHandler.canAttack()
 
-	if tick() - lastClickTime < HIT_COOLDOWN then
+	if time() - lastClickTime < HIT_COOLDOWN then
 		return false
 	end
-	lastClickTime = tick()
+	lastClickTime = time()
 
 	local character = player.Character
 	if not character then

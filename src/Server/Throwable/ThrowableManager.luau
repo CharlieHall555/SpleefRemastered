@@ -133,7 +133,7 @@ end
 
 function ThrowableManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult?): nil
     if hit.Instance:HasTag("PLAYER_HITBOX") then
-        KnockBackManager.hitHitbox(hit.Instance , throwable.direction)
+        KnockBackManager.hitHitbox(hit.Instance , throwable.direction , throwable.owner)
         return
     end
     local f = typeHitFunctions[throwable.typeName]

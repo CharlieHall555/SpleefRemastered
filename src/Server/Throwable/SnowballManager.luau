@@ -91,7 +91,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	end
 
 	local userId = player.UserId
-	local now = tick()
+	local now = time()
 	local lastFire = _lastSnowballFired[userId] or 0
 	if now - lastFire < Config.SNOWBALL_COOLDOWN then
 		warn("Snowball creation failed: cooldown active for", player)
