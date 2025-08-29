@@ -13,7 +13,7 @@ local ClientCommands = {}
 
 local function muteSound(originTextSource: TextSource, unfilteredText: string)
 
-    SoundPlayer.setInMuted(not SoundPlayer.getIsMuted())
+    SoundPlayer.setMuted(not SoundPlayer.getIsMuted())
 
 end
 

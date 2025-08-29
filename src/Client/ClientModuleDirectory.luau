@@ -114,6 +114,7 @@ ClientModuleDirectory.Spectate.CelebrationTracker = Root.Spectate.CelebrationTra
 
 ClientModuleDirectory.Sound = {}
 ClientModuleDirectory.Sound.SoundPlayer = Root.Sound.SoundPlayer
+ClientModuleDirectory.Sound.MusicPlayer = Root.Sound.MusicPlayer
 
 --//====================================================
 --// Debug Tools
