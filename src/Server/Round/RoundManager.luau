@@ -75,7 +75,7 @@ local function onRoundEnding(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
 	--ToolManager.reset()
-	AmmoPickupManager.cleanup()
+	AmmoPickupManager.stop()
 	AmmoManager.reset()
 	BlockFactory.stopAllTweens()
 	if ServerStatus.get() == "OK" then

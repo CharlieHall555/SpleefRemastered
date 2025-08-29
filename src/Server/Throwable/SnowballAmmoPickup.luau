@@ -20,6 +20,8 @@ local snowballAmmoTemplate : Model
 local _container: Folder? = nil
 local _nextId = 0
 
+local onRemoveCallback : (idRemoved : number) -> ()?
+
 local function _newId(): number
     _nextId += 1
     return _nextId
@@ -48,6 +50,12 @@ function SnowballAmmoPickup.reset() : nil
     for id , _ in Loaded do
         SnowballAmmoPickup.remove(id)
     end
+
+end
+
+function SnowballAmmoPickup.setOnRemoveCallback(fn : (removedId : number) -> ())
+
+    onRemoveCallback = fn
 
 end
 
@@ -96,6 +104,10 @@ function SnowballAmmoPickup.remove(id: number): nil
     end
     pickup.part:Destroy()
     Loaded[id] = nil
+
+    if onRemoveCallback then
+        onRemoveCallback(id)
+    end
 
 end
 

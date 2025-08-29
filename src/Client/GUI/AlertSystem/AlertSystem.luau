@@ -21,6 +21,7 @@ function AlertSystem.init()
 	assert(_alertStackGui, "AlertStackGui not found")
 
     _alertStackGui.Parent = player.PlayerGui:WaitForChild("General")
+	_alertStackGui.Visible = false
 
 	_alertStackTemplate = _alertStackGui:WaitForChild("AlertTemplate", 4)
 	assert(_alertStackTemplate, "AlertTemplate not found")

@@ -11,7 +11,6 @@ local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
-local AmmoPickupManager = require(ModuleDirectory.Gameplay.AmmoPickupManager)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp

@@ -6,7 +6,7 @@ return {
 			height = 0,
 			size = Vector2.new(35, 35),
 			shape = "Checked_Odd",
-            spawns_ammo = true,
+            spawnsAmmo = true,
             material = "sandstone",
             tileMap = {
                 { "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY", "PLACE", "EMPTY" },

@@ -61,11 +61,16 @@ return {
     MAX_AMMO = 20,                     -- Ammo cap
     AMMO_REGEN_INTERVAL = 100000,           -- Time between ammo regen ticks (s)
     RESPAWN_TIME = 1,                   -- Roblox Time to respawn after elimination
-    MAX_AMMO_PICKUPS = 15,
-    AMMO_SPAWN_GAP = 5,
-    AMMO_PICKUP_LIFETIME = 30,
+
+
     AMMO_PICKUP_VALUE = 20,
     AMMO_GAINED_FROM_FLOOR = 1,
+
+    AMMO_SPAWN_INTERVAL = 2,
+    AMMO_PICKUP_LIFETIME = 30,
+    MAX_AMMO_PICKUPS = 15,
+    MIN_AMMO_PICKUP_PER_FLOOR = 1,
+    AMMO_SPAWN_HEIGHT_OFFSET = 7,
 
     KNOCKBACK_COOLDOWN = 1,
     KNOCKBACK_POWER = 200,
