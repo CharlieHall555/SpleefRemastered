@@ -94,6 +94,7 @@ ModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.Vect
 ModuleDirectory.Timer = game:GetService("ReplicatedStorage").Utilities.Timer
 ModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
 ModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilities.LogHandler
+ModuleDirectory.ListUtil = game:GetService("ReplicatedStorage").Utilities.ListUtil
 
 --//====================================================
 --// Utilities
@@ -111,6 +112,11 @@ ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Lay
 ModuleDirectory.Analytics = {}
 ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
 ModuleDirectory.Analytics.Main = game:GetService("ServerScriptService").Analytics.AnalyticsMain
+
+ModuleDirectory.Badges = {}
+ModuleDirectory.Badges.PlayerBadgeHandler = game:GetService("ServerScriptService").Badges.PlayerBadgeHander
+ModuleDirectory.Badges.WinBadgeHandler = game:GetService("ServerScriptService").Badges.WinBadgeHandler
+
 
 -- Remote Handlers
 

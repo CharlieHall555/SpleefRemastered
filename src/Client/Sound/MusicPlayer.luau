@@ -2,7 +2,7 @@ local SoundService = game:GetService("SoundService")
 
 local MusicPlayer = {}
 
-local tracks = { "rbxassetid://139648518979670", "rbxassetid://114323832093188" }
+local tracks = { "rbxassetid://139648518979670", "rbxassetid://114323832093188" , "rbxassetid://93649998031408" }
 local trackNumber = 1
 local soundPlayer: Sound? = nil
 local enabled = true
@@ -11,7 +11,7 @@ local _endedConn: RBXScriptConnection? = nil
 local _toggleListeners: { [number]: (enabled: boolean) -> nil } = {}
 local _nextToggleUid = 1
 
-local lastVolume = 0.35
+local lastVolume = 0.25
 
 local function fireToggle(enabledNow: boolean)
     local snapshot: { (boolean) -> nil } = {}

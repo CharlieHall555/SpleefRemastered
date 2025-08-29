@@ -46,5 +46,19 @@ function ListUtil.get_keys(list)
     return keys
 end
 
+function ListUtil.chunkList(list: {any}, chunkSize: number?): {{any}}
+    local result = {}
+    local size = chunkSize or 10 -- default to 10 if not given
+    
+    for i = 1, #list, size do
+        local chunk = {}
+        for j = i, math.min(i + size - 1, #list) do
+            table.insert(chunk, list[j])
+        end
+        table.insert(result, chunk)
+    end
+    
+    return result 
+end
 
 return ListUtil

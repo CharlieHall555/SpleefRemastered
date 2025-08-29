@@ -22,6 +22,7 @@ local ServerStatus = require(ModuleDirectory.ServerStatus)
 local MapSelection = require(ModuleDirectory.Round.MapSelection)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
 local ClearLobby = require(ModuleDirectory.Gameplay.ClearLobby)
+local WinBadgeHandler = require(ModuleDirectory.Badges.WinBadgeHandler)
 
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
@@ -83,7 +84,9 @@ local function onRoundEnding(currentRound)
 		Onboarding.action(Winner, "WON")
 		if Winner then
 			PlayerData.incrementWins(Winner, 1)
-			Leaderstats.updateStat(Winner, "Wins", PlayerData.getWins(Winner))
+			local totalWins = PlayerData.getWins(Winner)
+			Leaderstats.updateStat(Winner, "Wins", totalWins)
+			WinBadgeHandler.playerAwardedWin(Winner , totalWins)
 			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName)
 		else
 			print("No winner")

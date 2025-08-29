@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local SynchronousBridge = ReplicatedStorage:WaitForChild("Synchronous")
 local ASynchronousBridge = ReplicatedStorage:WaitForChild("Asynchronous")
+local UnrelaibleASynchronousBridge = ReplicatedStorage:WaitForChild("UnreliableAsynchronous")
 local IsServer = RunService:IsServer()
 
 local EventConnectionsCache: { [string]: { [string]: (player: Player, ...any) -> any? } } = {}
