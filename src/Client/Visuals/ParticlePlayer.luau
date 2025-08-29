@@ -125,7 +125,7 @@ function ParticlePlayer.init(): nil
         -- Drain queue
         while #queuedEmits > 0 and #idlePlayers > 0 do
             local req = table.remove(queuedEmits, 1)
-            ParticlePlayer.queueEmission(req.defName, req.position, req.overrides)
+            ParticlePlayer.queueEmission(req.defName, req.position, req.amount, req.overrides)
         end
     end)
 end
