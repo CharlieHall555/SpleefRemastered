@@ -43,13 +43,6 @@ function EliminationEffect.init()
 	RemoteEventHandler.newEventConnection("ELIMINATION", function(playerKilled: Player)
 		fireEffect()
 	end)
-
-	task.spawn(function()
-		while true do
-			wait(1)
-			fireEffect()
-		end
-	end)
 end
 
 return EliminationEffect

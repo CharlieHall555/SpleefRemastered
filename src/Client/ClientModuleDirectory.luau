@@ -102,6 +102,8 @@ ClientModuleDirectory.EmitterDefs = Root.Visuals.EmitterDefs
 ClientModuleDirectory.ClientLavaManager = Root.Visuals.ClientLavaManager
 ClientModuleDirectory.CheerEffect = Root.Visuals.CheerEffect
 ClientModuleDirectory.EliminationEffect = Root.Visuals.EliminationEffect
+ClientModuleDirectory.CrownOverhead = Root.Visuals.CrownOverhead
+ClientModuleDirectory.WinnerEffect = Root.Visuals.WinnerEffect
 
 ClientModuleDirectory.Spectate= {}
 ClientModuleDirectory.Spectate.Ghost = Root.Spectate.Ghost
@@ -137,5 +139,10 @@ ClientModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilitie
 
 ClientModuleDirectory.ThrowableData = game:GetService("ReplicatedStorage").Types.ThrowableData
 ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage").Data.ThrowableDefinitions
+
+
+ClientModuleDirectory.Libs = {}
+ClientModuleDirectory.Libs.UIParticleEmitter = Root.Libs.UIParticleEmitter
+
 
 return ClientModuleDirectory

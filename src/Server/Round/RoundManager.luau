@@ -24,7 +24,8 @@ local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructio
 local ClearLobby = require(ModuleDirectory.Gameplay.ClearLobby)
 local WinBadgeHandler = require(ModuleDirectory.Badges.WinBadgeHandler)
 local KnockbackTracker = require(ModuleDirectory.Gameplay.KnockbackTracker)
-
+local EliminationTracker = require(ModuleDirectory.Gameplay.EliminationTracker)
+local RoundSummary = require(ModuleDirectory.Gameplay.RoundSummary)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -88,11 +89,13 @@ local function onRoundEnding(currentRound)
 			local totalWins = PlayerData.getWins(Winner)
 			Leaderstats.updateStat(Winner, "Wins", totalWins)
 			WinBadgeHandler.playerAwardedWin(Winner , totalWins)
-			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName)
+			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName , Winner)
 		else
 			print("No winner")
 		end
 	end
+
+	RoundSummary.onRoundEnd(currentRound)
 
 	KnockbackTracker.reset()
 	BlockDestructionTracker.reset()
@@ -141,6 +144,13 @@ function RoundManager.onPlayerDeath(playerWhoDied: Player , wasAlive : boolean)
 	if wasAlive then
 		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied)
 	end
+
+	local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
+
+	if Eliminator then
+		RemoteEventHandler.FireOnClient(Eliminator , "ELIMINATION" , playerWhoDied)
+	end
+
 end
 
 return RoundManager

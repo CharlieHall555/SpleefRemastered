@@ -22,7 +22,6 @@ ModuleDirectory.Round.RoundSystem = game:GetService("ServerScriptService").Round
 ModuleDirectory.Round.SuddenDeath = game:GetService("ServerScriptService").Round.SuddenDeath
 ModuleDirectory.Round.MapSelection = game:GetService("ServerScriptService").Round.MapSelection
 
-
 --//====================================================
 --// Throwable System
 --//====================================================
@@ -76,6 +75,8 @@ ModuleDirectory.Gameplay.ClearLobby = game:GetService("ServerScriptService").Gam
 ModuleDirectory.Gameplay.TouchedBlockTracker = game:GetService("ServerScriptService").Gameplay.TouchedBlockTracker
 ModuleDirectory.Gameplay.KnockbackTracker = game:GetService("ServerScriptService").Gameplay.KnockbackTracker
 ModuleDirectory.Gameplay.EliminationTracker = game:GetService("ServerScriptService").Gameplay.EliminationTracker
+ModuleDirectory.Gameplay.RoundSummary =  game:GetService("ServerScriptService").Gameplay.RoundSummary
+
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 
@@ -119,6 +120,8 @@ ModuleDirectory.Analytics.Main = game:GetService("ServerScriptService").Analytic
 ModuleDirectory.Badges = {}
 ModuleDirectory.Badges.PlayerBadgeHandler = game:GetService("ServerScriptService").Badges.PlayerBadgeHander
 ModuleDirectory.Badges.WinBadgeHandler = game:GetService("ServerScriptService").Badges.WinBadgeHandler
+
+
 
 
 -- Remote Handlers

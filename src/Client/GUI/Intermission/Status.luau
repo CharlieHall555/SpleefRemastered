@@ -7,6 +7,9 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 
 local StatusGui = {}
 
+local state : string = "Intermission"
+local timerValue : number = 0
+
 local serverStateMappings = {
     INTERMISSION = "Intermission",
     STARTING = "Round Starting",
@@ -26,7 +29,8 @@ function StatusGui.onProfileLoaded()
     
     ClientStateTracker.connectServerStateChange(function(newState)
 
-        Status.State.Text = serverStateMappings[newState] or ""
+        state = serverStateMappings[newState] or ""
+        Status.Label.Text = state .. " : " .. tostring(timerValue)
         
     end)
 
@@ -34,7 +38,8 @@ function StatusGui.onProfileLoaded()
         
         if ClientStateTracker.getState() == "INTERMISSION" then
             
-            Status.Timer.Text = math.max(math.floor(newValue) , 0)
+            timerValue = math.max(math.floor(newValue) , 0)
+            Status.Label.Text = state .. " : " .. tostring(timerValue)
 
         end
 
@@ -44,7 +49,8 @@ function StatusGui.onProfileLoaded()
         
         if ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "PREPARING" then
             
-            Status.Timer.Text = math.max(math.floor(newValue) , 0)
+            timerValue = math.max(math.floor(newValue) , 0)
+            Status.Label.Text = state .. " : " .. tostring(timerValue)
 
         end
 
@@ -54,7 +60,8 @@ function StatusGui.onProfileLoaded()
         
         if ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "ACTIVE" then
             
-            Status.Timer.Text = math.max(math.floor(newValue) , 0)
+            timerValue = math.max(math.floor(newValue) , 0)
+            Status.Label.Text = state .. " : " .. tostring(timerValue)
 
         end
 
