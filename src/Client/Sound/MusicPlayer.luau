@@ -1,3 +1,4 @@
+local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
 local MusicPlayer = {}
@@ -63,6 +64,9 @@ end
 function MusicPlayer.init()
     ensureSound()
     playCurrent()
+    if RunService:IsStudio() then
+        MusicPlayer.disable()
+    end
 end
 
 function MusicPlayer.enable()

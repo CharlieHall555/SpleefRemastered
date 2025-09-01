@@ -81,6 +81,7 @@ function ExperienceBar.onProfileLoaded()
 	end, "level")
 
 	UserProfile.setOnUpdateCallback(function(_, newXp)
+		print("got")
 		-- xp changed: update texts and tween bar
 		local level = select(1, getLevelAndXp())
 		local xp = tonumber(newXp) or 0

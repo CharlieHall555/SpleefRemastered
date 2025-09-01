@@ -141,6 +141,8 @@ function PlayerData.setXP(player: Player, newValue: number): nil
 		return
 	end
 	profile.Data.xp = newValue
+	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "xp", profile.Data.xp)
+
 end
 
 function PlayerData.incrementXP(player: Player, amount: number): nil
@@ -150,10 +152,13 @@ function PlayerData.incrementXP(player: Player, amount: number): nil
 		return
 	end
 	profile.Data.xp = (profile.Data.xp or 0) + amount
+	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "xp", profile.Data.xp)
+
 end
 
 function PlayerData.getLevel(player: Player): number
 	local profile = profiles[player.UserId]
+	print(profile.Data)
 	if profile == nil then
 		warn(player.Name .. " profile is nil")
 		return 1

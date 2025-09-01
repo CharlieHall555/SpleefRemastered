@@ -128,6 +128,8 @@ ModuleDirectory.LevelSystem = {}
 ModuleDirectory.LevelSystem.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
 ModuleDirectory.LevelSystem.LevelController = game:GetService("ServerScriptService").Player.LevelSystem.LevelController
 
+ModuleDirectory.ServerCommands = game:GetService("ServerScriptService").Core.ServerCommands
+
 -- Remote Handlers
 
 return ModuleDirectory
