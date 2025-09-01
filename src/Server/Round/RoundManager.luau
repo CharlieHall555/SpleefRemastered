@@ -141,11 +141,11 @@ end
 
 function RoundManager.onPlayerDeath(playerWhoDied: Player , wasAlive : boolean)
 	RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
-	if wasAlive then
-		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied)
-	end
-
 	local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
+
+	if wasAlive then
+		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied , Eliminator)
+	end
 
 	if Eliminator then
 		RemoteEventHandler.FireOnClient(Eliminator , "ELIMINATION" , playerWhoDied)

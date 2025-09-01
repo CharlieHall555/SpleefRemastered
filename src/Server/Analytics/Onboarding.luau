@@ -11,7 +11,7 @@ local callback : ((player : Player , newStep : number) -> nil)?
 
 export type Action = "JOINED_GAME" | "JOINED_ROUND" | "SHOT" | "SNOWBALL_BROKEN_BLOCK" | "WON" | "SPADE_BROKEN_BLOCK"
 
-local numberOfSteps = 5
+
 
 export type Progress = {
     step: number,
@@ -34,6 +34,8 @@ local ACTION_TO_FIELD: { [Action]: string } = {
     SNOWBALL_BROKEN_BLOCK = "hasBrokenBlockWithSnowball",
     WON = "hasWon"
 }
+
+local numberOfSteps = 6
 
 -- Map actions to display names
 local ACTION_TO_STEP_NAME: { [Action]: string } = {

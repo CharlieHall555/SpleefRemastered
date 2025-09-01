@@ -31,6 +31,7 @@ ClientModuleDirectory.Gui.ScaleUtilities = Root.Gui.Utilities.ScaleUtilities
 ClientModuleDirectory.Gui.SpectateButton = Root.Gui.Spectate.SpectateButton
 ClientModuleDirectory.Gui.MobileSettingsButton = Root.Gui.Settings.MobileSettingsButton
 ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSettingsWidget
+ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
 
 ClientModuleDirectory.Gui.TouchButtons = Root.Gui.Input.TouchButtons
 
@@ -43,6 +44,8 @@ ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
 
 ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
+
+ClientModuleDirectory.Gui.SummaryWidget = Root.Gui.Intermission.SummaryWidget
 
 --//====================================================
 --// Input Handler
@@ -143,6 +146,10 @@ ClientModuleDirectory.ThrowableDefinitions = game:GetService("ReplicatedStorage"
 
 ClientModuleDirectory.Libs = {}
 ClientModuleDirectory.Libs.UIParticleEmitter = Root.Libs.UIParticleEmitter
+
+ClientModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilities.LogHandler
+
+ClientModuleDirectory.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
 
 
 return ClientModuleDirectory

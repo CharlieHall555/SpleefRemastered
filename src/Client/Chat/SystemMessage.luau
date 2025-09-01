@@ -3,6 +3,8 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local TextChatService = game:GetService("TextChatService")
 local RBXSystem : TextChannel?
+local LogHandler = require(ClientModuleDirectory.LogHandler)
+
 
 local SystemMessage = {}
 
@@ -43,12 +45,12 @@ function SystemMessage.init() --#region
 
     local channels = TextChatService:WaitForChild("TextChannels" , 4)
     if channels == nil then
-        warn("TextChatService missing TextChannels folder.")
+        LogHandler.error("TextChatService missing TextChannels folder.")
         return
     end
     RBXSystem = channels:WaitForChild("RBXSystem")
     if RBXSystem == nil then
-        warn("TextChannels folder missing RBXSystem.")
+        LogHandler.error("TextChannels folder missing RBXSystem.")
         return
     end
    

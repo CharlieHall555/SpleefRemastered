@@ -16,7 +16,9 @@ local outputSeverity: Severity = 1
 local defaultSeverity: Severity = 1
 
 local function errorWrapper(message: string)
-	error(message, 2) -- blame caller
+    pcall(function()
+        error(message, 2)
+    end)
 end
 
 local severity_def: { [Severity]: { tag: string, f: SinkFn } } = {

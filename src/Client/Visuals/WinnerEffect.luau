@@ -78,7 +78,7 @@ function WinnerEffect.onProfileLoaded()
 	emitter3 = createEmitter(hook2, Color3.fromRGB(255, 255, 255))
 	emitter4 = createEmitter(hook2, Color3.fromRGB(250, 254, 131))
 
-	-- Event arrives any time; only play during INTERMISSION
+	-- Event can arrive any time; only play during INTERMISSION (queued otherwise)
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
 		pendingWin = { name = playerName, player = winner }
 		tryPlayPendingIfAllowed()
@@ -95,14 +95,17 @@ local function fireworkEffect()
 	SoundPlayer.playSound("rbxassetid://121821052187356")
 	emitter1:Emit(15)
 	emitter2:Emit(15)
+
 	task.wait(0.5)
 	SoundPlayer.playSound("rbxassetid://121821052187356")
 	emitter3:Emit(15)
 	emitter4:Emit(15)
+
 	task.wait(0.65)
 	emitter1:Emit(15)
 	emitter2:Emit(15)
 	SoundPlayer.playSound("rbxassetid://121821052187356")
+
 	task.wait(0.85)
 	emitter3:Emit(15)
 	emitter4:Emit(15)
@@ -111,26 +114,40 @@ end
 
 function WinnerEffect.onWin(winnerName: string, winner: Player?)
 	task.spawn(function()
-		-- small delay to let HUD settle
-		task.wait(1)
+		-- brief delay so the HUD has settled
+		task.wait(3)
 
 		local display = (winner and winner.DisplayName) or winnerName or "Winner"
 		label.Text = display .. " Won"
+
+		-- Target is wherever the widget is placed in Studio (center/top area of intermission HUD)
+		local targetPos: UDim2 = winnerWidget.Position
+		local offscreenTop = UDim2.fromScale(0.5, -winnerWidget.Size.Y.Scale) -- centered, above the screen
+
+		-- Prepare entrance: start above screen, show, then tween down to target
 		winnerWidget.Visible = true
+		winnerWidget.Position = offscreenTop
 
-		task.spawn(fireworkEffect)
+		local inTweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		local inTween = TweenService:Create(winnerWidget, inTweenInfo, { Position = targetPos })
+		inTween:Play()
+		inTween.Completed:Wait()
 
-		task.wait(5)
+		-- Play fireworks once the banner has landed
+		fireworkEffect()
 
-		local startPos = label.Position
-		local goal = { Position = UDim2.fromScale(0.5, 0 - winnerWidget.Size.Y.Scale) }
-		local tweenInfo = TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-		local tween = TweenService:Create(winnerWidget, tweenInfo, goal)
-		tween:Play()
-		tween.Completed:Wait()
+		-- Hold on-screen for a moment to let the moment land
+		task.wait(2.25)
 
-		label.Position = startPos
+		-- Slide back up and hide
+		local outTweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+		local outTween = TweenService:Create(winnerWidget, outTweenInfo, { Position = offscreenTop })
+		outTween:Play()
+		outTween.Completed:Wait()
+
 		winnerWidget.Visible = false
+		-- restore to targetPos so future entrances know their destination
+		winnerWidget.Position = targetPos
 	end)
 end
 

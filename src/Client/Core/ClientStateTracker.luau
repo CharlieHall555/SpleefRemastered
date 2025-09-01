@@ -69,7 +69,6 @@ function ClientStateTracker.changeState(newState: "ACTIVE" | "ROUND_STARTING" | 
 	state = newState
 
 	local bucket = _transitions[newState] or {}
-	print(newState , bucket)
 	for _, callback in bucket do
 		local ok, err = pcall(callback)
 		if not ok then

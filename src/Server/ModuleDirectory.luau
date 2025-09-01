@@ -1,3 +1,4 @@
+local GuiService = game:GetService("GuiService")
 local ModuleDirectory = {}
 
 -- Core Scripts
@@ -121,8 +122,11 @@ ModuleDirectory.Badges = {}
 ModuleDirectory.Badges.PlayerBadgeHandler = game:GetService("ServerScriptService").Badges.PlayerBadgeHander
 ModuleDirectory.Badges.WinBadgeHandler = game:GetService("ServerScriptService").Badges.WinBadgeHandler
 
+ModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilities.LogHandler
 
-
+ModuleDirectory.LevelSystem = {}
+ModuleDirectory.LevelSystem.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
+ModuleDirectory.LevelSystem.LevelController = game:GetService("ServerScriptService").Player.LevelSystem.LevelController
 
 -- Remote Handlers
 

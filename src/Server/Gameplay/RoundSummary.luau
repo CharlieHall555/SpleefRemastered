@@ -3,6 +3,7 @@ local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructio
 local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
 local EliminationTracker = require(ModuleDirectory.Gameplay.EliminationTracker)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local RoundSummary = {}
 
@@ -27,7 +28,7 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round)
             newRecord.blocksDestroyed = (#BlockDestructionTracker.getBlocksDestroyedByPlayer(eachPlayer)) or 0
             newRecord.elininations = (#EliminationTracker.getElimationsFor(eachPlayer)) or 0 
 
-            print("RECORD" , newRecord)
+            RemoteEventHandler.FireOnClient(eachPlayer , "ROUND_SUMMARY" , newRecord)
 
 		end
 	end

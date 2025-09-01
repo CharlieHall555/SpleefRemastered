@@ -79,3 +79,9 @@ local cheerEffect = require(ClientModuleDirectory.CheerEffect)
 
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
 
+local LogHandler = require(ClientModuleDirectory.LogHandler)
+
+RemoteEventHandler.newEventConnection("ROUND_SUMMARY" , function(value)
+	print("RECORD" ,  value)
+	
+end)

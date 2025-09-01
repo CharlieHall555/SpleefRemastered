@@ -8,13 +8,13 @@ local ProfileTemplate = {
 	onboardingStep = 0,
 	onboardingComplete = false,
 	xp = 0,
-	level = 0,
+	level = 1,
 	wins = 0,
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
 
-local ProfileStore = ProfileService.GetProfileStore("TestDatabase6", ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore("TestDatabase7", ProfileTemplate)
 
 local profiles: { [number]: any } = {}
 local loading: { [number]: boolean } = {}
@@ -108,6 +108,7 @@ function PlayerData.setWins(player: Player, newValue: number): nil
 		return
 	end
 	profile.Data.wins = newValue
+	RemoteEventHandler.FireOnClient(player , "PROFILE_UPDATE", "wins", profile.Data.wins)
 end
 
 function PlayerData.incrementWins(player: Player, amount: number): nil
@@ -150,5 +151,36 @@ function PlayerData.incrementXP(player: Player, amount: number): nil
 	end
 	profile.Data.xp = (profile.Data.xp or 0) + amount
 end
+
+function PlayerData.getLevel(player: Player): number
+	local profile = profiles[player.UserId]
+	if profile == nil then
+		warn(player.Name .. " profile is nil")
+		return 1
+	end
+	return profile.Data.level or 1
+end
+
+function PlayerData.setLevel(player: Player, newValue: number): nil
+	local profile = profiles[player.UserId]
+	if profile == nil then
+		warn(player.Name .. " profile is nil")
+		return
+	end
+	profile.Data.level = newValue
+	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "level", profile.Data.level)
+
+end
+
+function PlayerData.incrementLevel(player: Player, amount: number): nil
+	local profile = profiles[player.UserId]
+	if profile == nil then
+		warn(player.Name .. " profile is nil")
+		return
+	end
+	profile.Data.level = (profile.Data.level or 1) + amount
+	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "level", profile.Data.level)
+end
+
 
 return PlayerData

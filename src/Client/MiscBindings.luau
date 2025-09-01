@@ -11,6 +11,7 @@ local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local SpectateButton = require(ClientModuleDirectory.Gui.SpectateButton)
+local SystemMessage = require(ClientModuleDirectory.Chat.SystemMessage)
 
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
@@ -87,6 +88,24 @@ function MiscBindings.init()
 		end
 
 	end)
+
+	RemoteEventHandler.newEventConnection("PLAYER_DIED" , function(died : Player , killer : Player)
+
+		if died and killer then
+			SystemMessage.send(killer.DisplayName .. " ELIMINATED " .. died.DisplayName , Color3.new(0.937254, 0.019607, 0.019607) , true)
+		else
+			SystemMessage.send( died.DisplayName .. " Died" , Color3.new(0.788235, 0.129411, 0.043137) , true)
+		end
+
+		
+	end)
+
+	RemoteEventHandler.newEventConnection("PLAYER_WON" , function(playerName : string , winner : Player)
+		
+		SystemMessage.send(winner.DisplayName .. " WON" , Color3.new(0.862745, 0.890196, 0.352941) , true)
+
+	end)
+
 end
 
 return MiscBindings

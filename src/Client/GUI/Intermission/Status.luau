@@ -25,7 +25,6 @@ function StatusGui.onProfileLoaded()
 
     Status = GuiAssets:WaitForChild("Intermission"):WaitForChild("Status")
     Status.Parent = Screens.intermissionHUD
-    Status.Winner.Visible = false
     
     ClientStateTracker.connectServerStateChange(function(newState)
 
@@ -67,15 +66,7 @@ function StatusGui.onProfileLoaded()
 
     end)
 
-    RemoteEventHandler.newEventConnection("PLAYER_WON" , function(playerName : string)
-        
-        Status.Winner.Visible = true
-        Status.Winner.Text = "Winner: " .. playerName
-        task.delay(4 , function()
-            Status.Winner.Visible = false
-        end)
 
-    end)
     
     
 end
