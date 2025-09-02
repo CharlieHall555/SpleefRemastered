@@ -33,6 +33,9 @@ ClientModuleDirectory.Gui.MobileSettingsButton = Root.Gui.Settings.MobileSetting
 ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSettingsWidget
 ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
 
+ClientModuleDirectory.Gui.EliminationScreen = Root.Gui.Intermission.EliminationScreen
+ClientModuleDirectory.Gui.RespawnScreen = Root.Gui.Intermission.RespawnScreen
+
 ClientModuleDirectory.Gui.TouchButtons = Root.Gui.Input.TouchButtons
 
 ClientModuleDirectory.Gui.CrossHair = Root.Gui.Input.CrossHair
@@ -75,6 +78,7 @@ ClientModuleDirectory.HitBoxManager = Root.Gameplay.HitBoxManager
 ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
+ClientModuleDirectory.PostDeathSystem = Root.Gameplay.PostDeathSystem
 
 --//====================================================
 --// Profile
@@ -155,6 +159,6 @@ ClientModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilitie
 
 ClientModuleDirectory.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
 
-
+ClientModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
 
 return ClientModuleDirectory

@@ -15,9 +15,9 @@ return {
     --//====================================================
     REQUIRED_PLAYERS = 2,              -- Players needed to start a round
     PLAYERS_TO_END = 1,                -- Players left to trigger end
-    INTERMISSION_TIME = 300,             -- Time between rounds
+    INTERMISSION_TIME = 10,             -- Time between rounds
     PREPARING_TIME = 8,                -- Pre-round prep time
-    ROUND_TIME = 80,                   -- Normal round duration
+    ROUND_TIME = 10,                   -- Normal round duration
     MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
 
     --//====================================================
@@ -62,7 +62,7 @@ return {
     STARTING_AMMO = 0,                -- Ammo given at start
     MAX_AMMO = 20,                     -- Ammo cap
     AMMO_REGEN_INTERVAL = 100000,           -- Time between ammo regen ticks (s)
-    RESPAWN_TIME = 0.5,                   -- Roblox Time to respawn after elimination
+    RESPAWN_TIME = 0,                   -- Roblox Time to respawn after elimination
 
 
     AMMO_PICKUP_VALUE = 20,

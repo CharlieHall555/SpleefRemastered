@@ -7,6 +7,8 @@ local ClientStateTracker = {}
 local state: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION" = "INTERMISSION"
 local serverState: string?
 
+local isSuddenDeath = false
+
 -- callbacks stored per-state by uid
 local _transitions = {
 	ACTIVE = {} :: { [string]: () -> () },
@@ -52,12 +54,21 @@ function ClientStateTracker.init(): nil
 		ClientStateTracker.setServerState(gotState)
 	end
 
+	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH" , function()
+		isSuddenDeath = true
+	end)
+
 end
 
 function ClientStateTracker.receivedStateChange(newState: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION"): nil
 	if newState ~= state then
 		ClientStateTracker.changeState(newState)
 	end
+	
+end
+
+function ClientStateTracker.getSuddenDeath() : boolean
+	return isSuddenDeath
 end
 
 function ClientStateTracker.changeState(newState: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION"): nil
@@ -87,6 +98,9 @@ end
 
 function ClientStateTracker.setServerState(newServerState: string): nil
 	serverState = newServerState
+	if newServerState == "PREPARING" then
+		isSuddenDeath = false
+	end
 	print("SERVER STATECHANGE: " .. serverState)
 	for _, callback in _serverStateTransitions do
 		local ok, err = pcall(callback, newServerState)

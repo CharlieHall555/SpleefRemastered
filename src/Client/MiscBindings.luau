@@ -12,9 +12,10 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local SpectateButton = require(ClientModuleDirectory.Gui.SpectateButton)
 local SystemMessage = require(ClientModuleDirectory.Chat.SystemMessage)
-
+local Transition = require(ClientModuleDirectory.Gui.Transition)
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+
 
 local lastMousePos
 
@@ -62,7 +63,7 @@ function MiscBindings.init()
 	ClientStateTracker.connectServerStateChange(function(newState)
 		
 		if newState == "ACTIVE" and ClientStateTracker.getState() == "INTERMISSION" then
-			SpectateButton.show()
+			SpectateButton.show()		
 		elseif newState == "INTERMISSION" then
 			SpectateButton.hide()
 		end
@@ -70,7 +71,7 @@ function MiscBindings.init()
 	end)
 
 	ClientStateTracker.connectIntermission(function()
-		
+		task.wait(0.5)
 		if ClientStateTracker.getServerState() == "ACTIVE" then
 			SpectateButton.show()
 		end
@@ -89,6 +90,10 @@ function MiscBindings.init()
 
 	end)
 
+	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH" , function()
+		SoundPlayer.playSound("rbxassetid://88338250840662")
+	end)
+
 	RemoteEventHandler.newEventConnection("PLAYER_DIED" , function(died : Player , killer : Player)
 
 		if died and killer then
@@ -97,6 +102,11 @@ function MiscBindings.init()
 			SystemMessage.send( died.DisplayName .. " Died" , Color3.new(0.788235, 0.129411, 0.043137) , true)
 		end
 
+		if died == LocalPlayer then
+			Transition.show()
+			task.wait(1)
+			Transition.hide()
+		end
 		
 	end)
 
@@ -105,6 +115,8 @@ function MiscBindings.init()
 		SystemMessage.send(winner.DisplayName .. " WON" , Color3.new(0.862745, 0.890196, 0.352941) , true)
 
 	end)
+
+	
 
 end
 

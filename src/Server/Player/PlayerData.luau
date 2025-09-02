@@ -11,6 +11,7 @@ local ProfileTemplate = {
 	xp = 0,
 	coins = 0,
 	level = 1,
+	respawns = 0,
 	wins = 0,
 }
 

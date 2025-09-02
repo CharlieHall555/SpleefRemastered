@@ -4,7 +4,7 @@ local SoundService = game:GetService("SoundService")
 local MusicPlayer = {}
 
 local tracks = { "rbxassetid://139648518979670", "rbxassetid://114323832093188" , "rbxassetid://93649998031408" }
-local trackNumber = 1
+local trackNumber = math.random(1 , #tracks)
 local soundPlayer: Sound? = nil
 local enabled = true
 local _endedConn: RBXScriptConnection? = nil

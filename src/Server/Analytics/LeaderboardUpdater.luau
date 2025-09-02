@@ -7,7 +7,6 @@ local Config = require(game:GetService("ServerScriptService").ServerConfiguratio
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local isShuttingDown = false
-
 local got_key = false
 
 local MAX_RETRIES = 3
@@ -51,20 +50,8 @@ local function assembleRecord(userId: number, player: Player): updateRecord
     return cache
 end
 
-local function resetCache()
-    for eachUserId, eachPlayer in loadedPlayers do
-        leaderboardCache[eachUserId] = {
-            user = eachUserId,
-            new_wins = 0,
-            global_wins = PlayerData.getWins(eachPlayer) or 0,
-            level = PlayerData.getLevel(eachPlayer) or 1
-        }
-    end
-end
-
 function LeaderboardUpdater.init()
-
-    local s , e = pcall(function()
+    local s = pcall(function()
         LEADERBOARD_API_KEY = HttpService:GetSecret("LeaderboardAPIKey")
     end)
     got_key = s
@@ -85,7 +72,6 @@ function LeaderboardUpdater.init()
 
     game:BindToClose(function()
         isShuttingDown = true
-        -- one final flush; yield here so Roblox waits (up to ~30s total)
         LeaderboardUpdater.flush()
     end)
 end
@@ -97,26 +83,48 @@ end
 
 function LeaderboardUpdater.onPlayerLeave(player: Player)
     loadedPlayers[player.UserId] = nil
-    leaderboardCache[player.UserId] = nil
+    -- keep the cached record so it flushes later; snapshot latest values once more
+    local rec = leaderboardCache[player.UserId]
+    if rec then
+        rec.global_wins = PlayerData.getWins(player) or rec.global_wins
+        rec.level = PlayerData.getLevel(player) or rec.level
+    end
 end
 
 -- Call this when a player earns a win so we batch increment accurately between flushes.
 function LeaderboardUpdater.incrementWins(userId: number, amount: number)
     local player = loadedPlayers[userId]
-    if not player then
-        return
+    local rec: updateRecord?
+
+    if player then
+        rec = assembleRecord(userId, player)
+        rec.global_wins = PlayerData.getWins(player) or rec.global_wins
+    else
+        -- if player not loaded, ensure a cache entry exists to count late flushes
+        rec = leaderboardCache[userId]
+        if not rec then
+            rec = {
+                user = userId,
+                new_wins = 0,
+                global_wins = 0,
+                level = 1
+            }
+            leaderboardCache[userId] = rec
+        end
     end
-    local rec = assembleRecord(userId, player)
+
     rec.new_wins += math.max(0, amount or 0)
-    rec.global_wins = (PlayerData.getWins(player) or rec.global_wins) -- keep fresh
 end
 
 function LeaderboardUpdater.flush()
+    if not got_key then
+        return
+    end
+
     local list: { updateRecord } = {}
 
-    -- include everyone still cached, even if they’ve left
+    -- include everyone in cache (even if they have left)
     for _, rec in pairs(leaderboardCache) do
-        -- refresh wins/level if player still present
         local plr = loadedPlayers[rec.user]
         if plr then
             rec.global_wins = PlayerData.getWins(plr) or rec.global_wins
@@ -147,6 +155,7 @@ function LeaderboardUpdater.flush()
                 Body = requestBody
             })
         end)
+
         if ok and res and res.Success and res.StatusCode >= 200 and res.StatusCode < 300 then
             success = true
         else
@@ -155,10 +164,8 @@ function LeaderboardUpdater.flush()
     end
 
     if success then
-        -- after a successful push, clear cache for all records
         leaderboardCache = {}
-        -- rebuild cache for currently loaded players
-        for userId, plr in loadedPlayers do
+        for userId, plr in pairs(loadedPlayers) do
             assembleRecord(userId, plr)
         end
     end
