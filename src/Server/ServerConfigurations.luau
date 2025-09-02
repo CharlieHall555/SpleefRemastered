@@ -1,5 +1,7 @@
 return {
 
+    LEADERBOARD_API_ENDPOINT = "https://leaderboardapi-production.up.railway.app",
+
     --//====================================================
     --// Performance / Part Pooling
     --//====================================================

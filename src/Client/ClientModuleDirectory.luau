@@ -41,7 +41,10 @@ ClientModuleDirectory.Gui.PCSettingsWidget = Root.Gui.Settings.PCSettingsWidget
 ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
 ClientModuleDirectory.Gui.HowToPlay = Root.Gui.Intermission.HowToPlay
 ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon
+ClientModuleDirectory.Gui.Coins = Root.Gui.Intermission.Coins
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
+
+ClientModuleDirectory.Gui.GlobalLeaderboard = Root.Gui.SurfaceGUIs.GlobalLeaderboard
 
 ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 
@@ -135,6 +138,7 @@ ClientModuleDirectory.TapDebugView = Root.DebugTools.TapDebugView
 
 ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ClientModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
+ClientModuleDirectory.TextUtilities = game:GetService("ReplicatedStorage").Utilities.TextUtilities
 
 --//====================================================
 --// Resources Handler
@@ -150,6 +154,7 @@ ClientModuleDirectory.Libs.UIParticleEmitter = Root.Libs.UIParticleEmitter
 ClientModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilities.LogHandler
 
 ClientModuleDirectory.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
+
 
 
 return ClientModuleDirectory

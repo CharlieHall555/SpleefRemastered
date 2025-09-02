@@ -117,6 +117,8 @@ ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Lay
 ModuleDirectory.Analytics = {}
 ModuleDirectory.Analytics.Onboarding = game:GetService("ServerScriptService").Analytics.Onboarding
 ModuleDirectory.Analytics.Main = game:GetService("ServerScriptService").Analytics.AnalyticsMain
+ModuleDirectory.Analytics.LeaderboardUpdater = game:GetService("ServerScriptService").Analytics.LeaderboardUpdater
+ModuleDirectory.Analytics.LeaderboardGetter = game:GetService("ServerScriptService").Analytics.LeaderboardGetter
 
 ModuleDirectory.Badges = {}
 ModuleDirectory.Badges.PlayerBadgeHandler = game:GetService("ServerScriptService").Badges.PlayerBadgeHander

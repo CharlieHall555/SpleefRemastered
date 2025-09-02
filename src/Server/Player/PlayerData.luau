@@ -1,5 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
@@ -8,13 +9,22 @@ local ProfileTemplate = {
 	onboardingStep = 0,
 	onboardingComplete = false,
 	xp = 0,
+	coins = 0,
 	level = 1,
 	wins = 0,
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
 
-local ProfileStore = ProfileService.GetProfileStore("TestDatabase7", ProfileTemplate)
+local database = "PRODUCTION"
+
+if RunService:IsStudio() then
+	database = "TEST1"
+else
+	database = "PRODUCTION"
+end
+
+local ProfileStore = ProfileService.GetProfileStore(database, ProfileTemplate)
 
 local profiles: { [number]: any } = {}
 local loading: { [number]: boolean } = {}
@@ -185,6 +195,35 @@ function PlayerData.incrementLevel(player: Player, amount: number): nil
 	end
 	profile.Data.level = (profile.Data.level or 1) + amount
 	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "level", profile.Data.level)
+end
+
+function PlayerData.getCoins(player: Player): number
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return 0
+    end
+    return profile.Data.coins or 0
+end
+
+function PlayerData.setCoins(player: Player, newValue: number): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return
+    end
+    profile.Data.coins = newValue
+    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "coins", profile.Data.coins)
+end
+
+function PlayerData.incrementCoins(player: Player, amount: number): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return
+    end
+    profile.Data.coins = (profile.Data.coins or 0) + amount
+    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "coins", profile.Data.coins)
 end
 
 
