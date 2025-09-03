@@ -135,7 +135,7 @@ ModuleDirectory.LevelSystem = {}
 ModuleDirectory.LevelSystem.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
 ModuleDirectory.LevelSystem.LevelController = game:GetService("ServerScriptService").Player.LevelSystem.LevelController
 
-ModuleDirectory.ServerCommands = game:GetService("ServerScriptService").Core.ServerCommands
+ModuleDirectory.ServerCommands = game:GetService("ServerScriptService").Chat.ServerCommands
 
 ModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
 

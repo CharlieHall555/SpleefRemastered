@@ -4,18 +4,21 @@ local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local TextChatService = game:GetService("TextChatService")
 local Players = game:GetService("Players")
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local GroupService = game:GetService("GroupService")
+local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 local ServerCommands = {}
 
 local commandsFolder
 
 -- try to post a system message to the default channel (falls back to print)
-local function createCommand(commandName: string, allias: string): TextChatCommand
+local function createCommand(commandName: string, allias: string , requiredGroupLevel : number): TextChatCommand
 	local newCommand = Instance.new("TextChatCommand", commandsFolder)
 	newCommand.Name = commandName
 	newCommand.PrimaryAlias = allias
 	newCommand.AutocompleteVisible = false
 	newCommand.Parent = commandsFolder
+	newCommand:SetAttribute("level" , requiredGroupLevel)
 	return newCommand
 end
 
@@ -81,6 +84,26 @@ local function getOriginPlayer(originTextSource: TextSource?): Player?
 	return Players:GetPlayerByUserId(uid)
 end
 
+local function connectToTrigger(command : TextChatCommand , callback: (originTextSource: TextSource, unfilteredText: string) -> ())
+	
+	command.Triggered:Connect(function(originTextSource, unfilteredText)
+		
+		local levelRequired = command:GetAttribute("level") or 255
+		local caller : Player? = getOriginPlayer(originTextSource)
+		if caller then
+			
+			local callerRank = (caller:GetRankInGroup(Config.GROUP_ID) or 1)
+			if callerRank >= levelRequired then
+				callback(originTextSource , unfilteredText)
+			end
+
+		end
+
+
+	end)
+	
+end
+
 function ServerCommands.init()
 	commandsFolder = Instance.new("Folder")
 	commandsFolder.Name = "ServerCommands"
@@ -90,7 +113,8 @@ function ServerCommands.init()
 	commandsFolder.Name = "ServerCommands"
 	commandsFolder.Parent = TextChatService
 
-	createCommand("giveXp", "/xp").Triggered:Connect(function(originTextSource, unfilteredText)
+	--giveXpCommand
+	connectToTrigger(createCommand("giveXp", "/xp" , 255) , function(originTextSource, unfilteredText)
 		local caller = getOriginPlayer(originTextSource)
 		local argsText = trim(unfilteredText or "")
 		local parts = {}
@@ -98,7 +122,6 @@ function ServerCommands.init()
 			table.insert(parts, token)
 		end
 
-		print(parts)
 
 		-- parts[1] == "/xp", so real args start from parts[2]
 		if #parts < 2 then
@@ -141,6 +164,64 @@ function ServerCommands.init()
 			systemMessage(caller, "[XP] Failed to give XP: " .. tostring(err))
 		end
 	end)
+
+	connectToTrigger(createCommand("kick", "/kick", 255), function(originTextSource, unfilteredText)
+	local caller = getOriginPlayer(originTextSource)
+	local argsText = trim(unfilteredText or "")
+	local parts = {}
+	for token in string.gmatch(argsText, "%S+") do
+		table.insert(parts, token)
+	end
+
+	-- parts[1] == "/kick"
+	if #parts < 2 then
+		systemMessage(caller, "Usage: /kick <player> [reason]")
+		return
+	end
+
+	-- Support multi-word identifiers: try all splits to find a player
+	local target: Player? = nil
+	local identEnd = 2
+	for i = #parts, 2, -1 do
+		local ident = table.concat(parts, " ", 2, i)
+		target = findPlayerByIdentifier(ident)
+		if target then
+			identEnd = i
+			break
+		end
+	end
+
+	if not target then
+		systemMessage(caller, ("Player '%s' not found."):format(table.concat(parts, " ", 2)))
+		return
+	end
+
+	-- Extract optional reason after the identifier
+	local reason = ""
+	if identEnd < #parts then
+		reason = table.concat(parts, " ", identEnd + 1)
+	end
+	if reason == "" then
+		reason = "You were kicked from the server."
+	end
+
+	-- Prevent self-kick and kicking peers/superiors in the same group
+	if caller and caller == target then
+		systemMessage(caller, "You cannot kick yourself.")
+		return
+	end
+
+	-- Execute kick
+	local ok, err = pcall(function()
+		target:Kick(reason)
+	end)
+
+	if ok then
+		systemMessage(caller, ("Kicked %s. Reason: %s"):format(target.Name, reason))
+	else
+		systemMessage(caller, "Failed to kick: " .. tostring(err))
+	end
+end)
 end
 
 return ServerCommands
