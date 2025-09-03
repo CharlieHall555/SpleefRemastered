@@ -10,6 +10,8 @@ return {
     MAX_PARTS_PER_FRAME_PER_LAYER = 65,-- Max parts per frame per map layer
     BLOCK_SIZE = 5,                    -- Size of a block in studs
 
+    UPDATE_LEADERBOARD_IN_STUDIO = false,
+
     --//====================================================
     --// Game / Round Core Settings
     --//====================================================
@@ -17,7 +19,7 @@ return {
     PLAYERS_TO_END = 1,                -- Players left to trigger end
     INTERMISSION_TIME = 10,             -- Time between rounds
     PREPARING_TIME = 8,                -- Pre-round prep time
-    ROUND_TIME = 10,                   -- Normal round duration
+    ROUND_TIME = 80,                   -- Normal round duration
     MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
 
     --//====================================================

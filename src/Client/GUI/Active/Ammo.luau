@@ -18,11 +18,21 @@ function Ammo.onProfileLoaded()
 	AmmoGui.Parent = Screens.gameHUD
 
 	ClientAmmoTracker.setOnMaxAmmoChanged(function(maxammo)
+
+		if ClientAmmoTracker.getIsInfinite() then
+			return
+		end
+
 		AmmoGui.Count.Text = 0 .. " / " .. maxammo
 		AmmoGui.OutOfAmmo.Visible = true
 	end)
 
 	ClientAmmoTracker.setOnAmmoChanged(function(newAmmo, maxammo)
+
+		if ClientAmmoTracker.getIsInfinite() then
+			return
+		end
+
 		AmmoGui.Count.Text = newAmmo .. " / " .. maxammo
 		if newAmmo == 0 then
 			AmmoGui.OutOfAmmo.Visible = true
@@ -31,8 +41,15 @@ function Ammo.onProfileLoaded()
 		end
 	end)
 
-	if PlatformDetector.getPlatform() == "MOBILE" then
+	ClientAmmoTracker.setInfiniteOn(function()
 		
+		AmmoGui.Count.Text = "∞"
+		AmmoGui.OutOfAmmo.Visible = false
+
+	end)
+
+	if PlatformDetector.getPlatform() == "MOBILE" then
+	
 		AmmoGui.AnchorPoint = Vector2.new(AmmoGui.AnchorPoint.X , 1)
 		local touchButtonsGui = TouchButtons.getGui()
 		

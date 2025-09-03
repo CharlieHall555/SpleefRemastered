@@ -28,6 +28,7 @@ local EliminationTracker = require(ModuleDirectory.Gameplay.EliminationTracker)
 local RoundSummary = require(ModuleDirectory.Gameplay.RoundSummary)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
+local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -46,6 +47,7 @@ end
 
 local function onSuddenDeathTimerEnd()
 	SuddenDeath.start(currentMap)
+	AmmoManager.setInfinite(true)
 	RemoteEventHandler.FireOnAllClients("START_SUDDEN_DEATH")
 end
 
@@ -62,6 +64,7 @@ end
 local function onRoundPreparing(currentRound)
 	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "SEND_STARTING_PLAYERS", currentRound.startingPlayers)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
+	RespawnManager.setMap(currentMap) 
 	AmmoManager.startRegenLoop()
 	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "CHANGE_STATE", "ACTIVE")
 
@@ -82,6 +85,7 @@ local function onRoundEnding(currentRound)
 	--ToolManager.reset()
 	AmmoPickupManager.stop()
 	AmmoManager.reset()
+	RespawnManager.setMap(nil) 
 	BlockFactory.stopAllTweens()
 	if ServerStatus.get() == "OK" then
 		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)

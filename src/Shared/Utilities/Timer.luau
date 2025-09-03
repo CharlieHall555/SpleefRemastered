@@ -7,7 +7,7 @@ export type Timer = {
 	Time: number,
 	State: string,
 	EndCallback: () -> (),
-	Callback: (number) -> (),
+	Callback: (time : number) -> (),
 	Connection: RBXScriptConnection?,
 
 	Start: (self: Timer , startTime : number) -> nil,

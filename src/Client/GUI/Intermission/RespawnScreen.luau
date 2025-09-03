@@ -69,11 +69,6 @@ local function showFrame()
     end
 end
 
-local function requestRespawn()
-    if RemoteEventHandler and RemoteEventHandler.FireServer then
-        RemoteEventHandler.FireServer("REQUEST_RESPAWN")
-    end
-end
 
 local function onCloseButton()
     RespawnScreen.hide()
@@ -83,7 +78,8 @@ local function onRespawnButton()
     RespawnScreen.hide()
     local lives = tonumber(UserProfile.getValue("respawns")) or 0
     if lives > 0 then
-        requestRespawn()
+        RemoteEventHandler.FireOnServer("REQUEST_RESPAWN")
+        print("REQUEST!")
     else
         if ProductList and ProductList.ImmediateRespawn then
             MarketplaceService:PromptProductPurchase(LocalPlayer, ProductList.ImmediateRespawn)
@@ -138,6 +134,9 @@ function RespawnScreen.show(playerWhoDied: Player, eliminator: Player?)
     elseif deathLabel then
         deathLabel.Text = "You fell!"
     end
+
+    local lives = tonumber(UserProfile.getValue("respawns")) or 0
+    respawnInfoFrame.RemainingLivesCounter.Text = "Remaining: " .. tostring(lives)
 
     showFrame()
 

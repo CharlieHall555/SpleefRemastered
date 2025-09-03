@@ -109,6 +109,9 @@ function ActionHandler.mainAttack(action)
 		local character = player.Character
 		local headPart = character:FindFirstChild("Head")
 
+		print(ClientAmmoTracker.getIsInfinite())
+		print(ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false)
+
 		local selectedBlock =ClientBlockSelector.getSelected()
 
 		if selectedBlock then -- destroy with spade
@@ -117,7 +120,7 @@ function ActionHandler.mainAttack(action)
 			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
 			return
 		else -- shoot
-			if ClientAmmoTracker.getAmmo() <= 0 then
+			if ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false then
 				out_count += 1
 				if out_count >= 7 then
 					--InGameHUD.showHint()

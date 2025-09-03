@@ -11,6 +11,7 @@ local AmmoManager = {}
 local AmmoStore: { [number]: number } = {} -- userId -> ammo
 local _regenProgress: { [number]: number } = {} -- userId -> seconds accumulated toward next +1 ammo
 local _regenConnection: RBXScriptConnection? = nil
+local isInfiniteAmmo = false
 
 local function validatePlayer(player: Player)
     assert(player and player.UserId and player.UserId ~= 0, "Invalid player")
@@ -24,6 +25,10 @@ end
 function AmmoManager.init()
     RemoteEventHandler.newEventConnection("QUERY_AMMO_REGEN_INTERVAL" , function(player)
         return Config.AMMO_REGEN_INTERVAL
+    end)
+
+    RemoteEventHandler.newEventConnection("QUERY_AMMO_INFINITE" , function(player)
+        return isInfiniteAmmo
     end)
 
     table.clear(AmmoStore)
@@ -96,6 +101,27 @@ function AmmoManager.setUp(players: { Player })
     end
 end
 
+function AmmoManager.setInfinite(value : boolean)
+
+    local old = isInfiniteAmmo
+    isInfiniteAmmo = value
+
+    if old == isInfiniteAmmo then
+        return -- same dont call anything
+    end
+
+    if isInfiniteAmmo then
+         RemoteEventHandler.FireOnAllClients("INFINITE_AMMO_ON")
+    else
+        RemoteEventHandler.FireOnAllClients("INFINITE_AMMO_OFF")
+    end
+
+end
+
+function AmmoManager.isInfiniteAmmo()
+    return isInfiniteAmmo
+end
+
 function AmmoManager.getAmmo(player: Player): number?
     validatePlayer(player)
     return AmmoStore[player.UserId]
@@ -122,6 +148,7 @@ function AmmoManager.incrementAmmo(player: Player, value: number): nil
 end
 
 function AmmoManager.reset()
+    AmmoManager.setInfinite(false)
     table.clear(AmmoStore)
     table.clear(_regenProgress)
     if _regenConnection then

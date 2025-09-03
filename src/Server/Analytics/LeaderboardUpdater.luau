@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
@@ -117,6 +118,11 @@ function LeaderboardUpdater.incrementWins(userId: number, amount: number)
 end
 
 function LeaderboardUpdater.flush()
+    if RunService:IsStudio() and Config.UPDATE_LEADERBOARD_IN_STUDIO == false then
+        warn("Leaderboard flush aborted, UPDATE_LEADERBOARD_IN_STUDIO is false.")
+        return
+    end
+
     if not got_key then
         return
     end

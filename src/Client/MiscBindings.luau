@@ -91,7 +91,7 @@ function MiscBindings.init()
 	end)
 
 	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH" , function()
-		SoundPlayer.playSound("rbxassetid://88338250840662")
+		SoundPlayer.playSound("rbxassetid://88338250840662" , {volume = 0.38})
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_DIED" , function(died : Player , killer : Player)

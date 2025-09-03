@@ -59,7 +59,7 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 		return
 	end
 
-	if AmmoManager.getAmmo(player) < 1 then
+	if AmmoManager.getAmmo(player) < 1 and AmmoManager.isInfiniteAmmo() == false then
 		return
 	end
 

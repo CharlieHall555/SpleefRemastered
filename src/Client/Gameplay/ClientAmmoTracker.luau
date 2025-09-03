@@ -1,6 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RunService = game:GetService("RunService")
 
 workspace:GetServerTimeNow()
@@ -12,6 +13,7 @@ local ClientAmmoTracker = {}
 local maxAmmo = 0
 local predictedRegenProgress = 0
 local predictedAmmo = 0
+local isInfiniteAmmo = false
 
 local AMMO_REGEN_INTERVAL = 0
 local _heartbeatConn: RBXScriptConnection? = nil
@@ -20,6 +22,8 @@ local _heartbeatConn: RBXScriptConnection? = nil
 local _onAmmoChanged: ((number, number) -> ())? = nil -- (ammo, maxAmmo)
 local _onRegenProgressChanged: ((number, number) -> ())? = nil -- (progressSeconds, interval)
 local _onMaxAmmoChanged: ((number) -> ())? = nil -- (maxAmmo)
+local onInfiniteOff: () -> ()
+local onInfiniteOn: () -> ()
 
 -- last emitted values (to avoid redundant calls)
 local _lastAmmo: number = predictedAmmo
@@ -34,7 +38,7 @@ local function emitAmmoIfChanged()
 	if predictedAmmo ~= _lastAmmo then
 		_lastAmmo = predictedAmmo
 		if _onAmmoChanged then
-			_onAmmoChanged(predictedAmmo , maxAmmo)
+			_onAmmoChanged(predictedAmmo, maxAmmo)
 		end
 	end
 end
@@ -96,9 +100,32 @@ local function ensureHeartbeat()
 end
 
 function ClientAmmoTracker.init(): nil
-	AMMO_REGEN_INTERVAL = RemoteEventHandler.InvokeOnServer("QUERY_AMMO_REGEN_INTERVAL" , 2) or 2
+	AMMO_REGEN_INTERVAL = RemoteEventHandler.InvokeOnServer("QUERY_AMMO_REGEN_INTERVAL", 2) or 2
 	emitProgressIfChanged()
 	ensureHeartbeat()
+
+	task.spawn(function()
+		isInfiniteAmmo = (RemoteEventHandler.InvokeOnServer("QUERY_AMMO_INFINITE", 0.5) or false)
+		if isInfiniteAmmo then
+			if onInfiniteOn then
+				onInfiniteOn()
+			end
+		end
+	end)
+
+	RemoteEventHandler.newEventConnection("INFINITE_AMMO_ON", function()
+		isInfiniteAmmo = true
+		if onInfiniteOn then
+			onInfiniteOn()
+		end
+	end)
+
+	RemoteEventHandler.newEventConnection("INFINITE_AMMO_OFF", function()
+		isInfiniteAmmo = false
+		if onInfiniteOff then
+			onInfiniteOff()
+		end
+	end)
 
 	RemoteEventHandler.newEventConnection("SET_MAX_AMMO", function(newMaxAmmo)
 		if typeof(newMaxAmmo) == "number" then
@@ -177,6 +204,10 @@ function ClientAmmoTracker.onProfileLoaded(): nil
 	ensureHeartbeat()
 end
 
+function ClientAmmoTracker.getIsInfinite()
+	return isInfiniteAmmo
+end
+
 function ClientAmmoTracker.predictIncrement(value: number): nil
 	if typeof(value) ~= "number" or value == 0 then
 		return
@@ -204,17 +235,25 @@ function ClientAmmoTracker.predictIncrement(value: number): nil
 end
 
 -- callback setters
-function ClientAmmoTracker.setOnAmmoChanged(cb: ((newAmmo : number , maxAmmo : number) -> ())?): nil
+function ClientAmmoTracker.setInfiniteOn(cb: (() -> ())?): nil
+	onInfiniteOn = cb
+end
+
+function ClientAmmoTracker.setInfiniteOff(cb: (() -> ())?): nil
+	onInfiniteOff = cb
+end
+
+function ClientAmmoTracker.setOnAmmoChanged(cb: ((newAmmo: number, maxAmmo: number) -> ())?): nil
 	_onAmmoChanged = cb
 	emitAmmoIfChanged()
 end
 
-function ClientAmmoTracker.setOnRegenProgressChanged(cb: ((progress : number, interval : number) -> ())?): nil
+function ClientAmmoTracker.setOnRegenProgressChanged(cb: ((progress: number, interval: number) -> ())?): nil
 	_onRegenProgressChanged = cb
 	emitProgressIfChanged()
 end
 
-function ClientAmmoTracker.setOnMaxAmmoChanged(cb: ((newMax : number) -> ())?): nil
+function ClientAmmoTracker.setOnMaxAmmoChanged(cb: ((newMax: number) -> ())?): nil
 	_onMaxAmmoChanged = cb
 	emitMaxIfChanged()
 end

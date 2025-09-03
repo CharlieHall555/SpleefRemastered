@@ -77,7 +77,8 @@ ModuleDirectory.Gameplay.TouchedBlockTracker = game:GetService("ServerScriptServ
 ModuleDirectory.Gameplay.KnockbackTracker = game:GetService("ServerScriptService").Gameplay.KnockbackTracker
 ModuleDirectory.Gameplay.EliminationTracker = game:GetService("ServerScriptService").Gameplay.EliminationTracker
 ModuleDirectory.Gameplay.RoundSummary =  game:GetService("ServerScriptService").Gameplay.RoundSummary
-
+ModuleDirectory.Gameplay.SpawnProtectionManager = game:GetService("ServerScriptService").Gameplay.SpawnProtectionManager
+ModuleDirectory.Gameplay.RespawnManager = game:GetService("ServerScriptService").Gameplay.RespawnManager
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 

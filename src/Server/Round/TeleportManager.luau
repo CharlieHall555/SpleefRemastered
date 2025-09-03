@@ -6,7 +6,7 @@ local TeleportManager = {}
 local failureCallback: ((playerWhoFailed: Player) -> nil)?
 
 -- Helper to normalize input to a CFrame
-local function toCFrame(position)
+local function toCFrame(position: Vector3 | CFrame)
     if typeof(position) == "Vector3" then
         return CFrame.new(position)
     elseif typeof(position) == "CFrame" then
@@ -17,10 +17,10 @@ local function toCFrame(position)
 end
 
 -- Internal single-player teleport with optional retries
-local function teleportSingle(player: Player, positionCFrame: CFrame, retry: boolean)
+local function teleportSingle(player: Player, positionCFrame: CFrame, retry: boolean): boolean
     if not player or typeof(player) ~= "Instance" or not player:IsA("Player") then
         warn("Player instance is nil or of wrong type.")
-        return
+        return false
     end
 
     local retries = retry and (tonumber(Config.TELEPORT_RETRIES) or 3) or 0
@@ -36,7 +36,7 @@ local function teleportSingle(player: Player, positionCFrame: CFrame, retry: boo
                 if failureCallback then
                     failureCallback(player)
                 end
-                return
+                return false
             end
         end
 
@@ -55,16 +55,16 @@ local function teleportSingle(player: Player, positionCFrame: CFrame, retry: boo
                 if failureCallback then
                     failureCallback(player)
                 end
-                return
+                return false
             end
         end
 
-        local success, err = pcall(function()
+        local success = pcall(function()
             character:PivotTo(positionCFrame)
         end)
 
         if success then
-            return
+            return true
         else
             if attempt < 1 + retries then
                 task.wait(delayBetween)
@@ -72,17 +72,19 @@ local function teleportSingle(player: Player, positionCFrame: CFrame, retry: boo
                 if failureCallback then
                     failureCallback(player)
                 end
-                return
+                return false
             end
         end
     end
+
+    return false
 end
 
 function TeleportManager.init()
     -- currently nothing to initialize
 end
 
-function TeleportManager.teleport(player: Player, position: Vector3 | CFrame, retry: boolean?)
+function TeleportManager.teleport(player: Player, position: Vector3 | CFrame, retry: boolean?): boolean
     local targetCFrame = toCFrame(position)
     retry = retry or false
     if not targetCFrame then
@@ -90,16 +92,13 @@ function TeleportManager.teleport(player: Player, position: Vector3 | CFrame, re
         if failureCallback then
             failureCallback(player)
         end
-        return
+        return false
     end
 
-    task.spawn(function()
-        teleportSingle(player, targetCFrame, retry)
-    end)
+    return teleportSingle(player, targetCFrame, retry)
 end
 
-function TeleportManager.teleportPlayers(
-    players: { Player }, position: Vector3 | CFrame, retry: boolean)
+function TeleportManager.teleportPlayers(players: { Player }, position: Vector3 | CFrame, retry: boolean)
     local targetCFrame = toCFrame(position)
     if not targetCFrame then
         warn("TeleportManager.teleportPlayers called with invalid position type:", typeof(position))

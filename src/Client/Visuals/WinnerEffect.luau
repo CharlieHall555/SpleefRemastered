@@ -128,6 +128,7 @@ function WinnerEffect.onWin(winnerName: string, winner: Player?)
 		winnerWidget.Visible = true
 		winnerWidget.Position = offscreenTop
 
+		SoundPlayer.playSound("rbxassetid://113939513589596" , {volume = 0.4})
 		local inTweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		local inTween = TweenService:Create(winnerWidget, inTweenInfo, { Position = targetPos })
 		inTween:Play()
