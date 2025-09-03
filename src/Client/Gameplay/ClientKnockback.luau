@@ -116,7 +116,7 @@ function ClientKnockback.init()
 
 	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player) -- and sound
 		if playerTarget and playerTarget.Character then
-			SoundPlayer.queuePositionalSound("rbxassetid://146163534", playerTarget.Character.PrimaryPart.Position)
+			SoundPlayer.queuePositionalSound("rbxassetid://146163534", playerTarget.Character.PrimaryPart.Position) -- knockback sound.
 		end
 
 		if not playerTarget or playerTarget == localPlayer then

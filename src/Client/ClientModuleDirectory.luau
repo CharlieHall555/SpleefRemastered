@@ -47,7 +47,7 @@ ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon
 ClientModuleDirectory.Gui.Coins = Root.Gui.Intermission.Coins
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
 
-ClientModuleDirectory.Gui.GlobalLeaderboard = Root.Gui.SurfaceGUIs.GlobalLeaderboard
+ClientModuleDirectory.Gui.LeaderboardHandler = Root.Gui.SurfaceGUIs.LeaderboardHandler
 
 ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 

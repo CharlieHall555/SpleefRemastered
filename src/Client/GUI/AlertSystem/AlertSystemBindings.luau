@@ -7,12 +7,12 @@ local AlertSystemBindings = {}
 
 function AlertSystemBindings.init()
     
-    RemoteEventHandler.newEventConnection("PLAYER_DIED" , function(playerWhoDied : Player)
+	RemoteEventHandler.newEventConnection("RESPAWN_REFUNDED", function(amount) 
         
-        AlertSystem.addAlert(playerWhoDied.DisplayName .. " Died")
-
+        local text = "Respawn failed, you have been granted " .. amount .. " Respawns."
+        AlertSystem.show(text)
+    
     end)
-
 end
 
 return AlertSystemBindings

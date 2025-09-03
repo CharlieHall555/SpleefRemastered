@@ -4,6 +4,8 @@ local Config = require(game:GetService("ServerScriptService").ServerConfiguratio
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 
+local isActive = false
+
 local SuddenDeath = {}
 
 function SuddenDeath.start(map: Map.Map): nil
@@ -15,6 +17,8 @@ function SuddenDeath.start(map: Map.Map): nil
     local maxBlocks = Config.MAX_SUDDEN_DEATH_BLOCKS_CHOSEN or blocksChosen
     local blocksIncrease = Config.SUDDEN_DEATH_BLOCKS_CHOSEN_INCREASE or 0
 
+
+    isActive = true
     task.spawn(function()
         while RoundSystem.getState() == "ACTIVE" do
             task.wait(delay)
@@ -31,7 +35,13 @@ function SuddenDeath.start(map: Map.Map): nil
                 blocksChosen = math.min(maxBlocks, blocksChosen + blocksIncrease)
             end
         end
+        isActive = false
     end)
+    
+end
+
+function SuddenDeath.isActive()
+    return isActive
 end
 
 function SuddenDeath.destroyRandomBlock(map: Map.Map): nil

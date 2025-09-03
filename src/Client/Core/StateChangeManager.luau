@@ -20,7 +20,6 @@ function StateChangeManager.init()
 
     ClientStateTracker.connectRoundStarting(function()
         
-        AlertSystem.addAlert("Round starting...")
         SystemMessage.send("ROUND STARTING" , Color3.fromRGB(9, 134, 16) , true)
 
     end)

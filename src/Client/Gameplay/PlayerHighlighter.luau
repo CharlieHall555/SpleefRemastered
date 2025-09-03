@@ -17,6 +17,11 @@ function PlayerHighlighter.init()
         PlayerHighlighter.highlightPlayers(players)
     end)
 
+    RemoteEventHandler.newEventConnection("REHIGHLIGHT_PLAYERS" , function(players)
+        print("HIGHLIGHT PLAYERS" , players)
+        PlayerHighlighter.highlightPlayers(players)
+    end)
+
 end
 
 function PlayerHighlighter.highlightPlayer(player: Player)

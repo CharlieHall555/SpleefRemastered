@@ -11,7 +11,7 @@ local ProfileTemplate = {
 	xp = 0,
 	coins = 0,
 	level = 1,
-	respawns = 10,
+	respawns = 0,
 	wins = 0,
 	roundsPlayed = 0,
 }
@@ -21,7 +21,7 @@ local ProfileService = require(game:GetService("ServerScriptService").External.P
 local database = "PRODUCTION"
 
 if RunService:IsStudio() then
-	database = "TEST2"
+	database = "TEST3"
 else
 	database = "PRODUCTION"
 end

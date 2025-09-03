@@ -212,7 +212,7 @@ function LeaderboardGetter.init()
 		})
 		return jsonLeaderboard
 	end)
-
+	
 	task.spawn(function()
 		LeaderboardGetter.refreshAll()
 	end)

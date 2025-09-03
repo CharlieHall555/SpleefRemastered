@@ -20,7 +20,7 @@ local function createPlayerHitbox(): Part
     hitbox.CanCollide = false
     hitbox.Massless = true
     hitbox.CastShadow = false
-	hitbox:AddTag("PLAYER_HITBOX")
+    hitbox:AddTag("PLAYER_HITBOX")
     hitbox.CollisionGroup = "CG_GAMEPLAY"
     hitbox.CanQuery = true
     hitbox.CanTouch = true
@@ -53,23 +53,39 @@ local function weldToCharacter(hitbox: Part, character: Model)
     weld.Parent = hitbox
 end
 
+local function connectTouchOnce(uid: number, hitbox: Part, player: Player)
+    -- Only connect if not connected already
+    if _touchedConnections[uid] and _touchedConnections[uid].Connected then
+        return
+    end
+
+    _touchedConnections[uid] = hitbox.Touched:Connect(function(otherPart: BasePart)
+        -- If unparented (e.g., during death), Touched won't fire anyway.
+        local tags = otherPart:GetTags()
+        for _, each in ipairs(tags) do
+            local f = tagCallback[each]
+            if f then
+                f(player, otherPart)
+            end
+        end
+    end)
+end
+
 local function cleanupPlayer(player: Player)
     local uid = player.UserId
 
-    local touchConn = _touchedConnections[uid]
-    if touchConn then
-        touchConn:Disconnect()
-        _touchedConnections[uid] = nil
-    end
-
-    local charConn = _characterAddedConnections[uid]
-    if charConn then
-        charConn:Disconnect()
+    if _characterAddedConnections[uid] then
+        _characterAddedConnections[uid]:Disconnect()
         _characterAddedConnections[uid] = nil
     end
 
+    -- We only disconnect .Touched when we’re actually destroying the hitbox
     local hitbox = _hitBoxes[uid]
     if hitbox then
+        if _touchedConnections[uid] then
+            _touchedConnections[uid]:Disconnect()
+            _touchedConnections[uid] = nil
+        end
         if hitbox.Parent then
             hitbox.Parent = nil
         end
@@ -91,34 +107,29 @@ function ServerHitBoxManager.init()
         local hitbox = createPlayerHitbox()
         _hitBoxes[uid] = hitbox
 
+        -- Attach touch once and keep it for the whole session
+        connectTouchOnce(uid, hitbox, player)
+
+        -- If already spawned, weld immediately
         if player.Character then
             weldToCharacter(hitbox, player.Character)
         end
 
+        -- Handle respawns
         _characterAddedConnections[uid] = player.CharacterAdded:Connect(function(character)
             weldToCharacter(hitbox, character)
+
+            -- Touch is persistent; no reconnect needed, but if it was somehow lost, reattach
+            connectTouchOnce(uid, hitbox, player)
+
             local humanoid = character:FindFirstChildOfClass("Humanoid")
             if humanoid then
                 humanoid.Died:Once(function()
-                    -- detach and stop receiving touches on death
-                    local tConn = _touchedConnections[uid]
-                    if tConn then
-                        tConn:Disconnect()
-                        _touchedConnections[uid] = nil
-                    end
+                    -- Do NOT disconnect the touch here.
+                    -- Just remove from world so it can't touch anything.
                     hitbox.Anchored = true
                     hitbox.Parent = nil
                 end)
-            end
-        end)
-
-        _touchedConnections[uid] = hitbox.Touched:Connect(function(otherPart: BasePart)
-            local tags = otherPart:GetTags()
-            for _, each in ipairs(tags) do
-                local f = tagCallback[each]
-                if f then
-                    f(player, otherPart)
-                end
             end
         end)
     end)

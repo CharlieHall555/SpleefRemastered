@@ -13,7 +13,7 @@ local CoinsGui : Frame?
 function Coins.onProfileLoaded()
 	CoinsGui = GuiAssets:WaitForChild("Intermission"):WaitForChild("Coins")
 	CoinsGui.Parent = Screens.intermissionHUD
-	CoinsGui.Visible = true
+	CoinsGui.Visible = false
 
 	CoinsGui.Count.Text = TextUtilities.formatCurrency(UserProfile.getValue("coins"))
 

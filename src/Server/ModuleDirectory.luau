@@ -112,6 +112,10 @@ ModuleDirectory.Resources.Materials = game:GetService("ServerScriptService").Map
 ModuleDirectory.LoadedBlocks = game:GetService("ServerScriptService").Loaded.Block
 ModuleDirectory.LoadedLayers = game:GetService("ServerScriptService").Loaded.Layer
 
+ModuleDirectory.Monetization = {}
+ModuleDirectory.Monetization.ProductManager = game:GetService("ServerScriptService").Monetization.ProductManager
+ModuleDirectory.Monetization.ProductBindings = game:GetService("ServerScriptService").Monetization.ProductBindings
+
 --//====================================================
 --// Analytics
 --//====================================================

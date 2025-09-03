@@ -3,66 +3,37 @@ local player = Players.LocalPlayer
 local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
-local SystemChat = ClientModuleDirectory.Chat.SystemMessage
+local Screens = require(ClientModuleDirectory.Gui.Screens)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local AlertSystem = {}
 
 local TIME_TO_DISAPPEAR = 5
-local MAX_ALERTS = 5
 
-local _alertStackGui: Frame?
-local _alertStackTemplate: Frame?
-local _alertQueue: { Frame }
+local alertTemplate : Frame? -- clone this on new alert
 
 function AlertSystem.init()
-	_alertQueue = {}
+	--Screens.general -- this will be parent for guis
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		alertTemplate = GuiAssets:WaitForChild("AlertSystem"):WaitForChild("MobileAlert")
+	else
+		alertTemplate = GuiAssets:WaitForChild("AlertSystem"):WaitForChild("Alert")
+	end
 
-	_alertStackGui = GuiAssets:WaitForChild("AlertStackGui", 4)
-	assert(_alertStackGui, "AlertStackGui not found")
-
-    _alertStackGui.Parent = player.PlayerGui:WaitForChild("General")
-	_alertStackGui.Visible = false
-
-	_alertStackTemplate = _alertStackGui:WaitForChild("AlertTemplate", 4)
-	assert(_alertStackTemplate, "AlertTemplate not found")
 end
 
-function AlertSystem.addAlert( alertMessage: string?, alertImage: string)
-	assert(_alertStackGui and _alertStackTemplate, "AlertSystem not initialized")
+function AlertSystem.show(alertText : TextLabel)
+	
+	local newAlert = alertTemplate:Clone()
+	newAlert.Parent = Screens.general
+	local alertTextLabel : TextLabel = newAlert.AlertText
+	alertTextLabel.Text = alertText
 
-	if #_alertQueue >= MAX_ALERTS then
-		local oldest: Frame = table.remove(_alertQueue, 1)
-		oldest:Destroy()
-	end
-
-	local newAlert = _alertStackTemplate:Clone()
-    newAlert.Visible = true
-	newAlert.Name = tostring(DateTime.now().UnixTimestampMillis)
-	newAlert.Parent = _alertStackGui
-
-	local messageLabel = newAlert.Message
-	if messageLabel then
-		messageLabel.Text = alertMessage
-	end
-
-	local icon = newAlert.Icon
-	if icon then
-		icon.Image = alertImage or ""
-	end
-
-	table.insert(_alertQueue, newAlert)
-
-	task.delay(TIME_TO_DISAPPEAR, function()
-		for i, alert in ipairs(_alertQueue) do
-			if alert == newAlert then
-				table.remove(_alertQueue, i)
-				break
-			end
-		end
-		if newAlert.Parent then
-			newAlert:Destroy()
-		end
+	newAlert.CloseButton.Clickable.Activated:Connect(function()
+		newAlert:Destroy()
 	end)
 end
+
+
 
 return AlertSystem
