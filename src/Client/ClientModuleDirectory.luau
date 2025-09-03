@@ -64,6 +64,9 @@ ClientModuleDirectory.Input.MobileCamera = Root.Input.MobileCamera
 ClientModuleDirectory.Input.MobileCameraMovement = Root.Input.MobileCameraMovement
 ClientModuleDirectory.Input.MobileControls = Root.Input.MobileControls
 ClientModuleDirectory.Input.AimAssistController = Root.Input.AimAssistController
+ClientModuleDirectory.Input.BackwardsEdgeDetector = Root.Input.BackwardsEdgeDetector
+ClientModuleDirectory.Input.MovementDampaner = Root.Input.MovementDampener
+
 
 --//====================================================
 --// Gameplay
@@ -160,5 +163,7 @@ ClientModuleDirectory.LogHandler = game:GetService("ReplicatedStorage").Utilitie
 ClientModuleDirectory.LevelUtilities = game:GetService("ReplicatedStorage").Utilities.LevelUtilities
 
 ClientModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
+
+ClientModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilities.KnockbackUtilities
 
 return ClientModuleDirectory

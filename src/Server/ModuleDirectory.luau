@@ -139,6 +139,8 @@ ModuleDirectory.ServerCommands = game:GetService("ServerScriptService").Chat.Ser
 
 ModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
 
+ModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilities.KnockbackUtilities
+
 -- Remote Handlers
 
 return ModuleDirectory

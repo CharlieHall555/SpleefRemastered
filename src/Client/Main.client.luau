@@ -85,3 +85,5 @@ RemoteEventHandler.newEventConnection("ROUND_SUMMARY" , function(value)
 	print("RECORD" ,  value)
 	
 end)
+
+local BackwardsEdgeDetector = require(ClientModuleDirectory.Input.BackwardsEdgeDetector)

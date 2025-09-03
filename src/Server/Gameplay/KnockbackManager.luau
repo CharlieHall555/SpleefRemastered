@@ -1,10 +1,12 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local KnockbackTracker = require(ModuleDirectory.Gameplay.KnockbackTracker)
+local KnockbackUtilities = require(ModuleDirectory.KnockbackUtilities)
 
 local lastHitCache: { [number]: number } = {}
 
@@ -33,7 +35,7 @@ function KnockBackManager.init()
     end)
 end
 
-function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3 , fromPlayer : Player?)
+function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Player?)
     local char = hitBox.Parent
     if not char then
         return
@@ -50,11 +52,41 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3 , fromPlayer : Pl
 
     markHit(player.UserId)
 
-    KnockbackTracker.newKnockback(fromPlayer , player)
-    RemoteEventHandler.FireOnClient(player, "KNOCKBACK", dir, Config.KNOCKBACK_POWER)
+    local primary = char.PrimaryPart
+    if not primary then
+        return
+    end
+
+    KnockbackTracker.newKnockback(fromPlayer, player)
     RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION", player)
 
-    print(player.DisplayName .. " hIT")
+    if primary:GetNetworkOwner() == player then
+        RemoteEventHandler.FireOnClient(player, "KNOCKBACK", dir, Config.KNOCKBACK_POWER)
+    else
+        -- apply on server (server has or will take network ownership)
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        local rootPart = char:FindFirstChild("HumanoidRootPart") :: BasePart?
+        if not humanoid or not rootPart then
+            return
+        end
+
+        if dir.Magnitude < 1e-3 then
+            return
+        end
+
+        local power = Config.KNOCKBACK_POWER or 0
+        if power <= 0 then
+            return
+        end
+
+        -- Compute physics-consistent impulse (matches client behavior)
+        local impulse = KnockbackUtilities.computeImpulse(rootPart, humanoid, dir, power)
+
+        -- Optional micro-lift to reduce ground stickiness (tune as needed)
+        impulse += Vector3.new(0, rootPart.AssemblyMass * 15, 0)
+
+        rootPart:ApplyImpulse(impulse)
+    end
 end
 
 return KnockBackManager
