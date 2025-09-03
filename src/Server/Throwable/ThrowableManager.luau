@@ -1,3 +1,4 @@
+local LocalizationService = game:GetService("LocalizationService")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -8,6 +9,10 @@ local ThrowableDefinitions = require(ModuleDirectory.ThrowableDefinitions)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerRaycastParamsHandler = require(ModuleDirectory.Throwable.PlayerRaycastParamsHandler)
 local KnockBackManager = require(ModuleDirectory.Gameplay.KnockBackManager)
+local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+
+-- NOTE: the key name below matches your comment (even with the typo)
+local MAX_LIFETIME = tonumber(Config.MAX_THORWABLE_LIFETIME) or 5
 
 local ThrowableManager = {}
 
@@ -27,128 +32,141 @@ local DEBUG = false
 local CAST_RADIUS = 0.1 -- half-width of the swept box for collision checks
 
 local function generateUID(): string
-    _nextId += 1
-    return "s_" .. tostring(_nextId)
+	_nextId += 1
+	return "s_" .. tostring(_nextId)
 end
 
 function ThrowableManager.init(): nil
-    for eachType, eachTable in pairs(ThrowableDefinitions) do
-        gravityTable[eachType] = Vector3.new(0, -eachTable.gravity, 0)
-        velocityTable[eachType] = eachTable.velocity
-    end
-    RunService.Heartbeat:Connect(ThrowableManager.mainLoop)
+	for eachType, eachTable in pairs(ThrowableDefinitions) do
+		gravityTable[eachType] = Vector3.new(0, -eachTable.gravity, 0)
+		velocityTable[eachType] = eachTable.velocity
+	end
+	RunService.Heartbeat:Connect(ThrowableManager.mainLoop)
 end
 
 function ThrowableManager.onLoaded(): nil
-    defaultRayParams.FilterType = Enum.RaycastFilterType.Exclude
-    defaultRayParams.FilterDescendantsInstances = { }
-    defaultRayParams.IgnoreWater = true
-    defaultRayParams.RespectCanCollide = false
-    defaultRayParams.CollisionGroup = "CG_GAMEPLAY"
+	defaultRayParams.FilterType = Enum.RaycastFilterType.Exclude
+	defaultRayParams.FilterDescendantsInstances = { }
+	defaultRayParams.IgnoreWater = true
+	defaultRayParams.RespectCanCollide = false
+	defaultRayParams.CollisionGroup = "CG_GAMEPLAY"
 end
 
 function ThrowableManager.mainLoop(dt: number): nil
-    for uid, th in pairs(loadedThrowables) do
-        local oldPos = th.position
-        local newVel = th.velocity + gravityTable[th.typeName] * dt
-        local newPos = oldPos + newVel * dt
+	local now = workspace:GetServerTimeNow()
 
-        -- Debug stamp for path
-        if DEBUG then
-            local stamp = Instance.new("Part")
-            stamp.Size = Vector3.new(0.2, 0.2, 0.2)
-            stamp.CFrame = CFrame.new(newPos)
-            stamp.Anchored = true
-            stamp.CanCollide = false
-            stamp.Transparency = 0
-            stamp.BrickColor = BrickColor.new("Bright red")
-            stamp.Parent = workspace
-            Debris:AddItem(stamp, 5)
-        end
+	for uid, th in pairs(loadedThrowables) do
+		-- 1) lifetime check (hard cap)
+		if th.expireAt and now >= th.expireAt then
+			ThrowableManager.removeThrowable(uid)
+			continue
+		end
 
-        -- Swept-box collision (Blockcast) between oldPos and newPos
-        local direction = newPos - oldPos
-        local center = oldPos:Lerp(newPos, 0.5)
-        local orient = direction.Magnitude > 0 and direction.Unit or Vector3.new(0, 0, 1)
-        local castCFrame = CFrame.new(center, center + orient)
-        local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
-        local rayParms = PlayerRaycastParamsHandler.get(th.owner) or defaultRayParams
-        local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction , rayParms)
+		local oldPos = th.position
+		local newVel = th.velocity + gravityTable[th.typeName] * dt
+		local newPos = oldPos + newVel * dt
 
-        if oldPos.Y < -100 then
-            ThrowableManager.removeThrowable(uid)
-        elseif hit then
-            if DEBUG then
-                local stamp = Instance.new("Part")
-                stamp.Size = Vector3.new(1, 1, 1)
-                stamp.CFrame = CFrame.new(hit.Position)
-                stamp.Anchored = true
-                stamp.CanCollide = false
-                stamp.Transparency = 0
-                stamp.BrickColor = BrickColor.new("Parsley green")
-                stamp.Parent = workspace
-                Debris:AddItem(stamp, 5)
-            end
-            ThrowableManager.onHit(th, hit)
-            ThrowableManager.removeThrowable(uid)
-        else
-            th.velocity = newVel
-            th.position = newPos
-        end
-    end
+		-- Debug stamp for path
+		if DEBUG then
+			local stamp = Instance.new("Part")
+			stamp.Size = Vector3.new(0.2, 0.2, 0.2)
+			stamp.CFrame = CFrame.new(newPos)
+			stamp.Anchored = true
+			stamp.CanCollide = false
+			stamp.Transparency = 0
+			stamp.BrickColor = BrickColor.new("Bright red")
+			stamp.Parent = workspace
+			Debris:AddItem(stamp, 5)
+		end
+
+		-- Swept-box collision (Blockcast) between oldPos and newPos
+		local direction = newPos - oldPos
+		local center = oldPos:Lerp(newPos, 0.5)
+		local orient = direction.Magnitude > 0 and direction.Unit or Vector3.new(0, 0, 1)
+		local castCFrame = CFrame.new(center, center + orient)
+		local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
+		local rayParms = PlayerRaycastParamsHandler.get(th.owner) or defaultRayParams
+		local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction , rayParms)
+
+		if oldPos.Y < -100 then
+			ThrowableManager.removeThrowable(uid)
+		elseif hit then
+			if DEBUG then
+				local stamp = Instance.new("Part")
+				stamp.Size = Vector3.new(1, 1, 1)
+				stamp.CFrame = CFrame.new(hit.Position)
+				stamp.Anchored = true
+				stamp.CanCollide = false
+				stamp.Transparency = 0
+				stamp.BrickColor = BrickColor.new("Parsley green")
+				stamp.Parent = workspace
+				Debris:AddItem(stamp, 5)
+			end
+			ThrowableManager.onHit(th, hit)
+			ThrowableManager.removeThrowable(uid)
+		else
+			th.velocity = newVel
+			th.position = newPos
+		end
+	end
 end
 
 local function updateClients(newThrowable: Throwable.Throwable)
-    local dataToSend = {
-        sP = VectorUtil.SerializeVector3(newThrowable.position),
-        v  = VectorUtil.SerializeVector3(newThrowable.velocity),
-        t  = newThrowable.typeName,
-        s  = workspace:GetServerTimeNow(),
-        uid = newThrowable.uid,
-    }
-    RemoteEventHandler.FireOnAllClients("NEW_THROWABLE", dataToSend)
+	local dataToSend = {
+		sP  = VectorUtil.SerializeVector3(newThrowable.position),
+		v   = VectorUtil.SerializeVector3(newThrowable.velocity),
+		t   = newThrowable.typeName,
+		s   = workspace:GetServerTimeNow(),
+		uid = newThrowable.uid,
+	}
+	RemoteEventHandler.FireOnAllClients("NEW_THROWABLE", dataToSend)
 end
 
-function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _type: string , playerOwner : Player?): string
-    assert(typeof(position) == "Vector3", "ThrowableManager.newThrowable: 'position' must be a Vector3")
-    assert(typeof(direction) == "Vector3", "ThrowableManager.newThrowable: 'direction' must be a Vector3")
-    assert(typeof(_type) == "string" and _type ~= "", "ThrowableManager.newThrowable: '_type' must be a non-empty string")
+function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _type: string, playerOwner: Player?): string
+	assert(typeof(position) == "Vector3", "ThrowableManager.newThrowable: 'position' must be a Vector3")
+	assert(typeof(direction) == "Vector3", "ThrowableManager.newThrowable: 'direction' must be a Vector3")
+	assert(typeof(_type) == "string" and _type ~= "", "ThrowableManager.newThrowable: '_type' must be a non-empty string")
 
-    local uid = generateUID()
-    local speed = velocityTable[_type] or 80
-    local velocity = direction.Unit * speed
-    local new = {
-        uid = uid,
-        direction = direction,
-        position = position,
-        velocity = velocity,
-        typeName = _type,
-        owner = playerOwner
-    }
-    loadedThrowables[uid] = new
+	local uid = generateUID()
+	local speed = velocityTable[_type] or 80
+	local velocity = direction.Unit * speed
+	local now = workspace:GetServerTimeNow()
 
-    updateClients(new)
-    return uid
+	local new = {
+		uid       = uid,
+		direction = direction,
+		position  = position,
+		velocity  = velocity,
+		typeName  = _type,
+		owner     = playerOwner,
+
+		-- lifetime cap
+		expireAt  = now + MAX_LIFETIME,
+	}
+
+	loadedThrowables[uid] = new
+	updateClients(new)
+	return uid
 end
 
 function ThrowableManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult?): nil
-    if hit.Instance:HasTag("PLAYER_HITBOX") then
-        KnockBackManager.hitHitbox(hit.Instance , throwable.direction , throwable.owner)
-        return
-    end
-    local f = typeHitFunctions[throwable.typeName]
-    if f and hit then
-        f(throwable, hit)
-    end
+	if hit.Instance:HasTag("PLAYER_HITBOX") then
+		KnockBackManager.hitHitbox(hit.Instance, throwable.direction, throwable.owner)
+		return
+	end
+	local f = typeHitFunctions[throwable.typeName]
+	if f and hit then
+		f(throwable, hit)
+	end
 end
 
 function ThrowableManager.registerOnHit(typeName: string, func: (Throwable.Throwable, RaycastResult) -> ()): nil
-    typeHitFunctions[typeName] = func
+	typeHitFunctions[typeName] = func
 end
 
 function ThrowableManager.removeThrowable(uid: string): nil
-    RemoteEventHandler.FireOnAllClients("DELETE_THROWABLE", uid)
-    loadedThrowables[uid] = nil
-end 
+	RemoteEventHandler.FireOnAllClients("DELETE_THROWABLE", uid)
+	loadedThrowables[uid] = nil
+end
 
 return ThrowableManager

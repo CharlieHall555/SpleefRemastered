@@ -49,8 +49,8 @@ function RespawnManager.canRespawn(player: Player): boolean
 	return false
 end
 
-function RespawnManager.respawnPlayer(Player): boolean
-	if RespawnManager.canRespawn(Player) then
+function RespawnManager.respawnPlayer(player): boolean
+	if RespawnManager.canRespawn(player) then
 		local topLayer = currentMap:getTopLayer()
 		local randomBlock = topLayer:getRandomBlock()
 		local Position = Vector3.new(0, 150, 0)
@@ -60,15 +60,16 @@ function RespawnManager.respawnPlayer(Player): boolean
 			Position = currentMap.OriginPosition + Vector3.new(0, 150, 0)
 		end
 
-		local success = TeleportManager.teleport(Player, Position, false)
+		local success = TeleportManager.teleport(player, Position, false)
 		if not success then
 			return false
 		end
 
-		RemoteEventHandler.FireOnClient(Player, "CHANGE_STATE", "ACTIVE")
-		SpawnProtectionManager.apply(Player)
-		PlayersInGame.addPlayer(Player, true)
-		RemoteEventHandler.FireOnClient(Player , "REHIGHLIGHT_PLAYERS" , PlayersInGame.getActivePlayers())
+		PlayerData.incrementRespawns(player , -1)
+		RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "ACTIVE")
+		SpawnProtectionManager.apply(player)
+		PlayersInGame.addPlayer(player, true)
+		RemoteEventHandler.FireOnClient(player , "REHIGHLIGHT_PLAYERS" , PlayersInGame.getActivePlayers())
 		return true
 	else
 		return false

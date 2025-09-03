@@ -30,7 +30,7 @@ local out_count = 0
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true
-rayParams.CollisionGroup = "CG_BLOCK_SELECTION"
+rayParams.CollisionGroup = "CG_GAMEPLAY"
 
 local function ensureCamera(): Camera?
     if not camera or camera.Parent == nil then
@@ -70,38 +70,53 @@ function ActionHandler.canAttack()
 	return true
 end
 
-function ActionHandler.getDirection(_action, headPart: Part): Vector3
-	local cam = ensureCamera()
-	if not cam then
-		return Vector3.new(0, 0, -1)
-	end
+function ActionHandler.getDirection(_action, spawnPart: BasePart, reticleGui: GuiObject?): Vector3
+    local cam = ensureCamera()
+    if not cam then
+        return Vector3.new(0, 0, -1)
+    end
 
-	local aimPoint: Vector3?
+    -- Make sure we don't hit our own character
+    if spawnPart and spawnPart.Parent then
+        rayParams.FilterDescendantsInstances = { spawnPart.Parent }
+    else
+        rayParams.FilterDescendantsInstances = {}
+    end
 
-	if PlatformDetector.getPlatform() == "PC" then
-		if mouse and mouse.Hit then
-			aimPoint = mouse.Hit.Position
-		end
-	end
+    -- 1) Work out the SCREEN POINT to ray through
+    local screenX: number, screenY: number
 
-	if not aimPoint then
-		-- Use center-screen ray (works for MOBILE and PC fallback)
-		local viewport = cam.ViewportSize
-		local center = viewport * 0.5
-		local unitRay = cam:ViewportPointToRay(center.X, center.Y)
-		local result = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
-		if result then
-			aimPoint = result.Position
-		else
-			aimPoint = unitRay.Origin + unitRay.Direction * RAY_MAX
-		end
-	end
+    if reticleGui then
+        -- Use the actual reticle position (important for over-shoulder or offset reticles on MOBILE)
+        local absPos = reticleGui.AbsolutePosition
+        local absSize = reticleGui.AbsoluteSize
+        screenX = absPos.X + absSize.X * 0.5
+        screenY = absPos.Y + absSize.Y * 0.5
+    elseif PlatformDetector.getPlatform() == "PC" and mouse then
+        -- Mouse position on PC
+        screenX = mouse.X
+        screenY = mouse.Y
+    else
+        -- Fallback to center of the screen
+        local center = cam.ViewportSize * 0.5
+        screenX = center.X
+        screenY = center.Y
+    end
 
-	local fromHead = (aimPoint - headPart.Position)
-	if fromHead.Magnitude <= 1e-6 then
-		return cam.CFrame.LookVector.Unit
-	end
-	return fromHead.Unit
+    -- 2) Build a world ray from CAMERA through the screen point (reticle)
+    local unitRay = cam:ViewportPointToRay(screenX, screenY)
+
+    -- 3) Find a target point along that ray (prioritize real hit, otherwise a far point)
+    local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
+    local target: Vector3 = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
+
+    -- 4) Turn that into a direction from the projectile spawn position
+    --    This ensures the projectile’s path aims to the same point the reticle ray hits.
+    local fromSpawn = target - spawnPart.Position
+    if fromSpawn.Magnitude < 1e-6 then
+        return cam.CFrame.LookVector.Unit
+    end
+    return fromSpawn.Unit
 end
 
 function ActionHandler.mainAttack(action)
