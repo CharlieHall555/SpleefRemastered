@@ -12,6 +12,8 @@ local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local TutorialManager = require(ModuleDirectory.TutorialManager)
+local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
@@ -26,40 +28,42 @@ function SnowballManager.init()
 		print("pickup", pickup)
 		local increment = (pickup or {}).increment or 1
 		AmmoManager.incrementAmmo(player, increment)
-		RemoteEventHandler.FireOnClient(player ,"AMMO_GAINED", increment)
+		RemoteEventHandler.FireOnClient(player, "AMMO_GAINED", increment)
 		SnowballAmmoPickup.remove(snowballId)
 	end)
 end
 
-function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult)
+function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult , tutorial : boolean)
 	print("hit " .. hit.Instance.Name)
 	local blockId = hit.Instance:GetAttribute("Id")
 	if blockId then
 		local block: Block.Block = LoadedBlocks[blockId]
 		local blockPosition = hit.Instance.Position
 		BlockFactory.destroyById(blockId, throwable.owner)
-		
-		if throwable.owner then
-			Onboarding.action(throwable.owner , "SNOWBALL_BROKEN_BLOCK")
+
+		if tutorial and (not hit.Instance:HasTag("TutorialBlock")) then
+			return
 		end
 
-		RemoteEventHandler.FireOnAllClients(
-			"BLOCK_DESTROY_CONFIRMATION",
-			blockId,
-			block.Type,
-			blockPosition,
-			throwable.owner,
-			"snowball"
-		)
+		if throwable.owner and tutorial == false then
+			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
+		end
+
+		if block.Regenerates == false then
+			RemoteEventHandler.FireOnAllClients(
+				"BLOCK_DESTROY_CONFIRMATION",
+				blockId,
+				block.Type,
+				blockPosition,
+				throwable.owner,
+				"snowball"
+			)
+		end
 	end
 end
 
 function SnowballManager.createSnowballFor(player, playerPosition, direction)
-	if RoundSystem.getState() ~= "ACTIVE" then
-		return
-	end
-
-	if AmmoManager.getAmmo(player) < 1 and AmmoManager.isInfiniteAmmo() == false then
+	if AmmoManager.getAmmo(player) < 1 and AmmoManager.isInfiniteAmmo() == false and TutorialManager.isPlayerInTutorial(player) == false then
 		return
 	end
 
@@ -77,6 +81,11 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	local rootPart = character:FindFirstChild("HumanoidRootPart")
 	if not rootPart then
 		warn("Snowball creation failed: missing HumanoidRootPart for", player)
+		return
+	end
+
+	if PlayersInGame.isAlive(player) == false and TutorialManager.isPlayerInTutorial(player) == false then
+		warn("Player not alive or in tutorial.")
 		return
 	end
 
@@ -98,11 +107,18 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 		return
 	end
 
-	Onboarding.action(player, "SHOT")
+	local tutorial = TutorialManager.isPlayerInTutorial(player)
+
 	_lastSnowballFired[userId] = now
-	AmmoManager.incrementAmmo(player, -1)
 	
-	ThrowableManager.newThrowable(spawnPosition, direction, "snowball", player)
+	if tutorial == false then
+		Onboarding.action(player, "SHOT")
+		AmmoManager.incrementAmmo(player, -1)
+	end
+
+	print("now!")
+
+	ThrowableManager.newThrowable(spawnPosition, direction, "snowball", player , tutorial)
 end
 
 return SnowballManager

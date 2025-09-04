@@ -29,6 +29,7 @@ local RoundSummary = require(ModuleDirectory.Gameplay.RoundSummary)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
+local TutorialManager = require(ModuleDirectory.TutorialManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -62,9 +63,13 @@ local function onRoundStarting(currentRound: RoundSystem.Round)
 end
 
 local function onRoundPreparing(currentRound)
-	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "SEND_STARTING_PLAYERS", currentRound.startingPlayers)
+	RemoteEventHandler.FireOnClients(
+		PlayersInGame.getActivePlayers(),
+		"SEND_STARTING_PLAYERS",
+		currentRound.startingPlayers
+	)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
-	RespawnManager.setMap(currentMap) 
+	RespawnManager.setMap(currentMap)
 	AmmoManager.startRegenLoop()
 	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "CHANGE_STATE", "ACTIVE")
 
@@ -85,19 +90,19 @@ local function onRoundEnding(currentRound)
 	--ToolManager.reset()
 	AmmoPickupManager.stop()
 	AmmoManager.reset()
-	RespawnManager.setMap(nil) 
+	RespawnManager.setMap(nil)
 	BlockFactory.stopAllTweens()
 	if ServerStatus.get() == "OK" then
 		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
 		Onboarding.action(Winner, "WON")
 		if Winner then
-			LevelController.giveXp(Winner , 50)
+			LevelController.giveXp(Winner, 50)
 			PlayerData.incrementWins(Winner, 1)
-			LeaderboardUpdater.incrementWins(Winner.UserId , 1) 
+			LeaderboardUpdater.incrementWins(Winner.UserId, 1)
 			local totalWins = PlayerData.getWins(Winner)
 			Leaderstats.updateStat(Winner, "Wins", totalWins)
-			WinBadgeHandler.playerAwardedWin(Winner , totalWins)
-			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName , Winner)
+			WinBadgeHandler.playerAwardedWin(Winner, totalWins)
+			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
 		else
 			print("No winner")
 		end
@@ -114,8 +119,7 @@ local function onRoundEnding(currentRound)
 	task.wait(1)
 end
 
-local function onRoundIntermission(currentRound)
-end
+local function onRoundIntermission(currentRound) end
 
 function RoundManager.getCurrentMap(): {}?
 	return currentMap
@@ -142,23 +146,31 @@ function RoundManager.init(): nil
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
 
-	RemoteEventHandler.newEventConnection("QUERY_SERVER_STATE" , function(player)
+	RemoteEventHandler.newEventConnection("QUERY_SERVER_STATE", function(player)
 		return RoundSystem.getState()
 	end)
 end
 
-function RoundManager.onPlayerDeath(playerWhoDied: Player , wasAlive : boolean)
+function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
 	RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
 	local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
 
+	if TutorialManager.isPlayerInTutorial(playerWhoDied) then
+		task.spawn(function()
+			task.wait(0.5)
+			if TutorialManager.isPlayerInTutorial(playerWhoDied) then
+				TeleportManager.teleport(playerWhoDied, TutorialManager.getMapTeleportPoint(), true)
+			end
+		end)
+	end
+
 	if wasAlive then
-		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied , Eliminator)
+		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied, Eliminator)
 	end
 
 	if Eliminator then
-		RemoteEventHandler.FireOnClient(Eliminator , "ELIMINATION" , playerWhoDied)
+		RemoteEventHandler.FireOnClient(Eliminator, "ELIMINATION", playerWhoDied)
 	end
-
 end
 
 return RoundManager

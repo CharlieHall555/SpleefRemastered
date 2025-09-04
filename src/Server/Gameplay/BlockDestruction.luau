@@ -7,6 +7,7 @@ local Config =require(game:GetService("ServerScriptService").ServerConfiguration
 local Block = require(ModuleDirectory.Map.Block)
 local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 
 local BlockDestruction = {}
 
@@ -18,6 +19,8 @@ end
 
 function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
 
+	print("destory request")
+
     local blockToDestroy : Block.Block? = LoadedBlocks[blockId]
 
     if blockToDestroy == nil then
@@ -25,7 +28,11 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
 		return
     end
 
-    if RoundSystem.getState() ~= "ACTIVE" then
+    if RoundSystem.getState() ~= "ACTIVE" and blockToDestroy.TutorialBlock == false then
+		return
+	end
+
+	if PlayersInGame.isAlive(player) == false and blockToDestroy.TutorialBlock == false then
 		return
 	end
 	

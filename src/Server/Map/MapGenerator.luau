@@ -21,7 +21,7 @@ function MapGenerator.generate(params : MapDataFactory.MapDataCreationParams) : 
     --load background
     local template = BackgroundFolder:FindFirstChild(backgroundName) or BackgroundFolder.Background1
     local newBackground = template:Clone()
-    newBackground:PivotTo(CFrame.new(0,0,0))
+    newBackground:PivotTo(CFrame.new(params.originPosition or Vector3.new(0,0,0)))
     newBackground.Parent = game.Workspace
 
     local origin = newBackground.MapOrigin.Position or Vector3.new(0,0,0)

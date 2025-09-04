@@ -76,7 +76,9 @@ local function onWaiting()
 	task.spawn(function()
 		task.wait(3)
 		if waiting and canInvite then
-			InivteGUI.Visible = true
+			if ClientStateTracker.getState() == "INTERMISSION" then
+				InivteGUI.Visible = true
+			end
 		end
 	end)
 end

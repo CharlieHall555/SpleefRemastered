@@ -35,6 +35,22 @@ function Transition.onLoaded()
 			current = Transition.hide()
 		end)
 	end)
+
+	ClientStateTracker.connectIntermission(function()
+		task.spawn(function()
+			Transition.show()
+			task.wait(0.7)
+			Transition.hide()
+		end)
+	end)
+
+	ClientStateTracker.connectTutorial(function()
+		task.spawn(function()
+			Transition.show()
+			task.wait(0.7)
+			Transition.hide()
+		end)
+	end)
 end
 
 local TweenService = game:GetService("TweenService")

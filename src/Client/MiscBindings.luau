@@ -60,6 +60,17 @@ function MiscBindings.init()
 
 	end)
 
+	ClientStateTracker.connectTutorial(function()
+		
+		if PlatformDetector.getPlatform() == "MOBILE" then
+			
+			MobileCamera.enable()
+			TouchButtons.setVisibleActionButton(true)
+
+		end
+
+	end)
+
 	ClientStateTracker.connectServerStateChange(function(newState)
 		
 		if newState == "ACTIVE" and ClientStateTracker.getState() == "INTERMISSION" then
@@ -99,13 +110,7 @@ function MiscBindings.init()
 		if died and killer then
 			SystemMessage.send(killer.DisplayName .. " ELIMINATED " .. died.DisplayName , Color3.new(0.937254, 0.019607, 0.019607) , true)
 		else
-			SystemMessage.send( died.DisplayName .. " Died" , Color3.new(0.788235, 0.129411, 0.043137) , true)
-		end
-
-		if died == LocalPlayer then
-			Transition.show()
-			task.wait(1)
-			Transition.hide()
+			SystemMessage.send( died.DisplayName .. " DIED" , Color3.new(0.788235, 0.129411, 0.043137) , true)
 		end
 		
 	end)

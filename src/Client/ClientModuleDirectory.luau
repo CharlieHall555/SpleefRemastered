@@ -32,6 +32,7 @@ ClientModuleDirectory.Gui.SpectateButton = Root.Gui.Spectate.SpectateButton
 ClientModuleDirectory.Gui.MobileSettingsButton = Root.Gui.Settings.MobileSettingsButton
 ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSettingsWidget
 ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
+--ClientModuleDirectory.Gui.NameTag = Root.Gui.NameTag
 
 ClientModuleDirectory.Gui.EliminationScreen = Root.Gui.Intermission.EliminationScreen
 ClientModuleDirectory.Gui.RespawnScreen = Root.Gui.Intermission.RespawnScreen
@@ -65,7 +66,7 @@ ClientModuleDirectory.Input.MobileCameraMovement = Root.Input.MobileCameraMoveme
 ClientModuleDirectory.Input.MobileControls = Root.Input.MobileControls
 ClientModuleDirectory.Input.AimAssistController = Root.Input.AimAssistController
 ClientModuleDirectory.Input.BackwardsEdgeDetector = Root.Input.BackwardsEdgeDetector
-ClientModuleDirectory.Input.MovementDampaner = Root.Input.MovementDampener
+ClientModuleDirectory.Input.MovementDampener = Root.Input.MovementDampener
 
 
 --//====================================================

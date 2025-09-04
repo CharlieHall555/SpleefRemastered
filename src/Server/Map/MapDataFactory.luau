@@ -3,9 +3,9 @@ local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
 local LayerFactory = require(ModuleDirectory.Map.LayerFactory)
 
 export type MapDataCreationParams = {
-	layerSeperation: number,
 	originPosition: Vector3,
 	layerParams: { PlaneFactory.PlaneCreationParams },
+	background : string,
 }
 
 export type layerOutput = {
@@ -36,7 +36,8 @@ function MapDataFactory.create(params: MapDataCreationParams): MapData
 		local layerParams: LayerFactory.LayerCreationParams = {
 			worldPosition = worldPosition,
 			layerMaterial = planeParams.material,
-			spawnsAmmo = planeParams.spawnsAmmo or false
+			spawnsAmmo = planeParams.spawnsAmmo or false,
+			regenerates = planeParams.regenerates or false
 		}
 
 		table.insert(outputs, {

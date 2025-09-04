@@ -17,6 +17,8 @@ function SetUp.init()
     StarterPlayer.CharacterWalkSpeed = 21
     StarterPlayer.CharacterJumpPower = 60
     StarterPlayer.AutoJumpEnabled = false
+    StarterPlayer.NameDisplayDistance = 0
+    StarterPlayer.HealthDisplayDistance = 0
 
     if RunService:IsStudio() then
         

@@ -34,6 +34,20 @@ function BlockFactory.destroy(block: Block.Block , player : Player?): nil
         BlockFactory._activeTweens[block] = nil
     end
 
+    if block:getObstacle() then
+        ObstacleFactory.removeObstacle(block)
+        block:setObstacle(nil)
+    end
+
+    if block.Regenerates then
+        task.spawn(function()
+            block:Hide()
+            task.wait(5)
+            block:Show()
+        end)
+        return
+    end
+
     local parentGridId = block._LayerId
     if parentGridId then
         local parentGrid: Layer.Layer? = LoadedLayers[parentGridId]
@@ -42,10 +56,7 @@ function BlockFactory.destroy(block: Block.Block , player : Player?): nil
             parentGrid:removeBlock(block)
         end
     end
-    if block:getObstacle() then
-        ObstacleFactory.removeObstacle(block)
-        block:setObstacle(nil)
-    end
+
 
 
     block:Destroy()

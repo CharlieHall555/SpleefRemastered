@@ -13,7 +13,7 @@ local mouse = player:GetMouse()
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService
 
-local camera : Camera? = nil
+local camera: Camera? = nil
 
 local ActionHandler = {}
 
@@ -33,14 +33,13 @@ rayParams.IgnoreWater = true
 rayParams.CollisionGroup = "CG_GAMEPLAY"
 
 local function ensureCamera(): Camera?
-    if not camera or camera.Parent == nil then
-        camera = workspace.CurrentCamera
-    end
-    return camera
+	if not camera or camera.Parent == nil then
+		camera = workspace.CurrentCamera
+	end
+	return camera
 end
 
 function ActionHandler.canAttack()
-
 	if time() - lastClickTime < HIT_COOLDOWN then
 		return false
 	end
@@ -55,11 +54,7 @@ function ActionHandler.canAttack()
 	if (not rootPart) or not headPart then
 		return false
 	end
-	if ClientStateTracker.getState() ~= "ACTIVE" then
-		return false
-	end
-
-	if ClientStateTracker.getServerState() ~= "ACTIVE" then
+	if ClientStateTracker.getState() ~= "ACTIVE" and ClientStateTracker.getState() ~= "TUTORIAL" then
 		return false
 	end
 
@@ -70,53 +65,87 @@ function ActionHandler.canAttack()
 	return true
 end
 
+-- Computes a direction from a screen point (shared helper).
+local function directionFromScreenPoint(cam: Camera, spawnPart: BasePart, screenX: number, screenY: number): Vector3
+	-- Avoid hitting our own character
+	if spawnPart and spawnPart.Parent then
+		rayParams.FilterDescendantsInstances = { spawnPart.Parent }
+	else
+		rayParams.FilterDescendantsInstances = {}
+	end
+
+	local unitRay = cam:ViewportPointToRay(screenX, screenY)
+	local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
+	local target: Vector3 = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
+
+	local fromSpawn = target - spawnPart.Position
+	if fromSpawn.Magnitude < 1e-6 then
+		return cam.CFrame.LookVector.Unit
+	end
+	return fromSpawn.Unit
+end
+
+-- PC: uses the mouse position; falls back to center if unavailable.
+function ActionHandler.getDirectionPC(): Vector3
+	local cam = ensureCamera()
+	if not cam then
+		return Vector3.new(0, 0, -1)
+	end
+
+	if not Player.Character then
+		return
+	end
+
+	local headPart = player.Character:FindFirstAncestor("Head") or player.Character.PrimaryPart
+
+	if mouse and mouse.Hit then
+		local target = mouse.Hit.Position
+		local v = target - headPart.Position
+		if v.Magnitude <= 1e-6 then
+			return cam.CFrame.LookVector.Unit
+		end
+		return v.Unit
+	end
+
+	local center = cam.ViewportSize * 0.5
+	local unitRay = cam:ViewportPointToRay(center.X, center.Y)
+	local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
+	local target = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
+	local v2 = target - headPart.Position
+	if v2.Magnitude <= 1e-6 then
+		return cam.CFrame.LookVector.Unit
+	end
+	return v2.Unit
+end
+
+-- Phone: uses the reticle GUI position if provided; otherwise center screen.
+function ActionHandler.getDirectionMobile(spawnPart: BasePart, reticleGui: GuiObject?): Vector3
+	local cam = ensureCamera()
+	if not cam then
+		return Vector3.new(0, 0, -1)
+	end
+
+	local screenX: number, screenY: number
+	if reticleGui then
+		local absPos = reticleGui.AbsolutePosition
+		local absSize = reticleGui.AbsoluteSize
+		screenX = absPos.X + absSize.X * 0.5
+		screenY = absPos.Y + absSize.Y * 0.5
+	else
+		local center = cam.ViewportSize * 0.5
+		screenX, screenY = center.X, center.Y
+	end
+
+	return directionFromScreenPoint(cam, spawnPart, screenX, screenY)
+end
+
+-- Optional: keep your original entry point as a dispatcher so existing code doesn’t break.
 function ActionHandler.getDirection(_action, spawnPart: BasePart, reticleGui: GuiObject?): Vector3
-    local cam = ensureCamera()
-    if not cam then
-        return Vector3.new(0, 0, -1)
-    end
-
-    -- Make sure we don't hit our own character
-    if spawnPart and spawnPart.Parent then
-        rayParams.FilterDescendantsInstances = { spawnPart.Parent }
-    else
-        rayParams.FilterDescendantsInstances = {}
-    end
-
-    -- 1) Work out the SCREEN POINT to ray through
-    local screenX: number, screenY: number
-
-    if reticleGui then
-        -- Use the actual reticle position (important for over-shoulder or offset reticles on MOBILE)
-        local absPos = reticleGui.AbsolutePosition
-        local absSize = reticleGui.AbsoluteSize
-        screenX = absPos.X + absSize.X * 0.5
-        screenY = absPos.Y + absSize.Y * 0.5
-    elseif PlatformDetector.getPlatform() == "PC" and mouse then
-        -- Mouse position on PC
-        screenX = mouse.X
-        screenY = mouse.Y
-    else
-        -- Fallback to center of the screen
-        local center = cam.ViewportSize * 0.5
-        screenX = center.X
-        screenY = center.Y
-    end
-
-    -- 2) Build a world ray from CAMERA through the screen point (reticle)
-    local unitRay = cam:ViewportPointToRay(screenX, screenY)
-
-    -- 3) Find a target point along that ray (prioritize real hit, otherwise a far point)
-    local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
-    local target: Vector3 = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
-
-    -- 4) Turn that into a direction from the projectile spawn position
-    --    This ensures the projectile’s path aims to the same point the reticle ray hits.
-    local fromSpawn = target - spawnPart.Position
-    if fromSpawn.Magnitude < 1e-6 then
-        return cam.CFrame.LookVector.Unit
-    end
-    return fromSpawn.Unit
+	if PlatformDetector.getPlatform() == "PC" then
+		return ActionHandler.getDirectionPC()
+	else
+		return ActionHandler.getDirectionMobile(spawnPart, reticleGui)
+	end
 end
 
 function ActionHandler.mainAttack(action)
@@ -127,20 +156,22 @@ function ActionHandler.mainAttack(action)
 		print(ClientAmmoTracker.getIsInfinite())
 		print(ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false)
 
-		local selectedBlock =ClientBlockSelector.getSelected()
+		local selectedBlock = ClientBlockSelector.getSelected()
+		print(selectedBlock)
 
 		if selectedBlock then -- destroy with spade
 			local id = selectedBlock:GetAttribute("Id")
+			print("woop")
 			RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
 			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
 			return
 		else -- shoot
-			if ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false then
+			if ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false and ClientStateTracker.getState() ~= "TUTORIAL" then
 				out_count += 1
 				if out_count >= 7 then
 					--InGameHUD.showHint()
 				end
-				
+
 				SoundPlayer.playSound("rbxassetid://9125655693")
 				return
 			else

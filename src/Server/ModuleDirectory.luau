@@ -82,6 +82,8 @@ ModuleDirectory.Gameplay.RespawnManager = game:GetService("ServerScriptService")
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 
+ModuleDirectory.TutorialManager = game:GetService("ServerScriptService").Tutorial.TutorialManager
+
 --//====================================================
 --// Player Systems
 --//====================================================

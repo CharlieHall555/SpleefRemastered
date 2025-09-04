@@ -7,6 +7,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local LevelUtilities = require(ClientModuleDirectory.LevelUtilities)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 
@@ -88,6 +89,14 @@ function ExperienceBar.onProfileLoaded()
 		updateTexts(level, xp)
 		refreshBar(level, xp)
 	end, "xp")
+
+	ClientStateTracker.connectIntermission(function()
+		ExperienceFrame.Visible = true
+	end)
+
+	ClientStateTracker.connectTutorial(function()
+		ExperienceFrame.Visible = false
+	end)
 end
 
 return ExperienceBar

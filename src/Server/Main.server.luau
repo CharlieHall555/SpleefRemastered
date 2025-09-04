@@ -1,4 +1,5 @@
 local serverLoaded = false
+local LocalizationService = game:GetService("LocalizationService")
 local QueryLoaded = game:GetService("ReplicatedStorage"):WaitForChild("QueryLoaded")
 
 QueryLoaded.OnServerInvoke = function(player)
@@ -19,4 +20,3 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 RoundSystem.main()
-

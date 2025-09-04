@@ -8,6 +8,8 @@ PlayerPool.__index = PlayerPool
 -- Internal list of players currently in the pool
 local activePool: { Player } = {}
 
+local onAddedToPool : (player : Player) -> ()
+
 local onChange : ((any) -> (any))? = nil
 
 function PlayerPool.init(): nil
@@ -42,6 +44,9 @@ function PlayerPool.addToPool(player: Player): nil
         end
     end
     table.insert(activePool, player)
+    if onAddedToPool then
+        onAddedToPool(player)
+    end
     if onChange then
         onChange(activePool)
     end
@@ -62,5 +67,10 @@ function PlayerPool.removeFromPool(player: Player): nil
         end
     end
 end
+
+function PlayerPool.connectOnAdded(callback: (player: Player) -> ()): nil
+    onAddedToPool = callback
+end
+
 
 return PlayerPool

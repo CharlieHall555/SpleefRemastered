@@ -1,7 +1,8 @@
 export type LayerCreationParams = {
     worldPosition: Vector3,
     layerMaterial : string,
-    spwansAmmo : boolean
+    spwansAmmo : boolean,
+    regenerates : boolean
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
@@ -50,7 +51,7 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
                     (y - 1) * blockSize
                 )
                 local blk = BlockFactory.create(
-                    {material = params.layerMaterial}
+                    {material = params.layerMaterial , Regenerates = params.regenerates}
                 )
                 blk:setWorldPosition(worldPos)
                 blk:setLayerPosition(Vector2.new(x, y))

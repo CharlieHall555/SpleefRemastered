@@ -46,7 +46,7 @@ end
 
 function ThrowableManager.onLoaded(): nil
 	defaultRayParams.FilterType = Enum.RaycastFilterType.Exclude
-	defaultRayParams.FilterDescendantsInstances = { }
+	defaultRayParams.FilterDescendantsInstances = {}
 	defaultRayParams.IgnoreWater = true
 	defaultRayParams.RespectCanCollide = false
 	defaultRayParams.CollisionGroup = "CG_GAMEPLAY"
@@ -86,7 +86,7 @@ function ThrowableManager.mainLoop(dt: number): nil
 		local castCFrame = CFrame.new(center, center + orient)
 		local castSize = Vector3.new(CAST_RADIUS, CAST_RADIUS, direction.Magnitude)
 		local rayParms = PlayerRaycastParamsHandler.get(th.owner) or defaultRayParams
-		local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction , rayParms)
+		local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction, rayParms)
 
 		if oldPos.Y < -100 then
 			ThrowableManager.removeThrowable(uid)
@@ -113,19 +113,28 @@ end
 
 local function updateClients(newThrowable: Throwable.Throwable)
 	local dataToSend = {
-		sP  = VectorUtil.SerializeVector3(newThrowable.position),
-		v   = VectorUtil.SerializeVector3(newThrowable.velocity),
-		t   = newThrowable.typeName,
-		s   = workspace:GetServerTimeNow(),
+		sP = VectorUtil.SerializeVector3(newThrowable.position),
+		v = VectorUtil.SerializeVector3(newThrowable.velocity),
+		t = newThrowable.typeName,
+		s = workspace:GetServerTimeNow(),
 		uid = newThrowable.uid,
 	}
 	RemoteEventHandler.FireOnAllClients("NEW_THROWABLE", dataToSend)
 end
 
-function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _type: string, playerOwner: Player?): string
+function ThrowableManager.newThrowable(
+	position: Vector3,
+	direction: Vector3,
+	_type: string,
+	playerOwner: Player?,
+	tutorial: boolean?
+): string
 	assert(typeof(position) == "Vector3", "ThrowableManager.newThrowable: 'position' must be a Vector3")
 	assert(typeof(direction) == "Vector3", "ThrowableManager.newThrowable: 'direction' must be a Vector3")
-	assert(typeof(_type) == "string" and _type ~= "", "ThrowableManager.newThrowable: '_type' must be a non-empty string")
+	assert(
+		typeof(_type) == "string" and _type ~= "",
+		"ThrowableManager.newThrowable: '_type' must be a non-empty string"
+	)
 
 	local uid = generateUID()
 	local speed = velocityTable[_type] or 80
@@ -133,15 +142,16 @@ function ThrowableManager.newThrowable(position: Vector3, direction: Vector3, _t
 	local now = workspace:GetServerTimeNow()
 
 	local new = {
-		uid       = uid,
+		uid = uid,
 		direction = direction,
-		position  = position,
-		velocity  = velocity,
-		typeName  = _type,
-		owner     = playerOwner,
+		position = position,
+		velocity = velocity,
+		typeName = _type,
+		owner = playerOwner,
+		tutorial = tutorial or false,
 
 		-- lifetime cap
-		expireAt  = now + MAX_LIFETIME,
+		expireAt = now + MAX_LIFETIME,
 	}
 
 	loadedThrowables[uid] = new
@@ -151,12 +161,12 @@ end
 
 function ThrowableManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult?): nil
 	if hit.Instance:HasTag("PLAYER_HITBOX") then
-		KnockBackManager.hitHitbox(hit.Instance, throwable.direction, throwable.owner)
+		KnockBackManager.hitHitbox(hit.Instance, throwable.direction, throwable.owner , throwable.tutorial)
 		return
 	end
 	local f = typeHitFunctions[throwable.typeName]
 	if f and hit then
-		f(throwable, hit)
+		f(throwable, hit , throwable.tutorial)
 	end
 end
 

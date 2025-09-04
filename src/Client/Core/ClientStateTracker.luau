@@ -4,7 +4,9 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local ClientStateTracker = {}
 
-local state: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION" = "INTERMISSION"
+type ClientState = "ACTIVE" | "ROUND_STARTING" | "INTERMISSION" | "TUTORIAL"
+
+local state: ClientState = "INTERMISSION"
 local serverState: string?
 
 local isSuddenDeath = false
@@ -14,6 +16,7 @@ local _transitions = {
 	ACTIVE = {} :: { [string]: () -> () },
 	ROUND_STARTING = {} :: { [string]: () -> () },
 	INTERMISSION = {} :: { [string]: () -> () },
+	TUTORIAL = {} :: { [string]: () -> () },
 }
 
 -- server-state change callbacks (receive new serverState)
@@ -28,7 +31,7 @@ local function _newUID(): string
 	return "cs" .. tostring(_nextId)
 end
 
-local function _connect(stateName: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION", fn: () -> ()): string
+local function _connect(stateName: ClientState, fn: () -> ()): string
 	assert(typeof(fn) == "function", "Callback must be a function")
 	local uid = _newUID()
 	_transitions[stateName][uid] = fn
@@ -57,21 +60,19 @@ function ClientStateTracker.init(): nil
 	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH" , function()
 		isSuddenDeath = true
 	end)
-
 end
 
-function ClientStateTracker.receivedStateChange(newState: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION"): nil
+function ClientStateTracker.receivedStateChange(newState: ClientState): nil
 	if newState ~= state then
 		ClientStateTracker.changeState(newState)
 	end
-	
 end
 
 function ClientStateTracker.getSuddenDeath() : boolean
 	return isSuddenDeath
 end
 
-function ClientStateTracker.changeState(newState: "ACTIVE" | "ROUND_STARTING" | "INTERMISSION"): nil
+function ClientStateTracker.changeState(newState: ClientState): nil
 	if state == newState then
 		return
 	end
@@ -88,7 +89,7 @@ function ClientStateTracker.changeState(newState: "ACTIVE" | "ROUND_STARTING" | 
 	end
 end
 
-function ClientStateTracker.getState(): "ACTIVE" | "ROUND_STARTING" | "INTERMISSION"
+function ClientStateTracker.getState(): ClientState
 	return state
 end
 
@@ -121,6 +122,10 @@ end
 
 function ClientStateTracker.connectActive(fn: () -> ()): string
 	return _connect("ACTIVE", fn)
+end
+
+function ClientStateTracker.connectTutorial(fn: () -> ()): string
+	return _connect("TUTORIAL", fn)
 end
 
 function ClientStateTracker.connectServerStateChange(fn: (newState : string) -> ()): string

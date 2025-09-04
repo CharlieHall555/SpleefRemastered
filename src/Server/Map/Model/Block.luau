@@ -4,30 +4,31 @@ export type BlockConfig = {
 	Regenerates: boolean?, -- whether this block regenerates (defaults to false)
 }
 
-
 export type Block = {
 	Id: number,
 	_blockId: number,
 	_LayerId: number?,
-	Part: Part,
+	Part: Part?,
 	Shape: string?,
 	Regenerates: boolean,
-	Obstacle: any?,
-	State: string,
+	Obstacle: Instance?, -- or a more specific type if you have one
+	State: "VISIBLE" | "HIDDEN" | "DESTROYED",
 	LayerPosition: Vector2,
 	Falling: boolean,
 	Type: string,
 
 	setParentLayerId: (self: Block, parentLayerId: number) -> nil,
-	setObstacle: (self: Block, Obstacle: any) -> nil,
+	setObstacle: (self: Block, obstacle: Instance?) -> nil,
 	RemoveObstacle: (self: Block) -> nil,
+	getObstacle: (self: Block) -> Instance?,
+
 	setLayerPosition: (self: Block, newLayerPosition: Vector2) -> nil,
 	setWorldPosition: (self: Block, newWorldPosition: Vector3) -> nil,
 	getWorldPosition: (self: Block) -> Vector3,
-	Destroy: (self: Block) -> nil,
-	getObstacle : (self : Block) -> ({})?,
-	setObstacle : (self : Block , newObstacle : {}) -> nil,
 
+	Show: (self: Block) -> nil,
+	Hide: (self: Block) -> nil,
+	Destroy: (self: Block) -> nil,
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
@@ -36,7 +37,6 @@ local Materials = require(ModuleDirectory.Resources.Materials)
 local LoadedBlocks = require(ModuleDirectory.LoadedBlocks)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local TweenService = game:GetService("TweenService")
-
 
 local Block = {}
 Block.__index = Block
@@ -55,7 +55,7 @@ function Block.new(blockConfig: BlockConfig?): Block
 	local shape = blockConfig.Shape
 	local regenerates = blockConfig.Regenerates or false
 
-	local materialDef : Materials.CustomMaterial = Materials.get(materialName)
+	local materialDef: Materials.CustomMaterial = Materials.get(materialName)
 
 	local self = setmetatable({}, Block)
 
@@ -82,12 +82,17 @@ function Block.new(blockConfig: BlockConfig?): Block
 	self.Part.Parent = game.Workspace.Blocks
 	self.Part:AddTag("Block")
 	self.Part:SetAttribute("Id", self.Id)
-	self.Part:SetAttribute("Type" , blockConfig.material)
+	self.Part:SetAttribute("Type", blockConfig.material)
 
 	-- config
 	self.Shape = shape
 	self.Regenerates = regenerates
 	self.Obstacle = nil
+	self.Part:SetAttribute("Regenerates", self.Regenerates or false)
+	if self.Regenerates then
+		self.Part:SetAttribute("TutorialBlock")
+		self.TutorialBlock = true
+	end
 
 	if shape == "Ball" then
 		self.Part.Shape = Enum.PartType.Ball
@@ -95,7 +100,7 @@ function Block.new(blockConfig: BlockConfig?): Block
 	end
 
 	-- initial state
-	self.State = "DEFAULT"
+	self.State = "VISIBLE"
 	self.ParentLayer = nil
 	self.LayerPosition = Vector2.new(0, 0)
 	self.Falling = false
@@ -108,14 +113,12 @@ function Block:setParentLayerId(parentLayerId: number): nil
 	self._LayerId = parentLayerId
 end
 
-function Block:getObstacle() : {}?
+function Block:getObstacle(): {}?
 	return self.Obstacle
 end
 
-function Block:setObstacle(new : {}) : nil
-
+function Block:setObstacle(new: {}): nil
 	self.Obstacle = new
-	
 end
 
 function Block:setWorldPosition(newWorldPosition: Vector3): nil
@@ -130,24 +133,70 @@ function Block:getWorldPosition(): Vector3
 	return self.Part.Position
 end
 
+function Block:Show(): nil
+	if self.State == "DESTROYED" then
+		warn(("Block %d:Show() called after destroy"):format(self.Id))
+		return
+	end
+	if not self.Part then
+		return
+	end
+
+	self.Part.Transparency = 0
+	self.Part.CanCollide = true
+	self.Part.CanQuery = true
+	self.Part.CanTouch = true
+
+	self.State = "VISIBLE"
+end
+
+function Block:Hide(): nil
+	if self.State == "DESTROYED" then
+		warn(("Block %d:Hide() called after destroy"):format(self.Id))
+		return
+	end
+	if not self.Part then
+		return
+	end
+
+	self.Part.Transparency = 1
+	self.Part.CanCollide = false
+	self.Part.CanQuery = false
+	self.Part.CanTouch = false
+
+	self.State = "HIDDEN"
+end
+
 function Block:Destroy(): nil
 	if self.Obstacle then
-		self.Obstacle:Destroy()
+		pcall(function()
+			self.Obstacle:Destroy()
+		end)
+		self.Obstacle = nil
 	end
 
 	if self.Part then
-		self.Part.Transparency = 1
-		self.Part.CanCollide = false
-		self.Part.CanQuery = false
-		self.Part.CanTouch = false
-		self.Part.CollisionGroup = "Default"
-		PartPool.add(self.Part)
+		pcall(function()
+			self.Part.Transparency = 1
+			self.Part.CanCollide = false
+			self.Part.CanQuery = false
+			self.Part.CanTouch = false
+			self.Part.CollisionGroup = "Default"
+			self.Part.Anchored = true
+		end)
+
+		pcall(function()
+			PartPool.add(self.Part)
+		end)
+
+		self.Part = nil
 	end
 
-	LoadedBlocks[self.Id] = nil
-	self.Part = nil
+	if LoadedBlocks then
+		LoadedBlocks[self.Id] = nil
+	end
+
+	self = nil
 end
-
-
 
 return Block
