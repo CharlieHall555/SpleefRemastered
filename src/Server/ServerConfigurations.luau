@@ -18,7 +18,7 @@ return {
     --//====================================================
     REQUIRED_PLAYERS = 2,              -- Players needed to start a round
     PLAYERS_TO_END = 1,                -- Players left to trigger end
-    INTERMISSION_TIME = 15,             -- Time between rounds
+    INTERMISSION_TIME = 300,             -- Time between rounds
     PREPARING_TIME = 8,                -- Pre-round prep time
     ROUND_TIME = 80,                   -- Normal round duration
     MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
@@ -42,6 +42,8 @@ return {
 
     BLOCK_DESTROY_THRESHOLD = 35, --for standard click breaks
 
+
+    BLOCK_REGEN_TIME = 15,
     --//====================================================
     --// Client Responsiveness
     --//====================================================

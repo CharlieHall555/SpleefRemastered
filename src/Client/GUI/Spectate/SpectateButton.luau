@@ -67,7 +67,9 @@ function SpectateButton.onResize()
 end
 
 function SpectateButton.show()
-    SpectateButtonGUI.Visible = true
+    if SpectateButtonGUI then
+        SpectateButtonGUI.Visible = true
+    end
 end
 
 function SpectateButton.getGui() : Frame
@@ -77,7 +79,10 @@ end
 
 function SpectateButton.hide()
     print("hide spectate button")
-    SpectateButtonGUI.Visible = false
+    if SpectateButtonGUI then
+        SpectateButtonGUI.Visible = false
+    end
+    
 end
 
 return SpectateButton

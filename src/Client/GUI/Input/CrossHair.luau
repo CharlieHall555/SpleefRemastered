@@ -11,8 +11,8 @@ local CrossHair = {}
 
 function CrossHair.onLoaded()
     CrossHairGui = GuiAssets:WaitForChild("Input"):WaitForChild("Crosshair")
-    CrossHairGui.Parent = Screens.gameHUD
-    CrossHairGui.Visible = false
+    CrossHairGui.Parent = Screens.general
+    CrossHairGui.Visible = PlatformDetector.getPlatform() == "MOBILE"
 end
 
 function CrossHair.show()

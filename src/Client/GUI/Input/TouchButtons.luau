@@ -33,8 +33,8 @@ local lastActionTime = 0
 local TouchButtons = {}
 TouchButtons.__index = TouchButtons
 
-local function destroyDefaultJump()
-	pcall(function()
+local function destroyDefaultJump(): boolean & nil
+	return pcall(function()
 		Player.PlayerGui.TouchGui.TouchControlFrame.JumpButton.Visible = false
 	end)
 end
@@ -57,15 +57,24 @@ local function setHighlighted(bg: Frame, img: ImageLabel, highlighted: boolean)
 	end
 end
 
+function TouchButtons.onProfileLoaded()
+	local s, _ = destroyDefaultJump()
+	task.spawn(function()
+		local tries = 0
+		while s == false or tries > 200 do
+			destroyDefaultJump()
+			tries += 1
+			task.wait(0.1)
+		end
+	end)
+end
+
 function TouchButtons.onLoaded()
 	if PlatformDetector.getPlatform() == "MOBILE" then
-		destroyDefaultJump()
-
 		touchButtonsGui = GuiAssets.Input.TouchButtons
 		touchButtonsGui.Parent = Screens.touchControls
 		touchButtonsGui.Visible = true
 		-- touchButtonsGui.Visible = (PlatformDetector.getPlatform() == "MOBILE")
-
 
 		actionButtonBg = touchButtonsGui.ActionButton
 		jumpButtonBg = touchButtonsGui.JumpButton

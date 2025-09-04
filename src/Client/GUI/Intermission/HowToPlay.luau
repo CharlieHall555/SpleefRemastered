@@ -11,7 +11,7 @@ local howToPlayGUI : Frame
 
 function HowToPlay.onProfileLoaded()
 
-    task.spawn(function()
+    --[[task.spawn(function()
         task.wait(0.5)
         howToPlayGUI = GuiAssets:WaitForChild("HowToPlay")
         if howToPlayGUI then
@@ -24,7 +24,7 @@ function HowToPlay.onProfileLoaded()
             Debris:AddItem(howToPlayGUI , 5)
 
         end
-    end)
+    end)--]]
   
 
 end

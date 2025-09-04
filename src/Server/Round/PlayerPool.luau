@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local PlayerData = require(ModuleDirectory.Player.PlayerData)
 
 local PlayerPool = {}
 PlayerPool.__index = PlayerPool
@@ -13,9 +14,6 @@ local onAddedToPool : (player : Player) -> ()
 local onChange : ((any) -> (any))? = nil
 
 function PlayerPool.init(): nil
-    RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-        PlayerPool.addToPool(player)
-    end)
 
     RemoteEventHandler.newEventConnection("PLAYER_REQUEST_JOIN_POOL", function(player: Player)
         PlayerPool.addToPool(player)

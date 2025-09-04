@@ -32,6 +32,8 @@ ClientModuleDirectory.Gui.SpectateButton = Root.Gui.Spectate.SpectateButton
 ClientModuleDirectory.Gui.MobileSettingsButton = Root.Gui.Settings.MobileSettingsButton
 ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSettingsWidget
 ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
+ClientModuleDirectory.Gui.TutorialStatus = Root.Gui.Tutorial.TutorialStatus
+
 --ClientModuleDirectory.Gui.NameTag = Root.Gui.NameTag
 
 ClientModuleDirectory.Gui.EliminationScreen = Root.Gui.Intermission.EliminationScreen
@@ -118,6 +120,8 @@ ClientModuleDirectory.CheerEffect = Root.Visuals.CheerEffect
 ClientModuleDirectory.EliminationEffect = Root.Visuals.EliminationEffect
 ClientModuleDirectory.CrownOverhead = Root.Visuals.CrownOverhead
 ClientModuleDirectory.WinnerEffect = Root.Visuals.WinnerEffect
+ClientModuleDirectory.ClientSnowballVisuals = Root.Visuals.ClientSnowballVisuals
+ClientModuleDirectory.HighlightBlocks = Root.Visuals.HighlightBlocks
 
 ClientModuleDirectory.Spectate= {}
 ClientModuleDirectory.Spectate.Ghost = Root.Spectate.Ghost
@@ -166,5 +170,8 @@ ClientModuleDirectory.LevelUtilities = game:GetService("ReplicatedStorage").Util
 ClientModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
 
 ClientModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilities.KnockbackUtilities
+
+ClientModuleDirectory.ClientTutorial = Root.Tutorial.ClientTutorial
+
 
 return ClientModuleDirectory

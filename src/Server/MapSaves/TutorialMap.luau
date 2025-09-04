@@ -9,7 +9,7 @@ return {
 			shape = "Square",
             spawnsAmmo = true,
             regenerates = true,
-            material = "grass",
+            material = "sand",
 		},
 
 		-- Layer 2: Solid Circle
@@ -18,7 +18,7 @@ return {
 			size = Vector2.new(20, 20),
             regenerates = true,
 			shape = "Square",
-            material = "grass",
+            material = "sand",
 		}
     }
 

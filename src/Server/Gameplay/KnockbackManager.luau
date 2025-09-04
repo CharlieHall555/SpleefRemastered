@@ -30,7 +30,7 @@ local function markHit(userId: number)
 	lastHitCache[userId] = now()
 end
 
-local function applyKnockbackServer(char, dir)
+local function applyKnockbackServer(char, dir , power)
 	local humanoid = char:FindFirstChildOfClass("Humanoid")
 	local rootPart = char:FindFirstChild("HumanoidRootPart") :: BasePart?
 	if not humanoid or not rootPart then
@@ -41,7 +41,7 @@ local function applyKnockbackServer(char, dir)
 		return
 	end
 
-	local power = Config.KNOCKBACK_POWER or 0
+	local power = power or 0
 	if power <= 0 then
 		return
 	end
@@ -61,7 +61,7 @@ function KnockBackManager.init()
 	end)
 end
 
-function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Player?, tutorial: boolean?)
+function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Player?, active: boolean?)
 	local char = hitBox.Parent
 	if not char then
 		return
@@ -72,9 +72,15 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Play
 		applyKnockbackServer(char , dir)
 	end
 
-    if tutorial == true and PlayersInGame.isAlive(hitPlayer) then
-        return --ignore hitback from a tutorial player to a real player.
-    end
+	local power = Config.KNOCKBACK_POWER
+
+    if PlayersInGame.isAlive(hitPlayer) and active == false then
+		return
+	end
+
+	if PlayersInGame.isAlive(hitPlayer) == false then
+		power *= 0.3
+	end
 
 	if not canApplyKnockback(hitPlayer.UserId) then
 		return
@@ -91,10 +97,10 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Play
 	RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION", hitPlayer)
 
 	if primary:GetNetworkOwner() == hitPlayer then
-		RemoteEventHandler.FireOnClient(hitPlayer, "KNOCKBACK", dir, Config.KNOCKBACK_POWER)
+		RemoteEventHandler.FireOnClient(hitPlayer, "KNOCKBACK", dir, power)
 	else
 		-- apply on server (server has or will take network ownership)
-        applyKnockbackServer(hitPlayer.Character , dir)
+        applyKnockbackServer(hitPlayer.Character , dir , power)
 	end
 end
 

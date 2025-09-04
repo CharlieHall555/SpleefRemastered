@@ -155,15 +155,6 @@ function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
 	RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
 	local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
 
-	if TutorialManager.isPlayerInTutorial(playerWhoDied) then
-		task.spawn(function()
-			task.wait(0.5)
-			if TutorialManager.isPlayerInTutorial(playerWhoDied) then
-				TeleportManager.teleport(playerWhoDied, TutorialManager.getMapTeleportPoint(), true)
-			end
-		end)
-	end
-
 	if wasAlive then
 		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied, Eliminator)
 	end

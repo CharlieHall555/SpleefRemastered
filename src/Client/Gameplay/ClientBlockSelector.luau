@@ -95,7 +95,7 @@ function ClientBlockSelector.getMobileSelected(tapPos: Vector2): Instance?
     local unitRay = cam:ViewportPointToRay(viewportPos.X, viewportPos.Y)
     setRaycastFilterToLocalCharacter()
     local result = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAYCAST_MAX, selectionRaycast)
-    if result and withinDistance(result.Position) then
+    if result and withinDistance(result.Position) and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
         return result.Instance
     end
     return nil
@@ -168,7 +168,7 @@ local function step(_dt: number)
 
     local result = workspace:Raycast(ray.Origin, ray.Direction, selectionRaycast)
 
-    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) and ClientToolManager.isToolEquipped() then
+    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) and ClientToolManager.isToolEquipped() and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
         local hitPart = result.Instance :: Part
         if hitPart ~= selectedBlock then
             focus(hitPart)

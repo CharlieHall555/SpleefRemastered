@@ -14,6 +14,7 @@ local ProfileTemplate = {
 	respawns = 0,
 	wins = 0,
 	roundsPlayed = 0,
+	hasJoinedBefore = false,
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
@@ -21,7 +22,7 @@ local ProfileService = require(game:GetService("ServerScriptService").External.P
 local database = "PRODUCTION"
 
 if RunService:IsStudio() then
-	database = "TEST3"
+	database = "TEST4"
 else
 	database = "PRODUCTION"
 end
@@ -259,6 +260,25 @@ function PlayerData.incrementCoins(player: Player, amount: number): nil
     RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "coins", profile.Data.coins)
 end
 
+function PlayerData.gethasJoinedBefore(player: Player): number
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return 0
+    end
+    return profile.Data.hasJoinedBefore or false
+end
+
+function PlayerData.sethasJoinedBefore(player: Player, newValue: boolean): nil
+    local profile = profiles[player.UserId]
+    if profile == nil then
+        warn(player.Name .. " profile is nil")
+        return
+    end
+    profile.Data.roundsPlayed = newValue
+    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "hasJoinedBefore", profile.Data.roundsPlayed)
+end
+
 
 function PlayerData.getRoundsPlayed(player: Player): number
     local profile = profiles[player.UserId]
@@ -278,6 +298,7 @@ function PlayerData.setRoundsPlayed(player: Player, newValue: number): nil
     profile.Data.roundsPlayed = newValue
     RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "roundsPlayed", profile.Data.roundsPlayed)
 end
+
 
 function PlayerData.incrementRoundsPlayed(player: Player, amount: number): nil
     local profile = profiles[player.UserId]

@@ -12,6 +12,10 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local mouse = player:GetMouse()
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService
+local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
+local ClientTutorial = require(ClientModuleDirectory.ClientTutorial)
+
+
 
 local camera: Camera? = nil
 
@@ -45,6 +49,10 @@ function ActionHandler.canAttack()
 	end
 	lastClickTime = time()
 
+	if SpectateController.getEnabled() then
+		return
+	end
+
 	local character = player.Character
 	if not character then
 		return
@@ -54,12 +62,9 @@ function ActionHandler.canAttack()
 	if (not rootPart) or not headPart then
 		return false
 	end
-	if ClientStateTracker.getState() ~= "ACTIVE" and ClientStateTracker.getState() ~= "TUTORIAL" then
-		return false
-	end
 
-	if not character:FindFirstChild("Shovel") then
-		return false
+	if ClientStateTracker.getState() == "ACTIVE" and ClientStateTracker.getServerState() == "PREPARING" then
+		return
 	end
 
 	return true
@@ -153,6 +158,17 @@ function ActionHandler.mainAttack(action)
 		local character = player.Character
 		local headPart = character:FindFirstChild("Head")
 
+		if not character:FindFirstChild("Shovel") then
+			local shovel = player.Backpack:FindFirstChild("Shovel")
+			if shovel and shovel:IsA("Tool") then
+				character.Humanoid:EquipTool(shovel)
+			else
+				return
+			end
+		end
+
+		
+
 		print(ClientAmmoTracker.getIsInfinite())
 		print(ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false)
 
@@ -163,15 +179,12 @@ function ActionHandler.mainAttack(action)
 			local id = selectedBlock:GetAttribute("Id")
 			print("woop")
 			RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
+			ClientTutorial.onAction("BREAK")
 			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
 			return
 		else -- shoot
-			if ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false and ClientStateTracker.getState() ~= "TUTORIAL" then
+			if ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false and ClientStateTracker.getState() == "ACTIVE" then
 				out_count += 1
-				if out_count >= 7 then
-					--InGameHUD.showHint()
-				end
-
 				SoundPlayer.playSound("rbxassetid://9125655693")
 				return
 			else
@@ -183,6 +196,8 @@ function ActionHandler.mainAttack(action)
 		local playerPosition = headPart.Position
 		--ClientAmmoTracker.predictIncrement(-1)
 		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
+		ClientTutorial.onAction("SHOOT")
+
 	end
 end
 

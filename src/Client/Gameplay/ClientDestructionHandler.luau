@@ -52,14 +52,7 @@ function ClientDestructionHandler.receiveDestroyedBlock(
 )
 	_awaitingConfirmation[blockId] = nil
 	if player == LocalPlayer and method == "spade" then
-		--SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })
-	elseif method == "snowball" then
-		ParticlePlayer.queueEmission("PARTICLE_SNOWBALL", blockWorldPosition + Vector3.new(0, 3, 0), 12)
-		SoundPlayer.queuePositionalSound(
-			"rbxassetid://9119310655",
-			blockWorldPosition,
-			{ volume = 0.75, playbackSpeed = 1.2 }
-		)
+		--SoundPlayer.queuePositionalSound("rbxassetid://90611947337807", blockWorldPosition, { volume = 0.5 })	
 	end
 end
 

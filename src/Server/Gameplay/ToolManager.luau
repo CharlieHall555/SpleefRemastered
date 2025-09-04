@@ -45,7 +45,7 @@ local function playerHasToolAnywhere(player: Player): boolean
     return false
 end
 
-local function ensureTool(player: Player)
+local function ensureToolInternal(player: Player)
     if not player or not player.Parent then
         return
     end
@@ -80,9 +80,8 @@ local function hookBackpack(player: Player)
     _backpackRemovedConnections[userId] = backpack.ChildRemoved:Connect(function(child)
         if child.Name == TOOL_NAME then
             task.defer(function()
-                -- If it moved to Character, do nothing; otherwise restore.
                 if not playerHasToolAnywhere(player) then
-                    ensureTool(player)
+                    ensureToolInternal(player)
                 end
             end)
         end
@@ -101,9 +100,8 @@ local function hookCharacter(player: Player)
     _characterRemovedConnections[userId] = character.ChildRemoved:Connect(function(child)
         if child.Name == TOOL_NAME then
             task.defer(function()
-                -- If it moved back to Backpack, do nothing; otherwise restore.
                 if not playerHasToolAnywhere(player) then
-                    ensureTool(player)
+                    ensureToolInternal(player)
                 end
             end)
         end
@@ -120,12 +118,12 @@ local function hookPlayerContainersAppear(player: Player)
         if child:IsA("Backpack") then
             hookBackpack(player)
             task.defer(function()
-                ensureTool(player)
+                ensureToolInternal(player)
             end)
         elseif child:IsA("Model") and child.Name == player.Name then
             hookCharacter(player)
             task.defer(function()
-                ensureTool(player)
+                ensureToolInternal(player)
             end)
         end
     end)
@@ -139,6 +137,12 @@ local function hookPlayerContainersAppear(player: Player)
     end)
 end
 
+-- Public method: ensures the player has the tool without adding any new connections.
+function ToolManager.ensureTool(player: Player): nil
+    getToolTemplate()
+    ensureToolInternal(player)
+end
+
 function ToolManager.init()
     getToolTemplate()
 
@@ -148,14 +152,14 @@ function ToolManager.init()
         _characterAddedConnections[player.UserId] = player.CharacterAdded:Connect(function()
             task.defer(function()
                 hookCharacter(player)
-                ensureTool(player)
+                ensureToolInternal(player)
             end)
         end)
 
         task.defer(function()
             hookBackpack(player)
             hookCharacter(player)
-            ensureTool(player)
+            ensureToolInternal(player)
         end)
     end)
 
@@ -170,35 +174,3 @@ function ToolManager.init()
 end
 
 return ToolManager
-
---[[function ToolManager.onLoaded()
-    local serverStorage = game:GetService("ServerStorage")
-    local shovelsFolder = serverStorage:WaitForChild("Shovels")
-    _shovelTemplate = shovelsFolder:WaitForChild("Shovel" , 4) :: Tool
-    assert(_shovelTemplate, "BasicShovel template missing in ServerStorage/Shovels")
-end
-
-function ToolManager.giveTools(players: {Player}): nil
-    assert(_shovelTemplate, "ToolManager not loaded. Call onLoaded() first.")
-    for _, player in ipairs(players) do
-        if player and player.Parent then
-            local backpack = player:FindFirstChildOfClass("Backpack")
-            if backpack and not backpack:FindFirstChild(_shovelTemplate.Name) then
-                local tool = _shovelTemplate:Clone()
-                tool.Parent = backpack
-                table.insert(_handedOutTools, tool)
-            end
-        end
-    end
-end
-
-function ToolManager.reset(): nil
-    for i = #_handedOutTools, 1, -1 do
-        local tool = _handedOutTools[i]
-        if tool and tool.Parent then
-            tool:Destroy()
-        end
-        _handedOutTools[i] = nil
-    end
-end]]
-

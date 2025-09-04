@@ -8,6 +8,7 @@ local LoadedLayers = require(ModuleDirectory.LoadedLayers)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
 local ObstacleFactory = require(ModuleDirectory.Map.ObstacleFactory)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 
 local BlockFactory = {
@@ -42,7 +43,7 @@ function BlockFactory.destroy(block: Block.Block , player : Player?): nil
     if block.Regenerates then
         task.spawn(function()
             block:Hide()
-            task.wait(5)
+            task.wait(Config.BLOCK_REGEN_TIME)
             block:Show()
         end)
         return

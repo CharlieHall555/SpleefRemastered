@@ -24,7 +24,7 @@ local _nextId = 0
 local gravityTable: { [string]: Vector3 } = {}
 local velocityTable: { [string]: Vector3 } = {}
 
-local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult) -> () } = {}
+local typeHitFunctions: { [string]: (Throwable.Throwable, RaycastResult , boolean) -> () } = {}
 local defaultRayParams = RaycastParams.new()
 
 -- Debug and cast settings
@@ -127,7 +127,7 @@ function ThrowableManager.newThrowable(
 	direction: Vector3,
 	_type: string,
 	playerOwner: Player?,
-	tutorial: boolean?
+	active: boolean?
 ): string
 	assert(typeof(position) == "Vector3", "ThrowableManager.newThrowable: 'position' must be a Vector3")
 	assert(typeof(direction) == "Vector3", "ThrowableManager.newThrowable: 'direction' must be a Vector3")
@@ -148,7 +148,7 @@ function ThrowableManager.newThrowable(
 		velocity = velocity,
 		typeName = _type,
 		owner = playerOwner,
-		tutorial = tutorial or false,
+		acitve = active or false,
 
 		-- lifetime cap
 		expireAt = now + MAX_LIFETIME,
@@ -161,12 +161,12 @@ end
 
 function ThrowableManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult?): nil
 	if hit.Instance:HasTag("PLAYER_HITBOX") then
-		KnockBackManager.hitHitbox(hit.Instance, throwable.direction, throwable.owner , throwable.tutorial)
+		KnockBackManager.hitHitbox(hit.Instance, throwable.direction, throwable.owner , throwable.active)
 		return
 	end
 	local f = typeHitFunctions[throwable.typeName]
 	if f and hit then
-		f(throwable, hit , throwable.tutorial)
+		f(throwable, hit , throwable.active)
 	end
 end
 
