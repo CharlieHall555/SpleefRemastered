@@ -120,6 +120,12 @@ function TutorialManager.init(): nil
             RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", "Cannot enter tutorial area while in game")
         end
     end)
+
+    RemoteEventHandler.newEventConnection("REQUEST_LEAVE_TUTORIAL_AREA" , function(player)
+        if TutorialManager.isPlayerInTutorial(player) then
+            TutorialManager.playerLeaveTutorialArea(player)
+        end
+    end)
 end
 
 function TutorialManager.playerEnterTutorialArea(player: Player): nil
@@ -144,6 +150,7 @@ function TutorialManager.playerLeaveTutorialArea(player: Player): nil
         if player.Character then
             TeleportManager.teleport(player, lobbySpawn.Position + Vector3.new(0, LOBBY_Y_OFFSET, 0))
         end
+        PlayerPool.addToPool(player)
     end
 end
 

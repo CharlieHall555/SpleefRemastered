@@ -17,7 +17,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local GuiAssets = ReplicatedStorage:WaitForChild("GuiAssets")
 local TutorialFolder = GuiAssets:WaitForChild("Tutorial")
 
-local cheerSound = "rbxassetid://97118547861968"
+local cheerSound = "rbxassetid://112085968457085"
 
 export type TutorialStep = {
 	step: number,
@@ -25,7 +25,7 @@ export type TutorialStep = {
 	actionToComplete: string,
 	guiElement: GuiObject,
 	displayTime: number?, -- auto-complete after N seconds (optional)
-	delayBeforeNext: number?, -- NEW: wait this long before moving to next step after completion
+	delayBeforeNext: number?, -- wait this long before moving to next step after completion
 	onUpdate: ((dt: number) -> ())?,
 	onEnd: (() -> ())?,
 }
@@ -39,6 +39,8 @@ local onNewStep: (stepNumber: number) -> () = function() end
 local onComplete: () -> () = function() end
 local updateConn: RBXScriptConnection? = nil
 local _isAdvancing = false -- guard against double-advance
+local _enabled = true -- NEW: tutorial active toggle
+local _token = 0 -- NEW: cancels pending delayed tasks when changed
 
 -- Helpers
 local function createGuiFromTemplate(childName: string): GuiObject
@@ -65,13 +67,13 @@ local function personaliseWelcome()
 end
 
 local function showStep(step: TutorialStep)
-	if step.guiElement then
+	if step and step.guiElement then
 		step.guiElement.Visible = true
 	end
 end
 
 local function hideStep(step: TutorialStep)
-	if step.guiElement then
+	if step and step.guiElement then
 		step.guiElement.Visible = false
 	end
 end
@@ -96,6 +98,10 @@ local function bindUpdateForCurrentStep()
 		return
 	end
 	updateConn = RunService.RenderStepped:Connect(function(dt)
+		-- Respect disabled state at runtime
+		if not _enabled then
+			return
+		end
 		local cur = steps[currentStepIndex]
 		if cur and cur.onUpdate then
 			cur.onUpdate(dt)
@@ -111,23 +117,29 @@ local function endCurrentStep()
 	disconnectUpdate()
 end
 
--- NEW: advance that respects the previous step's delayBeforeNext
+-- advance that respects the previous step's delayBeforeNext
 local function advanceFromCurrent()
-	if _isAdvancing then
+	if _isAdvancing or not _enabled then
 		return
 	end
 	_isAdvancing = true
 
 	local previousStep = steps[currentStepIndex]
-
 	if currentStepIndex > 0 and previousStep then
 		hideStep(previousStep)
 		endCurrentStep()
 	end
 
 	local delay = (previousStep and previousStep.delayBeforeNext) or 0
+	local myToken = _token -- capture token for this transition
 
 	task.delay(delay, function()
+		-- Cancel if disabled or token invalidated
+		if not _enabled or myToken ~= _token then
+			_isAdvancing = false
+			return
+		end
+
 		currentStepIndex += 1
 		local step = steps[currentStepIndex]
 
@@ -135,9 +147,13 @@ local function advanceFromCurrent()
 			showStep(step)
 
 			if step.displayTime and step.displayTime > 0 then
+				local displayToken = _token
 				task.spawn(function()
 					task.wait(step.displayTime)
-					ClientTutorial.onAction(step.actionToComplete)
+					-- Only auto-complete if still enabled and on same token/step
+					if _enabled and displayToken == _token and steps[currentStepIndex] == step then
+						ClientTutorial.onAction(step.actionToComplete)
+					end
 				end)
 			end
 
@@ -175,21 +191,21 @@ function ClientTutorial.onLoaded()
 				name = "Move",
 				actionToComplete = "MOVE",
 				guiElement = createGuiFromTemplate("Move"),
-                delayBeforeNext = 1,
+				delayBeforeNext = 1,
 			},
 			{
 				step = 4,
 				name = "Break",
 				actionToComplete = "BREAK",
 				guiElement = createGuiFromTemplate("Break_MOBILE"),
-                delayBeforeNext = 1,
+				delayBeforeNext = 1,
 			},
 			{
 				step = 5,
 				name = "Shoot",
 				actionToComplete = "SHOOT",
 				guiElement = createGuiFromTemplate("Shoot_MOBILE"),
-                delayBeforeNext = 1,
+				delayBeforeNext = 1,
 			},
 			{
 				step = 6,
@@ -208,7 +224,7 @@ function ClientTutorial.onLoaded()
 		}
 	else
 		steps = {
-						{
+			{
 				step = 1,
 				name = "Welcome",
 				actionToComplete = "WELCOME_END",
@@ -227,22 +243,22 @@ function ClientTutorial.onLoaded()
 				name = "Move",
 				actionToComplete = "MOVE",
 				guiElement = createGuiFromTemplate("Move"),
-                delayBeforeNext = 1,
+				delayBeforeNext = 1,
 			},
 			{
 				step = 4,
 				name = "Break",
 				actionToComplete = "BREAK",
 				guiElement = createGuiFromTemplate("Break_PC"),
-                delayBeforeNext = 1,
+				delayBeforeNext = 1,
 			},
 			{
 				step = 5,
 				name = "Shoot",
 				actionToComplete = "SHOOT",
+				-- NOTE: if you have a Shoot_PC template, consider swapping it in here.
 				guiElement = createGuiFromTemplate("Break_PC"),
-                delayBeforeNext = 1,
-
+				delayBeforeNext = 1,
 			},
 			{
 				step = 6,
@@ -260,6 +276,7 @@ function ClientTutorial.onLoaded()
 			},
 		}
 	end
+
 	-- Example per-frame highlights using the new callbacks
 	ClientTutorial.setStepCallbacks(4, function()
 		HighlightBlocks.within(30)
@@ -284,6 +301,9 @@ function ClientTutorial.getStep(): number
 end
 
 function ClientTutorial.onAction(actionName: string)
+	if not _enabled then
+		return
+	end
 	local step = steps[currentStepIndex]
 	if step and actionName == step.actionToComplete then
 		advanceFromCurrent()
@@ -296,7 +316,7 @@ function ClientTutorial.onProfileLoaded()
 			return
 		end
 		task.spawn(function()
-			task.wait(3)
+			task.wait(1)
 			if ClientStateTracker.getState() == "TUTORIAL" then
 				ClientTutorial.startTutorial()
 			end
@@ -305,11 +325,21 @@ function ClientTutorial.onProfileLoaded()
 
 	ClientTutorial.setOnComplete(function()
 		RemoteEventHandler.FireOnServer("TUTORIAL_COMPLETED")
-        SoundPlayer.playSound(cheerSound) -- cheer sound
+		SoundPlayer.playSound(cheerSound)
+	end)
+
+	ClientStateTracker.connectIntermission(function()
+		ClientTutorial.disable()
+	end)
+
+	ClientStateTracker.connectActive(function()
+		ClientTutorial.disable()
 	end)
 end
 
 function ClientTutorial.startTutorial()
+	_enabled = true -- ensure enabled when starting
+	_token += 1 -- invalidate any old timers
 	local character = LocalPlayer.Character
 	local hrp = character and character.PrimaryPart
 	if hrp then
@@ -354,7 +384,7 @@ function ClientTutorial.setStepCallbacks(stepNumber: number, onUpdate: ((dt: num
 		if s.step == stepNumber then
 			s.onUpdate = onUpdate
 			s.onEnd = onEnd
-			if currentStepIndex == stepNumber then
+			if currentStepIndex == stepNumber and _enabled then
 				bindUpdateForCurrentStep()
 			end
 			break
@@ -373,6 +403,35 @@ function ClientTutorial.clearCallbacksForStep(stepNumber: number)
 			break
 		end
 	end
+end
+
+-- NEW: Enable/Disable controls
+function ClientTutorial.enable()
+	if _enabled then
+		return
+	end
+	_enabled = true
+	-- show current step again and resume updates
+	local step = steps[currentStepIndex]
+	if step then
+		showStep(step)
+	end
+	bindUpdateForCurrentStep()
+end
+
+function ClientTutorial.disable()
+	if not _enabled then
+		return
+	end
+	_enabled = false
+	_token += 1 -- invalidate any pending delays/autocomplete timers
+	hideAll()
+	disconnectUpdate()
+	-- do not reset currentStepIndex; re-enable will resume
+end
+
+function ClientTutorial.isEnabled(): boolean
+	return _enabled
 end
 
 return ClientTutorial

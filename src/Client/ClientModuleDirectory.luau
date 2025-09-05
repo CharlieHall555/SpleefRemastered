@@ -33,6 +33,7 @@ ClientModuleDirectory.Gui.MobileSettingsButton = Root.Gui.Settings.MobileSetting
 ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSettingsWidget
 ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
 ClientModuleDirectory.Gui.TutorialStatus = Root.Gui.Tutorial.TutorialStatus
+ClientModuleDirectory.Gui.TutorialLeave = Root.Gui.Tutorial.TutorialLeave
 
 --ClientModuleDirectory.Gui.NameTag = Root.Gui.NameTag
 
