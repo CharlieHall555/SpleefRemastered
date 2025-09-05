@@ -52,6 +52,7 @@ ClientModuleDirectory.Gui.Coins = Root.Gui.Intermission.Coins
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
 ClientModuleDirectory.Gui.Respawns = Root.Gui.Intermission.Respawns
 ClientModuleDirectory.Gui.LeaderboardHandler = Root.Gui.SurfaceGUIs.LeaderboardHandler
+ClientModuleDirectory.Gui.TutorialAmmo = Root.Gui.Tutorial.TutorialAmmo
 
 ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 

@@ -2,7 +2,7 @@
 
 local KnockbackUtilities = {}
 
-local AIR_MULTIPLIER = 0.14
+local AIR_MULTIPLIER = 0.01
 
 function KnockbackUtilities.isAirborne(h: Humanoid): boolean
     if h.FloorMaterial == Enum.Material.Air then

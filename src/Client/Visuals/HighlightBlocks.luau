@@ -59,8 +59,7 @@ function highlightBlocks.within(distance: number)
 	end
 
 	local position = character.PrimaryPart.Position
-	local cf = CFrame.new(position)
-	local parts = workspace:GetPartBoundsInBox(cf, Vector3.new(distance, 10, distance), blockOverlapParams)
+	local parts = workspace:GetPartBoundsInRadius(position, distance, blockOverlapParams)
 
 	-- Build new set of blocks to highlight
 	local newSet: { [BasePart]: boolean } = {}
@@ -108,8 +107,8 @@ function highlightBlocks.outside(distance: number)
 	local position = character.PrimaryPart.Position
 	local cf = CFrame.new(position)
 	local searchRadius = distance * 3 -- adjust how far you want to search for "outside" blocks
-	local parts = workspace:GetPartBoundsInBox(cf, Vector3.new(searchRadius, 10, searchRadius), blockOverlapParams)
-
+	local parts = workspace:GetPartBoundsInRadius(position, searchRadius, blockOverlapParams)
+	
 	-- Build new set of blocks to highlight
 	local newSet: { [BasePart]: boolean } = {}
 	for _, block in ipairs(parts) do

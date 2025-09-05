@@ -22,7 +22,7 @@ local ProfileService = require(game:GetService("ServerScriptService").External.P
 local database = "PRODUCTION"
 
 if RunService:IsStudio() then
-	database = "TEST4"
+	database = "TEST5"
 else
 	database = "PRODUCTION"
 end
@@ -275,8 +275,8 @@ function PlayerData.sethasJoinedBefore(player: Player, newValue: boolean): nil
         warn(player.Name .. " profile is nil")
         return
     end
-    profile.Data.roundsPlayed = newValue
-    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "hasJoinedBefore", profile.Data.roundsPlayed)
+    profile.Data.hasJoinedBefore = newValue
+    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "hasJoinedBefore", profile.Data.hasJoinedBefore)
 end
 
 

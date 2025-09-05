@@ -4,6 +4,9 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local LocalPlayer = game.Players.LocalPlayer
 local ParticlePlayer = require(ClientModuleDirectory.ParticlePlayer)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+local TutorialAmmo = require(ClientModuleDirectory.Gui.TutorialAmmo)
+
 
 local REINSTATEMENT_THRESHOLD = 0.5
 
@@ -25,6 +28,10 @@ function ClientDestructionHandler.predictBlockDestroy(block: Part)
 	local blockType = block:GetAttribute("Type") or "grass"
 	ParticlePlayer.queueEmission(blockType, block.Position, 12)
 	block.Transparency = 1
+
+	if ClientStateTracker.getState() == "TUTORIAL" and block:HasTag("TutorialBlock") then
+		TutorialAmmo.increment(1)
+	end
 
 	if (block:GetAttribute("Regenerates") or false) == false then
 		_awaitingConfirmation[blockId] = block

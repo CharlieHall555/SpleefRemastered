@@ -30,6 +30,10 @@ local MAX_SELECTION_DISTANCE = 25
 -- callback assigned by user code; called with Part? whenever selection changes (including nil)
 ClientBlockSelector.newBlockSelected = nil
 
+function ClientBlockSelector.getMaxSelectionDistance()
+    return MAX_SELECTION_DISTANCE
+end
+
 local function isMobile(): boolean
     return PlatformDetector.getPlatform() == "MOBILE"
 end
@@ -51,7 +55,7 @@ local function setRaycastFilterToLocalCharacter()
     end
 end
 
-local function withinDistance(p: Vector3): boolean
+local function  withinDistance(p: Vector3): boolean
     local char = localPlayer.Character
     if not char then
         return false
@@ -60,6 +64,7 @@ local function withinDistance(p: Vector3): boolean
     if not hrp then
         return false
     end
+
     return (hrp.Position - p).Magnitude <= MAX_SELECTION_DISTANCE
 end
 

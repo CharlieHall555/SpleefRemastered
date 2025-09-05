@@ -13,6 +13,8 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local CheerEffect = require(ClientModuleDirectory.CheerEffect)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
+local TutorialAmmo = require(ClientModuleDirectory.Gui.TutorialAmmo)
 
 local GuiAssets = ReplicatedStorage:WaitForChild("GuiAssets")
 local TutorialFolder = GuiAssets:WaitForChild("Tutorial")
@@ -41,6 +43,8 @@ local updateConn: RBXScriptConnection? = nil
 local _isAdvancing = false -- guard against double-advance
 local _enabled = true -- NEW: tutorial active toggle
 local _token = 0 -- NEW: cancels pending delayed tasks when changed
+
+local SELECTION_DISTANCE : number = 30
 
 -- Helpers
 local function createGuiFromTemplate(childName: string): GuiObject
@@ -170,6 +174,9 @@ end
 
 -- Public API
 function ClientTutorial.onLoaded()
+
+	SELECTION_DISTANCE = ClientBlockSelector.getMaxSelectionDistance()
+
 	if PlatformDetector.getPlatform() == "MOBILE" then
 		steps = {
 			{
@@ -202,20 +209,28 @@ function ClientTutorial.onLoaded()
 			},
 			{
 				step = 5,
+				name = "Ammo",
+				actionToComplete = "AMMO_END",
+				guiElement = createGuiFromTemplate("AmmoTIP"),
+				displayTime = 4,
+				delayBeforeNext = 1,
+			},
+			{
+				step = 6,
 				name = "Shoot",
 				actionToComplete = "SHOOT",
 				guiElement = createGuiFromTemplate("Shoot_MOBILE"),
 				delayBeforeNext = 1,
 			},
 			{
-				step = 6,
+				step = 7,
 				name = "Win",
 				actionToComplete = "WIN_END",
 				guiElement = createGuiFromTemplate("Win"),
 				displayTime = 5,
 			},
 			{
-				step = 7,
+				step = 8,
 				name = "Complete",
 				actionToComplete = "COMPLETE_END",
 				guiElement = createGuiFromTemplate("Complete"),
@@ -229,14 +244,14 @@ function ClientTutorial.onLoaded()
 				name = "Welcome",
 				actionToComplete = "WELCOME_END",
 				guiElement = createGuiFromTemplate("Welcome"),
-				displayTime = 4,
+				displayTime = 3,
 			},
 			{
 				step = 2,
 				name = "Tutorial",
 				actionToComplete = "TUTORIAL_END",
 				guiElement = createGuiFromTemplate("Tutorial"),
-				displayTime = 4,
+				displayTime = 5,
 			},
 			{
 				step = 3,
@@ -254,21 +269,29 @@ function ClientTutorial.onLoaded()
 			},
 			{
 				step = 5,
-				name = "Shoot",
-				actionToComplete = "SHOOT",
-				-- NOTE: if you have a Shoot_PC template, consider swapping it in here.
-				guiElement = createGuiFromTemplate("Break_PC"),
-				delayBeforeNext = 1,
+				name = "Ammo",
+				actionToComplete = "AMMO_END",
+				guiElement = createGuiFromTemplate("AmmoTIP"),
+				displayTime = 6,
+				delayBeforeNext = 2.5,
 			},
 			{
 				step = 6,
-				name = "Win",
-				actionToComplete = "WIN_END",
-				guiElement = createGuiFromTemplate("Win"),
-				displayTime = 5,
+				name = "Shoot",
+				actionToComplete = "SHOOT",
+				-- NOTE: if you have a Shoot_PC template, consider swapping it in here.
+				guiElement = createGuiFromTemplate("Shoot_PC"),
+				delayBeforeNext = 1,
 			},
 			{
 				step = 7,
+				name = "Win",
+				actionToComplete = "WIN_END",
+				guiElement = createGuiFromTemplate("Win"),
+				displayTime = 6,
+			},
+			{
+				step = 8,
 				name = "Complete",
 				actionToComplete = "COMPLETE_END",
 				guiElement = createGuiFromTemplate("Complete"),
@@ -278,19 +301,30 @@ function ClientTutorial.onLoaded()
 	end
 
 	-- Example per-frame highlights using the new callbacks
-	ClientTutorial.setStepCallbacks(4, function()
-		HighlightBlocks.within(30)
-	end, nil)
-
-	ClientTutorial.setOnNewStep(function(stepNumber)
-		print(stepNumber)
-		if stepNumber == 5 or stepNumber == 6 then
-			HighlightBlocks.reset()
-		end
-	end)
 
 	ClientTutorial.setStepCallbacks(5, function()
-		HighlightBlocks.outside(19)
+		TutorialAmmo.showArrow()
+	end, nil)
+
+	ClientTutorial.setStepCallbacks(4, function()
+		print(SELECTION_DISTANCE)
+		HighlightBlocks.within(SELECTION_DISTANCE)
+	end, nil)
+
+	local DING = "rbxassetid://79138466370636"
+
+	ClientTutorial.setOnNewStep(function(stepNumber)
+		
+		if stepNumber == 4 or stepNumber == 5 or stepNumber == 7 then
+			SoundPlayer.playSound(DING) -- ding sound
+		end
+		
+		TutorialAmmo.hideArrow()
+		HighlightBlocks.reset()
+	end)
+
+	ClientTutorial.setStepCallbacks(6, function()
+		HighlightBlocks.outside(SELECTION_DISTANCE)
 	end, nil)
 
 	personaliseWelcome()
@@ -311,17 +345,15 @@ function ClientTutorial.onAction(actionName: string)
 end
 
 function ClientTutorial.onProfileLoaded()
-	ClientStateTracker.connectTutorial(function()
-		if UserProfile.getValue("hasJoinedBefore") then
-			return
+	RemoteEventHandler.newEventConnection("START_TUTORIAL" , function(player)
+		
+		task.wait(1)
+		if ClientStateTracker.getState() == "TUTORIAL" then
+			ClientTutorial.startTutorial()
 		end
-		task.spawn(function()
-			task.wait(1)
-			if ClientStateTracker.getState() == "TUTORIAL" then
-				ClientTutorial.startTutorial()
-			end
-		end)
+		
 	end)
+
 
 	ClientTutorial.setOnComplete(function()
 		RemoteEventHandler.FireOnServer("TUTORIAL_COMPLETED")

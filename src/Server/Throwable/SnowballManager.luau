@@ -37,12 +37,12 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 	if blockId then
 		local block: Block.Block = LoadedBlocks[blockId]
 		local blockPosition = hit.Instance.Position
-		BlockFactory.destroyById(blockId, throwable.owner)
 
 		if active == false and hit.Instance:HasTag("TutorialBlock") == false then
 			return
 		end
 
+		BlockFactory.destroyById(blockId, throwable.owner)
 		if throwable.owner and active == true then
 			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
 		end
@@ -59,7 +59,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 		end
 	end
 
-	RemoteEventHandler.FireUnreliableOnAllClients("SNOWBALL_IMPACT" , hit.Position , hit.Instance)
+	RemoteEventHandler.FireUnreliableOnAllClients("SNOWBALL_IMPACT" , hit.Position , hit.Instance , throwable.owner)
 
 end
 

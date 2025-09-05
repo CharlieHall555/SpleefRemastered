@@ -6,11 +6,13 @@ local LocalPlayer = game.Players.LocalPlayer
 local ParticlePlayer = require(ClientModuleDirectory.ParticlePlayer)
 local CollectionService = game:GetService("CollectionService")
 
+local SNOWBALL_IMPACT_SOUND = "rbxassetid://9119310655"
+
 local ClientSnowballVisual = {}
 
-local _tagHandlers: { [string]: (hitObject: Instance) -> () } = {}
+local _tagHandlers: { [string]: (hitObject: Instance , owner : Player?) -> () } = {}
 
-function ClientSnowballVisual.registerTag(tagName: string, fn: (hitObject: Instance) -> ())
+function ClientSnowballVisual.registerTag(tagName: string, fn: (snowballOwner: Instance) -> ())
 	if typeof(tagName) ~= "string" or tagName == "" then
 		return
 	end
@@ -25,10 +27,10 @@ function ClientSnowballVisual.unregisterTag(tagName: string): nil
 end
 
 -- on every snowball hit, if the hit instance has any registered tag(s), fire their callbacks
-local function onSnowballHit(hitPos: Vector3, hitInstance: Instance?)
+local function onSnowballHit(hitPos: Vector3, hitInstance: Instance? , snowballOwner : Player?)
 	if hitPos then
 		ParticlePlayer.queueEmission("PARTICLE_SNOWBALL", hitPos, 12)
-		SoundPlayer.queuePositionalSound("rbxassetid://9119310655", hitPos, { volume = 0.75, playbackSpeed = 1.2 })
+		SoundPlayer.queuePositionalSound(SNOWBALL_IMPACT_SOUND, hitPos, { volume = 0.45, playbackSpeed = 1.2 })
 	end
 
 	if not hitInstance then
@@ -44,7 +46,7 @@ local function onSnowballHit(hitPos: Vector3, hitInstance: Instance?)
 		local handler = _tagHandlers[tag]
 		if handler then
 			task.spawn(function()
-				local ok, err = pcall(handler, hitInstance)
+				local ok, err = pcall(handler, hitInstance , snowballOwner)
 				if not ok then
 					warn("[ClientSnowballVisual] tag handler error for tag '" .. tag .. "': " .. tostring(err))
 				end

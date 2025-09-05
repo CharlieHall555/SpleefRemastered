@@ -1,3 +1,4 @@
+local TextService = game:GetService("TextService")
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Player = game.Players.LocalPlayer
@@ -14,6 +15,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local UserInputService
 local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
 local ClientTutorial = require(ClientModuleDirectory.ClientTutorial)
+local TutorialAmmo = require(ClientModuleDirectory.Gui.TutorialAmmo)
 
 
 
@@ -28,6 +30,9 @@ end
 local lastClickTime = 0
 local HIT_COOLDOWN = 0.1
 local RAY_MAX = 1000
+
+local THROW_SOUND = "rbxassetid://129467477219437"
+local OUT_SOUND = "rbxassetid://9125655693"
 
 local out_count = 0
 
@@ -177,15 +182,17 @@ function ActionHandler.mainAttack(action)
 
 		if selectedBlock then -- destroy with spade
 			local id = selectedBlock:GetAttribute("Id")
-			print("woop")
 			RemoteEventHandler.FireOnServer("REQUEST_DESTROY_BLOCK", id)
 			ClientTutorial.onAction("BREAK")
 			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
 			return
 		else -- shoot
-			if ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false and ClientStateTracker.getState() == "ACTIVE" then
+			if ClientStateTracker.getState() == "ACTIVE" and ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false  then
 				out_count += 1
-				SoundPlayer.playSound("rbxassetid://9125655693")
+				SoundPlayer.playSound(OUT_SOUND)
+				return
+			elseif ClientStateTracker.getState() == "TUTORIAL" and TutorialAmmo.getState().current <= 0 then
+				SoundPlayer.playSound(OUT_SOUND)
 				return
 			else
 				out_count = 0
@@ -194,7 +201,13 @@ function ActionHandler.mainAttack(action)
 
 		local direction = ActionHandler.getDirection(action, headPart)
 		local playerPosition = headPart.Position
+
+		if ClientStateTracker.getState() == "TUTORIAL" then
+			TutorialAmmo.increment(-1)
+		end
+
 		--ClientAmmoTracker.predictIncrement(-1)
+		SoundPlayer.playSound(THROW_SOUND)
 		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
 		ClientTutorial.onAction("SHOOT")
 

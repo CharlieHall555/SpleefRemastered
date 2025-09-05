@@ -38,25 +38,27 @@ function MiscBindings.onProfileLoaded()
 	end
 end
 
+function MiscBindings.onSnowballGained(amount)
+	if PlatformDetector.getPlatform() == "PC" and lastMousePos then
+		local randomX = (math.random() - 0.5) / 5
+		local randomY = 1
+
+		local opts = {
+			image = "rbxassetid://91214120728139",
+			speed = Vector2.new(randomX, randomY),
+			color = Color3.fromRGB(255, 255, 255), -- optional highlight color
+		}
+
+		ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), lastMousePos, opts)
+	end
+end
+
 function MiscBindings.init()
 	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(playerWhoDied: Player)
 		SoundPlayer.playSound(lightning, { volume = 0.3 })
 	end)
 
-	RemoteEventHandler.newEventConnection("AMMO_GAINED", function(amount: number)
-		if PlatformDetector.getPlatform() == "PC" and lastMousePos then
-			local randomX = (math.random() - 0.5) / 5
-			local randomY = 1
-
-			local opts = {
-				image = "rbxassetid://91214120728139",
-				speed = Vector2.new(randomX, randomY),
-				color = Color3.fromRGB(255, 255, 255), -- optional highlight color
-			}
-
-			ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), lastMousePos, opts)
-		end
-	end)
+	RemoteEventHandler.newEventConnection("AMMO_GAINED", MiscBindings.onSnowballGained)
 
 	ClientStateTracker.connectServerStateChange(function(newState)
 		if newState == "ACTIVE" and ClientStateTracker.getState() == "INTERMISSION" then
@@ -67,10 +69,14 @@ function MiscBindings.init()
 	end)
 
 	ClientStateTracker.connectIntermission(function()
-		task.wait(0.5)
+		task.wait(0.25)
 		if ClientStateTracker.getServerState() == "ACTIVE" then
 			SpectateButton.show()
 		end
+	end)
+
+	ClientStateTracker.connectTutorial(function()
+		SpectateButton.hide()
 	end)
 
 	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH", function()
@@ -88,11 +94,6 @@ function MiscBindings.init()
 			SystemMessage.send(died.DisplayName .. " DIED", Color3.new(0.788235, 0.129411, 0.043137), true)
 		end
 
-		if died == LocalPlayer then
-			Transition.show()
-			task.wait(1)
-			Transition.hide()
-		end
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
@@ -111,31 +112,14 @@ function MiscBindings.init()
 		MovementDampener.disable()
 	end)
 
-	CLientSnowballVisuals.registerTag("Target", function(hitObject)
-		local parentGui = Screens.gameHUD
-		local absSize = parentGui.AbsoluteSize
-		local screenCenter = Vector2.new(absSize.X / 2, absSize.Y / 2)
-		print("hit target")
-		SoundPlayer.playSound("rbxassetid://79138466370636") -- ding sound
-		local opts = {
-			image = "rbxassetid://113489472341219",
-			speed = Vector2.new(math.random(-50, 50) / 100, math.random(20, 50) / 100),
-			color = Color3.fromRGB(
-				math.random(50, 255), -- avoid too-dark colors
-				math.random(50, 255),
-				math.random(50, 255)
-			),
-			lifetime = 5,
-			size = UDim2.fromScale(0.144, 0.12),
-		}
+	local DING = "rbxassetid://79138466370636"
 
-		ParticleText.new(
-			parentGui,
-			"HIT",
-			screenCenter + Vector2.new(math.random(-100, 100), math.random(-100, 100)),
-			opts
-		)
+	CLientSnowballVisuals.registerTag("Target", function(hitObject, snowballOwner: Player?)
+		if snowballOwner and snowballOwner == LocalPlayer then
+			SoundPlayer.playSound(DING) -- ding sound
+		end
 	end)
+
 end
 
 return MiscBindings

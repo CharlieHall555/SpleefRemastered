@@ -9,6 +9,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 
 local AmmoGui : Frame?
@@ -25,6 +26,7 @@ function Ammo.onProfileLoaded()
 
 		AmmoGui.Count.Text = 0 .. " / " .. maxammo
 		AmmoGui.OutOfAmmo.Visible = true
+		RoundStatus.outOfAmmo(true)
 	end)
 
 	ClientAmmoTracker.setOnAmmoChanged(function(newAmmo, maxammo)
@@ -36,8 +38,10 @@ function Ammo.onProfileLoaded()
 		AmmoGui.Count.Text = newAmmo .. " / " .. maxammo
 		if newAmmo == 0 then
 			AmmoGui.OutOfAmmo.Visible = true
+			RoundStatus.outOfAmmo(true)
 		else
 			AmmoGui.OutOfAmmo.Visible = false
+			RoundStatus.outOfAmmo(false)
 		end
 	end)
 
@@ -45,6 +49,7 @@ function Ammo.onProfileLoaded()
 		
 		AmmoGui.Count.Text = "∞"
 		AmmoGui.OutOfAmmo.Visible = false
+		RoundStatus.outOfAmmo(false)
 
 	end)
 

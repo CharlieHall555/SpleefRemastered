@@ -11,6 +11,12 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 
 local StatusGUI
 
+function RoundStatus.outOfAmmo(value: boolean)
+	if StatusGUI then
+		StatusGUI.AmmoWarning.Visible = value
+	end
+end
+
 function RoundStatus.onProfileLoaded()
 	StatusGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("Status")
 	StatusGUI.Parent = Screens.gameHUD
@@ -33,17 +39,15 @@ function RoundStatus.onProfileLoaded()
 		StatusGUI.State.Fire2.Visible = true
 	end)
 
-	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED" , function(aliveNow : number , maxAlive : number)
+	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED", function(aliveNow: number, maxAlive: number)
 		StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
-
 	end)
 
-    RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
+	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getServerState() == "PREPARING" then
 			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
 		end
 	end)
-    
 
 	RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getServerState() == "ACTIVE" then
@@ -51,8 +55,16 @@ function RoundStatus.onProfileLoaded()
 		end
 	end)
 
+	local AMMO_ORIGIN = StatusGUI.AmmoWarning.Position
+
+	StatusGUI.State.Changed:Connect(function(property)
+		if StatusGUI.State.Visible == true then
+			StatusGUI.AmmoWarning.Position = AMMO_ORIGIN
+		else
+			StatusGUI.AmmoWarning.Position = StatusGUI.State.Position
+		end
+	end)
+		
 end
-
-
 
 return RoundStatus

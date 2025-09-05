@@ -70,6 +70,7 @@ function RespawnManager.respawnPlayer(player): boolean
 		SpawnProtectionManager.apply(player)
 		PlayersInGame.addPlayer(player, true)
 		RemoteEventHandler.FireOnClient(player , "REHIGHLIGHT_PLAYERS" , PlayersInGame.getActivePlayers())
+		RemoteEventHandler.FireOnAllClients("PLAYER_REVIVED", player)
 		return true
 	else
 		return false

@@ -90,7 +90,7 @@ function Block.new(blockConfig: BlockConfig?): Block
 	self.Obstacle = nil
 	self.Part:SetAttribute("Regenerates", self.Regenerates or false)
 	if self.Regenerates then
-		self.Part:SetAttribute("TutorialBlock")
+		self.Part:AddTag("TutorialBlock")
 		self.TutorialBlock = true
 	end
 

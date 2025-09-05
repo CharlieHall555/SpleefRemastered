@@ -2,6 +2,7 @@ local localPlayer = game.Players.LocalPlayer
 local Root = localPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local highlightTemplate : Highlight
 
@@ -18,8 +19,18 @@ function PlayerHighlighter.init()
     end)
 
     RemoteEventHandler.newEventConnection("REHIGHLIGHT_PLAYERS" , function(players)
-        print("HIGHLIGHT PLAYERS" , players)
         PlayerHighlighter.highlightPlayers(players)
+    end)
+
+    RemoteEventHandler.newEventConnection("PLAYER_REVIVED" , function(player)
+        if ClientStateTracker.getState() == "ACTIVE" then
+            PlayerHighlighter.highlightPlayer(player)
+        end
+    end)
+
+    ClientStateTracker.connectIntermission(function()
+        print("Hi")
+        PlayerHighlighter.reset()
     end)
 
 end
