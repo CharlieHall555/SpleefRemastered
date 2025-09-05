@@ -60,7 +60,7 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
 	RemoteEventHandler.FireOnClient(player ,"AMMO_GAINED",  Config.AMMO_GAINED_FROM_FLOOR)
 
 
-	if player then
+	if player and PlayersInGame.isAlive(player) then
 		Onboarding.action(player , "SPADE_BROKEN_BLOCK")
 	end
     RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , blockToDestroy , blockPosition , player , "spade")

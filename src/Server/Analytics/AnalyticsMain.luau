@@ -9,7 +9,6 @@ function AnalyticsMain.init()
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player)
 		local profile = PlayerData.getProfile(player)
 		if profile.Data.onboardingComplete == false then
-			print("wowowo")
 			Onboarding.registerUser(player, profile.Data.onboardingStep)
 			Onboarding.action(player, "JOINED_GAME")
 		end

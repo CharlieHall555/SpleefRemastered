@@ -38,18 +38,46 @@ function MiscBindings.onProfileLoaded()
 	end
 end
 
+local GuiService = game:GetService("GuiService")
+
+local function getMobileCenterOffsetPos(): Vector2
+	local cam = workspace.CurrentCamera
+	local viewport: Vector2 = cam and cam.ViewportSize or Vector2.new(1280, 720)
+	local inset: Vector2 = GuiService:GetGuiInset()
+
+	local center = viewport * 0.5
+	-- Offset radius (~8% width, ~6% height); tweak to taste
+	local rX = viewport.X * 0.08
+	local rY = viewport.Y * 0.06
+
+	local offset = Vector2.new((math.random() * 2 - 1) * rX, (math.random() * 2 - 1) * rY)
+	local pos = center + offset
+
+	-- Clamp inside screen, respecting top inset
+	local pad = 12
+	local minX = math.max(pad, inset.X + pad)
+	local minY = math.max(pad, inset.Y + pad)
+	local maxX = viewport.X - pad
+	local maxY = viewport.Y - pad
+
+	return Vector2.new(math.clamp(pos.X, minX, maxX), math.clamp(pos.Y, minY, maxY))
+end
+
 function MiscBindings.onSnowballGained(amount)
-	if PlatformDetector.getPlatform() == "PC" and lastMousePos then
-		local randomX = (math.random() - 0.5) / 5
-		local randomY = 1
+	local platform = PlatformDetector.getPlatform()
+	local randomX = (math.random() - 0.5) / 5
+	local randomY = 1
+	local opts = {
+		image = "rbxassetid://91214120728139", --snowball image.
+		speed = Vector2.new(randomX, randomY),
+		color = Color3.fromRGB(255, 255, 255),
+	}
 
-		local opts = {
-			image = "rbxassetid://91214120728139",
-			speed = Vector2.new(randomX, randomY),
-			color = Color3.fromRGB(255, 255, 255), -- optional highlight color
-		}
-
+	if platform == "PC" and lastMousePos then
 		ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), lastMousePos, opts)
+	elseif platform == "MOBILE" then
+		local screenPos = getMobileCenterOffsetPos()
+		ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), screenPos, opts)
 	end
 end
 
@@ -93,7 +121,6 @@ function MiscBindings.init()
 		else
 			SystemMessage.send(died.DisplayName .. " DIED", Color3.new(0.788235, 0.129411, 0.043137), true)
 		end
-
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
@@ -119,7 +146,6 @@ function MiscBindings.init()
 			SoundPlayer.playSound(DING) -- ding sound
 		end
 	end)
-
 end
 
 return MiscBindings

@@ -12,7 +12,6 @@ local AmmoManager = require(ModuleDirectory.Throwable.AmmoManager)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
-local TutorialManager = require(ModuleDirectory.TutorialManager)
 local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
@@ -43,7 +42,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 		end
 
 		BlockFactory.destroyById(blockId, throwable.owner)
-		if throwable.owner and active == true then
+		if throwable.owner and active == true and PlayersInGame.isAlive(throwable.owner) then
 			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
 		end
 
