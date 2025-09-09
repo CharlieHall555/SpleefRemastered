@@ -87,3 +87,6 @@ RemoteEventHandler.newEventConnection("ROUND_SUMMARY" , function(value)
 end)
 
 local BackwardsEdgeDetector = require(ClientModuleDirectory.Input.BackwardsEdgeDetector)
+
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)

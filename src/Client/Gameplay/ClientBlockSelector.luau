@@ -27,7 +27,6 @@ selectionRaycast.FilterDescendantsInstances = {}
 local RAYCAST_MAX = 300
 local MAX_SELECTION_DISTANCE = 25
 
--- callback assigned by user code; called with Part? whenever selection changes (including nil)
 ClientBlockSelector.newBlockSelected = nil
 
 function ClientBlockSelector.getMaxSelectionDistance()
@@ -173,7 +172,7 @@ local function step(_dt: number)
 
     local result = workspace:Raycast(ray.Origin, ray.Direction, selectionRaycast)
 
-    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) and ClientToolManager.isToolEquipped() and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
+    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
         local hitPart = result.Instance :: Part
         if hitPart ~= selectedBlock then
             focus(hitPart)

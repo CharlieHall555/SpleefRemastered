@@ -8,6 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 local ActionHandler = require(ClientModuleDirectory.Input.ActionHandler)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
+local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
 
 local Controls
 
@@ -95,7 +96,6 @@ local function onJumpPressed()
 	end
 end
 
-
 function MobileControls.onProfileLoaded()
 	print("MobileControls Loaded")
 	Controls = require(LocalPlayer.PlayerScripts.PlayerModule):GetControls()
@@ -104,13 +104,13 @@ function MobileControls.onProfileLoaded()
 		TouchButtons.setJumpCallback(onJumpPressed)
 		TouchButtons.setActionCallback(ActionHandler.mainAttack)
 
-		ClientBlockSelector.newBlockSelected = function(newBlock)
+		ModeDetector.connectModeChange(function(newBlock)
 			if newBlock then
 				TouchButtons.setActionToShovelIcon()
 			else
 				TouchButtons.setActionToSnowballIcon()
 			end
-		end
+		end)
 
 		local binding2 = InputHandler.bindActionEnd(Enum.UserInputType.Touch, function(action: InputHandler.InputAction)
 			if action.length < TAP_LENGTH then

@@ -71,6 +71,7 @@ ClientModuleDirectory.Input.MobileControls = Root.Input.MobileControls
 ClientModuleDirectory.Input.AimAssistController = Root.Input.AimAssistController
 ClientModuleDirectory.Input.BackwardsEdgeDetector = Root.Input.BackwardsEdgeDetector
 ClientModuleDirectory.Input.MovementDampener = Root.Input.MovementDampener
+ClientModuleDirectory.Input.ModeDetector = Root.Input.ModeDetector
 
 
 --//====================================================
@@ -87,6 +88,8 @@ ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
 ClientModuleDirectory.PostDeathSystem = Root.Gameplay.PostDeathSystem
+
+ClientModuleDirectory.AnimationManager = Root.Visuals.AnimationManager
 
 --//====================================================
 --// Profile

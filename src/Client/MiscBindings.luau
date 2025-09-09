@@ -18,6 +18,8 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local MovementDampener = require(ClientModuleDirectory.Input.MovementDampener)
 local CLientSnowballVisuals = require(ClientModuleDirectory.ClientSnowballVisuals)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
+local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
+local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
 
 local lastMousePos
 
@@ -32,6 +34,11 @@ local MiscBindings = {}
 local lightning = "rbxassetid://6994934244"
 
 function MiscBindings.onProfileLoaded()
+
+	if PlatformDetector.getPlatform() == "PC" then
+		LocalPlayer.CameraMinZoomDistance = 0
+	end
+
 	if PlatformDetector.getPlatform() == "MOBILE" then
 		MobileCamera.enable()
 		TouchButtons.setVisibleActionButton(true)
@@ -81,7 +88,15 @@ function MiscBindings.onSnowballGained(amount)
 	end
 end
 
+
+
 function MiscBindings.init()
+
+	ClientBlockSelector.newBlockSelected = function(newBlock)
+		ModeDetector.newBlock(newBlock)
+	end
+
+
 	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(playerWhoDied: Player)
 		SoundPlayer.playSound(lightning, { volume = 0.3 })
 	end)
@@ -147,5 +162,7 @@ function MiscBindings.init()
 		end
 	end)
 end
+
+
 
 return MiscBindings
