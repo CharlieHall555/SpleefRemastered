@@ -95,11 +95,11 @@ function TutorialManager.isPlayerInTutorial(player: Player): boolean
 	return inTutorial[player.UserId] == true
 end
 
-function TutorialManager.init(): nil
-
+--function TutorialManager.init(): nil
+--[[
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
 		PlayerPool.addToPool(player)
-		if PlayerData.gethasJoinedBefore(player) then
+		--[[if PlayerData.gethasJoinedBefore(player) then
 			PlayerPool.addToPool(player)
 		else
 			PlayerData.sethasJoinedBefore(player , true)
@@ -157,7 +157,7 @@ function TutorialManager.init(): nil
 			TutorialManager.playerLeaveTutorialArea(player)
 		end
 	end)
-end
+end ]]--
 
 function TutorialManager.playerEnterTutorialArea(player: Player): nil
 	-- Debounce/lock

@@ -4,6 +4,7 @@ local ParticleText = require(ClientModuleDirectory.Gui.ParticleText)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
+local VibrationService = require(ClientModuleDirectory.VibrationService)
 
 local EliminationEffect = {}
 
@@ -41,6 +42,7 @@ end
 
 function EliminationEffect.init()
 	RemoteEventHandler.newEventConnection("ELIMINATION", function(playerKilled: Player)
+		VibrationService.medium()
 		fireEffect()
 	end)
 end

@@ -1,3 +1,4 @@
+local LocalizationService = game:GetService("LocalizationService")
 local TextService = game:GetService("TextService")
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
@@ -16,8 +17,11 @@ local UserInputService
 local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
 local ClientTutorial = require(ClientModuleDirectory.ClientTutorial)
 local TutorialAmmo = require(ClientModuleDirectory.Gui.TutorialAmmo)
-
-
+local AmmoGui = require(ClientModuleDirectory.Gui.Ammo)
+local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
+local AnimationManager = require(ClientModuleDirectory.AnimationManager)
+local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
+local VibrationService = require(ClientModuleDirectory.VibrationService)
 
 local camera: Camera? = nil
 
@@ -39,7 +43,7 @@ local out_count = 0
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true
-rayParams.CollisionGroup = "CG_GAMEPLAY"
+rayParams.CollisionGroup = "CG_BLOCK_SELECTION"
 
 local function ensureCamera(): Camera?
 	if not camera or camera.Parent == nil then
@@ -66,10 +70,6 @@ function ActionHandler.canAttack()
 	local headPart = character:FindFirstChild("Head")
 	if (not rootPart) or not headPart then
 		return false
-	end
-
-	if ClientStateTracker.getState() == "ACTIVE" and ClientStateTracker.getServerState() == "PREPARING" then
-		return
 	end
 
 	return true
@@ -163,22 +163,23 @@ function ActionHandler.mainAttack(action)
 		local character = player.Character
 		local headPart = character:FindFirstChild("Head")
 
-		if not character:FindFirstChild("Shovel") then
-			local shovel = player.Backpack:FindFirstChild("Shovel")
-			if shovel and shovel:IsA("Tool") then
-				character.Humanoid:EquipTool(shovel)
-			else
-				return
-			end
+		if ClientToolManager.isToolEquipped() == false then
+			ClientToolManager.equipTool()
 		end
-
-		
 
 		print(ClientAmmoTracker.getIsInfinite())
 		print(ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false)
 
 		local selectedBlock = ClientBlockSelector.getSelected()
 		print(selectedBlock)
+
+		if ClientStateTracker.getState() == "ACTIVE" and ClientStateTracker.getServerState() == "PREPARING" then
+			local errorBlip = "rbxassetid://70373378044427"
+			SoundPlayer.playSound(errorBlip, { volume = 1.5 })
+			RoundStatus.shakePrepare()
+			VibrationService.light()
+			return
+		end
 
 		if selectedBlock then -- destroy with spade
 			local id = selectedBlock:GetAttribute("Id")
@@ -187,12 +188,20 @@ function ActionHandler.mainAttack(action)
 			ClientDestructionHandler.predictBlockDestroy(selectedBlock)
 			return
 		else -- shoot
-			if ClientStateTracker.getState() == "ACTIVE" and ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false  then
-				out_count += 1
+			if
+				ClientStateTracker.getState() == "ACTIVE"
+				and ClientAmmoTracker.getAmmo() <= 0
+				and ClientAmmoTracker.getIsInfinite() == false
+			then
+				AmmoGui.shake()
 				SoundPlayer.playSound(OUT_SOUND)
+				VibrationService.light()
+
 				return
 			elseif ClientStateTracker.getState() == "TUTORIAL" and TutorialAmmo.getState().current <= 0 then
 				SoundPlayer.playSound(OUT_SOUND)
+				VibrationService.light()
+
 				return
 			else
 				out_count = 0
@@ -206,11 +215,16 @@ function ActionHandler.mainAttack(action)
 			TutorialAmmo.increment(-1)
 		end
 
-		--ClientAmmoTracker.predictIncrement(-1)
+		--ClientAmmoTracker.predictIncrement(-1)#l
+		local tool = ClientToolManager.getTool()
+		if tool and tool.Name == "Snowball" then
+			local snowballThrowAnim = "rbxassetid://136985168029082"
+			AnimationManager.playAnimation(snowballThrowAnim)
+		end
+
 		SoundPlayer.playSound(THROW_SOUND)
 		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
 		ClientTutorial.onAction("SHOOT")
-
 	end
 end
 

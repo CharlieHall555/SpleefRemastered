@@ -6,6 +6,7 @@ local Root = LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
+local VibrationService = require(ClientModuleDirectory.VibrationService)
 
 local KnockbackUtilities = require(ClientModuleDirectory.KnockbackUtilities)
 
@@ -66,6 +67,7 @@ local function playHitFlashOn(playerTarget: Player)
 end
 
 function ClientKnockback.knockback(dir: Vector3, power: number)
+    VibrationService.medium()
     local character = LocalPlayer.Character
     if not character then return end
 

@@ -31,24 +31,18 @@ function StatusGui.onProfileLoaded()
 	end)
 
 	RemoteEventHandler.newEventConnection("INTERMISSION_TIMER_CHANGED", function(newValue)
-		if ClientStateTracker.getState() == "INTERMISSION" then
-			timerValue = math.max(math.floor(newValue), 0)
-			Status.Label.Text = state .. " : " .. tostring(timerValue)
-		end
+		timerValue = math.max(math.floor(newValue), 0)
+		Status.Label.Text = state .. " : " .. tostring(timerValue)
 	end)
 
 	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(newValue)
-		if ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "PREPARING" then
-			timerValue = math.max(math.floor(newValue), 0)
-			Status.Label.Text = state .. " : " .. tostring(timerValue)
-		end
+		timerValue = math.max(math.floor(newValue), 0)
+		Status.Label.Text = state .. " : " .. tostring(timerValue)
 	end)
 
 	RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED", function(newValue)
-		if ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "ACTIVE" then
-			timerValue = math.max(math.floor(newValue), 0)
-			Status.Label.Text = state .. " : " .. tostring(timerValue)
-		end
+		timerValue = math.max(math.floor(newValue), 0)
+		Status.Label.Text = state .. " : " .. tostring(timerValue)
 	end)
 
 	ClientStateTracker.connectIntermission(function()

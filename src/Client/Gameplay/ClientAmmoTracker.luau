@@ -3,6 +3,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RunService = game:GetService("RunService")
+local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
 
 workspace:GetServerTimeNow()
 
@@ -115,6 +116,7 @@ function ClientAmmoTracker.init(): nil
 
 	RemoteEventHandler.newEventConnection("INFINITE_AMMO_ON", function()
 		isInfiniteAmmo = true
+		ClientToolManager.setSnowballVisible(true)
 		if onInfiniteOn then
 			onInfiniteOn()
 		end
@@ -161,6 +163,11 @@ function ClientAmmoTracker.init(): nil
 					predictedRegenProgress = 0
 					emitProgressIfChanged()
 				end
+			end
+			if predictedAmmo <= 0 and isInfiniteAmmo == false then
+				ClientToolManager.setSnowballVisible(false)
+			else
+				ClientToolManager.setSnowballVisible(true)
 			end
 		end
 	end)

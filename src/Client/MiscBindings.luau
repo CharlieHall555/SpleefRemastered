@@ -20,6 +20,7 @@ local CLientSnowballVisuals = require(ClientModuleDirectory.ClientSnowballVisual
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
+local VibrationService = require(ClientModuleDirectory.VibrationService)
 
 local lastMousePos
 
@@ -95,10 +96,12 @@ function MiscBindings.init()
 	ClientBlockSelector.newBlockSelected = function(newBlock)
 		ModeDetector.newBlock(newBlock)
 	end
-
-
+	
 	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(playerWhoDied: Player)
 		SoundPlayer.playSound(lightning, { volume = 0.3 })
+		if playerWhoDied == LocalPlayer then
+			VibrationService.medium()
+		end
 	end)
 
 	RemoteEventHandler.newEventConnection("AMMO_GAINED", MiscBindings.onSnowballGained)
@@ -113,7 +116,7 @@ function MiscBindings.init()
 
 	ClientStateTracker.connectIntermission(function()
 		task.wait(0.25)
-		if ClientStateTracker.getServerState() == "ACTIVE" then
+		if ClientStateTracker.getServerState() == "ACTIVE" and  ClientStateTracker.getState() == "INTERMISSION" then
 			SpectateButton.show()
 		end
 	end)

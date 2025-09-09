@@ -6,6 +6,8 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local GUISpectateControls = require(ClientModuleDirectory.Gui.SpectateControls)
 local LocalPlayer = Players.LocalPlayer
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local EnterSpectateButton = require(ClientModuleDirectory.Gui.SpectateButton)
 
 local SpectateController = {}
@@ -208,6 +210,10 @@ function SpectateController.enter(): nil
     EnterSpectateButton.hide()
     GUISpectateControls.show()
 
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        MobileCamera.disable()
+    end
+
     currentIndex = currentIndex or 1
     currentIndex = bindIndex(currentIndex, playersAlive)
     if currentIndex == nil then
@@ -236,6 +242,9 @@ function SpectateController.exit(): nil
     end
 
     enabled = false
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        MobileCamera.enable()
+    end
     GUISpectateControls.hide()
     EnterSpectateButton.show()
 

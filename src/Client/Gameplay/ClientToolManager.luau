@@ -16,84 +16,95 @@ local ATTEMPT_DELAY = 0.1
 local activeIdleTrack: AnimationTrack? = nil
 
 local function applyIdleForTool(toolName: string)
-    if toolName == "Snowball" then
-        if activeIdleTrack then
-            activeIdleTrack:Stop()
-            activeIdleTrack:Destroy()
-            activeIdleTrack = nil
-        end
-        activeIdleTrack = AnimationManager.playAnimation(snowballIdleAnim , true)
-    else
-        if activeIdleTrack then
-            activeIdleTrack:Stop()
-            activeIdleTrack:Destroy()
-            activeIdleTrack = nil
-        end
-    end
+	if toolName == "Snowball" then
+		if activeIdleTrack then
+			activeIdleTrack:Stop()
+			activeIdleTrack:Destroy()
+			activeIdleTrack = nil
+		end
+		activeIdleTrack = AnimationManager.playAnimation(snowballIdleAnim, true)
+	else
+		if activeIdleTrack then
+			activeIdleTrack:Stop()
+			activeIdleTrack:Destroy()
+			activeIdleTrack = nil
+		end
+	end
+end
+
+function ClientToolManager.setSnowballVisible(value: boolean)
+	if localPlayer.Character then
+		local snowballTool = localPlayer.Backpack:FindFirstChild("Snowball")
+			or localPlayer.Character:FindFirstChild("Snowball")
+
+		if snowballTool then
+			if value then
+				snowballTool.Handle.Transparency = 0
+			else
+				snowballTool.Handle.Transparency = 1
+			end
+		end
+	end
 end
 
 function ClientToolManager.init()
-    ModeDetector.connectModeChange(function()
-        ClientToolManager.equipTool()
-    end)
+	ModeDetector.connectModeChange(function()
+		ClientToolManager.equipTool()
+	end)
 
 	ClientStateTracker.connectIntermission(function()
-		
 		ClientToolManager.equipTool()
-	
 	end)
-	
 end
 
 function ClientToolManager.getTool()
 	local char = localPlayer.Character
-    if not char then
-        return nil
-    end
-    return char:FindFirstChild("Shovel") or char:FindFirstChild("Snowball")
+	if not char then
+		return nil
+	end
+	return char:FindFirstChild("Shovel") or char:FindFirstChild("Snowball")
 end
 
 function ClientToolManager.isToolEquipped(): boolean
-    local char = localPlayer.Character
-    if not char then
-        return false
-    end
-    return char:FindFirstChild("Shovel") ~= nil or char:FindFirstChild("Snowball") ~= nil
+	local char = localPlayer.Character
+	if not char then
+		return false
+	end
+	return char:FindFirstChild("Shovel") ~= nil or char:FindFirstChild("Snowball") ~= nil
 end
 
 function ClientToolManager.equipTool()
 	print("equip")
-    local char = localPlayer.Character
-    if not char then
+	local char = localPlayer.Character
+	if not char then
 		print("return")
-        return
-    end
+		return
+	end
 
-    local toolName
+	local toolName
 	if ModeDetector.getMode() == "SHOOT" and ClientStateTracker.getState() == "ACTIVE" then
 		toolName = "Snowball"
 	else
 		toolName = "Shovel"
 	end
-    local tool = localPlayer.Backpack:FindFirstChild(toolName)
+	local tool = localPlayer.Backpack:FindFirstChild(toolName)
 
-    if not tool then
-        applyIdleForTool(toolName)
+	if not tool then
+		applyIdleForTool(toolName)
 		print("return")
-        return
-    end
+		return
+	end
 
-    local equippedTool = char:FindFirstChildOfClass("Tool")
+	local equippedTool = char:FindFirstChildOfClass("Tool")
 
-	print("et" , equippedTool , tool)
+	print("et", equippedTool, tool)
 
-    if tool ~= equippedTool then
-        char.Humanoid:UnequipTools()
-        char.Humanoid:EquipTool(tool)
-    end
+	if tool ~= equippedTool then
+		char.Humanoid:UnequipTools()
+		char.Humanoid:EquipTool(tool)
+	end
 
-    applyIdleForTool(toolName)
+	applyIdleForTool(toolName)
 end
 
 return ClientToolManager
-

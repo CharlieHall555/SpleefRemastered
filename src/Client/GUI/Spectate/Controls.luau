@@ -105,7 +105,6 @@ end
 
 function Controls.hide()
 	SpectateGui.Visible = false
-	game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
 end
 
 function Controls.connectOnExit(fn: () -> ())

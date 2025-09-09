@@ -112,6 +112,7 @@ ClientModuleDirectory.Chat.ClientCommands = Root.Chat.ClientCommands
 
 ClientModuleDirectory.SnowballPool = Root.ClientUtils.SnowballPool
 
+ClientModuleDirectory.VibrationService = Root.Visuals.VibrationService
 
 
 --//====================================================

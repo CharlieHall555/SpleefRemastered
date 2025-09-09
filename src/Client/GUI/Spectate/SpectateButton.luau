@@ -24,11 +24,7 @@ function SpectateButton.onProfileLoaded()
     SpectateButtonClickable = SpectateButtonGUI:WaitForChild("Clickable")
     SpectateButtonGUI.Visible = ClientStateTracker.getServerState() == "ACTIVE"
     UIScale = SpectateButtonGUI:WaitForChild("UIScale")
-    local AnchorPoint = 0.8 --ToolBarUtilities.hotBarAnchorPoint() or 0.7
-    SpectateButtonGUI.Position = UDim2.new(
-        UDim.new(SpectateButtonGUI.Position.X.Scale , 0), 
-        UDim.new(AnchorPoint - 0.1 , 0) 
-    )
+
 
     SpectateButton.onResize()
 
