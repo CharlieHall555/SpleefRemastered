@@ -1,313 +1,179 @@
+
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local ProfileManager = require(ModuleDirectory.Player.ProfileManager)
 
-local ProfileTemplate = {
-	onboardingStep = 0,
-	onboardingComplete = false,
-	xp = 0,
-	coins = 0,
-	level = 1,
-	respawns = 0,
-	wins = 0,
-	roundsPlayed = 0,
-	hasJoinedBefore = false,
-}
+local PlayerData = {} :: any
 
-local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
-
-local database = "PRODUCTION"
-
-if RunService:IsStudio() then
-	database = "TEST7"
-else
-	database = "PRODUCTION"
+local function getData(player: Player): any?
+    if not ProfileManager.isProfileLoaded(player) then
+        warn(player.Name .. " profile not loaded")
+        return nil
+    end
+    if ProfileManager.getProfile then
+        local profile = ProfileManager.getProfile(player)
+        return profile and profile.Data or nil
+    end
+    if ProfileManager.getProfileData then
+        return ProfileManager.getProfileData(player)
+    end
+    warn("ProfileManager must expose getProfile or getProfileData")
+    return nil
 end
 
-local ProfileStore = ProfileService.GetProfileStore(database, ProfileTemplate)
-
-local profiles: { [number]: any } = {}
-local loading: { [number]: boolean } = {}
-local callback: (playerWhoLoaded: Player) -> nil
-
-local PlayerData: PlayerData = {} :: any
+local function setFieldAndNotify(player: Player, fieldName: string, value: any): nil
+    local ok = false
+    if ProfileManager.setField then
+        ok = ProfileManager.setField(player.UserId, fieldName, value)
+    end
+    if ok then
+        RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", fieldName, value)
+    else
+        warn("Failed to set field '" .. fieldName .. "' for " .. player.Name)
+    end
+end
 
 function PlayerData.setCallback(fn: (playerWhoLoaded: Player) -> nil)
-	callback = fn
+    if ProfileManager.setCallback then
+        ProfileManager.setCallback(fn)
+    end
 end
 
-function PlayerData.onPlayerAdded(player: Player?)
-	local userId = player.UserId
-	if profiles[userId] or loading[userId] then
-		return
-	end
-
-	loading[userId] = true
-
-	task.spawn(function()
-		local ok, profile = pcall(function()
-			return ProfileStore:LoadProfileAsync("Player_" .. userId)
-		end)
-
-		if not ok or profile == nil then
-			loading[userId] = nil
-			warn("Could not load user profile, user kicked.")
-			if player.Parent == Players then
-				KickManager.safeKick(player, "Could not load user profile, try again later.")
-			end
-			return
-		end
-
-		profile:AddUserId(userId)
-		profile:Reconcile()
-		profile:ListenToRelease(function()
-			profiles[userId] = nil
-			loading[userId] = nil
-			if player.Parent == Players then
-				KickManager.safeKick(player, "User profile release, Possibly joined from another place?")
-			end
-		end)
-
-		if player:IsDescendantOf(Players) then
-			profiles[userId] = profile
-			callback(player)
-		else
-			profile:Release()
-		end
-
-		loading[userId] = nil
-	end)
+function PlayerData.onPlayerAdded(player: Player)
+    if ProfileManager.onPlayerAdded then
+        ProfileManager.onPlayerAdded(player)
+    end
 end
 
 function PlayerData.onPlayerRemoving(player: Player)
-	local userId = player.UserId
-	local profile = profiles[userId]
-	if profile ~= nil then
-		profile:Release()
-	end
-	profiles[userId] = nil
-	loading[userId] = nil
+    if ProfileManager.onPlayerRemoving then
+        ProfileManager.onPlayerRemoving(player)
+    end
 end
 
 function PlayerData.init(): nil
-	RemoteEventHandler.newEventConnection("QUERY_PROFILE_DATA", function(player)
-		if PlayerData.isProfileLoaded(player) then
-			local profile = profiles[player.UserId]
-			return HttpService:JSONEncode(profile.Data or {})
-		end
-	end)
+    RemoteEventHandler.newEventConnection("QUERY_PROFILE_DATA", function(player: Player)
+        if PlayerData.isProfileLoaded(player) then
+            local data = getData(player)
+            return HttpService:JSONEncode(data or {})
+        end
+        return HttpService:JSONEncode({})
+    end)
 end
 
 function PlayerData.isProfileLoaded(player: Player): boolean
-	return profiles[player.UserId] ~= nil
+    return ProfileManager.isProfileLoaded and ProfileManager.isProfileLoaded(player) or false
+end
+
+function PlayerData.getProfile(player: Player): any?
+    return getData(player)
 end
 
 function PlayerData.getWins(player: Player): number
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return 0
-	end
-	return profile.Data.wins or 0
+    local data = getData(player)
+    return data and (data.wins or 0) or 0
 end
 
 function PlayerData.setWins(player: Player, newValue: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.wins = newValue
-	RemoteEventHandler.FireOnClient(player , "PROFILE_UPDATE", "wins", profile.Data.wins)
+    setFieldAndNotify(player, "wins", newValue)
 end
 
 function PlayerData.incrementWins(player: Player, amount: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.wins = (profile.Data.wins or 0) + amount
-	RemoteEventHandler.FireOnClient(player , "PROFILE_UPDATE", "wins", profile.Data.wins)
-end
-
-function PlayerData.getProfile(player: Player): {}
-	return profiles[player.UserId]
+    local data = getData(player)
+    if not data then return end
+    setFieldAndNotify(player, "wins", (data.wins or 0) + amount)
 end
 
 function PlayerData.getXP(player: Player): number
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return 0
-	end
-	return profile.Data.xp or 0
+    local data = getData(player)
+    return data and (data.xp or 0) or 0
 end
 
 function PlayerData.setXP(player: Player, newValue: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.xp = newValue
-	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "xp", profile.Data.xp)
-
+    setFieldAndNotify(player, "xp", newValue)
 end
 
 function PlayerData.incrementXP(player: Player, amount: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.xp = (profile.Data.xp or 0) + amount
-	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "xp", profile.Data.xp)
-
+    local data = getData(player)
+    if not data then return end
+    setFieldAndNotify(player, "xp", (data.xp or 0) + amount)
 end
 
 function PlayerData.getLevel(player: Player): number
-	local profile = profiles[player.UserId]
-	print(profile.Data)
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return 1
-	end
-	return profile.Data.level or 1
+    local data = getData(player)
+    return data and (data.level or 1) or 1
 end
 
 function PlayerData.setLevel(player: Player, newValue: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.level = newValue
-	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "level", profile.Data.level)
-
+    setFieldAndNotify(player, "level", newValue)
 end
 
 function PlayerData.incrementLevel(player: Player, amount: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.level = (profile.Data.level or 1) + amount
-	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "level", profile.Data.level)
+    local data = getData(player)
+    if not data then return end
+    setFieldAndNotify(player, "level", (data.level or 1) + amount)
 end
 
 function PlayerData.getRespawns(player: Player): number
-	local profile = profiles[player.UserId]
-	print(profile.Data)
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return 1
-	end
-	return profile.Data.respawns or 1
+    local data = getData(player)
+    return data and (data.respawns or 1) or 1
 end
 
 function PlayerData.setRespawns(player: Player, newValue: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.respawns = newValue
-	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "respawns", profile.Data.respawns)
-
+    setFieldAndNotify(player, "respawns", newValue)
 end
 
 function PlayerData.incrementRespawns(player: Player, amount: number): nil
-	local profile = profiles[player.UserId]
-	if profile == nil then
-		warn(player.Name .. " profile is nil")
-		return
-	end
-	profile.Data.respawns = (profile.Data.respawns or 1) + amount
-	RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "respawns", profile.Data.respawns)
+    local data = getData(player)
+    if not data then return end
+    setFieldAndNotify(player, "respawns", (data.respawns or 1) + amount)
 end
 
 function PlayerData.getCoins(player: Player): number
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return 0
-    end
-    return profile.Data.coins or 0
+    local data = getData(player)
+    return data and (data.coins or 0) or 0
 end
 
 function PlayerData.setCoins(player: Player, newValue: number): nil
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return
-    end
-    profile.Data.coins = newValue
-    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "coins", profile.Data.coins)
+    setFieldAndNotify(player, "coins", newValue)
 end
 
 function PlayerData.incrementCoins(player: Player, amount: number): nil
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return
-    end
-    profile.Data.coins = (profile.Data.coins or 0) + amount
-    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "coins", profile.Data.coins)
+    local data = getData(player)
+    if not data then return end
+    setFieldAndNotify(player, "coins", (data.coins or 0) + amount)
 end
 
-function PlayerData.gethasJoinedBefore(player: Player): number
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return 0
-    end
-    return profile.Data.hasJoinedBefore or false
+function PlayerData.getHasJoinedBefore(player: Player): boolean
+    local data = getData(player)
+    return data and (data.hasJoinedBefore == true) or false
 end
 
-function PlayerData.sethasJoinedBefore(player: Player, newValue: boolean): nil
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return
-    end
-    profile.Data.hasJoinedBefore = newValue
-    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "hasJoinedBefore", profile.Data.hasJoinedBefore)
+function PlayerData.setHasJoinedBefore(player: Player, newValue: boolean): nil
+    setFieldAndNotify(player, "hasJoinedBefore", newValue == true)
 end
-
 
 function PlayerData.getRoundsPlayed(player: Player): number
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return 0
-    end
-    return profile.Data.roundsPlayed or 0
+    local data = getData(player)
+    return data and (data.roundsPlayed or 0) or 0
 end
 
 function PlayerData.setRoundsPlayed(player: Player, newValue: number): nil
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return
-    end
-    profile.Data.roundsPlayed = newValue
-    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "roundsPlayed", profile.Data.roundsPlayed)
+    setFieldAndNotify(player, "roundsPlayed", newValue)
 end
 
-
 function PlayerData.incrementRoundsPlayed(player: Player, amount: number): nil
-    local profile = profiles[player.UserId]
-    if profile == nil then
-        warn(player.Name .. " profile is nil")
-        return
-    end
-    profile.Data.roundsPlayed = (profile.Data.roundsPlayed or 0) + amount
-    RemoteEventHandler.FireOnClient(player, "PROFILE_UPDATE", "roundsPlayed", profile.Data.roundsPlayed)
+    local data = getData(player)
+    if not data then return end
+    setFieldAndNotify(player, "roundsPlayed", (data.roundsPlayed or 0) + amount)
+end
+
+function PlayerData.getShovel(player: Player): string
+    local data = getData(player)
+    return data and (data.shovel or "DEFAULT") or "DEFAULT"
 end
 
 return PlayerData

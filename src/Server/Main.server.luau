@@ -19,4 +19,4 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
-RoundSystem.main()
+RoundSystem.main()	

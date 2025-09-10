@@ -88,6 +88,7 @@ function EliminationScreen.onProfileLoaded()
     -- Intentionally not wiring spectate action here (external code will handle)
     spectateButton.Activated:Connect(function()
         if onSpectatePressed then
+            EliminationScreen.hide()
             onSpectatePressed()
         end
     end)

@@ -96,37 +96,69 @@ local function directionFromScreenPoint(cam: Camera, spawnPart: BasePart, screen
 end
 
 -- PC: uses the mouse position; falls back to center if unavailable.
+local GuiService = game:GetService("GuiService")
+
+local EPSILON = 1e-6
+local DEFAULT_DIR = Vector3.new(0, 0, -1)
+
 function ActionHandler.getDirectionPC(): Vector3
 	local cam = ensureCamera()
 	if not cam then
-		return Vector3.new(0, 0, -1)
+		return DEFAULT_DIR
 	end
 
-	if not Player.Character then
-		return
+	if not player or not player.Character then
+		return cam.CFrame.LookVector
 	end
 
-	local headPart = player.Character:FindFirstAncestor("Head") or player.Character.PrimaryPart
+	-- Find a sensible head reference
+	local headPart = player.Character:FindFirstChild("Head")
+	if not headPart then
+		headPart = player.Character.PrimaryPart
+	end
+	if not headPart then
+		return cam.CFrame.LookVector
+	end
 
+	-- Prefer mouse world hit if available
 	if mouse and mouse.Hit then
 		local target = mouse.Hit.Position
 		local v = target - headPart.Position
-		if v.Magnitude <= 1e-6 then
-			return cam.CFrame.LookVector.Unit
+		if v.Magnitude <= EPSILON then
+			return cam.CFrame.LookVector
+		else
+			return v.Unit
 		end
-		return v.Unit
 	end
 
-	local center = cam.ViewportSize * 0.5
-	local unitRay = cam:ViewportPointToRay(center.X, center.Y)
+	-- Fallback: screen-center ray that respects CoreGui safe insets (mobile, notch, etc.)
+	local topLeftInset, bottomRightInset = GuiService:GetGuiInset()
+	local viewportSize = cam.ViewportSize
+
+	local safeWidth = viewportSize.X - topLeftInset.X - bottomRightInset.X
+	local safeHeight = viewportSize.Y - topLeftInset.Y - bottomRightInset.Y
+
+	local centerX = topLeftInset.X + (safeWidth * 0.5)
+	local centerY = topLeftInset.Y + (safeHeight * 0.5)
+
+	local unitRay = cam:ViewportPointToRay(centerX, centerY)
 	local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
-	local target = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
-	local v2 = target - headPart.Position
-	if v2.Magnitude <= 1e-6 then
-		return cam.CFrame.LookVector.Unit
+
+	local target
+	if hit then
+		target = hit.Position
+	else
+		target = unitRay.Origin + unitRay.Direction * RAY_MAX
 	end
-	return v2.Unit
+
+	local v2 = target - headPart.Position
+	if v2.Magnitude <= EPSILON then
+		return cam.CFrame.LookVector
+	else
+		return v2.Unit
+	end
 end
+
 
 -- Phone: uses the reticle GUI position if provided; otherwise center screen.
 function ActionHandler.getDirectionMobile(spawnPart: BasePart, reticleGui: GuiObject?): Vector3

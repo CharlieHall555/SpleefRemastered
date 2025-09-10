@@ -95,6 +95,15 @@ function TutorialManager.isPlayerInTutorial(player: Player): boolean
 	return inTutorial[player.UserId] == true
 end
 
+function TutorialManager.init(): nil
+
+	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
+		task.wait(1)
+		PlayerPool.addToPool(player)
+	end)
+
+end
+
 --function TutorialManager.init(): nil
 --[[
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)

@@ -79,6 +79,7 @@ ModuleDirectory.Gameplay.EliminationTracker = game:GetService("ServerScriptServi
 ModuleDirectory.Gameplay.RoundSummary =  game:GetService("ServerScriptService").Gameplay.RoundSummary
 ModuleDirectory.Gameplay.SpawnProtectionManager = game:GetService("ServerScriptService").Gameplay.SpawnProtectionManager
 ModuleDirectory.Gameplay.RespawnManager = game:GetService("ServerScriptService").Gameplay.RespawnManager
+ModuleDirectory.Gameplay.BackShovel = game:GetService("ServerScriptService").Gameplay.BackShovel
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 
@@ -93,6 +94,7 @@ ModuleDirectory.Player.Leaderstats = game:GetService("ServerScriptService").Play
 ModuleDirectory.Player.PlayerManager = game:GetService("ServerScriptService").Player.PlayerManager
 ModuleDirectory.Player.PlayerPositionTracker = game:GetService("ServerScriptService").Player.PlayerPositionTracker
 ModuleDirectory.Player.SessionVariables = game:GetService("ServerScriptService").Player.PlayerSessionVariables
+ModuleDirectory.Player.ProfileManager = game:GetService("ServerScriptService").Player.ProfileManager
 
 --//====================================================
 --// Utilities

@@ -35,6 +35,8 @@ ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
 ClientModuleDirectory.Gui.TutorialStatus = Root.Gui.Tutorial.TutorialStatus
 ClientModuleDirectory.Gui.TutorialLeave = Root.Gui.Tutorial.TutorialLeave
 
+ClientModuleDirectory.BackShovel = Root.Visuals.BackShovel
+
 --ClientModuleDirectory.Gui.NameTag = Root.Gui.NameTag
 
 ClientModuleDirectory.Gui.EliminationScreen = Root.Gui.Intermission.EliminationScreen

@@ -15,6 +15,22 @@ local ATTEMPT_DELAY = 0.1
 
 local activeIdleTrack: AnimationTrack? = nil
 
+local function makeModelVisible(model : Model , value : boolean)
+	
+	local parts = model:GetDescendants()
+	for _ , each in parts do
+		if each:IsA("BasePart") and each.Name ~= "Handle" then
+			if value then
+				each.Transparency = 0
+			else
+				each.Transparency = 1
+			end
+		end
+
+	end
+	
+end
+
 local function applyIdleForTool(toolName: string)
 	if toolName == "Snowball" then
 		if activeIdleTrack then
@@ -81,12 +97,22 @@ function ClientToolManager.equipTool()
 		return
 	end
 
+	local backShovel = char:FindFirstChild("BackShovel")
+
 	local toolName
 	if ModeDetector.getMode() == "SHOOT" and ClientStateTracker.getState() == "ACTIVE" then
 		toolName = "Snowball"
+		if backShovel then
+			makeModelVisible(backShovel , true)
+		end
 	else
 		toolName = "Shovel"
+		if backShovel then
+			makeModelVisible(backShovel , false)
+		end
 	end
+
+	
 	local tool = localPlayer.Backpack:FindFirstChild(toolName)
 
 	if not tool then

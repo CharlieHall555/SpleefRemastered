@@ -65,12 +65,12 @@ return {
     --// Ammo System
     --//====================================================
     STARTING_AMMO = 0,                -- Ammo given at start
-    MAX_AMMO = 5,                     -- Ammo cap
+    MAX_AMMO = 20,                     -- Ammo cap
     AMMO_REGEN_INTERVAL = 100000,           -- Time between ammo regen ticks (s)
     RESPAWN_TIME = 0,                   -- Roblox Time to respawn after elimination
 
 
-    AMMO_PICKUP_VALUE = 5,
+    AMMO_PICKUP_VALUE = 20,
     AMMO_GAINED_FROM_FLOOR = 1,
     MAX_THORWABLE_LIFETIME = 10,
 
