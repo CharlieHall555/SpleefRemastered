@@ -1,0 +1,47 @@
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local ProfileManager = require(ModuleDirectory.Gameplay.KickManager)
+
+local ConstraintManager = {}
+
+function ConstraintManager.init()
+	ProfileManager.setFieldConstraint("xp", {
+		type = "number",
+		min = 0,
+	})
+
+	ProfileManager.setFieldConstraint("level", {
+		type = "number",
+		min = 1,
+	})
+
+	ProfileManager.setFieldConstraint("respawns", {
+		type = "number",
+		min = 0,
+	})
+
+	ProfileManager.setFieldConstraint("coins", {
+		type = "number",
+		min = 0,
+	})
+
+	ProfileManager.setFieldConstraint("onboardingStep", {
+		type = "number",
+		min = 0,
+		max = 10,
+	})
+
+	ProfileManager.setFieldConstraint("onboardingComplete", {
+		type = "boolean",
+	})
+
+	ProfileManager.setFieldConstraint("hasJoinedBefore", {
+		type = "boolean",
+	})
+
+	ProfileManager.setFieldConstraint("shovel", {
+		type = "whitelist",
+		allowedValues = { "DEFAULT", "GOLD", "ICE", "SHADOW" },
+	})
+end
+
+return ConstraintManager

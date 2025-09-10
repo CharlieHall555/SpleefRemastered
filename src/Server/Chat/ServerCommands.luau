@@ -6,19 +6,20 @@ local Players = game:GetService("Players")
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local GroupService = game:GetService("GroupService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+local ShovelCustomization = require(ModuleDirectory.ShovelCustomization)
 
 local ServerCommands = {}
 
 local commandsFolder
 
 -- try to post a system message to the default channel (falls back to print)
-local function createCommand(commandName: string, allias: string , requiredGroupLevel : number): TextChatCommand
+local function createCommand(commandName: string, allias: string, requiredGroupLevel: number): TextChatCommand
 	local newCommand = Instance.new("TextChatCommand", commandsFolder)
 	newCommand.Name = commandName
 	newCommand.PrimaryAlias = allias
 	newCommand.AutocompleteVisible = false
 	newCommand.Parent = commandsFolder
-	newCommand:SetAttribute("level" , requiredGroupLevel)
+	newCommand:SetAttribute("level", requiredGroupLevel)
 	return newCommand
 end
 
@@ -84,24 +85,20 @@ local function getOriginPlayer(originTextSource: TextSource?): Player?
 	return Players:GetPlayerByUserId(uid)
 end
 
-local function connectToTrigger(command : TextChatCommand , callback: (originTextSource: TextSource, unfilteredText: string) -> ())
-	
+local function connectToTrigger(
+	command: TextChatCommand,
+	callback: (originTextSource: TextSource, unfilteredText: string) -> ()
+)
 	command.Triggered:Connect(function(originTextSource, unfilteredText)
-		
 		local levelRequired = command:GetAttribute("level") or 255
-		local caller : Player? = getOriginPlayer(originTextSource)
+		local caller: Player? = getOriginPlayer(originTextSource)
 		if caller then
-			
 			local callerRank = (caller:GetRankInGroup(Config.GROUP_ID) or 1)
 			if callerRank >= levelRequired then
-				callback(originTextSource , unfilteredText)
+				callback(originTextSource, unfilteredText)
 			end
-
 		end
-
-
 	end)
-	
 end
 
 function ServerCommands.init()
@@ -113,15 +110,48 @@ function ServerCommands.init()
 	commandsFolder.Name = "ServerCommands"
 	commandsFolder.Parent = TextChatService
 
+	--systemMessage(caller, "Invalid amount. Usage: /xp <positive number> [player]") example where caller is player
+
+	connectToTrigger(
+		createCommand("setTool", "/setShovel", 255),
+		function(originTextSource: TextSource, unfilteredText: string)
+			local player = Players:GetPlayerByUserId(originTextSource.UserId)
+			if not player then
+				return "Error: unable to resolve your player."
+			end
+
+			-- Require quoted shovel name: /setShovel "ShovelNameHere"
+			local shovelName = unfilteredText:match('^%s*/setShovel%s+"(.-)"%s*$')
+				or unfilteredText:match('^%s*/setShovel%s+"(.-)"%s+')
+				or unfilteredText:match('^%s*/setShovel%s+"(.-)"')
+
+			if not shovelName or shovelName == "" then
+				local usage = 'Usage: /setShovel "ShovelNameHere"'
+				systemMessage(player, usage)
+				return usage
+			end
+
+			local ok = ShovelCustomization.equipShovel(player, shovelName)
+			if ok then
+				local msg = ('Shovel set to "%s".'):format(shovelName)
+				systemMessage(player, msg)
+				return msg
+			else
+				local msg = ('Failed to set shovel to "%s".'):format(shovelName)
+				systemMessage(player, msg)
+				return msg
+			end
+		end
+	)
+
 	--giveXpCommand
-	connectToTrigger(createCommand("giveXp", "/xp" , 255) , function(originTextSource, unfilteredText)
+	connectToTrigger(createCommand("giveXp", "/xp", 255), function(originTextSource, unfilteredText)
 		local caller = getOriginPlayer(originTextSource)
 		local argsText = trim(unfilteredText or "")
 		local parts = {}
 		for token in string.gmatch(argsText, "%S+") do
 			table.insert(parts, token)
 		end
-
 
 		-- parts[1] == "/xp", so real args start from parts[2]
 		if #parts < 2 then
@@ -166,62 +196,62 @@ function ServerCommands.init()
 	end)
 
 	connectToTrigger(createCommand("kick", "/kick", 255), function(originTextSource, unfilteredText)
-	local caller = getOriginPlayer(originTextSource)
-	local argsText = trim(unfilteredText or "")
-	local parts = {}
-	for token in string.gmatch(argsText, "%S+") do
-		table.insert(parts, token)
-	end
-
-	-- parts[1] == "/kick"
-	if #parts < 2 then
-		systemMessage(caller, "Usage: /kick <player> [reason]")
-		return
-	end
-
-	-- Support multi-word identifiers: try all splits to find a player
-	local target: Player? = nil
-	local identEnd = 2
-	for i = #parts, 2, -1 do
-		local ident = table.concat(parts, " ", 2, i)
-		target = findPlayerByIdentifier(ident)
-		if target then
-			identEnd = i
-			break
+		local caller = getOriginPlayer(originTextSource)
+		local argsText = trim(unfilteredText or "")
+		local parts = {}
+		for token in string.gmatch(argsText, "%S+") do
+			table.insert(parts, token)
 		end
-	end
 
-	if not target then
-		systemMessage(caller, ("Player '%s' not found."):format(table.concat(parts, " ", 2)))
-		return
-	end
+		-- parts[1] == "/kick"
+		if #parts < 2 then
+			systemMessage(caller, "Usage: /kick <player> [reason]")
+			return
+		end
 
-	-- Extract optional reason after the identifier
-	local reason = ""
-	if identEnd < #parts then
-		reason = table.concat(parts, " ", identEnd + 1)
-	end
-	if reason == "" then
-		reason = "You were kicked from the server."
-	end
+		-- Support multi-word identifiers: try all splits to find a player
+		local target: Player? = nil
+		local identEnd = 2
+		for i = #parts, 2, -1 do
+			local ident = table.concat(parts, " ", 2, i)
+			target = findPlayerByIdentifier(ident)
+			if target then
+				identEnd = i
+				break
+			end
+		end
 
-	-- Prevent self-kick and kicking peers/superiors in the same group
-	if caller and caller == target then
-		systemMessage(caller, "You cannot kick yourself.")
-		return
-	end
+		if not target then
+			systemMessage(caller, ("Player '%s' not found."):format(table.concat(parts, " ", 2)))
+			return
+		end
 
-	-- Execute kick
-	local ok, err = pcall(function()
-		target:Kick(reason)
+		-- Extract optional reason after the identifier
+		local reason = ""
+		if identEnd < #parts then
+			reason = table.concat(parts, " ", identEnd + 1)
+		end
+		if reason == "" then
+			reason = "You were kicked from the server."
+		end
+
+		-- Prevent self-kick and kicking peers/superiors in the same group
+		if caller and caller == target then
+			systemMessage(caller, "You cannot kick yourself.")
+			return
+		end
+
+		-- Execute kick
+		local ok, err = pcall(function()
+			target:Kick(reason)
+		end)
+
+		if ok then
+			systemMessage(caller, ("Kicked %s. Reason: %s"):format(target.Name, reason))
+		else
+			systemMessage(caller, "Failed to kick: " .. tostring(err))
+		end
 	end)
-
-	if ok then
-		systemMessage(caller, ("Kicked %s. Reason: %s"):format(target.Name, reason))
-	else
-		systemMessage(caller, "Failed to kick: " .. tostring(err))
-	end
-end)
 end
 
 return ServerCommands

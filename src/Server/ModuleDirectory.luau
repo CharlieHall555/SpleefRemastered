@@ -145,6 +145,8 @@ ModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
 
 ModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilities.KnockbackUtilities
 
+ModuleDirectory.ShovelCustomization = game:GetService("ServerScriptService").Gameplay.ShovelCustomization
+
 -- Remote Handlers
 
 return ModuleDirectory

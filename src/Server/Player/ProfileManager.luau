@@ -263,6 +263,11 @@ function ProfileManager.isProfileLoaded(player: Player): boolean
     return profiles[player.UserId] ~= nil
 end
 
+function ProfileManager.getProfile(player: Player) : {}
+    return profiles[player.UserId]
+    
+end
+
 return ProfileManager
 
 -- Suggestions:
