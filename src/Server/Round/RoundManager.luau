@@ -92,11 +92,11 @@ local function onRoundEnding(currentRound)
 	AmmoManager.reset()
 	RespawnManager.setMap(nil)
 	BlockFactory.stopAllTweens()
+	local Winner
 	if ServerStatus.get() == "OK" then
-		local Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
+		Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
 		Onboarding.action(Winner, "WON")
 		if Winner then
-			LevelController.giveXp(Winner, 50)
 			PlayerData.incrementWins(Winner, 1)
 			LeaderboardUpdater.incrementWins(Winner.UserId, 1)
 			local totalWins = PlayerData.getWins(Winner)
@@ -108,7 +108,7 @@ local function onRoundEnding(currentRound)
 		end
 	end
 
-	RoundSummary.onRoundEnd(currentRound)
+	RoundSummary.onRoundEnd(currentRound , Winner)
 
 	KnockbackTracker.reset()
 	BlockDestructionTracker.reset()
@@ -142,7 +142,7 @@ function RoundManager.init(): nil
 	RoundSystem.connectPreparing(onRoundPreparing)
 	RoundSystem.connectEnding(onRoundEnding)
 	RoundSystem.connectIntermission(onRoundIntermission)
-	RoundSystem.connectActive(onRoundActive)
+	RoundSystem.connectActive(onRoundActive)	
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
 

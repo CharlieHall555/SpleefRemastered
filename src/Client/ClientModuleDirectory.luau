@@ -50,9 +50,9 @@ ClientModuleDirectory.Gui.PCSettingsWidget = Root.Gui.Settings.PCSettingsWidget
 ClientModuleDirectory.Gui.ParticleText = Root.Gui.Particles.ParticleText
 ClientModuleDirectory.Gui.HowToPlay = Root.Gui.Intermission.HowToPlay
 ClientModuleDirectory.Gui.MouseIcon = Root.Gui.MouseIcon
-ClientModuleDirectory.Gui.Coins = Root.Gui.Intermission.Coins
+--ClientModuleDirectory.Gui.Coins = Root.Gui.Intermission.Coins
 ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
-ClientModuleDirectory.Gui.Respawns = Root.Gui.Intermission.Respawns
+ClientModuleDirectory.Gui.CurrencyGui = Root.Gui.Intermission.CurrencyGui
 ClientModuleDirectory.Gui.LeaderboardHandler = Root.Gui.SurfaceGUIs.LeaderboardHandler
 ClientModuleDirectory.Gui.TutorialAmmo = Root.Gui.Tutorial.TutorialAmmo
 

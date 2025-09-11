@@ -10,36 +10,41 @@ local TextUtilities = require(ClientModuleDirectory.TextUtilities)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 
-local RespawnsGui: Frame?
+local CurrencyGui: Frame?
 
 function Respawns.onProfileLoaded()
-	RespawnsGui = GuiAssets:WaitForChild("Intermission"):WaitForChild("Respawns")
-	RespawnsGui.Parent = Screens.intermissionHUD
-	RespawnsGui.Visible = true
+	CurrencyGui = GuiAssets:WaitForChild("Intermission"):WaitForChild("CurrencyGui")
+	CurrencyGui.Parent = Screens.intermissionHUD
+	CurrencyGui.Visible = true
 
-	RespawnsGui.Count.Text = TextUtilities.formatCurrency(UserProfile.getValue("respawns"))
+	CurrencyGui.RespawnCount.Text = TextUtilities.formatCurrency(UserProfile.getValue("respawns"))
+	CurrencyGui.CoinCount.Text = TextUtilities.formatCurrency(UserProfile.getValue("coins"))
 
 	UserProfile.setOnUpdateCallback(function(valueName, newValue)
-		RespawnsGui.Count.Text = TextUtilities.formatCurrency(newValue)
-	end, "Respawns")
+		CurrencyGui.RespawnCount.Text = TextUtilities.formatCurrency(newValue)
+	end, "respawns")
+
+	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+		CurrencyGui.CoinCount.Text = TextUtilities.formatCurrency(newValue)
+	end, "coins")
 
 	ClientStateTracker.connectIntermission(function()
-		RespawnsGui.Visible = true
+		CurrencyGui.Visible = true
 	end)
 
 	ClientStateTracker.connectTutorial(function()
-		RespawnsGui.Visible = false
+		CurrencyGui.Visible = false
 	end)
 
 	if PlatformDetector.getPlatform() == "MOBILE" then
 	
-		RespawnsGui.AnchorPoint = Vector2.new(RespawnsGui.AnchorPoint.X , 1)
+		CurrencyGui.AnchorPoint = Vector2.new(CurrencyGui.AnchorPoint.X , 1)
 		local touchButtonsGui = TouchButtons.getGui()
 		
 		local yScale = touchButtonsGui.Position.Y.Scale - touchButtonsGui.Size.Y.Scale
 
-		RespawnsGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(yScale , 0))
-		RespawnsGui.UIScale.Scale = 1.2
+		CurrencyGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(yScale , 0))
+		CurrencyGui.UIScale.Scale = 1.2
 
 	end
 

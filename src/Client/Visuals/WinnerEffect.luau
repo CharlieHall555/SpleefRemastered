@@ -9,6 +9,7 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local TweenService = game:GetService("TweenService")
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+local SummaryWidget = require(ClientModuleDirectory.Gui.SummaryWidget)
 
 local WinnerEffect = {}
 
@@ -145,6 +146,8 @@ function WinnerEffect.onWin(winnerName: string, winner: Player?)
 		local outTween = TweenService:Create(winnerWidget, outTweenInfo, { Position = offscreenTop })
 		outTween:Play()
 		outTween.Completed:Wait()
+
+		SummaryWidget.show()
 
 		winnerWidget.Visible = false
 		-- restore to targetPos so future entrances know their destination

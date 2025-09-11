@@ -4,34 +4,123 @@ local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
 local EliminationTracker = require(ModuleDirectory.Gameplay.EliminationTracker)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local WinnerDetection = require(ModuleDirectory.Round.WinnerDetection)
+local CoinsManager = require(ModuleDirectory.CoinManager)
+local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 
 local RoundSummary = {}
 
-export type endSummary = {
-	timeAlive: number,
-	blocksDestroyed: number,
-	elininations: number,
+export type EndSummary = {
+    timeAlive: number,
+    blocksDestroyed: number,
+    eliminations: number,
+    coinsGained: number, -- total coins granted (base + winnerBonus)
+    xpGained: number,
+    winnerBonus: number -- explicit coin win bonus granted
 }
 
-function RoundSummary.onRoundEnd(round: RoundSystem.Round)
-	for _, eachPlayer in round.startingPlayers do
-		if eachPlayer and eachPlayer.Parent then
-			local newRecord : endSummary = {}
-            local s
-			s , newRecord.timeAlive = pcall(function()
-                return PlayerDeathDetector.getDeathTime(eachPlayer) - round.startTime
-            end)
-            if s == false then
-                newRecord.timeAlive = 0
-            end
-            
-            newRecord.blocksDestroyed = (#BlockDestructionTracker.getBlocksDestroyedByPlayer(eachPlayer)) or 0
-            newRecord.elininations = (#EliminationTracker.getElimationsFor(eachPlayer)) or 0 
 
-            RemoteEventHandler.FireOnClient(eachPlayer , "ROUND_SUMMARY" , newRecord)
 
-		end
-	end
+-- Utility: safe table length
+local function count(list)
+    if typeof(list) == "table" then
+        return #list
+    end
+    return 0
 end
+
+-- Utility: server time (fallback)
+local function now()
+    if workspace.GetServerTimeNow then
+        return workspace:GetServerTimeNow()
+    end
+    return time()
+end
+
+-- Clamp helper
+local function clamp(n, lo, hi)
+    return math.max(lo, math.min(hi, n))
+end
+
+-- === Rewards design ===
+-- Coins: performance-focused (blocks, eliminations), with explicit win bonus.
+local function calcBaseCoins(timeAlive: number, blocksDestroyed: number, eliminations: number): number
+    local bd = clamp(blocksDestroyed, 0, 600)
+    local elims = clamp(eliminations, 0, 50)
+    local tAlive = clamp(timeAlive, 0, 600)
+
+    local coins = 0
+    coins += bd * 0.5
+    coins += elims * 10
+    coins += math.floor(tAlive / 10) -- every 10s alive = 1 coin (low weight)
+
+    return math.max(0, math.floor(coins))
+end
+
+-- Winner bonus: explicit and separate from base. To preserve previous doubling behavior, set bonus = base.
+local function calcCoinWinBonus(baseCoins: number): number
+    return math.max(0, baseCoins)
+end
+
+-- XP: participation-first (time), flat win bonus so losers still progress.
+local function calcXp(winner: boolean, timeAlive: number, blocksDestroyed: number, eliminations: number): number
+    local bd = clamp(blocksDestroyed, 0, 600)
+    local elims = clamp(eliminations, 0, 50)
+    local tAlive = clamp(timeAlive, 0, 600)
+
+    local xp = 0
+    xp += math.floor(tAlive / 5) -- every 5s alive = 1 XP (steady drip)
+    xp += bd * 0.2
+    xp += elims * 5
+    if winner then
+        xp += 50 -- flat win bonus
+    end
+
+    return math.max(0, math.floor(xp))
+end
+
+function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
+    local roundEnd = now()
+
+    for _, eachPlayer in ipairs(round.startingPlayers or {}) do
+        if eachPlayer and eachPlayer.Parent then
+            local isWinner = (winner == eachPlayer)
+
+            local deathTime
+            pcall(function()
+                deathTime = PlayerDeathDetector.getDeathTime(eachPlayer)
+            end)
+            local aliveUntil = deathTime or roundEnd
+            local tAlive = math.max(0, (aliveUntil - round.startTime))
+
+            local blocks = count(BlockDestructionTracker.getBlocksDestroyedByPlayer(eachPlayer))
+            local elims = count(EliminationTracker.getElimationsFor(eachPlayer))
+
+            -- Compute rewards (coins use explicit winner bonus)
+            local baseCoins = calcBaseCoins(tAlive, blocks, elims)
+            local winnerBonus = isWinner and calcCoinWinBonus(baseCoins) or 0
+            local totalCoins = baseCoins + winnerBonus
+
+            local xpGained = calcXp(isWinner, tAlive, blocks, elims)
+
+            totalCoins = CoinsManager.giveCoins(eachPlayer, totalCoins)
+            LevelController.giveXp(eachPlayer , xpGained)
+
+            local summary: EndSummary = {
+                timeAlive = tAlive,
+                blocksDestroyed = blocks,
+                eliminations = elims,
+                coinsGained = totalCoins,
+                xpGained = xpGained,
+                winnerBonus = winnerBonus
+            }
+
+            RemoteEventHandler.FireOnClient(eachPlayer, "ROUND_SUMMARY", summary)
+        end
+    end
+end
+
+-- Suggestions:
+-- - Consider surfacing baseCoins in the summary if you want the client UI to break down coins further.
 
 return RoundSummary

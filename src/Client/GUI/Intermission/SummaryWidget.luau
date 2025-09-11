@@ -1,6 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -10,64 +11,172 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 
 local SummaryWidget = {}
 
+local record = {}
+
 local SummaryWidgetGui: Frame
-
-local blocksDestroyedLabel: TextLabel
-local elininationsLabel: TextLabel
-local timeAliveLabel: TextLabel
-
+local statsFrame: Frame
+local countDownLabel: TextLabel
 local closeButtonClickable: TextButton
 
+local countdownNonce = 0
+local currentTween: Tween? = nil
+local targetPosition: UDim2? = nil
+local offscreenPosition: UDim2? = nil
+
 export type Record = {
-	blocksDestroyed: number,
-	elininations: number,
-	timeAlive: number, -- seconds
+    timeAlive: number,
+    blocksDestroyed: number,
+    eliminations: number,
+    coinsGained: number,
+    xpGained: number,
+    winnerBonus: number?
 }
 
+local TWEEN_IN = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+local TWEEN_OUT = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
+
+local function startCountdown(seconds: number)
+    countdownNonce += 1
+    local myNonce = countdownNonce
+
+    if not countDownLabel then
+        task.spawn(function()
+            task.wait(seconds)
+            if countdownNonce == myNonce then
+                SummaryWidget.hide()
+            end
+        end)
+        return
+    end
+
+    countDownLabel.Visible = true
+    task.spawn(function()
+        local remaining = math.max(0, math.floor(seconds))
+        while remaining > 0 and countdownNonce == myNonce and SummaryWidgetGui.Visible do
+            countDownLabel.Text = ("Closing in %d second%s"):format(remaining, remaining == 1 and "" or "s")
+            task.wait(1)
+            remaining -= 1
+        end
+
+        if countdownNonce == myNonce and SummaryWidgetGui.Visible then
+            countDownLabel.Text = "Closing…"
+            SummaryWidget.hide()
+        end
+    end)
+end
+
+local function stopTween()
+    if currentTween then
+        currentTween:Pause()
+        currentTween:Destroy()
+        currentTween = nil
+    end
+end
+
+local function ensurePositions()
+    if not SummaryWidgetGui then
+        return
+    end
+    if not targetPosition then
+        targetPosition = SummaryWidgetGui.Position
+    end
+    if not offscreenPosition then
+        local anchor = SummaryWidgetGui.AnchorPoint
+        -- Slide from bottom: y below screen. Keep x the same as target.
+        offscreenPosition = UDim2.new(targetPosition.X.Scale, targetPosition.X.Offset, 1 + anchor.Y + 0.2, 0)
+    end
+end
 
 function SummaryWidget.onProfileLoaded()
-	SummaryWidgetGui = GuiAssets.Intermission.SummaryWidget
-	SummaryWidgetGui.Parent = Screens.intermissionHUD
-	SummaryWidgetGui.Visible = false
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        SummaryWidgetGui = GuiAssets.Intermission.SummaryWidgetMobile
+    else
+        SummaryWidgetGui = GuiAssets.Intermission.SummaryWidget
+    end
 
-	blocksDestroyedLabel = SummaryWidgetGui.SummaryHolder.BlocksDestroyed.ValueLabel
-	timeAliveLabel = SummaryWidgetGui.SummaryHolder.TimeAlive.ValueLabel
-	elininationsLabel = SummaryWidgetGui.SummaryHolder.Eliminations.ValueLabel
+    SummaryWidgetGui.Parent = Screens.intermissionHUD
+    SummaryWidgetGui.Visible = false
 
-	closeButtonClickable = SummaryWidgetGui.CloseButton.Clickable
+    statsFrame = SummaryWidgetGui.Stats
+    closeButtonClickable = SummaryWidgetGui.CloseButton.Clickable
+    countDownLabel = SummaryWidgetGui.Timer
 
-	--RemoteEventHandler.newEventConnection("ROUND_SUMMARY" , SummaryWidget.show)
+    ensurePositions()
 
-	closeButtonClickable.Activated:Connect(function(inputObject, clickCount)
-		
-		SummaryWidgetGui.Visible = false
+    closeButtonClickable.Activated:Connect(function()
+        countdownNonce += 1
+        SummaryWidget.hide()
+    end)
 
-	end)
-
+    RemoteEventHandler.newEventConnection("ROUND_SUMMARY", function(g_record: Record)
+        record = g_record
+    end)
 end
 
+function SummaryWidget.show()
+    if not SummaryWidgetGui then
+        return
+    end
 
+    statsFrame.Blocks.TextLabel.Text = tostring(record.blocksDestroyed or 0)
+    statsFrame.Eliminations.TextLabel.Text = (tostring(record.eliminations or 0)) .. " KOs"
+    statsFrame.TimeAlive.TextLabel.Text = tostring(math.floor(record.timeAlive or 0)) .. "s"
+    SummaryWidgetGui.XpReward.Text = "+" .. tostring(record.xpGained or 0) .. "Xp"
+    SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(record.coinsGained or 0) .. "C"
 
-function SummaryWidget.show(record : Record)
+    if record.winnerBonus and record.winnerBonus > 0 then
+        SummaryWidgetGui.WinBonus.Text = "+" .. tostring(record.winnerBonus) .. "C (winner bonus)"
+    else
+        SummaryWidgetGui.WinBonus.Text = ""
+    end
 
-	timeAliveLabel.Text = math.floor(record.timeAlive) .. " s"
-	elininationsLabel.Text = record.elininations
-	blocksDestroyedLabel.Text = record.blocksDestroyed
+    ensurePositions()
+    stopTween()
 
-	SummaryWidgetGui.Visible = true
+    SummaryWidgetGui.Visible = true
+    if offscreenPosition then
+        SummaryWidgetGui.Position = offscreenPosition
+    end
 
-	task.spawn(function()
+    currentTween = TweenService:Create(SummaryWidgetGui, TWEEN_IN, { Position = targetPosition })
+    currentTween:Play()
+    currentTween.Completed:Connect(function()
+        if currentTween then
+            currentTween:Destroy()
+            currentTween = nil
+        end
+    end)
 
-		task.wait(10)
-		SummaryWidgetGui.Visible = false
-		
-	end)
-
-
+    startCountdown(8)
 end
 
+function SummaryWidget.hide()
+    if not SummaryWidgetGui or not SummaryWidgetGui.Visible then
+        return
+    end
 
+    ensurePositions()
+    stopTween()
 
+    local goal = { Position = offscreenPosition }
+    currentTween = TweenService:Create(SummaryWidgetGui, TWEEN_OUT, goal)
+    currentTween:Play()
+    currentTween.Completed:Connect(function()
+        if countdownNonce then
+            countdownNonce += 1
+        end
+        if countDownLabel then
+            countDownLabel.Visible = false
+        end
+        SummaryWidgetGui.Visible = false
+        if currentTween then
+            currentTween:Destroy()
+            currentTween = nil
+        end
+        if targetPosition then
+            SummaryWidgetGui.Position = targetPosition
+        end
+    end)
+end
 
-	
 return SummaryWidget

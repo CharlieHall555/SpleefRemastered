@@ -147,6 +147,8 @@ ModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilit
 
 ModuleDirectory.ShovelCustomization = game:GetService("ServerScriptService").Gameplay.ShovelCustomization
 
+ModuleDirectory.CoinManager = game:GetService("ServerScriptService").Monetization.CoinManager
+
 -- Remote Handlers
 
 return ModuleDirectory

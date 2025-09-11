@@ -7,6 +7,8 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local GroupService = game:GetService("GroupService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local ShovelCustomization = require(ModuleDirectory.ShovelCustomization)
+local PlayerData = require(ModuleDirectory.Player.PlayerData)
+local CoinManager = require(ModuleDirectory.CoinManager)
 
 local ServerCommands = {}
 
@@ -143,6 +145,55 @@ function ServerCommands.init()
 			end
 		end
 	)
+
+
+	connectToTrigger(createCommand("giveCoins", "/coins", 255), function(originTextSource, unfilteredText)
+		local caller = getOriginPlayer(originTextSource)
+		local argsText = trim(unfilteredText or "")
+		local parts = {}
+		for token in string.gmatch(argsText, "%S+") do
+			table.insert(parts, token)
+		end
+
+		if #parts < 2 then
+			systemMessage(caller, "Usage: /coins <amount> [player]")
+			return
+		end
+
+		local amount = tonumber(parts[2])
+		if not amount or amount <= 0 then
+			systemMessage(caller, "Invalid amount. Usage: /coins <positive number> [player]")
+			return
+		end
+
+		local target: Player? = nil
+		if #parts >= 3 then
+			local ident = table.concat(parts, " ", 3)
+			target = findPlayerByIdentifier(ident)
+			if not target then
+				systemMessage(caller, ("Player '%s' not found."):format(ident))
+				return
+			end
+		else
+			target = caller
+			if not target then
+				systemMessage(caller, "Could not resolve the calling player.")
+				return
+			end
+		end
+
+		-- apply XP
+		local ok, err = pcall(function()
+			CoinManager.giveCoins(target , amount)
+		end)
+
+		if ok then
+			local who = (caller and caller.Name) or "SYSTEM"
+			systemMessage(caller, ("[COINS] %s gave %d coins to %s."):format(who, amount, target.Name))
+		else
+			systemMessage(caller, "[COINS] Failed to give coins: " .. tostring(err))
+		end
+	end)
 
 	--giveXpCommand
 	connectToTrigger(createCommand("giveXp", "/xp", 255), function(originTextSource, unfilteredText)

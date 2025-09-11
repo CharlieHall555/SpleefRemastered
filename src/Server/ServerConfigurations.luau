@@ -18,8 +18,8 @@ return {
     --//====================================================
     REQUIRED_PLAYERS = 2,              -- Players needed to start a round
     PLAYERS_TO_END = 1,                -- Players left to trigger end
-    INTERMISSION_TIME = 15,             -- Time between rounds
-    PREPARING_TIME = 8,                -- Pre-round prep time
+    INTERMISSION_TIME = 22,             -- Time between rounds
+    PREPARING_TIME = 4,                -- Pre-round prep time
     ROUND_TIME = 80,                   -- Normal round duration
     MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
 
