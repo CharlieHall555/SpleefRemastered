@@ -59,7 +59,7 @@ end
 
 -- Winner bonus: explicit and separate from base. To preserve previous doubling behavior, set bonus = base.
 local function calcCoinWinBonus(baseCoins: number): number
-    return math.max(0, baseCoins)
+    return math.max(10, baseCoins)
 end
 
 -- XP: participation-first (time), flat win bonus so losers still progress.
@@ -105,6 +105,7 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
 
             totalCoins = CoinsManager.giveCoins(eachPlayer, totalCoins)
             LevelController.giveXp(eachPlayer , xpGained)
+            winnerBonus = CoinsManager.giveCoins(eachPlayer , winnerBonus)
 
             local summary: EndSummary = {
                 timeAlive = tAlive,

@@ -26,6 +26,7 @@ local function createEmitter(hook: Frame, color: Color3): any
 	emitter.RotSpeed = NumberRange.new(0)
 	emitter.Rate = 0
 	emitter.Color = color
+	emitter.ZOffset = 9
 	emitter.Size = Vector2.new(0.5, 0.5)
 	emitter.Lifetime = NumberRange.new(1.0, 1.6)
 	emitter.xSpeed = NumberRange.new(0, 0)
@@ -82,12 +83,14 @@ function WinnerEffect.onProfileLoaded()
 	-- Event can arrive any time; only play during INTERMISSION (queued otherwise)
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
 		pendingWin = { name = playerName, player = winner }
-		tryPlayPendingIfAllowed()
 	end)
 
 	-- When we enter intermission, reset debounce and play pending once
 	ClientStateTracker.connectIntermission(function()
 		playedThisIntermission = false
+	end)
+
+	SummaryWidget.connectOnClose(function()
 		tryPlayPendingIfAllowed()
 	end)
 end
@@ -146,8 +149,6 @@ function WinnerEffect.onWin(winnerName: string, winner: Player?)
 		local outTween = TweenService:Create(winnerWidget, outTweenInfo, { Position = offscreenTop })
 		outTween:Play()
 		outTween.Completed:Wait()
-
-		SummaryWidget.show()
 
 		winnerWidget.Visible = false
 		-- restore to targetPos so future entrances know their destination

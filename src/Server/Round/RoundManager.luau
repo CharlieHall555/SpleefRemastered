@@ -30,6 +30,7 @@ local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
 local TutorialManager = require(ModuleDirectory.TutorialManager)
+local PodiumManager = require(ModuleDirectory.Gameplay.PodiumManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -97,6 +98,7 @@ local function onRoundEnding(currentRound)
 		Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
 		Onboarding.action(Winner, "WON")
 		if Winner then
+			--pcall(PodiumManager.setChar , Winner)	
 			PlayerData.incrementWins(Winner, 1)
 			LeaderboardUpdater.incrementWins(Winner.UserId, 1)
 			local totalWins = PlayerData.getWins(Winner)
@@ -104,6 +106,7 @@ local function onRoundEnding(currentRound)
 			WinBadgeHandler.playerAwardedWin(Winner, totalWins)
 			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
 		else
+			PodiumManager.clear()
 			print("No winner")
 		end
 	end

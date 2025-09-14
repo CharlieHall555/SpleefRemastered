@@ -24,6 +24,32 @@ function ProductBindings.init()
 		end)
 	end)
 
+	ProductManager.bindToReceipt(ProductList.OneRespawn, function(player, receiptInfo)
+		task.spawn(function()
+            task.wait(RESPAWN_DELAY)
+			PlayerData.incrementRespawns(player, 1)
+			RemoteEventHandler.FireOnClient(player, "RESPAWN_ADDED", 1)
+		end)
+	end)
+
+	ProductManager.bindToReceipt(ProductList.ThreeRespawn, function(player, receiptInfo)
+		task.spawn(function()
+            task.wait(RESPAWN_DELAY)
+			PlayerData.incrementRespawns(player, 3)
+			RemoteEventHandler.FireOnClient(player, "RESPAWN_ADDED", 3)
+		end)
+	end)
+
+	ProductManager.bindToReceipt(ProductList.FiveRespawn, function(player, receiptInfo)
+		task.spawn(function()
+            task.wait(RESPAWN_DELAY)
+			PlayerData.incrementRespawns(player, 5)
+			RemoteEventHandler.FireOnClient(player, "RESPAWN_ADDED", 5)
+		end)
+	end)
+
+
+
 	ProductManager.bindToPromptFinished(ProductList.ImmediateRespawn, function(userId, info) end)
 end
 

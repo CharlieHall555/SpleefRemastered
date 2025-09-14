@@ -80,6 +80,7 @@ ModuleDirectory.Gameplay.RoundSummary =  game:GetService("ServerScriptService").
 ModuleDirectory.Gameplay.SpawnProtectionManager = game:GetService("ServerScriptService").Gameplay.SpawnProtectionManager
 ModuleDirectory.Gameplay.RespawnManager = game:GetService("ServerScriptService").Gameplay.RespawnManager
 ModuleDirectory.Gameplay.BackShovel = game:GetService("ServerScriptService").Gameplay.BackShovel
+ModuleDirectory.Gameplay.PodiumManager = game:GetService("ServerScriptService").Gameplay.PodiumManager
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 

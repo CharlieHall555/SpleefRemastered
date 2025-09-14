@@ -3,6 +3,8 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local MusicPlayer = require(ClientModuleDirectory.Sound.MusicPlayer)
+local Shop = require(ClientModuleDirectory.Gui.Shop)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
@@ -17,6 +19,7 @@ local MUSIC_ON_IMAGE = "rbxassetid://110651581351042"
 local MUSIC_OFF_IMAGE = "rbxassetid://92620108688852"
 
 local soundToggleButton: TextButton?
+local ShopButton : TextButton?
 local musicToggleButton: TextButton?
 local soundIcon: ImageLabel?
 local musicIcon: ImageLabel?
@@ -66,6 +69,20 @@ local function bindButtons()
             end
         end)
     end
+
+    if ShopButton then
+        
+        ShopButton.Clickable.Activated:Connect(function(inputObject, clickCount)
+            
+            if Shop.getVisible() then
+                Shop.hide()
+            else
+                Shop.show()
+            end
+
+        end)
+
+    end
 end
 
 local function setInitialIcons()
@@ -90,8 +107,18 @@ function PCSettingsWidget.onLoaded()
     soundToggleButton = widgetGui.Sound.Clickable
     soundIcon = widgetGui.Sound.ImageLabel
 
+    ShopButton = widgetGui.Shop
+    
     musicToggleButton = widgetGui.Music.Clickable
     musicIcon = widgetGui.Music.ImageLabel
+
+    ClientStateTracker.connectActive(function()
+        ShopButton.Visible = false
+    end)
+
+    ClientStateTracker.connectIntermission(function()
+        ShopButton.Visible = true
+    end)
 
     setInitialIcons()
     bindToggleSignals()

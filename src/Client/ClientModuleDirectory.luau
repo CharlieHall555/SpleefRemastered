@@ -34,6 +34,8 @@ ClientModuleDirectory.Gui.MobileSettingsWidget = Root.Gui.Settings.MobileSetting
 ClientModuleDirectory.Gui.ExperienceBar = Root.Gui.Intermission.ExperienceBar
 ClientModuleDirectory.Gui.TutorialStatus = Root.Gui.Tutorial.TutorialStatus
 ClientModuleDirectory.Gui.TutorialLeave = Root.Gui.Tutorial.TutorialLeave
+ClientModuleDirectory.Gui.FrameSystem = Root.Gui.Intermission.FrameSystem
+ClientModuleDirectory.Gui.MobileShopButton = Root.Gui.Intermission.MobileShopButton
 
 ClientModuleDirectory.BackShovel = Root.Visuals.BackShovel
 
@@ -59,6 +61,10 @@ ClientModuleDirectory.Gui.TutorialAmmo = Root.Gui.Tutorial.TutorialAmmo
 ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 
 ClientModuleDirectory.Gui.SummaryWidget = Root.Gui.Intermission.SummaryWidget
+
+ClientModuleDirectory.Gui.Shop = Root.Gui.Intermission.Shop
+
+ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
 
 --//====================================================
 --// Input Handler
@@ -180,6 +186,9 @@ ClientModuleDirectory.ProductList = game:GetService("ReplicatedStorage").Product
 ClientModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilities.KnockbackUtilities
 
 ClientModuleDirectory.ClientTutorial = Root.Tutorial.ClientTutorial
+
+ClientModuleDirectory.ShopItem = game:GetService("ReplicatedStorage").Data.ShopData.ShopItem
+ClientModuleDirectory.ExtraLives = game:GetService("ReplicatedStorage").Data.ShopData.ExtraLives
 
 
 return ClientModuleDirectory
