@@ -45,7 +45,7 @@ local ProfileService = require(game:GetService("ServerScriptService").External.P
 
 local database = "PRODUCTION"
 if RunService:IsStudio() then
-    database = "TEST8"
+    database = "TEST9"
 else
     database = "PRODUCTION"
 end

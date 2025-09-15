@@ -83,7 +83,7 @@ local function getCenterScreenRay(): Ray
         return Ray.new(Vector3.zero, Vector3.zAxis)
     end
     local inset = GuiService:GetGuiInset()
-    local center = cam.ViewportSize * 0.5
+    local center = (cam.ViewportSize + inset) * 0.5
     local p = center
     local unitRay = cam:ViewportPointToRay(p.X, p.Y)
     return Ray.new(unitRay.Origin, unitRay.Direction * RAYCAST_MAX)
@@ -100,6 +100,7 @@ function ClientBlockSelector.getMobileSelected(tapPos: Vector2): Instance?
     setRaycastFilterToLocalCharacter()
     local result = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAYCAST_MAX, selectionRaycast)
     if result and withinDistance(result.Position) and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
+        print(result)
         return result.Instance
     end
     return nil

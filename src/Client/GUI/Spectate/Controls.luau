@@ -90,6 +90,8 @@ function Controls.onProfileLoaded()
 	end)
 		
 
+	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+
 end
 
 function Controls.setPlayerSpectating(name: string)

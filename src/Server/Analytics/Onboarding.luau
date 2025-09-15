@@ -94,6 +94,7 @@ function Onboarding.init()
 end
 
 function Onboarding.registerUser(player: Player, previousStep: number?)
+	print("lol")
 	getOrCreateProgress(player.UserId, previousStep or 1)
 end
 

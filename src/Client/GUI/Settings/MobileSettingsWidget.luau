@@ -105,7 +105,7 @@ end
 
 function MobileSettingsWidget.hide()
 	WidgetGUI.Visible = false
-	game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+	game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 end
 
 function MobileSettingsWidget.show()

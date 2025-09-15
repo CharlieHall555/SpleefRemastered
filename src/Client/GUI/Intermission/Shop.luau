@@ -11,6 +11,7 @@ local ExtraLives = require(ClientModuleDirectory.ExtraLives)
 local ShopItem = require(ClientModuleDirectory.ShopItem)
 local FrameSystem = require(ClientModuleDirectory.Gui.FrameSystem)
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local LocalPlayer = Players.LocalPlayer
 
@@ -91,7 +92,13 @@ function Shop.onProfileLoaded()
 		return
 	end
 
-	ShopGui = GuiAssets.Intermission:WaitForChild("Shop")
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		ShopGui = GuiAssets.Intermission:WaitForChild("MobileShop")
+	else
+		ShopGui = GuiAssets.Intermission:WaitForChild("Shop")
+	end
+
+	ShopGui.Visible = false
 	ShopGui.Parent = Screens.intermissionHUD
 
 	main = ShopGui:WaitForChild("Main")

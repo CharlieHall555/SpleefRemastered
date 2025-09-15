@@ -1,4 +1,5 @@
 local LocalizationService = game:GetService("LocalizationService")
+local StarterGui = game:GetService("StarterGui")
 local TextService = game:GetService("TextService")
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
@@ -75,25 +76,7 @@ function ActionHandler.canAttack()
 	return true
 end
 
--- Computes a direction from a screen point (shared helper).
-local function directionFromScreenPoint(cam: Camera, spawnPart: BasePart, screenX: number, screenY: number): Vector3
-	-- Avoid hitting our own character
-	if spawnPart and spawnPart.Parent then
-		rayParams.FilterDescendantsInstances = { spawnPart.Parent }
-	else
-		rayParams.FilterDescendantsInstances = {}
-	end
 
-	local unitRay = cam:ViewportPointToRay(screenX, screenY)
-	local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
-	local target: Vector3 = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
-
-	local fromSpawn = target - spawnPart.Position
-	if fromSpawn.Magnitude < 1e-6 then
-		return cam.CFrame.LookVector.Unit
-	end
-	return fromSpawn.Unit
-end
 
 -- PC: uses the mouse position; falls back to center if unavailable.
 local GuiService = game:GetService("GuiService")
@@ -159,6 +142,26 @@ function ActionHandler.getDirectionPC(): Vector3
 	end
 end
 
+-- Computes a direction from a screen point (shared helper).
+local function directionFromScreenPoint(cam: Camera, spawnPart: BasePart, screenX: number, screenY: number): Vector3
+	-- Avoid hitting our own character
+	if spawnPart and spawnPart.Parent then
+		rayParams.FilterDescendantsInstances = { spawnPart.Parent }
+	else
+		rayParams.FilterDescendantsInstances = {}
+	end
+
+	local unitRay = cam:ViewportPointToRay(screenX, screenY)
+	local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
+	print(hit)
+	local target: Vector3 = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
+
+	local fromSpawn = target - spawnPart.Position
+	if fromSpawn.Magnitude < 1e-6 then
+		return cam.CFrame.LookVector.Unit
+	end
+	return fromSpawn.Unit
+end
 
 -- Phone: uses the reticle GUI position if provided; otherwise center screen.
 function ActionHandler.getDirectionMobile(spawnPart: BasePart, reticleGui: GuiObject?): Vector3
@@ -168,15 +171,9 @@ function ActionHandler.getDirectionMobile(spawnPart: BasePart, reticleGui: GuiOb
 	end
 
 	local screenX: number, screenY: number
-	if reticleGui then
-		local absPos = reticleGui.AbsolutePosition
-		local absSize = reticleGui.AbsoluteSize
-		screenX = absPos.X + absSize.X * 0.5
-		screenY = absPos.Y + absSize.Y * 0.5
-	else
-		local center = cam.ViewportSize * 0.5
-		screenX, screenY = center.X, center.Y
-	end
+	local center = (cam.ViewportSize + GuiService:GetGuiInset())* 0.5 
+	screenX, screenY = center.X, center.Y
+
 
 	return directionFromScreenPoint(cam, spawnPart, screenX, screenY)
 end

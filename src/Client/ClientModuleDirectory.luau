@@ -19,7 +19,7 @@ ClientModuleDirectory.MiscBindings = Root.MiscBindings
 
 ClientModuleDirectory.Gui = {}
 ClientModuleDirectory.Gui.Screens = Root.Gui.Screens
-ClientModuleDirectory.Gui.InivteGUI = Root.Gui.Intermission.InviteGui
+--ClientModuleDirectory.Gui.InivteGUI = Root.Gui.Intermission.InviteGui
 ClientModuleDirectory.Gui.AlertSystem = Root.Gui.AlertSystem.AlertSystem
 ClientModuleDirectory.Gui.AlertSystemBindings = Root.Gui.AlertSystem.AlertSystemBindings
 ClientModuleDirectory.Gui.RoundStatus = Root.Gui.Active.Status
@@ -64,7 +64,7 @@ ClientModuleDirectory.Gui.SummaryWidget = Root.Gui.Intermission.SummaryWidget
 
 ClientModuleDirectory.Gui.Shop = Root.Gui.Intermission.Shop
 
-ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
+--ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
 
 --//====================================================
 --// Input Handler
@@ -190,5 +190,6 @@ ClientModuleDirectory.ClientTutorial = Root.Tutorial.ClientTutorial
 ClientModuleDirectory.ShopItem = game:GetService("ReplicatedStorage").Data.ShopData.ShopItem
 ClientModuleDirectory.ExtraLives = game:GetService("ReplicatedStorage").Data.ShopData.ExtraLives
 
+ClientModuleDirectory.ClientVoice = Root.Chat.ClientVoice
 
 return ClientModuleDirectory

@@ -35,6 +35,8 @@ ModuleDirectory.Throwable.AmmoManager = game:GetService("ServerScriptService").G
 ModuleDirectory.Throwable.PlayerRaycastParamsHandler = game:GetService("ServerScriptService").Throwable.PlayerRaycastParmsHandler
 ModuleDirectory.Throwable.SnowballManager = game:GetService("ServerScriptService").Throwable.SnowballManager
 
+ModuleDirectory.Overhead = game:GetService("ServerScriptService").Gameplay.OverheadGui
+
 --//====================================================
 --// Map System
 --//====================================================
@@ -149,6 +151,8 @@ ModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilit
 ModuleDirectory.ShovelCustomization = game:GetService("ServerScriptService").Gameplay.ShovelCustomization
 
 ModuleDirectory.CoinManager = game:GetService("ServerScriptService").Monetization.CoinManager
+
+ModuleDirectory.ServerVoice = game:GetService("ServerScriptService").ServerVoice
 
 -- Remote Handlers
 

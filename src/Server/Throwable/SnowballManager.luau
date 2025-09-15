@@ -42,7 +42,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 		end
 
 		BlockFactory.destroyById(blockId, throwable.owner)
-		if throwable.owner and active == true and PlayersInGame.isAlive(throwable.owner) then
+		if throwable.owner and PlayersInGame.isAlive(throwable.owner) then
 			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
 		end
 
