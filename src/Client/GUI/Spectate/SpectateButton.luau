@@ -63,7 +63,8 @@ function SpectateButton.onResize()
 end
 
 function SpectateButton.show()
-    if SpectateButtonGUI then
+
+    if SpectateButtonGUI and  ClientStateTracker.getState() == "INTERMISSION" and ClientStateTracker.getServerState() == "ACTIVE" then
         SpectateButtonGUI.Visible = true
     end
 end

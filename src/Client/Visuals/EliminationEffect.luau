@@ -45,6 +45,11 @@ function EliminationEffect.init()
 		VibrationService.medium()
 		fireEffect()
 	end)
+
+	RemoteEventHandler.newEventConnection("DUMMY_DIED", function(playerKilled: Player)
+		VibrationService.medium()
+		fireEffect()
+	end)
 end
 
 return EliminationEffect

@@ -23,8 +23,7 @@ local function removeExisting(character: Model)
     end
 end
 
-local function playHitFlashOn(playerTarget: Player)
-    local character = playerTarget.Character
+local function playHitFlashOn(character)
     if not character then
         return
     end
@@ -96,7 +95,15 @@ function ClientKnockback.init()
             return
         end
 
-        playHitFlashOn(playerTarget)
+        playHitFlashOn(playerTarget.Character)
+    end)
+
+    RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION_CHAR", function(Char: Model)
+        if Char and Char.PrimaryPart then
+            SoundPlayer.queuePositionalSound("rbxassetid://146163534", Char.PrimaryPart.Position)
+        end
+
+        playHitFlashOn(Char)
     end)
 end
 

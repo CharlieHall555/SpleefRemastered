@@ -158,6 +158,9 @@ ClientModuleDirectory.Sound.MusicPlayer = Root.Sound.MusicPlayer
 ClientModuleDirectory.test = Root.DebugTools.testModule
 ClientModuleDirectory.TapDebugView = Root.DebugTools.TapDebugView
 
+ClientModuleDirectory.TutorialAnnouncer = Root.Tutorial.TutorialAnnouncer
+
+
 --//====================================================
 --// Shared Utilities
 --//====================================================

@@ -11,15 +11,6 @@ return {
             regenerates = true,
             material = "sand",
 		},
-
-		-- Layer 2: Solid Circle
-		{
-			height = 30,
-			size = Vector2.new(20, 20),
-            regenerates = true,
-			shape = "Square",
-            material = "sand",
-		}
     }
 
 }

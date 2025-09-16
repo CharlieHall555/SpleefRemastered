@@ -29,7 +29,6 @@ local RoundSummary = require(ModuleDirectory.Gameplay.RoundSummary)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
-local TutorialManager = require(ModuleDirectory.TutorialManager)
 local PodiumManager = require(ModuleDirectory.Gameplay.PodiumManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)

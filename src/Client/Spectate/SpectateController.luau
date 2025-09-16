@@ -246,6 +246,9 @@ function SpectateController.exit(): nil
         MobileCamera.enable()
     end
     GUISpectateControls.hide()
+    
+   
+    
     EnterSpectateButton.show()
 
     clearCharConn()

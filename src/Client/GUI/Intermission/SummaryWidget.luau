@@ -9,6 +9,10 @@ local GuiAssets = game:GetService("ReplicatedStorage").GuiAssets
 local TweenService = game:GetService("TweenService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local FrameSystem = require(ClientModuleDirectory.Gui.FrameSystem)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
+
+local CoinSound = "rbxassetid://607665037"
+
 
 
 local SummaryWidget = {}
@@ -126,6 +130,9 @@ function SummaryWidget.connectOnClose(callback: () -> ())
 end
 
 function SummaryWidget.show()
+
+	
+	SoundPlayer.playSound(CoinSound)
 
 	FrameSystem.setCurrent(SummaryWidgetGui)
 

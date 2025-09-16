@@ -11,7 +11,8 @@ export type Map = {
     new: (originPosition: Vector3) -> Map,
     addLayer: (self: Map, Layer: Layer.Layer ) -> nil,
     getTopLayer: (self: Map) -> Layer.Layer ?,
-    getRandomLayer: (self: Map) -> Layer.Layer?
+    getRandomLayer: (self: Map) -> Layer.Layer?,
+    Destroy:  (self: Map) -> nil,
 
 }
 

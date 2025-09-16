@@ -67,12 +67,14 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Play
 		return
 	end
 
+	local power = Config.KNOCKBACK_POWER
+
 	local hitPlayer = Players:GetPlayerFromCharacter(char)
 	if not hitPlayer then
-		applyKnockbackServer(char , dir)
+		applyKnockbackServer(char , dir , power)
+		RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION_CHAR", char)
+		return
 	end
-
-	local power = Config.KNOCKBACK_POWER
 
     if PlayersInGame.isAlive(hitPlayer) and active == false then
 		return

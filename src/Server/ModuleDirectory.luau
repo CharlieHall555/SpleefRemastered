@@ -86,7 +86,14 @@ ModuleDirectory.Gameplay.PodiumManager = game:GetService("ServerScriptService").
 
 ModuleDirectory.ServerSpectateController = game:GetService("ServerScriptService").Gameplay.ServerSpectateController
 
-ModuleDirectory.TutorialManager = game:GetService("ServerScriptService").Tutorial.TutorialManager
+--//====================================================
+--// Tutorial
+--//====================================================
+
+ModuleDirectory.Tutorial = {}
+ModuleDirectory.Tutorial.TutorialManager = game:GetService("ServerScriptService").Tutorial.TutorialManager
+ModuleDirectory.Tutorial.tutorialMapGenerator = game:GetService("ServerScriptService").Tutorial.TutorialMapGenerator
+ModuleDirectory.Tutorial.Dummy = game:GetService("ServerScriptService").Tutorial.Npc
 
 --//====================================================
 --// Player Systems

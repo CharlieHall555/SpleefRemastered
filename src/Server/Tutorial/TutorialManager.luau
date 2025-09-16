@@ -1,16 +1,17 @@
+-- TutorialManager.lua
 local Players = game:GetService("Players")
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
-local TutorialMap = require(game:GetService("ServerScriptService").MapSaves.TutorialMap)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local TeleportManager = require(ModuleDirectory.Round.TeleportManager)
 local PlayerPool = require(ModuleDirectory.Round.PlayerPool)
 local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
-local Map = require(ModuleDirectory.Map.Map)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local ToolManager = require(ModuleDirectory.Gameplay.ToolManager)
+local Dummy = require(ModuleDirectory.Tutorial.Dummy)
+local TutorialMapGen = require(ModuleDirectory.Tutorial.tutorialMapGenerator)
 
 local TutorialManager = {}
 
@@ -20,24 +21,26 @@ local LOBBY_Y_OFFSET = 6
 local TRANSITION_COOLDOWN = 1.0 -- seconds between enter/leave per player
 
 -- state
-local tutorialMap: Map.Map?
 local lobbySpawn: SpawnLocation?
 local inTutorial: { [number]: boolean } = {}
 local charAddedConns: { [number]: RBXScriptConnection } = {}
 
--- NEW: transition locks and cooldown tracking
+-- NEW: track each player's spawned dummy uid
+local _dummyUIDs: { [number]: number } = {}
+
+-- transition locks and cooldown tracking
 local _transitionLock: { [number]: boolean } = {}
 local _lastTransitionAt: { [number]: number } = {}
 
 -- utils
-local function getMapTeleportPoint(): Vector3
-	if tutorialMap and tutorialMap.OriginPosition then
-		return tutorialMap.OriginPosition + Vector3.new(0, TUTORIAL_TELEPORT_HEIGHT, 0)
+local function getPlayerTeleportPoint(player: Player): Vector3
+	local origin = TutorialMapGen.getMapOrigin(player)
+	if origin then
+		return origin + Vector3.new(0, TUTORIAL_TELEPORT_HEIGHT, 0)
 	end
-	return Vector3.new(0, 0, 0)
+	return Vector3.new()
 end
 
--- NEW: basic per-player mutex + cooldown
 local function canBeginTransition(player: Player): (boolean, string?)
 	local uid = player.UserId
 	if _transitionLock[uid] then
@@ -72,10 +75,40 @@ local function bindCharacterAdded(player: Player)
 	charAddedConns[player.UserId] = player.CharacterAdded:Connect(function()
 		task.wait(0.1)
 		if inTutorial[player.UserId] then
-			-- Note: this is a passive teleport (not a state transition), so no lock here
-			TeleportManager.teleport(player, getMapTeleportPoint(), true)
+			-- passive teleport back into the player's own map
+			TeleportManager.teleport(player, getPlayerTeleportPoint(player), true)
 		end
 	end)
+end
+
+-- NEW: destroy that player's dummy if present
+local function destroyDummyFor(player: Player)
+	local uid = _dummyUIDs[player.UserId]
+	if uid then
+		pcall(function()
+			Dummy.destroy(uid)
+		end)
+		_dummyUIDs[player.UserId] = nil
+	end
+end
+
+-- NEW: spawn a dummy at the player's tutorial map origin (slightly above ground)
+local function spawnDummyFor(player: Player)
+	-- ensure map exists; spawn at map origin + Y offset
+	local origin = TutorialMapGen.getMapOrigin(player)
+	local spawnPoint = getPlayerTeleportPoint(player)
+
+	-- defensively remove any old dummy first (e.g., re-entering tutorial)
+	destroyDummyFor(player)
+
+	local ok, uidOrErr = pcall(function()
+		return Dummy.generateNPC(spawnPoint , player)
+	end)
+	if ok and typeof(uidOrErr) == "number" then
+		_dummyUIDs[player.UserId] = uidOrErr
+	else
+		warn("[TutorialManager] Failed to spawn dummy for", player.Name, uidOrErr)
+	end
 end
 
 local function cleanupPlayer(player: Player)
@@ -88,6 +121,10 @@ local function cleanupPlayer(player: Player)
 		conn:Disconnect()
 		charAddedConns[player.UserId] = nil
 	end
+
+	-- clean up their dummy and private tutorial world
+	destroyDummyFor(player)
+	TutorialMapGen.deleteMap(player)
 end
 
 -- public
@@ -96,48 +133,35 @@ function TutorialManager.isPlayerInTutorial(player: Player): boolean
 end
 
 function TutorialManager.init(): nil
-
+	-- First load path
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-		task.wait(1)
-		PlayerPool.addToPool(player)
-	end)
-
-end
-
---function TutorialManager.init(): nil
---[[
-	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-		PlayerPool.addToPool(player)
-		--[[if PlayerData.gethasJoinedBefore(player) then
-			PlayerPool.addToPool(player)
-		else
-			PlayerData.sethasJoinedBefore(player , true)
+		-- If first time: auto-enter tutorial (adjust to your UX)
+		if PlayerData.getHasJoinedBefore(player) == false then
+			PlayerData.setHasJoinedBefore(player, true)
 			task.wait(1)
 			TutorialManager.playerEnterTutorialArea(player)
-			RemoteEventHandler.FireOnClient(player , "START_TUTORIAL")
+			RemoteEventHandler.FireOnClient(player, "START_TUTORIAL")
+		else
+			PlayerPool.addToPool(player)
 		end
+
+		-- Always bind respawn handler
+		bindCharacterAdded(player)
 	end)
 
-	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETED", function(player)
+	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETED", function(player: Player)
 		if TutorialManager.isPlayerInTutorial(player) then
 			TutorialManager.playerLeaveTutorialArea(player)
 		end
 	end)
 
 	lobbySpawn = workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation") :: SpawnLocation
-	tutorialMap = MapGenerator.generate(TutorialMap)
 
-	-- lava -> respawn back to tutorial spawn
+	-- lava -> respawn back to the player's own tutorial spawn
 	ServerHitBoxManager.setUpCallback("TestLava", function(player: Player, _otherPart: BasePart)
 		if player.Character and inTutorial[player.UserId] then
-			-- Not a state transition; no lock/cooldown needed
-			TeleportManager.teleport(player, getMapTeleportPoint())
+			TeleportManager.teleport(player, getPlayerTeleportPoint(player))
 		end
-	end)
-
-	-- player lifecycle
-	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-		bindCharacterAdded(player)
 	end)
 
 	Players.PlayerRemoving:Connect(function(player: Player)
@@ -147,12 +171,12 @@ end
 	-- pool interaction
 	PlayerPool.connectOnAdded(function(player: Player)
 		if inTutorial[player.UserId] then
-			-- Not a state transition; re-apply tutorial spawn if needed
+			-- re-apply tutorial spawn if needed (e.g., after rejoin to server)
 			TutorialManager.playerEnterTutorialArea(player)
 		end
 	end)
 
-	-- requests
+	-- requests from client
 	RemoteEventHandler.newEventConnection("REQUEST_JOIN_TUTORIAL_AREA", function(player: Player)
 		if PlayersInGame.isAlive(player) == false then
 			TutorialManager.playerEnterTutorialArea(player)
@@ -166,10 +190,11 @@ end
 			TutorialManager.playerLeaveTutorialArea(player)
 		end
 	end)
-end ]]--
+end
 
 function TutorialManager.playerEnterTutorialArea(player: Player): nil
-	-- Debounce/lock
+	print(player.Name .. "Enter")
+
 	local ok, msg = canBeginTransition(player)
 	if not ok then
 		if msg then RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", msg) end
@@ -177,19 +202,21 @@ function TutorialManager.playerEnterTutorialArea(player: Player): nil
 	end
 	beginTransition(player)
 
-	-- Always clear lock at the end
 	local success, err = pcall(function()
-		if not tutorialMap then
-			RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", "Cannot enter tutorial area: something went wrong.")
-			return
-		end
+		-- Make sure the player has a private map (created if absent)
+		local _map = TutorialMapGen.ensureMap(player)
 
 		RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "TUTORIAL")
 		PlayerPool.removeFromPool(player)
 
 		inTutorial[player.UserId] = true
 		ToolManager.ensureTool(player)
-		TeleportManager.teleport(player, getMapTeleportPoint(), true)
+
+		-- Teleport the player to their map spawn
+		TeleportManager.teleport(player, getPlayerTeleportPoint(player), true)
+
+		-- Spawn their tutorial dummy (NPC)
+		spawnDummyFor(player)
 	end)
 
 	endTransition(player)
@@ -199,7 +226,6 @@ function TutorialManager.playerEnterTutorialArea(player: Player): nil
 end
 
 function TutorialManager.playerLeaveTutorialArea(player: Player): nil
-	-- Debounce/lock
 	local ok, msg = canBeginTransition(player)
 	if not ok then
 		if msg then RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", msg) end
@@ -209,15 +235,29 @@ function TutorialManager.playerLeaveTutorialArea(player: Player): nil
 
 	local success, err = pcall(function()
 		inTutorial[player.UserId] = nil
-		if player.Character and lobbySpawn then
-			RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "INTERMISSION")
-			task.wait(1)
-			if player.Character then
-				TeleportManager.teleport(player, lobbySpawn.Position + Vector3.new(0, LOBBY_Y_OFFSET, 0))
+
+		-- Clean up dummy and map now
+		destroyDummyFor(player)
+		TutorialMapGen.deleteMap(player)
+
+		-- Return them to the lobby pool a moment later (if they didn't re-enter)
+		task.spawn(function()
+			task.wait(3)
+			if TutorialManager.isPlayerInTutorial(player) == false then
+				PlayerPool.addToPool(player)
 			end
-			task.wait(1)
-			PlayerPool.addToPool(player)
+		end)
+
+		-- Move slightly above the lobby spawn to avoid clipping
+		if lobbySpawn and lobbySpawn:IsDescendantOf(workspace) then
+			local pos = lobbySpawn.Position + Vector3.new(0, LOBBY_Y_OFFSET, 0)
+			TeleportManager.teleport(player, pos, true)
+		else
+			warn("[TutorialManager] Lobby spawn not found")
+			TeleportManager.teleport(player, Vector3.new(), true)
 		end
+
+		RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "INTERMISSION")
 	end)
 
 	endTransition(player)
