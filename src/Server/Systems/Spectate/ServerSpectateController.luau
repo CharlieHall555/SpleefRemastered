@@ -5,8 +5,6 @@ local ServerSpectateController = {}
 
 function ServerSpectateController.onLoaded()
 
-    print("this loaded.")
-
     RemoteEventHandler.newEventConnection("REQUEST_CHEER" , function(fromPlayer , targetPlayer)
         print("GOT REQUEST")
         RemoteEventHandler.FireOnAllClients("CHEERED_PLAYER" , targetPlayer , fromPlayer)

@@ -6,9 +6,9 @@ local Players = game:GetService("Players")
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local GroupService = game:GetService("GroupService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local ShovelCustomization = require(ModuleDirectory.ShovelCustomization)
+local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
-local CoinManager = require(ModuleDirectory.CoinManager)
+local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
 
 local ServerCommands = {}
 

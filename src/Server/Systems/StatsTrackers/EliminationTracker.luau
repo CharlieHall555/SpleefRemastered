@@ -1,8 +1,8 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
 local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
-local TouchedBlockTracker = require(ModuleDirectory.Gameplay.TouchedBlockTracker)
-local KnockbackTracker = require(ModuleDirectory.Gameplay.KnockbackTracker)
+local TouchedBlockTracker = require(ModuleDirectory.Stats.TouchedBlockTracker)
+local KnockbackTracker = require(ModuleDirectory.Stats.KnockbackTracker)
 
 export type EliminationTracker = {
     configure: (opts: { knockbackWindow: number?, tileWindow: number? }) -> nil,

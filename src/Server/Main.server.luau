@@ -12,7 +12,7 @@ serverLoaded = true
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local SnowballManger = require(ModuleDirectory.Throwable.SnowballManager)
-local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
+local SnowballAmmoPickup = require(ModuleDirectory.Ammo.SnowballAmmoPickup)
 local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)

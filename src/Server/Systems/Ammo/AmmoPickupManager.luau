@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local SnowballAmmoPickup = require(ModuleDirectory.Gameplay.SnowballAmmoPickup)
+local SnowballAmmoPickup = require(ModuleDirectory.Ammo.SnowballAmmoPickup)
 local Map = require(ModuleDirectory.Map.Map)
 local Layer = require(ModuleDirectory.Map.Layer)
 

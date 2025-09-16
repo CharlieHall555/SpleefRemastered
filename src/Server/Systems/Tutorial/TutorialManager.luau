@@ -9,7 +9,7 @@ local PlayerPool = require(ModuleDirectory.Round.PlayerPool)
 local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
-local ToolManager = require(ModuleDirectory.Gameplay.ToolManager)
+local ToolManager = require(ModuleDirectory.Tool.ToolManager)
 local Dummy = require(ModuleDirectory.Tutorial.Dummy)
 local TutorialMapGen = require(ModuleDirectory.Tutorial.tutorialMapGenerator)
 

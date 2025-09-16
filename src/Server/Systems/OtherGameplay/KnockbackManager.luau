@@ -5,7 +5,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local KnockbackTracker = require(ModuleDirectory.Gameplay.KnockbackTracker)
+local KnockbackTracker = require(ModuleDirectory.Stats.KnockbackTracker)
 local KnockbackUtilities = require(ModuleDirectory.KnockbackUtilities)
 local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 

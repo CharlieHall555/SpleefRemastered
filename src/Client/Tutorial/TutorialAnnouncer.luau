@@ -61,13 +61,9 @@ end
 
 function TutorialAnnouncer.init()
 	ensurePlayer()
-	-- (Optional) Preload to avoid first-play hitch:
-	-- ContentProvider:PreloadAsync(table.create(#announcements, SoundService))
-	-- We'll lazily preload each id when playing to keep it simple.
 end
 
---- Plays the announcement for the given step number.
---- Stops any currently-playing announcement.
+
 function TutorialAnnouncer.play(stepNumber: number)
 	if not enabled then
 		return false

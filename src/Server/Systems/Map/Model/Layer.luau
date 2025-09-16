@@ -1,6 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Block = require(ModuleDirectory.Map.Block)
-local LoadedLayers = require(ModuleDirectory.LoadedLayers)
+local LoadedLayers = require(ModuleDirectory.Map.LoadedLayers)
 
 export type Layer = {
     _id: number,
