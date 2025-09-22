@@ -3,6 +3,7 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local AbilitiesDefinitions = require(ModuleDirectory.Abilities.Definitions)
 local AbilitiesFunctions = require(ModuleDirectory.Abilities.Functions)
+local PlayersAlive = require(ModuleDirectory.Round.PlayersInGame)
 
 local AbilitiesMain = {}
 
@@ -57,10 +58,17 @@ function AbilitiesMain.fireAbility(player: Player)
         return
     end
 
+	if PlayersAlive.isAlive(player) == false then
+		--return
+	end
+
     local func = AbilitiesFunctions[abilName]
     if func then
         func(player , player.Character)
     end
+
+	RemoteEventHandler.FireOnClient(player, "FIRE_ABILITY", abilName, {})
+
 
 
 end

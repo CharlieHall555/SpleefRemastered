@@ -104,8 +104,8 @@ function MobileControls.onProfileLoaded()
 		TouchButtons.setJumpCallback(onJumpPressed)
 		TouchButtons.setActionCallback(ActionHandler.mainAttack)
 
-		ModeDetector.connectModeChange(function(newBlock)
-			if newBlock then
+		ModeDetector.connectModeChange(function(Mode)
+			if Mode == "MINE" then
 				TouchButtons.setActionToShovelIcon()
 			else
 				TouchButtons.setActionToSnowballIcon()

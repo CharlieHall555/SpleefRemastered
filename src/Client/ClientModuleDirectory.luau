@@ -80,6 +80,7 @@ ClientModuleDirectory.Input.AimAssistController = Root.Input.AimAssistController
 ClientModuleDirectory.Input.BackwardsEdgeDetector = Root.Input.BackwardsEdgeDetector
 ClientModuleDirectory.Input.MovementDampener = Root.Input.MovementDampener
 ClientModuleDirectory.Input.ModeDetector = Root.Input.ModeDetector
+ClientModuleDirectory.Input.AbilityActionHandler = Root.Input.AbilityActionHander 
 
 ClientModuleDirectory.Abilities = {}
 ClientModuleDirectory.Abilities.Main = Root.Gameplay.Abilities.ClientAbilities

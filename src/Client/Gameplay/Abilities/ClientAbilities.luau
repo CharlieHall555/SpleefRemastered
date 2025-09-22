@@ -11,6 +11,8 @@ function ClientAbilities.init()
 
     RemoteEventHandler.newEventConnection("FIRE_ABILITY" , function(abil_name : string , data : {})
         
+        print(abil_name)
+
         local callback = AbilitiesFunctions[abil_name]
         if callback then
             callback(LocalPlayer , LocalPlayer.Character , data)

@@ -1,6 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
+local RunService = game:GetService("RunService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local Player = game.Players.LocalPlayer
@@ -131,6 +132,67 @@ function TouchButtons.onLoaded()
 				end
 			end
 		end)
+
+		RunService.RenderStepped:Connect(TouchButtons.resizeLoop)
+	end
+end
+
+local lastScreenSize: Vector2? = nil
+
+local function getInsets()
+	local tl, br = game:GetService("GuiService"):GetGuiInset()
+	return tl.X, br.X, br.Y
+end
+
+local function computeButtonSize(gui: Frame)
+	local size = gui and gui.AbsoluteSize or Vector2.new(800, 600)
+	local minAxis = math.min(size.X, size.Y)
+	local isSmall = minAxis <= 500
+	local base = isSmall and 70 or 120
+	local scaled = math.clamp(math.floor(minAxis * 0.14), base, 160)
+	return isSmall and base or scaled
+end
+
+function TouchButtons.resizeLoop()
+	if not touchButtonsGui or not touchButtonsGui.Visible then
+		return
+	end
+
+	local currentSize = touchButtonsGui.AbsoluteSize
+	if lastScreenSize and currentSize == lastScreenSize then
+		return -- no change, skip expensive recompute
+	end
+	lastScreenSize = currentSize
+
+	local btn = computeButtonSize(touchButtonsGui)
+	local margin = (btn >= 120) and 16 or 10
+
+	-- Move the pair slightly further left from the edge
+	local globalShift = math.floor(btn * 0.15)
+
+	-- Vertical offset so the action button sits a little higher than jump
+	local actionLift = math.max(12, math.floor(btn * 1.1)) -- "couple px more" on small screens
+
+	-- Ensure no overlap -> keep center distance > ~1.05*btn
+	-- With a small vertical separation (actionLift), use a solid horizontal gap
+	local horizontalGap = math.max(math.floor(btn * 0.95), 48)
+
+	local _, rightInset, bottomInset = getInsets()
+
+	-- Action: closer to the right edge and slightly higher
+	if actionButtonBg then
+		actionButtonBg.AnchorPoint = Vector2.new(1, 1)
+		actionButtonBg.Size = UDim2.fromOffset(btn, btn)
+		actionButtonBg.Position =
+			UDim2.new(1, -(rightInset + margin + globalShift), 1, -(bottomInset + margin + actionLift))
+	end
+
+	-- Jump: further left than the action (more inset), slightly lower
+	if jumpButtonBg then
+		jumpButtonBg.AnchorPoint = Vector2.new(1, 1)
+		jumpButtonBg.Size = UDim2.fromOffset(btn, btn)
+		jumpButtonBg.Position =
+			UDim2.new(1, -(rightInset + margin + globalShift + horizontalGap), 1, -(bottomInset + margin))
 	end
 end
 
@@ -139,6 +201,7 @@ function TouchButtons.setActionToShovelIcon()
 end
 
 function TouchButtons.setActionToSnowballIcon()
+	print("hi")
 	actionButtonImage.Image = SNOWBALL_ICON
 end
 
