@@ -8,21 +8,16 @@ export type DummyState = {
     conns: { RBXScriptConnection }
 }
 
-export type Dummy = {
-    init: (self: Dummy) -> (),
-    generateNPC: (self: Dummy, spawnPoint: Vector3, player: Player) -> number,
-    destroy: (self: Dummy, uid: number) -> ()
-}
-
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
+local CollectionService = game:GetService("CollectionService")
 
 local DummyTemplate: Model = ServerStorage:WaitForChild("NPCTemplate") :: Model
 
-local Dummy: Dummy = {}
+local Dummy = {}
 
 local nextUid = 1
 local states: { [number]: DummyState } = {}
@@ -40,9 +35,9 @@ local function createModelAt(spawnPoint: Vector3): (Model, Humanoid, BasePart)
     end
 
     local randomOffset = Vector3.new(
-        math.random(-5 , 5),
+        math.random(-25 , 25),
         0,
-        math.random(-5 , 5)
+        math.random(-25 , 25)
     )
 
     model:PivotTo(CFrame.new(spawnPoint + randomOffset))
@@ -58,16 +53,21 @@ local function createModelAt(spawnPoint: Vector3): (Model, Humanoid, BasePart)
     return model, humanoid, root
 end
 
-local function bindDeath(state: DummyState)
-    -- Clear prior connections
+local function clearConns(state: DummyState)
     for _, c in ipairs(state.conns) do
-        if c.Connected then
+        if c and c.Connected then
             c:Disconnect()
         end
     end
     state.conns = {}
+end
 
-    local conn = state.humanoid.Died:Connect(function()
+local function bindStateConnections(state: DummyState)
+    -- Clear existing connections first
+    clearConns(state)
+
+    -- Death connection
+    local deathConn = state.humanoid.Died:Connect(function()
         RemoteEventHandler.FireOnClient(state.owner, "DUMMY_DIED")
 
         -- Replace the dead model with a fresh one at the spawn point
@@ -85,11 +85,29 @@ local function bindDeath(state: DummyState)
             state.humanoid = newHumanoid
             state.root = newRoot
 
-            bindDeath(state)
+            -- Re-bind connections for the new model
+            bindStateConnections(state)
         end)
     end)
+    table.insert(state.conns, deathConn)
 
-    table.insert(state.conns, conn)
+    -- Touched connection on the root part to detect "TestLava" tag
+    if state.root and state.root:IsA("BasePart") then
+        local touchConn = state.root.Touched:Connect(function(otherPart)
+            if not otherPart or not otherPart:IsA("BasePart") then
+                return
+            end
+
+            -- If the touched part has the "TestLava" tag, kill the humanoid
+            if CollectionService:HasTag(otherPart, "TestLava") then
+                -- Guard: humanoid may already be dead or destroyed
+                if state.humanoid and state.humanoid.Health > 0 then
+                    state.humanoid.Health = 0
+                end
+            end
+        end)
+        table.insert(state.conns, touchConn)
+    end
 end
 
 function Dummy.init() end
@@ -111,7 +129,7 @@ function Dummy.generateNPC(spawnPoint: Vector3, player: Player): number
     }
 
     states[uid] = state
-    bindDeath(state)
+    bindStateConnections(state)
 
     return uid
 end
@@ -122,12 +140,7 @@ function Dummy.destroy(uid: number)
         return
     end
 
-    for _, c in ipairs(state.conns) do
-        if c.Connected then
-            c:Disconnect()
-        end
-    end
-    state.conns = {}
+    clearConns(state)
 
     if state.model and state.model.Parent then
         state.model:Destroy()

@@ -63,7 +63,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 end
 
 function SnowballManager.createSnowballFor(player, playerPosition, direction)
-	if PlayersInGame.isAlive(player) and AmmoManager.getAmmo(player) < 1 and AmmoManager.isInfiniteAmmo() == false then
+	if PlayersInGame.isAlive(player) and (AmmoManager.getAmmo(player) or 0) < 1 and AmmoManager.isInfiniteAmmo() == false then
 		return
 	end
 

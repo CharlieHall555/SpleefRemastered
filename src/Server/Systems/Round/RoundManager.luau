@@ -70,7 +70,6 @@ local function onRoundPreparing(currentRound)
 	)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
 	RespawnManager.setMap(currentMap)
-	AmmoManager.startRegenLoop()
 	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "CHANGE_STATE", "ACTIVE")
 
 	for _, eachPlayer in PlayersInGame.getActivePlayers() do

@@ -11,15 +11,15 @@ local TutorialMapTemplate = require(game:GetService("ServerScriptService").Syste
 
 local tutorialMapGenerator = {}
 
--- Track maps per user and (optionally) a slot index for spatial separation.
+-- Track maps per user and a slot index for spatial separation.
 local _mapsByUser: { [number]: Map.Map } = {}
 local _slotByUser: { [number]: number } = {}
-local _counter = 0
+local _usedSlots: { [number]: boolean } = {}
 
 -- Grid spacing so maps don't overlap; tweak as needed.
-local CELL_X = 300
-local CELL_Z = 300
-local BASE_Y = 1000
+local CELL_X = 1500
+local CELL_Z = 1500
+local BASE_Y = 4000
 
 -- optional: distribute on a simple grid to keep worlds nicely spaced
 local function slotToOrigin(slot: number): Vector3
@@ -60,12 +60,17 @@ function tutorialMapGenerator.ensureMap(player: Player): Map.Map
 		return _mapsByUser[uid]
 	end
 
-	_counter += 1
-	_slotByUser[uid] = _counter
+	-- Find the smallest available slot
+	local slot = 1
+	while _usedSlots[slot] do
+		slot += 1
+	end
+	_slotByUser[uid] = slot
+	_usedSlots[slot] = true
 
 	-- clone template without mutating the shared module table
 	local tpl = deepCopy(TutorialMapTemplate)
-	local origin = slotToOrigin(_counter)
+	local origin = slotToOrigin(slot)
 	-- normalise the expected field name the generator uses (handle a few common names)
 	if tpl.originPosition ~= nil then
 		tpl.originPosition = origin
@@ -77,6 +82,7 @@ function tutorialMapGenerator.ensureMap(player: Player): Map.Map
 	end
 
 	local newMap: Map.Map = MapGenerator.generate(tpl)
+	print(newMap.background)
 	_mapsByUser[uid] = newMap
 	return newMap
 end
@@ -91,6 +97,10 @@ function tutorialMapGenerator.deleteMap(player: Player)
 		end)
 	end
 	_mapsByUser[uid] = nil
+	local slot = _slotByUser[uid]
+	if slot then
+		_usedSlots[slot] = nil
+	end
 	_slotByUser[uid] = nil
 end
 

@@ -12,6 +12,8 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local ToolManager = require(ModuleDirectory.Tool.ToolManager)
 local Dummy = require(ModuleDirectory.Tutorial.Dummy)
 local TutorialMapGen = require(ModuleDirectory.Tutorial.tutorialMapGenerator)
+local EventAnalytics = require(ModuleDirectory.Analytics.EventAnalytics)
+local TimeTaken = require(ModuleDirectory.Tutorial.TimeTaken)
 
 local TutorialManager = {}
 
@@ -102,7 +104,7 @@ local function spawnDummyFor(player: Player)
 	destroyDummyFor(player)
 
 	local ok, uidOrErr = pcall(function()
-		return Dummy.generateNPC(spawnPoint , player)
+		return Dummy.generateNPC(spawnPoint, player)
 	end)
 	if ok and typeof(uidOrErr) == "number" then
 		_dummyUIDs[player.UserId] = uidOrErr
@@ -140,7 +142,6 @@ function TutorialManager.init(): nil
 			PlayerData.setHasJoinedBefore(player, true)
 			task.wait(1)
 			TutorialManager.playerEnterTutorialArea(player)
-			RemoteEventHandler.FireOnClient(player, "START_TUTORIAL")
 		else
 			PlayerPool.addToPool(player)
 		end
@@ -151,6 +152,7 @@ function TutorialManager.init(): nil
 
 	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETED", function(player: Player)
 		if TutorialManager.isPlayerInTutorial(player) then
+			EventAnalytics.logEvent(player, "COMPLETED_TUTORIAL" , TimeTaken.get(player))
 			TutorialManager.playerLeaveTutorialArea(player)
 		end
 	end)
@@ -181,7 +183,11 @@ function TutorialManager.init(): nil
 		if PlayersInGame.isAlive(player) == false then
 			TutorialManager.playerEnterTutorialArea(player)
 		else
-			RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", "Cannot enter tutorial area while in game")
+			RemoteEventHandler.FireOnClient(
+				player,
+				"RECEIVE_SYSTEM_MESSAGE",
+				"Cannot enter tutorial area while in game"
+			)
 		end
 	end)
 
@@ -197,7 +203,9 @@ function TutorialManager.playerEnterTutorialArea(player: Player): nil
 
 	local ok, msg = canBeginTransition(player)
 	if not ok then
-		if msg then RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", msg) end
+		if msg then
+			RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", msg)
+		end
 		return
 	end
 	beginTransition(player)
@@ -211,6 +219,11 @@ function TutorialManager.playerEnterTutorialArea(player: Player): nil
 
 		inTutorial[player.UserId] = true
 		ToolManager.ensureTool(player)
+
+		RemoteEventHandler.FireOnClient(player, "START_TUTORIAL")
+
+		EventAnalytics.logEvent(player, "STARTED_TUTORIAL")
+		TimeTaken.start(player)
 
 		-- Teleport the player to their map spawn
 		TeleportManager.teleport(player, getPlayerTeleportPoint(player), true)
@@ -228,7 +241,9 @@ end
 function TutorialManager.playerLeaveTutorialArea(player: Player): nil
 	local ok, msg = canBeginTransition(player)
 	if not ok then
-		if msg then RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", msg) end
+		if msg then
+			RemoteEventHandler.FireOnClient(player, "RECEIVE_SYSTEM_MESSAGE", msg)
+		end
 		return
 	end
 	beginTransition(player)

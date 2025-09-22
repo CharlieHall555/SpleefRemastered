@@ -39,56 +39,6 @@ function AmmoManager.init()
     end
 end
 
-function AmmoManager.startRegenLoop()
-    if _regenConnection then
-        _regenConnection:Disconnect()
-        _regenConnection = nil
-    end
-
-    local RunService = game:GetService("RunService")
-    _regenConnection = RunService.Heartbeat:Connect(function(dt)
-        if RoundSystem.getState() ~= "ACTIVE" and RoundSystem.getState() ~= "PREPARING" then
-            -- stop ticking outside of active rounds
-            _regenConnection:Disconnect()
-            _regenConnection = nil
-            return
-        end
-
-        local secondsPerAmmo = math.max(0.01, Config.AMMO_REGEN_INTERVAL or 2)
-
-        for userId, ammo in pairs(AmmoStore) do
-            local maxAmmo = Config.MAX_AMMO or math.huge
-
-            if ammo >= maxAmmo then
-                -- at max: progress is reset and does not accumulate
-                _regenProgress[userId] = 0
-                continue
-            end
-
-            local progress = (_regenProgress[userId] or 0) + dt
-            local gained = 0
-            -- award ammo for each full interval accumulated
-            while progress >= secondsPerAmmo and (ammo + gained) < maxAmmo do
-                progress -= secondsPerAmmo
-				gained += 1
-            end
-
-            if gained > 0 then
-                local newAmmo = clampAmmo(ammo + gained)
-                AmmoStore[userId] = newAmmo
-
-                local player = Players:GetPlayerByUserId(userId)
-                if player then
-                    local serverTime = workspace:GetServerTimeNow()
-                    RemoteEventHandler.FireOnClient(player,"AMMO_REGEN" ,serverTime, newAmmo)
-                end
-            end
-
-            _regenProgress[userId] = progress
-        end
-    end)
-end
-
 function AmmoManager.setUp(players: { Player })
     local starting = clampAmmo(Config.STARTING_AMMO or 0)
     for _, player in ipairs(players) do

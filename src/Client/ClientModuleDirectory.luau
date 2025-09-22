@@ -195,4 +195,7 @@ ClientModuleDirectory.ExtraLives = game:GetService("ReplicatedStorage").Data.Sho
 
 ClientModuleDirectory.ClientVoice = Root.Chat.ClientVoice
 
+ClientModuleDirectory.Gui.InviteGui = Root.Gui.Intermission.InviteGui
+
 return ClientModuleDirectory
+

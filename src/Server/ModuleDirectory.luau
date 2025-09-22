@@ -115,6 +115,7 @@ ModuleDirectory.Tutorial = {}
 ModuleDirectory.Tutorial.TutorialManager = serverRoot.Systems.Tutorial.TutorialManager
 ModuleDirectory.Tutorial.tutorialMapGenerator = serverRoot.Systems.Tutorial.TutorialMapGenerator
 ModuleDirectory.Tutorial.Dummy = serverRoot.Systems.Tutorial.Npc
+ModuleDirectory.Tutorial.TimeTaken = serverRoot.Systems.Tutorial.TimeTaken
 
 --//====================================================
 --// Player Systems
@@ -158,6 +159,7 @@ ModuleDirectory.Analytics.Onboarding = serverRoot.Services.Analytics.Onboarding
 ModuleDirectory.Analytics.Main =serverRoot.Services.Analytics.AnalyticsMain
 ModuleDirectory.Analytics.LeaderboardUpdater = serverRoot.Services.Analytics.LeaderboardUpdater
 ModuleDirectory.Analytics.LeaderboardGetter = serverRoot.Services.Analytics.LeaderboardGetter
+ModuleDirectory.Analytics.EventAnalytics = serverRoot.Services.Analytics.EventAnalytics
 
 ModuleDirectory.Badges = {}
 ModuleDirectory.Badges.PlayerBadgeHandler = serverRoot.Services.Badges.PlayerBadgeHander
