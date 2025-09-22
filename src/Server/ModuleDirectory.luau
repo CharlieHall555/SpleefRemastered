@@ -25,6 +25,12 @@ ModuleDirectory.Round.MapSelection = serverRoot.Systems.Round.MapSelection
 ModuleDirectory.Round.ClearLobby = serverRoot.Systems.Round.ClearLobby
 ModuleDirectory.Round.PodiumManager = serverRoot.Systems.Round.PodiumManager
 
+ModuleDirectory.Abilities = {}
+ModuleDirectory.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
+ModuleDirectory.Abilities.Functions = serverRoot.Systems.Abilities.AbilitiesFunctions
+ModuleDirectory.Abilities.Definitions = serverRoot.Systems.Abilities.AbilityDefinitions
+
+
 --//====================================================
 --// StatsTracker System
 --//====================================================

@@ -137,7 +137,6 @@ end
 function TutorialManager.init(): nil
 	-- First load path
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-		-- If first time: auto-enter tutorial (adjust to your UX)
 		if PlayerData.getHasJoinedBefore(player) == false then
 			PlayerData.setHasJoinedBefore(player, true)
 			task.wait(1)

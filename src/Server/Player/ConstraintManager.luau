@@ -3,6 +3,8 @@ local ProfileManager = require(ModuleDirectory.Gameplay.KickManager)
 
 local ConstraintManager = {}
 
+--Contraints garantee thefield is a certain value fall back is the value in profile tempalte found in playerdata.
+
 function ConstraintManager.init()
 	ProfileManager.setFieldConstraint("xp", {
 		type = "number",
@@ -41,6 +43,11 @@ function ConstraintManager.init()
 	ProfileManager.setFieldConstraint("shovel", {
 		type = "whitelist",
 		allowedValues = { "DEFAULT", "GOLD", "ICE", "SHADOW" },
+	})
+
+	ProfileManager.setFieldConstraint("ability" , {
+		type = "whitelist",
+		allowedValues = { "DASH" },
 	})
 end
 

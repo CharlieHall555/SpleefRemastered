@@ -38,7 +38,8 @@ local ProfileTemplate = {
     respawns = 0,
     wins = 0,
     roundsPlayed = 0,
-    hasJoinedBefore = false
+    hasJoinedBefore = false,
+    ability = "DASH"
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)

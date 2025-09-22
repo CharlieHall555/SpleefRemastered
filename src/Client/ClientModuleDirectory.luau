@@ -81,6 +81,9 @@ ClientModuleDirectory.Input.BackwardsEdgeDetector = Root.Input.BackwardsEdgeDete
 ClientModuleDirectory.Input.MovementDampener = Root.Input.MovementDampener
 ClientModuleDirectory.Input.ModeDetector = Root.Input.ModeDetector
 
+ClientModuleDirectory.Abilities = {}
+ClientModuleDirectory.Abilities.Main = Root.Gameplay.Abilities.ClientAbilities
+ClientModuleDirectory.Abilities.Functions = Root.Gameplay.Abilities.AbilitiesFunctions
 
 --//====================================================
 --// Gameplay

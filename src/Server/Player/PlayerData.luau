@@ -191,4 +191,13 @@ function PlayerData.setShovel(player: Player, newValue: string): string
 	setFieldAndNotify(player, "shovel", newValue)
 end
 
+function PlayerData.getAbility(player: Player): string
+	local data = getData(player)
+	return data and (data.ability or "NONE") or "NONE"
+end
+
+function PlayerData.setAbility(player: Player, newValue: string): nil
+	setFieldAndNotify(player, "ability", newValue)
+end
+
 return PlayerData
