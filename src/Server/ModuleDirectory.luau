@@ -29,7 +29,7 @@ ModuleDirectory.Round.PodiumManager = serverRoot.Systems.Round.PodiumManager
 ModuleDirectory.Abilities = {}
 ModuleDirectory.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
 ModuleDirectory.Abilities.Functions = serverRoot.Systems.Abilities.AbilitiesFunctions
-ModuleDirectory.Abilities.Definitions = shareRoot.Data.AbilityDefinitions
+ModuleDirectory.Abilities.Definitions = shareRoot.Data.AbilitiesDefinitions
 
 
 --//====================================================
@@ -185,6 +185,8 @@ ModuleDirectory.Chat.ServerVoice = serverRoot.Services.Chat.ServerVoice
 ModuleDirectory.ProductList = game:GetService("ReplicatedStorage").ProductsList
 
 ModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilities.KnockbackUtilities
+
+ModuleDirectory.ShovelDefinitions = game:GetService("ReplicatedStorage").Data.ShovelDefinitions
 
 
 

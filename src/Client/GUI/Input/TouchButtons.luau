@@ -1,5 +1,6 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
+local LocalizationService = game:GetService("LocalizationService")
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local RunService = game:GetService("RunService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
@@ -13,23 +14,30 @@ local BUTTON_COOLDOWN = 0.1
 
 local SHOVEL_ICON = "rbxassetid://82072164357150"
 local SNOWBALL_ICON = "rbxassetid://102733737810926"
+local POWERUP_ICON = "rbxassetid://104332731142938"
 
 local touchButtonsGui: Frame
 
 local actionButtonImage: ImageLabel
 local jumpButtonImage: ImageLabel
+local powerUpButtonImage: ImageLabel
+local powerUpButtonText : TextLabel
 
 local actionButtonClickable: ImageLabel
 local jumpButtonClickable: ImageLabel
+local powerUpButtonClickable: ImageLabel
 
 local actionButtonBg: Frame
 local jumpButtonBg: Frame
+local powerUpButtonBg: Frame
 
 local onJump: (() -> ())? = nil
 local onAction: (() -> ())? = nil
+local onPowerUp: (() -> ())? = nil
 
 local lastJumpTime = 0
 local lastActionTime = 0
+local lastPowerUpTime = 0
 
 local TouchButtons = {}
 TouchButtons.__index = TouchButtons
@@ -79,15 +87,21 @@ function TouchButtons.onLoaded()
 
 		actionButtonBg = touchButtonsGui.ActionButton
 		jumpButtonBg = touchButtonsGui.JumpButton
+		powerUpButtonBg = touchButtonsGui.PowerUpButton
 
 		actionButtonClickable = actionButtonBg.Clickable
 		jumpButtonClickable = jumpButtonBg.Clickable
+		powerUpButtonClickable = powerUpButtonBg.Clickable
 
 		actionButtonImage = actionButtonBg.ImageLabel
 		jumpButtonImage = jumpButtonBg.ImageLabel
+		powerUpButtonImage = powerUpButtonBg.ImageLabel
+
+		powerUpButtonText = powerUpButtonBg.TextLabel
 
 		setHighlighted(actionButtonBg, actionButtonImage, false)
 		setHighlighted(jumpButtonBg, jumpButtonImage, false)
+		setHighlighted(powerUpButtonBg, powerUpButtonImage, false)
 
 		TouchButtons.setVisibleActionButton(ClientStateTracker.getState == "ACTIVE")
 
@@ -112,6 +126,27 @@ function TouchButtons.onLoaded()
 		jumpButtonClickable.InputEnded:Connect(function(input)
 			if isTouch(input) then
 				setHighlighted(jumpButtonBg, jumpButtonImage, false)
+			end
+		end)
+
+		powerUpButtonClickable.InputBegan:Connect(function(input)
+			if isTouch(input) then
+				setHighlighted(powerUpButtonBg, powerUpButtonImage, true)
+			end
+		end)
+
+		powerUpButtonClickable.InputEnded:Connect(function(input)
+			if isTouch(input) then
+				setHighlighted(powerUpButtonBg, powerUpButtonImage, false)
+			end
+		end)
+
+		powerUpButtonClickable.Activated:Connect(function()
+			if canActivate(lastPowerUpTime) then
+				lastPowerUpTime = time()
+				if onPowerUp then
+					onPowerUp()
+				end
 			end
 		end)
 
@@ -168,7 +203,7 @@ function TouchButtons.resizeLoop()
 	local margin = (btn >= 120) and 16 or 10
 
 	-- Move the pair slightly further left from the edge
-	local globalShift = math.floor(btn * 0.15)
+	local globalShift = math.floor(btn * 0.05)
 
 	-- Vertical offset so the action button sits a little higher than jump
 	local actionLift = math.max(12, math.floor(btn * 1.1)) -- "couple px more" on small screens
@@ -178,6 +213,13 @@ function TouchButtons.resizeLoop()
 	local horizontalGap = math.max(math.floor(btn * 0.95), 48)
 
 	local _, rightInset, bottomInset = getInsets()
+
+	if powerUpButtonBg then
+		powerUpButtonBg.AnchorPoint = Vector2.new(1, 1)
+		powerUpButtonBg.Size = UDim2.fromOffset(btn, btn)
+		powerUpButtonBg.Position =
+			UDim2.new(1, -(rightInset + margin + globalShift + (horizontalGap*1.5)), 1, -(bottomInset + margin + (actionLift*1.5)))
+	end
 
 	-- Action: closer to the right edge and slightly higher
 	if actionButtonBg then
@@ -200,8 +242,21 @@ function TouchButtons.setActionToShovelIcon()
 	actionButtonImage.Image = SHOVEL_ICON
 end
 
+function TouchButtons.setCooldown(value : number)
+	powerUpButtonText.Text = tostring(math.floor(value))
+end
+
+function TouchButtons.showCooldown()
+	powerUpButtonText.Visible = true
+	powerUpButtonImage.Visible = false
+end
+
+function TouchButtons.hideCooldown()
+	powerUpButtonText.Visible = false
+	powerUpButtonImage.Visible = true
+end
+
 function TouchButtons.setActionToSnowballIcon()
-	print("hi")
 	actionButtonImage.Image = SNOWBALL_ICON
 end
 
@@ -211,6 +266,10 @@ end
 
 function TouchButtons.setActionCallback(fn: (() -> ())?)
 	onAction = fn
+end
+
+function TouchButtons.setPowerUpCallback(fn: (() -> ())?)
+	onPowerUp = fn
 end
 
 function TouchButtons.setVisibleActionButton(value: boolean): nil

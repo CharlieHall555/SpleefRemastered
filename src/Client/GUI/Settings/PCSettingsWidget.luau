@@ -3,7 +3,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local MusicPlayer = require(ClientModuleDirectory.Sound.MusicPlayer)
-local Shop = require(ClientModuleDirectory.Gui.Shop)
+local Shop = require(ClientModuleDirectory.Gui.Shop.Main)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")

@@ -1,5 +1,6 @@
 -- Client Module Directory
 local Root = script.Parent
+local SharedRoot = game:GetService("ReplicatedStorage")
 local ClientModuleDirectory = {}
 
 --//====================================================
@@ -62,7 +63,12 @@ ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 
 ClientModuleDirectory.Gui.SummaryWidget = Root.Gui.Intermission.SummaryWidget
 
-ClientModuleDirectory.Gui.Shop = Root.Gui.Intermission.Shop
+ClientModuleDirectory.Gui.Shop = {} 
+ClientModuleDirectory.Gui.Shop.Main = Root.Gui.Intermission.Shop.Main
+ClientModuleDirectory.Gui.Shop.ExtraLives = Root.Gui.Intermission.Shop.ExtraLives
+ClientModuleDirectory.Gui.Shop.Abilities = Root.Gui.Intermission.Shop.Abilities
+ClientModuleDirectory.Gui.Shop.Shovels = Root.Gui.Intermission.Shop.Shovels
+
 
 --ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
 
@@ -100,6 +106,7 @@ ClientModuleDirectory.ClientAmmoTracker = Root.Gameplay.ClientAmmoTracker
 ClientModuleDirectory.ClientKnockback = Root.Gameplay.ClientKnockback
 ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
 ClientModuleDirectory.PostDeathSystem = Root.Gameplay.PostDeathSystem
+ClientModuleDirectory.CooldownPredicter = Root.Gameplay.CooldownPredicter
 
 ClientModuleDirectory.AnimationManager = Root.Visuals.AnimationManager
 
@@ -200,6 +207,9 @@ ClientModuleDirectory.ExtraLives = game:GetService("ReplicatedStorage").Data.Sho
 ClientModuleDirectory.ClientVoice = Root.Chat.ClientVoice
 
 ClientModuleDirectory.Gui.InviteGui = Root.Gui.Intermission.InviteGui
+
+ClientModuleDirectory.AbilitiesData = SharedRoot.Data.AbilitiesDefinitions
+ClientModuleDirectory.ShovelsData = SharedRoot.Data.ShovelDefinitions
 
 return ClientModuleDirectory
 

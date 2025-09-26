@@ -9,6 +9,12 @@ export type WhitelistConstraint = {
     allowedValues: { any }
 }
 
+export type ListConstraint = {
+    type: "list",
+    allowedValues: { any },
+    canBeEmpty: boolean
+}
+
 export type StringConstraint = {
     type: "string"
 }
@@ -17,8 +23,7 @@ export type BoolConstraint = {
     type: "boolean"
 }
 
-export type FieldConstraint = NumberConstraint | WhitelistConstraint | StringConstraint | BoolConstraint
-
+export type FieldConstraint = NumberConstraint | WhitelistConstraint | ListConstraint | StringConstraint | BoolConstraint
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -39,7 +44,9 @@ local ProfileTemplate = {
     wins = 0,
     roundsPlayed = 0,
     hasJoinedBefore = false,
-    ability = "DASH"
+    ability = "DASH",
+    abilities = {"DASH"},
+    shovels = {"DEFAULT"},
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
@@ -70,6 +77,15 @@ local function normalizeConstraint(constraint: any): FieldConstraint?
         return { type = "string" }
     elseif ctype == "boolean" then
         return { type = "boolean" }
+    elseif ctype == "list" or (constraint and constraint.allowedValues ~= nil and typeof(constraint.allowedValues) == "table") then
+        if typeof(constraint.allowedValues) ~= "table" then
+            return nil
+        end
+        return {
+            type = "list",
+            allowedValues = constraint.allowedValues,
+            canBeEmpty = constraint.canBeEmpty == true
+        }
     elseif ctype == "whitelist" or constraint.allowedValue ~= nil or constraint.allowedValues ~= nil then
         local list = constraint.allowedValues or constraint.allowedValue
         if type(list) ~= "table" then
@@ -131,6 +147,40 @@ local function applyConstraint(fieldName: string, value: any): any
             end
         end
         return list[1]
+    elseif constraint.type == "list" then
+        local allowedList = constraint.allowedValues
+        if typeof(value) ~= "table" then
+            local fallback = getTemplateDefault(fieldName)
+            if typeof(fallback) == "table" then
+                value = fallback
+            else
+                value = {}
+            end
+        end
+
+        -- Build a set for allowed values for O(1) membership checks
+        local allowedSet = {}
+        for _, v in ipairs(allowedList) do
+            allowedSet[v] = true
+        end
+
+        local filtered = {}
+        for _, v in ipairs(value) do
+            if allowedSet[v] then
+                table.insert(filtered, v)
+            end
+        end
+
+        if (#filtered == 0) and (constraint.canBeEmpty ~= true) then
+            local fallback = getTemplateDefault(fieldName)
+            if typeof(fallback) == "table" and #fallback > 0 then
+                return fallback
+            end
+            -- If template default is not a non-empty table, keep empty to avoid invalid state
+            return {}
+        end
+
+        return filtered
     end
 
     return value
@@ -171,7 +221,6 @@ function ProfileManager.setFieldConstraint(fieldName: string, constraint: FieldC
     end
     fieldConstraints[fieldName] = normalized
 
-    -- backfill any loaded profiles to comply immediately
     for _, profile in pairs(profiles) do
         local current = profile.Data[fieldName]
         if current ~= nil then
@@ -214,7 +263,6 @@ function ProfileManager.onPlayerAdded(player: Player)
         profile:AddUserId(userId)
         profile:Reconcile()
 
-        -- enforce constraints on load
         if profile.Data then
             parseProfile(profile.Data)
         end
@@ -264,14 +312,13 @@ function ProfileManager.isProfileLoaded(player: Player): boolean
     return profiles[player.UserId] ~= nil
 end
 
-function ProfileManager.getProfile(player: Player) : {}
+function ProfileManager.getProfile(player: Player): {}
     return profiles[player.UserId]
-    
 end
 
 return ProfileManager
-
 -- Suggestions:
 -- - Consider adding explicit getters for fields to reduce direct Data access.
 -- - Split constraint logic into a dedicated Utility module if reused elsewhere.
 -- - Add persistence hooks or throttled manual save calls if ProfileService library supports them.
+-- - Implement logging for constraint violations for easier debugging.

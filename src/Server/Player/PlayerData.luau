@@ -200,4 +200,26 @@ function PlayerData.setAbility(player: Player, newValue: string): nil
 	setFieldAndNotify(player, "ability", newValue)
 end
 
+function PlayerData.getShovels(player: Player): { string }
+	local data = getData(player)
+	return data and (data.shovels or { "DEFAULT" }) or { "DEFAULT" }
+end
+
+function PlayerData.setShovels(player : Player , newValue : { string }) : nil
+	setFieldAndNotify(player, "shovels", newValue)
+end
+
+function PlayerData.addShovel(player: Player, shovelName: string): nil
+	local data = getData(player)
+	if not data then
+		return
+	end
+	local shovels = data.shovels or {}
+	if table.find(shovels, shovelName) then
+		return
+	end
+	table.insert(shovels, shovelName)
+	setFieldAndNotify(player, "shovels", shovels)
+end
+
 return PlayerData

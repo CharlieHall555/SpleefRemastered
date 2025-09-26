@@ -8,11 +8,16 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local AbilityActionHandler = {}
 
+function AbilityActionHandler.useAbility()
+    RemoteEventHandler.FireOnServer("REQUEST_ABILITY" , "DASH")
+    
+end
+
 function AbilityActionHandler.init()
     
     InputHandler.bindKey(Enum.KeyCode.Q , function()
-        RemoteEventHandler.FireOnServer("REQUEST_ABILITY", "DASH")
-    end)
+       AbilityActionHandler.useAbility()
+    end) 
 
 end
 

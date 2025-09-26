@@ -11,6 +11,13 @@ function CoinManager.init()
     
 end
 
+function CoinManager.hasCoins(player : Player , amount : number) : boolean
+
+    local currentCoins = PlayerData.getValue(player, "coins") or 0
+    return currentCoins >= amount
+    
+end
+
 function CoinManager.giveCoins(player : Player , amount : number) : nil
 
     PlayerData.incrementCoins(player , amount)

@@ -49,6 +49,18 @@ function ConstraintManager.init()
 		type = "whitelist",
 		allowedValues = { "DASH" },
 	})
+
+	ProfileManager.setFieldConstraint("abilities" , {
+		type = "list",
+		allowedValues = { "DASH" },
+		canBeEmpty = false,
+	})
+
+	ProfileManager.setFieldConstraint("shovels" , {
+		type = "list",
+		allowedValues = { "DEFAULT" },
+		canBeEmpty = false,
+	})
 end
 
 return ConstraintManager

@@ -3,8 +3,7 @@ export type ShopItem = {
     cost : number,
     image : string,
     title : string,
+    canBuy : boolean,
 }
 
-return {
-
-}
+return {}
