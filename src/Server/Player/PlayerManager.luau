@@ -6,7 +6,7 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 
 local PlayerManager = {}
 
-function PlayerManager.init()
+function PlayerManager.onLoaded()
     
     for _ , eachPlayer in Players:GetPlayers() do
         PlayerManager.Setup(eachPlayer)

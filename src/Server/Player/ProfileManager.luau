@@ -1,26 +1,26 @@
 export type NumberConstraint = {
-    type: "number",
-    min: number?,
-    max: number?
+	type: "number",
+	min: number?,
+	max: number?,
 }
 
 export type WhitelistConstraint = {
-    type: "whitelist",
-    allowedValues: { any }
+	type: "whitelist",
+	allowedValues: { any },
 }
 
 export type ListConstraint = {
-    type: "list",
-    allowedValues: { any },
-    canBeEmpty: boolean
+	type: "list",
+	allowedValues: { any },
+	canBeEmpty: boolean,
 }
 
 export type StringConstraint = {
-    type: "string"
+	type: "string",
 }
 
 export type BoolConstraint = {
-    type: "boolean"
+	type: "boolean",
 }
 
 export type FieldConstraint = NumberConstraint | WhitelistConstraint | ListConstraint | StringConstraint | BoolConstraint
@@ -34,28 +34,28 @@ local KickManager = require(ModuleDirectory.Gameplay.KickManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local ProfileTemplate = {
-    onboardingStep = 0,
-    onboardingComplete = false,
-    shovel = "DEFAULT",
-    xp = 0,
-    coins = 0,
-    level = 1,
-    respawns = 0,
-    wins = 0,
-    roundsPlayed = 0,
-    hasJoinedBefore = false,
-    ability = "DASH",
-    abilities = {"DASH"},
-    shovels = {"DEFAULT"},
+	onboardingStep = 0,
+	onboardingComplete = false,
+	shovel = "DEFAULT",
+	xp = 0,
+	coins = 0,
+	level = 1,
+	respawns = 0,
+	wins = 0,
+	roundsPlayed = 0,
+	hasJoinedBefore = false,
+	ability = "DASH",
+	abilities = { "DASH" },
+	shovels = { "DEFAULT" },
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
 
 local database = "PRODUCTION"
 if RunService:IsStudio() then
-    database = "TEST15"
+	database = "TEST15"
 else
-    database = "PRODUCTION"
+	database = "PRODUCTION"
 end
 
 local ProfileStore = ProfileService.GetProfileStore(database, ProfileTemplate)
@@ -66,133 +66,198 @@ local loading: { [number]: boolean } = {}
 local fieldConstraints: { [string]: FieldConstraint } = {}
 
 local function normalizeConstraint(constraint: any): FieldConstraint?
-    local ctype = constraint and constraint.type
-    if ctype == "number" then
-        return {
-            type = "number",
-            min = constraint.min,
-            max = constraint.max
-        }
-    elseif ctype == "string" then
-        return { type = "string" }
-    elseif ctype == "boolean" then
-        return { type = "boolean" }
-    elseif ctype == "list" or (constraint and constraint.allowedValues ~= nil and typeof(constraint.allowedValues) == "table") then
-        if typeof(constraint.allowedValues) ~= "table" then
-            return nil
-        end
-        return {
-            type = "list",
-            allowedValues = constraint.allowedValues,
-            canBeEmpty = constraint.canBeEmpty == true
-        }
-    elseif ctype == "whitelist" or constraint.allowedValue ~= nil or constraint.allowedValues ~= nil then
-        local list = constraint.allowedValues or constraint.allowedValue
-        if type(list) ~= "table" then
-            return nil
-        end
-        return {
-            type = "whitelist",
-            allowedValues = list
-        }
-    end
-    return nil
+	if typeof(constraint) ~= "table" then
+		return nil
+	end
+
+	local ctype = constraint.type
+
+	-- Explicit types first (no inference)
+	if ctype == "number" then
+		return {
+			type = "number",
+			min = constraint.min,
+			max = constraint.max,
+		}
+	elseif ctype == "string" then
+		return { type = "string" }
+	elseif ctype == "boolean" then
+		return { type = "boolean" }
+	elseif ctype == "whitelist" then
+		local list = constraint.allowedValues or constraint.allowedValue
+		if typeof(list) ~= "table" then
+			return nil
+		end
+		return {
+			type = "whitelist",
+			allowedValues = list,
+		}
+	elseif ctype == "list" then
+		if typeof(constraint.allowedValues) ~= "table" then
+			return nil
+		end
+		return {
+			type = "list",
+			allowedValues = constraint.allowedValues,
+			canBeEmpty = constraint.canBeEmpty == true,
+		}
+	end
+
+	-- Inference only if `type` is missing
+	local av = constraint.allowedValues or constraint.allowedValue
+	if typeof(av) == "table" then
+		-- Heuristic: presence of canBeEmpty implies list; otherwise assume whitelist
+		if constraint.canBeEmpty ~= nil then
+			return {
+				type = "list",
+				allowedValues = av,
+				canBeEmpty = constraint.canBeEmpty == true,
+			}
+		else
+			return {
+				type = "whitelist",
+				allowedValues = av,
+			}
+		end
+	end
+
+	return nil
 end
 
 local function getTemplateDefault(fieldName: string): any
-    return (ProfileTemplate :: any)[fieldName]
+	return (ProfileTemplate :: any)[fieldName]
 end
 
 local function applyConstraint(fieldName: string, value: any): any
-    local constraint = fieldConstraints[fieldName]
-    if not constraint then
-        return value
-    end
+	
+	local constraint = fieldConstraints[fieldName]
+	print(constraint)
+	if not constraint then
+		return value
+	end
 
-    if constraint.type == "number" then
-        if typeof(value) ~= "number" then
-            local fallback = getTemplateDefault(fieldName)
-            if typeof(fallback) == "number" then
-                value = fallback
-            else
-                return nil
-            end
-        end
-        if constraint.min ~= nil and value < constraint.min then
-            value = constraint.min
-        end
-        if constraint.max ~= nil and value > constraint.max then
-            value = constraint.max
-        end
-        return value
-    elseif constraint.type == "string" then
-        if typeof(value) ~= "string" then
-            local fallback = getTemplateDefault(fieldName)
-            if typeof(fallback) == "string" then
-                return fallback
-            end
-            return tostring(value)
-        end
-        return value
-    elseif constraint.type == "boolean" then
-        if typeof(value) ~= "boolean" then
-            return value == true
-        end
-        return value
-    elseif constraint.type == "whitelist" then
-        local list = constraint.allowedValues
-        for _, v in ipairs(list) do
-            if v == value then
-                return value
-            end
-        end
-        return list[1]
-    elseif constraint.type == "list" then
-        local allowedList = constraint.allowedValues
-        if typeof(value) ~= "table" then
-            local fallback = getTemplateDefault(fieldName)
-            if typeof(fallback) == "table" then
-                value = fallback
-            else
-                value = {}
-            end
-        end
+	if constraint.type == "number" then
+		if typeof(value) ~= "number" then
+			local fallback = getTemplateDefault(fieldName)
+			if typeof(fallback) == "number" then
+				value = fallback
+			else
+				return nil
+			end
+		end
+		if constraint.min ~= nil and value < constraint.min then
+			value = constraint.min
+		end
+		if constraint.max ~= nil and value > constraint.max then
+			value = constraint.max
+		end
+		return value
+	elseif constraint.type == "string" then
+		if typeof(value) ~= "string" then
+			local fallback = getTemplateDefault(fieldName)
+			if typeof(fallback) == "string" then
+				return fallback
+			end
+			return tostring(value)
+		end
+		return value
+	elseif constraint.type == "boolean" then
+		if typeof(value) ~= "boolean" then
+			return value == true
+		end
+		return value
+	elseif constraint.type == "whitelist" then
+		local list = constraint.allowedValues
+		for _, v in ipairs(list) do
+			if v == value then
+				return value
+			end
+		end
+		return list[1]
+	elseif constraint.type == "list" then
+		local allowedList = constraint.allowedValues
 
-        -- Build a set for allowed values for O(1) membership checks
-        local allowedSet = {}
-        for _, v in ipairs(allowedList) do
-            allowedSet[v] = true
-        end
+		-- Coerce incoming value to a table
+		if typeof(value) ~= "table" then
+			local fb = getTemplateDefault(fieldName)
+			if typeof(fb) == "table" then
+				value = fb
+			else
+				value = {}
+			end
+		end
 
-        local filtered = {}
-        for _, v in ipairs(value) do
-            if allowedSet[v] then
-                table.insert(filtered, v)
-            end
-        end
+		-- Build an allowed set supporting both array and set/dict forms
+		local allowedSet = {}
+		-- array form
+		for _, v in ipairs(allowedList) do
+			allowedSet[v] = true
+		end
+		-- set/dict form
+		for k, v in pairs(allowedList) do
+			if v == true then
+				allowedSet[k] = true
+			end
+		end
 
-        if (#filtered == 0) and (constraint.canBeEmpty ~= true) then
-            local fallback = getTemplateDefault(fieldName)
-            if typeof(fallback) == "table" and #fallback > 0 then
-                return fallback
-            end
-            -- If template default is not a non-empty table, keep empty to avoid invalid state
-            return {}
-        end
+		-- Filter + dedupe while preserving input order
+		local filtered, seen = {}, {}
+		for _, v in ipairs(value) do
+			if allowedSet[v] and not seen[v] then
+				table.insert(filtered, v)
+				seen[v] = true
+			end
+		end
 
-        return filtered
-    end
+		-- If empty and not allowed to be empty, try template default (coerced)
+		if (#filtered == 0) and (constraint.canBeEmpty ~= true) then
+			local fb = getTemplateDefault(fieldName)
+			if typeof(fb) == "table" then
+				local coercedFb, seenFb = {}, {}
+				for _, v in ipairs(fb) do
+					if allowedSet[v] and not seenFb[v] then
+						table.insert(coercedFb, v)
+						seenFb[v] = true
+					end
+				end
+				if #coercedFb > 0 then
+					return coercedFb
+				end
+			end
+			-- As a final guard, pick at least one allowed value
+			-- Prefer the first array element if present; otherwise, scan dict keys
+			if typeof(allowedList) == "table" then
+				if #allowedList > 0 then
+					return { allowedList[1] }
+				else
+					for k, v in pairs(allowedList) do
+						if v == true then
+							return { k }
+						end
+					end
+				end
+			end
+			-- If allowedValues is truly empty, fall back to empty (no valid choice exists)
+			return {}
+		end
 
-    return value
+		return filtered
+    else
+        print("Invalid constraint type")
+	end
+
+	return value
 end
 
 local function parseProfile(profileData: {}): nil
-    for fieldName, current in pairs(profileData) do
-        local coerced = applyConstraint(fieldName, current)
-        if coerced ~= nil then
-            (profileData :: any)[fieldName] = coerced
-        end
-    end
+	
+	for fieldName, current in pairs(profileData) do
+		print(fieldName , current)
+		local coerced = applyConstraint(fieldName, current)
+		if coerced ~= nil then
+			(profileData :: any)[fieldName] = coerced
+		end
+	end
 end
 
 local callback: (playerWhoLoaded: Player) -> nil = function() end
@@ -200,120 +265,115 @@ local callback: (playerWhoLoaded: Player) -> nil = function() end
 local ProfileManager = {} :: any
 
 function ProfileManager.setField(userId: number, fieldName: string, fieldValue: any): boolean
-    local profile = profiles[userId]
-    if not profile then
-        return false
-    end
+	local profile = profiles[userId]
+	if not profile then
+		return false
+	end
 
-    local newValue = applyConstraint(fieldName, fieldValue)
-    if newValue == nil then
-        return false
-    end
+	local newValue = applyConstraint(fieldName, fieldValue)
+	if newValue == nil then
+		return false
+	end
 
-    profile.Data[fieldName] = newValue
-    return true
+	profile.Data[fieldName] = newValue
+	return true
 end
 
 function ProfileManager.setFieldConstraint(fieldName: string, constraint: FieldConstraint): boolean
-    local normalized = normalizeConstraint(constraint)
-    if not normalized then
-        return false
-    end
-    fieldConstraints[fieldName] = normalized
+	print("Whitelist for", fieldName, "allowedValues=", HttpService:JSONEncode(constraint.allowedValues))
 
-    for _, profile in pairs(profiles) do
-        local current = profile.Data[fieldName]
-        if current ~= nil then
-            local coerced = applyConstraint(fieldName, current)
-            if coerced ~= nil then
-                profile.Data[fieldName] = coerced
-            end
-        end
-    end
+	local normalized = normalizeConstraint(constraint)
+	if not normalized then
+		return false
+	end
+	fieldConstraints[fieldName] = normalized
 
-    return true
+	for _, profile in pairs(profiles) do
+		local current = profile.Data[fieldName]
+		if current ~= nil then
+			local coerced = applyConstraint(fieldName, current)
+			if coerced ~= nil then
+				profile.Data[fieldName] = coerced
+			end
+		end
+	end
+
+	return true
 end
 
 function ProfileManager.setCallback(fn: (playerWhoLoaded: Player) -> nil)
-    callback = fn
+	callback = fn
 end
 
 function ProfileManager.onPlayerAdded(player: Player)
-    local userId = player.UserId
-    if profiles[userId] or loading[userId] then
-        return
-    end
+	local userId = player.UserId
+	if profiles[userId] or loading[userId] then
+		return
+	end
 
-    loading[userId] = true
+	loading[userId] = true
 
-    task.spawn(function()
-        local ok, profile = pcall(function()
-            return ProfileStore:LoadProfileAsync("Player_" .. userId)
-        end)
+	task.spawn(function()
+		local ok, profile = pcall(function()
+			return ProfileStore:LoadProfileAsync("Player_" .. userId)
+		end)
 
-        if not ok or profile == nil then
-            loading[userId] = nil
-            warn("Could not load user profile, user kicked.")
-            if player.Parent == Players then
-                KickManager.safeKick(player, "Could not load user profile, try again later.")
-            end
-            return
-        end
+		if not ok or profile == nil then
+			loading[userId] = nil
+			warn("Could not load user profile, user kicked.")
+			if player.Parent == Players then
+				KickManager.safeKick(player, "Could not load user profile, try again later.")
+			end
+			return
+		end
 
-        profile:AddUserId(userId)
-        profile:Reconcile()
+		profile:AddUserId(userId)
+		profile:Reconcile()
 
-        if profile.Data then
-            parseProfile(profile.Data)
-        end
+		if profile.Data then
+			parseProfile(profile.Data)
+		end
 
-        profile:ListenToRelease(function()
-            profiles[userId] = nil
-            loading[userId] = nil
-            if player.Parent == Players then
-                KickManager.safeKick(player, "User profile released. Possibly joined from another place.")
-            end
-        end)
+		profile:ListenToRelease(function()
+			profiles[userId] = nil
+			loading[userId] = nil
+			if player.Parent == Players then
+				KickManager.safeKick(player, "User profile released. Possibly joined from another place.")
+			end
+		end)
 
-        if player:IsDescendantOf(Players) then
-            profiles[userId] = profile
-            if callback then
-                callback(player)
-            end
-        else
-            profile:Release()
-        end
+		if player:IsDescendantOf(Players) then
+			profiles[userId] = profile
+			if callback then
+				callback(player)
+			end
+		else
+			profile:Release()
+		end
 
-        loading[userId] = nil
-    end)
+		loading[userId] = nil
+	end)
 end
 
 function ProfileManager.onPlayerRemoving(player: Player)
-    local userId = player.UserId
-    local profile = profiles[userId]
-    if profile ~= nil then
-        profile:Release()
-    end
-    profiles[userId] = nil
-    loading[userId] = nil
+	local userId = player.UserId
+	local profile = profiles[userId]
+	if profile ~= nil then
+		profile:Release()
+	end
+	profiles[userId] = nil
+	loading[userId] = nil
 end
 
 function ProfileManager.init(): nil
-    RemoteEventHandler.newEventConnection("QUERY_PROFILE_DATA", function(player: Player)
-        if ProfileManager.isProfileLoaded(player) then
-            local profile = profiles[player.UserId]
-            return HttpService:JSONEncode(profile.Data or {})
-        end
-        return HttpService:JSONEncode({})
-    end)
 end
 
 function ProfileManager.isProfileLoaded(player: Player): boolean
-    return profiles[player.UserId] ~= nil
+	return profiles[player.UserId] ~= nil
 end
 
 function ProfileManager.getProfile(player: Player): {}
-    return profiles[player.UserId]
+	return profiles[player.UserId]
 end
 
 return ProfileManager

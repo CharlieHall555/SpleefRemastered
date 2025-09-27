@@ -5,11 +5,14 @@ local MarketplaceService = game:GetService("MarketplaceService")
 
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
+local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
 
 local ShovelsData = require(ClientModuleDirectory.ShovelsData)
+
+local buttonConnections = {}
 
 local LocalPlayer = Players.LocalPlayer
 
@@ -41,22 +44,46 @@ end
 local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
     local card = itemTemplate:Clone()
 
-    if table.find(UserProfile.getValue("shovels") or {}, item.name) then
+    local equippedShovel = UserProfile.getValue("shovel") or ""
+   
+    if item.name == equippedShovel then
+        card.Price.Text = "Equipped"
+        card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
+        card.BuyButton.Visible = false
+        card.EquipButton.Visible = false
+        card.EquippedBadge.Visible = true
+    elseif table.find(UserProfile.getValue("shovels") or {}, item.name) then
         card.Price.Text = "Owned"
         card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
         card.BuyButton.Visible = false
         card.EquipButton.Visible = true
+        card.EquippedBadge.Visible = false
     elseif item.canBuy == false then
         card.Price.Text = "Locked"
         card.Price.TextColor3 = Color3.fromRGB(220, 7, 7)
         card.BuyButton.Visible = false
         card.EquipButton.Visible = false
+        card.EquippedBadge.Visible = false
     else
         card.Price.Text = tostring(item.cost) .. "C"
         card.Price.TextColor3 = Color3.fromRGB(255, 205, 23)
         card.BuyButton.Visible = true
         card.EquipButton.Visible = false
+        card.EquippedBadge.Visible = false
     end
+
+    local connection = card.BuyButton.Clickable.Activated:Connect(function()
+        if item.canBuy == false then
+            return
+        end
+        RemoteEventHandler.FireOnServer("REQUEST_BUY_SHOVEL", item.name)
+    end)
+    table.insert(buttonConnections, connection)
+
+    local connection = card.EquipButton.Clickable.Activated:Connect(function()
+        RemoteEventHandler.FireOnServer("REQUEST_EQUIP_SHOVEL", item.name)
+    end)
+    table.insert(buttonConnections, connection)
 
     card.NameLabel.Text = item.displayName
     card.Name = repeatChar("a", item.cost)
@@ -71,6 +98,9 @@ local function loadItems()
 
     local list = shovelsFrame:WaitForChild("ScrollingFrame")
     clearChildren(list)
+    for _, connection in buttonConnections do
+        connection:Disconnect()
+    end
 
     local source = cachedItems or ShovelsData
 
@@ -92,20 +122,25 @@ function ShopShovels.start(frame: Frame, template: Frame)
     coinLabel = shovelsFrame:WaitForChild("Coins")
     shovelLabel = shovelsFrame:WaitForChild("Equipped")
 
-
-
     coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(UserProfile.getValue("coins") or 0).."C"
-    shovelLabel.Text = "Equipped: " .. (UserProfile.getValue("shovel") or "None")
+    shovelLabel.Text = "Equipped: " .. tostring(UserProfile.getValue("shovel") or "None")
     loadItems()
 
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
-        shovelLabel.Text = "Equipped: " .. (newValue or "None")
+        shovelLabel.Text = "Equipped: " .. tostring(newValue or "None")
     end , "shovel")
 
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
         coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(newValue or 0).."C"
     end , "coins")
 
+    UserProfile.setOnUpdateCallback(function(valueName, newValue)  
+        loadItems()
+    end , "shovels")
+
+    UserProfile.setOnUpdateCallback(function(valueName, newValue)  
+        loadItems()
+    end , "shovel")
     
 end
 

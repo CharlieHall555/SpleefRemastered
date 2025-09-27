@@ -42,7 +42,15 @@ end
 local function buildItemCard(item: ShopItem.ShopItem): Frame
     local card = itemTemplate:Clone()
 
-    if table.find(UserProfile.getValue("abilities") or {}, item.name) then
+    local equippedAbility = UserProfile.getValue("ability") or ""
+
+    if item.name == equippedAbility then
+        card.Price.Text = "Equipped"
+        card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
+        card.BuyButton.Visible = false
+        card.EquipButton.Visible = false
+        card.EquippedBadge.Visible = true
+    elseif table.find(UserProfile.getValue("abilities") or {}, item.name) then
         card.Price.Text = "Owned"
         card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
         card.BuyButton.Visible = false
@@ -85,19 +93,22 @@ function ShopAbilities.start(frame: Frame, template: Frame)
     coinLabel = abilitiesFrame:WaitForChild("Coins")
     abilityLabel = abilitiesFrame:WaitForChild("Equipped")
 
-
-
+    print(UserProfile.getValue("coins") , UserProfile.getValue("ability"))
     coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(UserProfile.getValue("coins") or 0).."C"
-    abilityLabel.Text = "Equipped: " .. (UserProfile.getValue("ability") or "None")
+    abilityLabel.Text = "Equipped: " .. tostring(UserProfile.getValue("ability") or "None")
     loadItems()
 
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
-        abilityLabel.Text = "Equipped: " .. (newValue or "None")
+        abilityLabel.Text = "Equipped: " .. tostring(newValue or "None")
     end , "ability")
-
+    
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
         coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(newValue or 0).."C"
     end , "coins")
+
+    UserProfile.setOnUpdateCallback(function(valueName, newValue)  
+        loadItems()
+    end , "abilities")
 
     
 end

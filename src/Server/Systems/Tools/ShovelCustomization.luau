@@ -9,7 +9,7 @@ local ShovelCustomization = {}
 function ShovelCustomization.equipShovel(player: Player, shovelName: string)
 	print("types", typeof(player), typeof(shovelName))
 
-	local ownedShovels = PlayerData.getValue(player, "shovels") or {}
+	local ownedShovels = PlayerData.getShovels(player) or {}
 	if table.find(ownedShovels, shovelName) then
 		PlayerData.setShovel(player, shovelName)
 		ToolManager.refreshTool(player)

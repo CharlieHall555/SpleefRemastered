@@ -43,7 +43,7 @@ function Respawns.onProfileLoaded()
 		
 		local yScale = touchButtonsGui.Position.Y.Scale - touchButtonsGui.Size.Y.Scale
 
-		CurrencyGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(yScale , 0))
+		CurrencyGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(0.3 , 0))
 		CurrencyGui.UIScale.Scale = 1.2
 
 	end

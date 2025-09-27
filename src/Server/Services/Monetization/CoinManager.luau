@@ -13,7 +13,7 @@ end
 
 function CoinManager.hasCoins(player : Player , amount : number) : boolean
 
-    local currentCoins = PlayerData.getValue(player, "coins") or 0
+    local currentCoins = PlayerData.getCoins(player) or 0
     return currentCoins >= amount
     
 end

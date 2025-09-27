@@ -134,6 +134,7 @@ ModuleDirectory.Player.PlayerManager = serverRoot.Player.PlayerManager
 ModuleDirectory.Player.PlayerPositionTracker = serverRoot.Player.PlayerPositionTracker
 ModuleDirectory.Player.SessionVariables = serverRoot.Player.PlayerSessionVariables
 ModuleDirectory.Player.ProfileManager = serverRoot.Player.ProfileManager
+ModuleDirectory.Player.ConstraintManager = serverRoot.Player.ConstraintManager
 
 --//====================================================
 --// Utilities
@@ -157,6 +158,7 @@ ModuleDirectory.Monetization = {}
 ModuleDirectory.Monetization.ProductManager = serverRoot.Services.Monetization.ProductManager
 ModuleDirectory.Monetization.ProductBindings = serverRoot.Services.Monetization.ProductBindings
 ModuleDirectory.Monetization.CoinManager = serverRoot.Services.Monetization.CoinManager
+ModuleDirectory.Monetization.ShovelShopManager = serverRoot.Services.Monetization.ShovelShopManager
 
 --//====================================================
 --// Analytics

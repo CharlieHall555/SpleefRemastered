@@ -49,7 +49,7 @@ function PlayerData.onPlayerRemoving(player: Player)
 	end
 end
 
-function PlayerData.init(): nil
+function PlayerData.onLoaded(): nil
 	RemoteEventHandler.newEventConnection("QUERY_PROFILE_DATA", function(player: Player)
 		if PlayerData.isProfileLoaded(player) then
 			local data = getData(player)

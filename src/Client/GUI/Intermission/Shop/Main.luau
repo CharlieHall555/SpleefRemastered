@@ -1,5 +1,6 @@
 -- ShopMain.lua
 
+local LocalizationService = game:GetService("LocalizationService")
 local Players = game:GetService("Players")
 local MarketplaceService = game:GetService("MarketplaceService")
 
@@ -15,6 +16,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local ShopExtraLives = require(ClientModuleDirectory.Gui.Shop.ExtraLives)
 local ShopAbilities = require(ClientModuleDirectory.Gui.Shop.Abilities)
 local ShopShovels = require(ClientModuleDirectory.Gui.Shop.Shovels)
+local ShopCoins = require(ClientModuleDirectory.Gui.Shop.Coins)
 
 local LocalPlayer = Players.LocalPlayer
 
@@ -31,6 +33,7 @@ local extraLifeFrame: Frame
 local shovelsFrame: Frame
 local abilityFrame: Frame
 local itemTemplate: Frame
+local coinsFrame: Frame
 
 local initialized = false
 
@@ -39,7 +42,7 @@ local function bindSelectionButtons()
         ShopMain.setFrame(extraLifeFrame, "Extra Lives")
     end)
 
-    buttonSelection.Shovels.Clickable.Activated:Connect(function()
+    buttonSelection.AShovels.Clickable.Activated:Connect(function()
         ShopMain.setFrame(shovelsFrame, "Shovels")
     end)
 
@@ -47,8 +50,8 @@ local function bindSelectionButtons()
         ShopMain.setFrame(abilityFrame, "Abilities")
     end)
 
-    buttonSelection.Shovels.Clickable.Activated:Connect(function()
-        ShopMain.setFrame(shovelsFrame, "Shovels")
+    buttonSelection.Coins.Clickable.Activated:Connect(function()
+        ShopMain.setFrame(coinsFrame, "Coins")
     end)
 end
 
@@ -84,6 +87,7 @@ function ShopMain.onProfileLoaded()
     extraLifeFrame = main:WaitForChild("ExtraLives")
     shovelsFrame = main:WaitForChild("Shovels")
     abilityFrame = main:WaitForChild("Abilities")
+    coinsFrame = main:WaitForChild("Coins")
 
     itemTemplate = shopGui:WaitForChild("ItemTemplate")
 
@@ -94,6 +98,7 @@ function ShopMain.onProfileLoaded()
     ShopExtraLives.start(extraLifeFrame, itemTemplate)
     ShopAbilities.start(abilityFrame, itemTemplate)
     ShopShovels.start(shovelsFrame, itemTemplate)
+    ShopCoins.start(coinsFrame, itemTemplate)
 
     initialized = true
 end

@@ -153,7 +153,6 @@ local function directionFromScreenPoint(cam: Camera, spawnPart: BasePart, screen
 
 	local unitRay = cam:ViewportPointToRay(screenX, screenY)
 	local hit = workspace:Raycast(unitRay.Origin, unitRay.Direction * RAY_MAX, rayParams)
-	print(hit)
 	local target: Vector3 = hit and hit.Position or (unitRay.Origin + unitRay.Direction * RAY_MAX)
 
 	local fromSpawn = target - spawnPart.Position
@@ -196,11 +195,7 @@ function ActionHandler.mainAttack(action)
 			ClientToolManager.equipTool()
 		end
 
-		print(ClientAmmoTracker.getIsInfinite())
-		print(ClientAmmoTracker.getAmmo() <= 0 and ClientAmmoTracker.getIsInfinite() == false)
-
 		local selectedBlock = ClientBlockSelector.getSelected()
-		print(selectedBlock)
 
 		if ClientStateTracker.getState() == "ACTIVE" and ClientStateTracker.getServerState() == "PREPARING" then
 			local errorBlip = "rbxassetid://70373378044427"

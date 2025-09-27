@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local ProfileManager = require(ModuleDirectory.Gameplay.KickManager)
+local ProfileManager = require(ModuleDirectory.Player.ProfileManager)
 
 local ConstraintManager = {}
 
@@ -42,7 +42,7 @@ function ConstraintManager.init()
 
 	ProfileManager.setFieldConstraint("shovel", {
 		type = "whitelist",
-		allowedValues = { "DEFAULT", "GOLD", "ICE", "SHADOW" },
+		allowedValues = { "DEFAULT", "Debug" ,"GOLD", "ICE", "SHADOW" },
 	})
 
 	ProfileManager.setFieldConstraint("ability" , {
@@ -58,7 +58,7 @@ function ConstraintManager.init()
 
 	ProfileManager.setFieldConstraint("shovels" , {
 		type = "list",
-		allowedValues = { "DEFAULT" },
+		allowedValues = { "DEFAULT" , "Debug"},
 		canBeEmpty = false,
 	})
 end

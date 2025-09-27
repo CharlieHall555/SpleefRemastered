@@ -5,22 +5,39 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
 local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
-local ShovelData = require(ModuleDirectory.ShovelDefinitions)
+local ShovelDefinitions = require(ModuleDirectory.ShovelDefinitions)
 
 local ShovelShopManager = {}
 
 function ShovelShopManager.init()
 
     RemoteEventHandler.newEventConnection("REQUEST_EQUIP_SHOVEL", function(player : Player , shovelName : string) : nil
-    
+        print(PlayerData.getShovels(player))
+        print(player  , shovelName)
         return ShovelCustomization.equipShovel(player, shovelName)
 
     end)
 
     RemoteEventHandler.newEventConnection("REQUEST_BUY_SHOVEL", function(player : Player , shovelName : string) : nil
-    
-        
-        return ShovelCustomization.equipShovel(player, shovelName)
+        print(player  , shovelName)
+        local definition = ShovelDefinitions[shovelName]
+        if definition == nil then
+            return false
+        end
+
+        local ownedShovels = PlayerData.getShovels(player) or {}
+        if table.find(ownedShovels, shovelName) then
+            return false
+        end
+
+        if CoinManager.hasCoins(player, definition.cost) == false then
+            return false
+        end
+
+        PlayerData.incrementCoins(player, -definition.cost)
+        PlayerData.addShovel(player, shovelName)
+        ShovelCustomization.equipShovel(player, shovelName)
+        return true
 
     end)
     

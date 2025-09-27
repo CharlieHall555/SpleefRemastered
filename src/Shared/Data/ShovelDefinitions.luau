@@ -17,13 +17,13 @@ return {
         canBuy = true,
         showInShop = true,
     },
-    VIP = {
-        name = "VIP",
-        displayName = "VIP Shovel",
+    Debug = {
+        name = "Debug",
+        displayName = "Debug Shovel",
         image = "rbxassetid://123456789",
         cost = 1,
-        canBuy = false,
-        showInShop = false,
+        canBuy = true,
+        showInShop = true,
     }
 
 }

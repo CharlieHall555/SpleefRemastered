@@ -68,6 +68,7 @@ ClientModuleDirectory.Gui.Shop.Main = Root.Gui.Intermission.Shop.Main
 ClientModuleDirectory.Gui.Shop.ExtraLives = Root.Gui.Intermission.Shop.ExtraLives
 ClientModuleDirectory.Gui.Shop.Abilities = Root.Gui.Intermission.Shop.Abilities
 ClientModuleDirectory.Gui.Shop.Shovels = Root.Gui.Intermission.Shop.Shovels
+ClientModuleDirectory.Gui.Shop.Coins = Root.Gui.Intermission.Shop.Coins 
 
 
 --ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
@@ -203,6 +204,7 @@ ClientModuleDirectory.ClientTutorial = Root.Tutorial.ClientTutorial
 
 ClientModuleDirectory.ShopItem = game:GetService("ReplicatedStorage").Data.ShopData.ShopItem
 ClientModuleDirectory.ExtraLives = game:GetService("ReplicatedStorage").Data.ShopData.ExtraLives
+ClientModuleDirectory.Coins = game:GetService("ReplicatedStorage").Data.ShopData.Coins
 
 ClientModuleDirectory.ClientVoice = Root.Chat.ClientVoice
 
