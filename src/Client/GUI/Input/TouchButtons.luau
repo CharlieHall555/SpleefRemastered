@@ -252,8 +252,10 @@ function TouchButtons.showCooldown()
 end
 
 function TouchButtons.hideCooldown()
-	powerUpButtonText.Visible = false
-	powerUpButtonImage.Visible = true
+	if touchButtonsGui then
+		powerUpButtonText.Visible = false
+		powerUpButtonImage.Visible = true
+	end
 end
 
 function TouchButtons.setActionToSnowballIcon()

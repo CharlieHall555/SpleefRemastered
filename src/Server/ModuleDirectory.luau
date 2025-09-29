@@ -159,6 +159,9 @@ ModuleDirectory.Monetization.ProductManager = serverRoot.Services.Monetization.P
 ModuleDirectory.Monetization.ProductBindings = serverRoot.Services.Monetization.ProductBindings
 ModuleDirectory.Monetization.CoinManager = serverRoot.Services.Monetization.CoinManager
 ModuleDirectory.Monetization.ShovelShopManager = serverRoot.Services.Monetization.ShovelShopManager
+ModuleDirectory.Monetization.GamepassManager = serverRoot.Services.Monetization.GamepassManager
+
+ModuleDirectory.Monetization.GamepassData = game:GetService("ReplicatedStorage").Data.ShopData.Gamepasses 
 
 --//====================================================
 --// Analytics

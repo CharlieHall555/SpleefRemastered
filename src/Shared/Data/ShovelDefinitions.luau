@@ -5,6 +5,7 @@ export type ShovelDefinition = {
     cost: number,
     canBuy: boolean,
     showInShop: boolean,
+    passLink: string?,
 }
 
 return {
@@ -16,6 +17,7 @@ return {
         cost = 1,
         canBuy = true,
         showInShop = true,
+        
     },
     Debug = {
         name = "Debug",
@@ -23,7 +25,16 @@ return {
         image = "rbxassetid://123456789",
         cost = 1,
         canBuy = true,
+        showInShop = false,
+    },
+    VIP = {
+        name = "VIP",
+        displayName = "VIP Shovel",
+        image = "rbxassetid://123456789",
+        cost = 1,
+        canBuy = false,
         showInShop = true,
-    }
+        passLink = "rbxassetid://134332109977759"
+    },
 
 }

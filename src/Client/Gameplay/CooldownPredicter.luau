@@ -5,6 +5,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local lastUsed: number = 0
 local cooldown: number = 0
@@ -34,11 +35,13 @@ function cooldownPredicter.onProfileLoaded()
 		local abilityCooldown = abilityDef.cooldown or 0
 		cooldown = math.clamp(abilityCooldown - (time() - lastUsed), 0, abilityCooldown)
 
-		if cooldown > 0 then
-			TouchButtons.showCooldown()
-			TouchButtons.setCooldown(cooldown + 1)
-		else
-			TouchButtons.hideCooldown()
+		if PlatformDetector.getPlatform() == "MOBILE" then
+			if cooldown > 0 then
+				TouchButtons.showCooldown()
+				TouchButtons.setCooldown(cooldown + 1)
+			else
+				TouchButtons.hideCooldown()
+			end
 		end
 	end)
 end

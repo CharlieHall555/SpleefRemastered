@@ -146,6 +146,48 @@ function ServerCommands.init()
 		end
 	)
 
+	connectToTrigger(createCommand("giveShovel", "/giveShovel", 255),
+		function(originTextSource: TextSource, unfilteredText: string)
+		local caller = getOriginPlayer(originTextSource)
+		if not caller then
+			return
+		end
+
+		-- Extract quoted shovel name and optional remainder (player ident)
+		-- Matches:
+		--   /giveShovel "VIP"
+		--   /giveShovel "VIP" fazeNinja
+		--   /giveShovel    "VIP"     Some Display Name
+		local shovelName, remainder = unfilteredText:match('^%s*/giveShovel%s+"(.-)"%s*(.*)$')
+
+		if not shovelName or shovelName == "" then
+			systemMessage(caller, 'Usage: /giveShovel "ShovelNameHere" [player]')
+			return
+		end
+
+		local target: Player? = nil
+		remainder = trim(remainder or "")
+
+		if remainder ~= "" then
+			-- support spaces in display names
+			target = findPlayerByIdentifier(remainder)
+			if not target then
+				systemMessage(caller, ("Player '%s' not found."):format(remainder))
+				return
+			end
+		else
+			target = caller
+		end
+
+		local ok = ShovelCustomization.giveShovel(target, shovelName)
+
+		if ok then
+			local who = (caller and caller.Name) or "SYSTEM"
+			systemMessage(caller, ('[SHOVEL] %s gave shovel "%s" to %s.'):format(who, shovelName, target.Name))
+		else
+			systemMessage(caller, "[SHOVEL] Failed to give shovel.")
+		end
+	end)
 
 	connectToTrigger(createCommand("giveCoins", "/coins", 255), function(originTextSource, unfilteredText)
 		local caller = getOriginPlayer(originTextSource)
@@ -184,7 +226,7 @@ function ServerCommands.init()
 
 		-- apply XP
 		local ok, err = pcall(function()
-			CoinManager.giveCoins(target , amount)
+			CoinManager.giveCoins(target, amount)
 		end)
 
 		if ok then

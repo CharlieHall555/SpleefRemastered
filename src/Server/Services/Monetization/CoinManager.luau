@@ -3,6 +3,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local PlayerSessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 
 local CoinManager = {}
@@ -19,6 +20,9 @@ function CoinManager.hasCoins(player : Player , amount : number) : boolean
 end
 
 function CoinManager.giveCoins(player : Player , amount : number) : nil
+
+    local multiplier = PlayerSessionVariables.getValue(player , "coinMultiplier") or 1
+    amount = math.floor(amount * multiplier)
 
     PlayerData.incrementCoins(player , amount)
     return amount

@@ -64,6 +64,10 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
         card.BuyButton.Visible = false
         card.EquipButton.Visible = false
         card.EquippedBadge.Visible = false
+        if item.passLink then
+            card.BuyButton.Visible = true
+            card.BuyButton.Text = "Get Pass"
+        end
     else
         card.Price.Text = tostring(item.cost) .. "C"
         card.Price.TextColor3 = Color3.fromRGB(255, 205, 23)
@@ -73,7 +77,12 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
     end
 
     local connection = card.BuyButton.Clickable.Activated:Connect(function()
-        if item.canBuy == false then
+        if item.passLink then
+            local success, message = pcall(function()
+                MarketplaceService:PromptGamePassPurchase(LocalPlayer, item.passLink)
+            end)
+            return
+        elseif item.canBuy == false then
             return
         end
         RemoteEventHandler.FireOnServer("REQUEST_BUY_SHOVEL", item.name)

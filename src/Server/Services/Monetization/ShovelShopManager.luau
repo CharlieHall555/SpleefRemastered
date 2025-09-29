@@ -35,7 +35,7 @@ function ShovelShopManager.init()
         end
 
         PlayerData.incrementCoins(player, -definition.cost)
-        PlayerData.addShovel(player, shovelName)
+        ShovelCustomization.giveShovel(player, shovelName)
         ShovelCustomization.equipShovel(player, shovelName)
         return true
 

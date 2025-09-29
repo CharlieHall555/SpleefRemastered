@@ -69,6 +69,7 @@ ClientModuleDirectory.Gui.Shop.ExtraLives = Root.Gui.Intermission.Shop.ExtraLive
 ClientModuleDirectory.Gui.Shop.Abilities = Root.Gui.Intermission.Shop.Abilities
 ClientModuleDirectory.Gui.Shop.Shovels = Root.Gui.Intermission.Shop.Shovels
 ClientModuleDirectory.Gui.Shop.Coins = Root.Gui.Intermission.Shop.Coins 
+ClientModuleDirectory.Gui.Shop.Gamepass = Root.Gui.Intermission.Shop.Gamepass
 
 
 --ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
@@ -117,6 +118,7 @@ ClientModuleDirectory.AnimationManager = Root.Visuals.AnimationManager
 
 ClientModuleDirectory.Profile = {}
 ClientModuleDirectory.Profile.UserProfile = Root.Profile.UserProfile
+ClientModuleDirectory.Profile.UserSessionVariables = Root.Profile.UserSessionVariables
 
 --//====================================================
 --// Chat
@@ -204,6 +206,7 @@ ClientModuleDirectory.ClientTutorial = Root.Tutorial.ClientTutorial
 
 ClientModuleDirectory.ShopItem = game:GetService("ReplicatedStorage").Data.ShopData.ShopItem
 ClientModuleDirectory.ExtraLives = game:GetService("ReplicatedStorage").Data.ShopData.ExtraLives
+ClientModuleDirectory.GamePassData = game:GetService("ReplicatedStorage").Data.ShopData.Gamepasses
 ClientModuleDirectory.Coins = game:GetService("ReplicatedStorage").Data.ShopData.Coins
 
 ClientModuleDirectory.ClientVoice = Root.Chat.ClientVoice

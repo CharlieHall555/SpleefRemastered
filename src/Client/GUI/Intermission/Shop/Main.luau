@@ -17,6 +17,7 @@ local ShopExtraLives = require(ClientModuleDirectory.Gui.Shop.ExtraLives)
 local ShopAbilities = require(ClientModuleDirectory.Gui.Shop.Abilities)
 local ShopShovels = require(ClientModuleDirectory.Gui.Shop.Shovels)
 local ShopCoins = require(ClientModuleDirectory.Gui.Shop.Coins)
+local ShopGamepass = require(ClientModuleDirectory.Gui.Shop.Gamepass)
 
 local LocalPlayer = Players.LocalPlayer
 
@@ -34,6 +35,7 @@ local shovelsFrame: Frame
 local abilityFrame: Frame
 local itemTemplate: Frame
 local coinsFrame: Frame
+local gamepassFrame: Frame
 
 local initialized = false
 
@@ -52,6 +54,10 @@ local function bindSelectionButtons()
 
     buttonSelection.Coins.Clickable.Activated:Connect(function()
         ShopMain.setFrame(coinsFrame, "Coins")
+    end)
+
+    buttonSelection.GamePasses.Clickable.Activated:Connect(function()
+        ShopMain.setFrame(gamepassFrame, "Gamepasses")
     end)
 end
 
@@ -88,6 +94,7 @@ function ShopMain.onProfileLoaded()
     shovelsFrame = main:WaitForChild("Shovels")
     abilityFrame = main:WaitForChild("Abilities")
     coinsFrame = main:WaitForChild("Coins")
+    gamepassFrame = main:WaitForChild("Gamepasses")
 
     itemTemplate = shopGui:WaitForChild("ItemTemplate")
 
@@ -99,6 +106,7 @@ function ShopMain.onProfileLoaded()
     ShopAbilities.start(abilityFrame, itemTemplate)
     ShopShovels.start(shovelsFrame, itemTemplate)
     ShopCoins.start(coinsFrame, itemTemplate)
+    ShopGamepass.start(gamepassFrame, itemTemplate)
 
     initialized = true
 end

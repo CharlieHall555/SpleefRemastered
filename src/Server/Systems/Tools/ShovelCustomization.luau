@@ -6,6 +6,16 @@ local ToolManager = require(ModuleDirectory.Tool.ToolManager)
 
 local ShovelCustomization = {}
 
+function ShovelCustomization.giveShovel(player: Player, shovelName: string)
+	local ownedShovels = PlayerData.getShovels(player) or {}
+	if table.find(ownedShovels, shovelName) then
+		return false
+	end
+	PlayerData.addShovel(player, shovelName)
+	ToolManager.refreshTool(player)
+	return true
+end
+
 function ShovelCustomization.equipShovel(player: Player, shovelName: string)
 	print("types", typeof(player), typeof(shovelName))
 
@@ -15,6 +25,8 @@ function ShovelCustomization.equipShovel(player: Player, shovelName: string)
 		ToolManager.refreshTool(player)
 		return true
 	end
+
+	print("NOT OWNDED" , ownedShovels)
 
 	return false
 end
