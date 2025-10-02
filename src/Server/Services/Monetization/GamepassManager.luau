@@ -6,6 +6,7 @@ local PlayerSessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local GamepassData = require(ModuleDirectory.Monetization.GamepassData)
 local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
 local MarketplaceService = game:GetService("MarketplaceService")
+local Overhead = require(ModuleDirectory.Overhead)
 
 local GamepassManager = {}
 
@@ -18,16 +19,50 @@ end
 onJoinFunctions["1502789277"] = function(player)
     PlayerSessionVariables.setValue(player , "isVIP" , true)
     ShovelCustomization.giveShovel(player , "VIP")
+    Overhead.refreshForPlayer(player)
+end
+
+local onBuyFunctions = {}
+
+onBuyFunctions["1502155612"] = function(player)
+    PlayerSessionVariables.setValue(player , "coinsMultiplier" , 2)
+end
+
+onBuyFunctions["1502789277"] = function(player)
+    PlayerSessionVariables.setValue(player , "isVIP" , true)
+    ShovelCustomization.giveShovel(player , "VIP")
+    Overhead.refreshForPlayer(player)
 end
 
 function GamepassManager.init()
     
     RemoteEventHandler.newEventConnection("PLAYER_LOADED" , function(player)
         GamepassManager.determineOnwership(player)
-    end)
-    
-    print(PlayerSessionVariables.getValue("ownedGamepasses"))
 
+        for passId , eachFunc in onJoinFunctions do
+            local ownedGamepasses = PlayerSessionVariables.getValue(player , "ownedGamepasses") or {}
+            if table.find(ownedGamepasses , passId) then
+                eachFunc(player)
+            end
+        end
+
+    end)
+
+    MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, gamePassId, wasPurchased)
+        if wasPurchased then
+            local passIdStr = tostring(gamePassId)
+            local ownedGamepasses = PlayerSessionVariables.getValue(player , "ownedGamepasses") or {}
+            if not table.find(ownedGamepasses , passIdStr) then
+                table.insert(ownedGamepasses , passIdStr)
+                PlayerSessionVariables.setValue(player , "ownedGamepasses" , ownedGamepasses)
+            end
+
+            local func = onBuyFunctions[passIdStr] or onJoinFunctions[passIdStr]
+            if func then
+                func(player)
+            end
+        end
+    end)
 end
 
 function GamepassManager.determineOnwership(player)
@@ -39,8 +74,6 @@ function GamepassManager.determineOnwership(player)
         local success, owns = pcall(function()
             return MarketplaceService:UserOwnsGamePassAsync(player.UserId, gamepassId)
         end)
-
-        print("Owns" , gamepassId , owns)
 
         if success and owns then
             local ownedGamepasses = PlayerSessionVariables.getValue(player , "ownedGamepasses") or {}

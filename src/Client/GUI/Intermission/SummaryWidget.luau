@@ -2,6 +2,7 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -25,6 +26,7 @@ local SummaryWidgetGui: Frame
 local statsFrame: Frame
 local countDownLabel: TextLabel
 local closeButtonClickable: TextButton
+local bonusLabel: TextLabel
 
 local countdownNonce = 0
 local currentTween: Tween? = nil
@@ -96,15 +98,17 @@ local function ensurePositions()
 end
 
 function SummaryWidget.onProfileLoaded()
+	SummaryWidgetGui = GuiAssets.Intermission.SummaryWidget
 	if PlatformDetector.getPlatform() == "MOBILE" then
-		SummaryWidgetGui = GuiAssets.Intermission.SummaryWidgetMobile
+		SummaryWidgetGui.Size = UDim2.new(0.83, 0, 0.855, 0)
 	else
-		SummaryWidgetGui = GuiAssets.Intermission.SummaryWidget
+		
 	end
 
 	SummaryWidgetGui.Parent = Screens.intermissionHUD
 	SummaryWidgetGui.Visible = false
 
+	bonusLabel = SummaryWidgetGui.Bonus
 	statsFrame = SummaryWidgetGui.Stats
 	closeButtonClickable = SummaryWidgetGui.CloseButton.Clickable
 	countDownLabel = SummaryWidgetGui.Timer
@@ -140,16 +144,27 @@ function SummaryWidget.show()
 		return
 	end
 
+
+	local coinMultiplierValue = math.floor(UserSessionVariables.getValue("coinsMultiplier") or 1)
+	print("Coin Multiplier: " .. tostring(coinMultiplierValue))
+	if coinMultiplierValue > 1 then
+		bonusLabel.Text = "(C Multiplier: x" .. tostring(coinMultiplierValue) .. ")"
+		bonusLabel.Visible = true
+	else
+		bonusLabel.Text = ""
+		bonusLabel.Visible = false
+	end
+
 	statsFrame.Blocks.TextLabel.Text = tostring(record.blocksDestroyed or 0)
 	statsFrame.Eliminations.TextLabel.Text = (tostring(record.eliminations or 0)) .. " KOs"
 	statsFrame.TimeAlive.TextLabel.Text = tostring(math.floor(record.timeAlive or 0)) .. "s"
-	SummaryWidgetGui.XpReward.Text = "+" .. tostring(record.xpGained or 0) .. "Xp"
-	SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(record.coinsGained or 0) .. "C"
+
+	local totalCoins = (record.coinsGained or 0) + (record.winnerBonus or 0)
 
 	if record.winnerBonus and record.winnerBonus > 0 then
-		SummaryWidgetGui.WinBonus.Text = "+" .. tostring(record.winnerBonus) .. "C (winner bonus)"
+		SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(totalCoins) .. "C (+" .. tostring(record.winnerBonus) .. "C Winner Bonus)"
 	else
-		SummaryWidgetGui.WinBonus.Text = ""
+		SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(totalCoins) .. "C"
 	end
 
 	ensurePositions()

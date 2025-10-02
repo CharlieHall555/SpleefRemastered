@@ -7,6 +7,7 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local WinnerDetection = require(ModuleDirectory.Stats.WinnerDetection)
 local CoinsManager = require(ModuleDirectory.Monetization.CoinManager)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
+local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
 
 local RoundSummary = {}
 
@@ -50,8 +51,8 @@ local function calcBaseCoins(timeAlive: number, blocksDestroyed: number, elimina
     local tAlive = clamp(timeAlive, 0, 600)
 
     local coins = 0
-    coins += bd * 0.5
-    coins += elims * 10
+    coins += bd * 0.05 -- 10 blocks = 1 coin
+    coins += elims * 5 -- 10 coins ber elim
     coins += math.floor(tAlive / 10) -- every 10s alive = 1 coin (low weight)
 
     return math.max(0, math.floor(coins))
@@ -106,6 +107,8 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
             totalCoins = CoinsManager.giveCoins(eachPlayer, totalCoins)
             LevelController.giveXp(eachPlayer , xpGained)
             winnerBonus = CoinsManager.giveCoins(eachPlayer , winnerBonus)
+            EconomyAnalytics.logCoinsTransaction(eachPlayer , totalCoins + winnerBonus , "Source" , "Gameplay")
+
 
             local summary: EndSummary = {
                 timeAlive = tAlive,

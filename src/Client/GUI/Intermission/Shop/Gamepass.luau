@@ -39,8 +39,6 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
 
     local ownedGamepasses = UserSessionVariables.getValue("ownedGamepasses") or {}
 
-    print("Owned gamepasses: ", ownedGamepasses)
-
     if table.find(ownedGamepasses, item.passId) then
         local card = itemTemplate:Clone()
         card.Price.Text = tostring(item.cost) .. "\u{E002}"
@@ -83,9 +81,11 @@ local function loadItems()
     local count = 0
     for _, item: ShopItem.ShopItem in GamePassData do
         count += 1
-        local card = buildItemCard(item)
-        card.LayoutOrder = count
-        card.Parent = list
+        pcall(function()
+            local card = buildItemCard(item)
+            card.LayoutOrder = count
+            card.Parent = list
+        end)        
     end
 end
 

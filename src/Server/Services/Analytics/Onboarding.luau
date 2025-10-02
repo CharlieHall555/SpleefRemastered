@@ -135,8 +135,7 @@ function Onboarding.action(player: Player, newAction: Action, customFields: { [s
 			progress.step = stepNumber
 		end
 
-		local SessionVariables = PlayerSessionVariables.get(player) or {}
-		customFields.platform = SessionVariables.platform or "UNKNOWN"
+		customFields.platform = PlayerSessionVariables.getValue("platform") or "UNKNOWN"
 		logStep(player, stepNumber, stepName, customFields)
 	end
 end

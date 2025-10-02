@@ -8,6 +8,7 @@ local GroupService = game:GetService("GroupService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
+local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
 local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
 
 local ServerCommands = {}
@@ -227,6 +228,7 @@ function ServerCommands.init()
 		-- apply XP
 		local ok, err = pcall(function()
 			CoinManager.giveCoins(target, amount)
+			EconomyAnalytics.logCoinsTransaction(target , amount , "Source" , "Admin")
 		end)
 
 		if ok then

@@ -109,6 +109,8 @@ function ShopMain.onProfileLoaded()
     ShopGamepass.start(gamepassFrame, itemTemplate)
 
     initialized = true
+    ShopMain.setFrame(shovelsFrame, "Shovels")
+
 end
 
 function ShopMain.setFrame(frame: Frame, title: string)

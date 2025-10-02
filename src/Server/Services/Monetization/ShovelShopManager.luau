@@ -6,6 +6,7 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
 local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
 local ShovelDefinitions = require(ModuleDirectory.ShovelDefinitions)
+local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
 
 local ShovelShopManager = {}
 
@@ -34,7 +35,9 @@ function ShovelShopManager.init()
             return false
         end
 
-        PlayerData.incrementCoins(player, -definition.cost)
+        CoinManager.takeCoins(player , definition.cost)
+        EconomyAnalytics.logCoinsTransaction(player, -definition.cost , "Sink" , "Shop")
+
         ShovelCustomization.giveShovel(player, shovelName)
         ShovelCustomization.equipShovel(player, shovelName)
         return true

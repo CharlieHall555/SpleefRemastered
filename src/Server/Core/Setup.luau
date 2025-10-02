@@ -22,9 +22,11 @@ function SetUp.init()
         
         Config.REQUIRED_PLAYERS = 1
         Config.PLAYERS_TO_END = 0   
-        Config.INTERMISSION_TIME = 300
+        Config.INTERMISSION_TIME = 5
 
     end
+
+    
 
 end
 

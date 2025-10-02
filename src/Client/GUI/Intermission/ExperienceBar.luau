@@ -55,8 +55,9 @@ local function renderAll()
 end
 
 function ExperienceBar.onProfileLoaded()
+	return 
 	-- build UI
-	ExperienceFrame = GuiAssets.Intermission.Experience
+	--[[ExperienceFrame = GuiAssets.Intermission.Experience
 	ExperienceFrame.Parent = Screens.intermissionHUD
 	ExperienceFrame.Visible = true
 
@@ -96,7 +97,7 @@ function ExperienceBar.onProfileLoaded()
 
 	ClientStateTracker.connectTutorial(function()
 		ExperienceFrame.Visible = false
-	end)
+	end)]]
 end
 
 return ExperienceBar

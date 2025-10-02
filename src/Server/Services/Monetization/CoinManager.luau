@@ -12,6 +12,14 @@ function CoinManager.init()
     
 end
 
+function CoinManager.takeCoins(player : Player , amount : number)
+
+    local amount = math.min(PlayerData.getCoins(player) , amount)
+    PlayerData.incrementCoins(player , -amount)
+    return amount
+    
+end
+
 function CoinManager.hasCoins(player : Player , amount : number) : boolean
 
     local currentCoins = PlayerData.getCoins(player) or 0

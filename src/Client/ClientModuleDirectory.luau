@@ -37,6 +37,8 @@ ClientModuleDirectory.Gui.TutorialStatus = Root.Gui.Tutorial.TutorialStatus
 ClientModuleDirectory.Gui.TutorialLeave = Root.Gui.Tutorial.TutorialLeave
 ClientModuleDirectory.Gui.FrameSystem = Root.Gui.Intermission.FrameSystem
 ClientModuleDirectory.Gui.MobileShopButton = Root.Gui.Intermission.MobileShopButton
+ClientModuleDirectory.Gui.AbilityBar = Root.Gui.Active.AbilityBar
+
 
 ClientModuleDirectory.BackShovel = Root.Visuals.BackShovel
 
@@ -58,6 +60,7 @@ ClientModuleDirectory.Gui.Transition = Root.Gui.Transition
 ClientModuleDirectory.Gui.CurrencyGui = Root.Gui.Intermission.CurrencyGui
 ClientModuleDirectory.Gui.LeaderboardHandler = Root.Gui.SurfaceGUIs.LeaderboardHandler
 ClientModuleDirectory.Gui.TutorialAmmo = Root.Gui.Tutorial.TutorialAmmo
+ClientModuleDirectory.Gui.OverheadGui = Root.ClientUtils.ClientOverheadGui
 
 ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 

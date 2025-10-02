@@ -172,6 +172,7 @@ ModuleDirectory.Analytics.Main =serverRoot.Services.Analytics.AnalyticsMain
 ModuleDirectory.Analytics.LeaderboardUpdater = serverRoot.Services.Analytics.LeaderboardUpdater
 ModuleDirectory.Analytics.LeaderboardGetter = serverRoot.Services.Analytics.LeaderboardGetter
 ModuleDirectory.Analytics.EventAnalytics = serverRoot.Services.Analytics.EventAnalytics
+ModuleDirectory.Analytics.EconomyAnalytics = serverRoot.Services.Analytics.EconomyAnalytics
 
 ModuleDirectory.Badges = {}
 ModuleDirectory.Badges.PlayerBadgeHandler = serverRoot.Services.Badges.PlayerBadgeHander
@@ -193,9 +194,7 @@ ModuleDirectory.KnockbackUtilities = game:GetService("ReplicatedStorage").Utilit
 
 ModuleDirectory.ShovelDefinitions = game:GetService("ReplicatedStorage").Data.ShovelDefinitions
 
-
-
-
+ModuleDirectory.Set = game:GetService("ReplicatedStorage").Utilities.Set
 
 -- Remote Handlers
 

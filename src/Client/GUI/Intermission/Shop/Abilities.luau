@@ -50,16 +50,19 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
         card.BuyButton.Visible = false
         card.EquipButton.Visible = false
         card.EquippedBadge.Visible = true
+        card.ImageLabel.Image = item.icon
     elseif table.find(UserProfile.getValue("abilities") or {}, item.name) then
         card.Price.Text = "Owned"
         card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
         card.BuyButton.Visible = false
         card.EquipButton.Visible = true
+        card.ImageLabel.Image = item.icon
     else
         card.Price.Text = tostring(item.cost) .. "C"
         card.Price.TextColor3 = Color3.fromRGB(255, 205, 23)
         card.BuyButton.Visible = true
         card.EquipButton.Visible = false
+        card.ImageLabel.Image = item.icon
     end
 
     card.NameLabel.Text = item.displayName
@@ -81,9 +84,11 @@ local function loadItems()
     local order = 0
     for _, item: ShopItem.ShopItem in source do
         order += 1
-        local card = buildItemCard(item)
-        card.LayoutOrder = order
-        card.Parent = list
+        pcall(function()
+            local card = buildItemCard(item)
+            card.LayoutOrder = order
+            card.Parent = list
+        end)
     end
 end
 

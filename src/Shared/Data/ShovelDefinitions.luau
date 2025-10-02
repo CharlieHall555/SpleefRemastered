@@ -13,7 +13,7 @@ return {
     Default = {
         name = "DEFAULT",
         displayName = "Default Shovel",
-        image = "rbxassetid://123456789",
+        image = "rbxassetid://78996729241524",
         cost = 1,
         canBuy = true,
         showInShop = true,
@@ -30,7 +30,7 @@ return {
     VIP = {
         name = "VIP",
         displayName = "VIP Shovel",
-        image = "rbxassetid://123456789",
+        image = "rbxassetid://113069624280056",
         cost = 1,
         canBuy = false,
         showInShop = true,

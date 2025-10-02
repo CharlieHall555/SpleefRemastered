@@ -52,21 +52,24 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
         card.BuyButton.Visible = false
         card.EquipButton.Visible = false
         card.EquippedBadge.Visible = true
+        card.ImageLabel.Image = item.image
     elseif table.find(UserProfile.getValue("shovels") or {}, item.name) then
         card.Price.Text = "Owned"
         card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
         card.BuyButton.Visible = false
         card.EquipButton.Visible = true
         card.EquippedBadge.Visible = false
+        card.ImageLabel.Image = item.image
     elseif item.canBuy == false then
         card.Price.Text = "Locked"
         card.Price.TextColor3 = Color3.fromRGB(220, 7, 7)
         card.BuyButton.Visible = false
         card.EquipButton.Visible = false
         card.EquippedBadge.Visible = false
+        card.ImageLabel.Image = item.image
         if item.passLink then
             card.BuyButton.Visible = true
-            card.BuyButton.Text = "Get Pass"
+            card.BuyButton.TextLabel.Text = "Get Pass"
         end
     else
         card.Price.Text = tostring(item.cost) .. "C"
@@ -74,9 +77,11 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
         card.BuyButton.Visible = true
         card.EquipButton.Visible = false
         card.EquippedBadge.Visible = false
+        card.ImageLabel.Image = item.image
     end
 
     local connection = card.BuyButton.Clickable.Activated:Connect(function()
+        print("lol")
         if item.passLink then
             local success, message = pcall(function()
                 MarketplaceService:PromptGamePassPurchase(LocalPlayer, item.passLink)
@@ -119,9 +124,11 @@ local function loadItems()
             continue
         end
         order += 1
-        local card = buildItemCard(item)
-        card.LayoutOrder = order
-        card.Parent = list
+        pcall(function()
+            local card = buildItemCard(item)
+            card.LayoutOrder = order
+            card.Parent = list
+        end)
     end
 end
 

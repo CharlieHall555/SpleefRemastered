@@ -4,6 +4,7 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local AbilitiesDefinitions = require(ModuleDirectory.Abilities.Definitions)
 local AbilitiesFunctions = require(ModuleDirectory.Abilities.Functions)
 local PlayersAlive = require(ModuleDirectory.Round.PlayersInGame)
+local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 
 local AbilitiesMain = {}
 
@@ -39,9 +40,9 @@ function AbilitiesMain.init()
 		lastUsed[player.UserId] = nil
 	end)
 
-    RemoteEventHandler.newEventConnection("REQUEST_ABILITY" , function(player)
-        AbilitiesMain.fireAbility(player)
-    end)
+	RemoteEventHandler.newEventConnection("REQUEST_ABILITY", function(player)
+		AbilitiesMain.fireAbility(player)
+	end)
 end
 
 function AbilitiesMain.fireAbility(player: Player)
@@ -54,23 +55,24 @@ function AbilitiesMain.fireAbility(player: Player)
 
 	local abilCooldown = abilDef.cooldown
 
-	if checkCooldown(player, abilName, abilCooldown) == false then
-        return
-    end
-
-	if PlayersAlive.isAlive(player) == false then
-		--return
+	if RoundSystem.getState() ~= "ACTIVE" then
+		return
 	end
 
-    local func = AbilitiesFunctions[abilName]
-    if func then
-        func(player , player.Character)
-    end
+	if checkCooldown(player, abilName, abilCooldown) == false then
+		return
+	end
+
+	if PlayersAlive.isAlive(player) == false then
+		return
+	end
+
+	local func = AbilitiesFunctions[abilName]
+	if func then
+		func(player, player.Character)
+	end
 
 	RemoteEventHandler.FireOnClient(player, "FIRE_ABILITY", abilName, {})
-
-
-
 end
 
 return AbilitiesMain

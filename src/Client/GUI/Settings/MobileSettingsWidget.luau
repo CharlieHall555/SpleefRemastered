@@ -4,6 +4,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
+local FrameSystem = require(ClientModuleDirectory.Gui.FrameSystem)
 
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local MusicPlayer = require(ClientModuleDirectory.Sound.MusicPlayer)
@@ -109,6 +110,7 @@ function MobileSettingsWidget.hide()
 end
 
 function MobileSettingsWidget.show()
+	FrameSystem.setCurrent(WidgetGUI)
 	game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 	WidgetGUI.Visible = true
 end

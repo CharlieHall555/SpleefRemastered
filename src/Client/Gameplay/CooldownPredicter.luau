@@ -6,6 +6,7 @@ local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local AbilityBar = require(ClientModuleDirectory.Gui.AbilityBar)
 
 local lastUsed: number = 0
 local cooldown: number = 0
@@ -42,6 +43,8 @@ function cooldownPredicter.onProfileLoaded()
 			else
 				TouchButtons.hideCooldown()
 			end
+		elseif AbilityBar.getGui() then
+			AbilityBar.setCooldown(cooldown)
 		end
 	end)
 end

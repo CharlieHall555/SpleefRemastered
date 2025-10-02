@@ -135,19 +135,24 @@ function TutorialManager.isPlayerInTutorial(player: Player): boolean
 end
 
 function TutorialManager.init(): nil
-	-- First load path
+
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
+		PlayerPool.addToPool(player)
+	end)
+
+	-- First load path
+	--[[RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
 		if PlayerData.getHasJoinedBefore(player) == false then
 			PlayerData.setHasJoinedBefore(player, true)
 			task.wait(1)
 			TutorialManager.playerEnterTutorialArea(player)
 		else
-			PlayerPool.addToPool(player)
+			
 		end
 
 		-- Always bind respawn handler
 		bindCharacterAdded(player)
-	end)
+	end)]]
 
 	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETED", function(player: Player)
 		if TutorialManager.isPlayerInTutorial(player) then

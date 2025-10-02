@@ -60,9 +60,11 @@ local function loadItems()
     local count = 0
     for _, item: ShopItem.ShopItem in ExtraLivesData do
         count += 1
-        local card = buildItemCard(item)
-        card.LayoutOrder = count
-        card.Parent = list
+        pcall(function()
+            local card = buildItemCard(item)
+            card.LayoutOrder = count
+            card.Parent = list
+        end)
     end
 end
 

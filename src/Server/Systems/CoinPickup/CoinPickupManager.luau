@@ -4,11 +4,8 @@ local Config = require(game:GetService("ServerScriptService").ServerConfiguratio
 local SnowballAmmoPickup = require(ModuleDirectory.Ammo.SnowballAmmoPickup)
 local Map = require(ModuleDirectory.Map.Map)
 local Layer = require(ModuleDirectory.Map.Layer)
-local Block = require(ModuleDirectory.Map.Block)
-local Set = require(ModuleDirectory.Set)
-local VectorUtil = require(ModuleDirectory.VectorUtil)
 
-local SnowballPickupFolder: Folder? = nil
+local CoinPickupFolder: Folder? = nil
 local heartbeatConnection: RBXScriptConnection? = nil
 local spawnAccumulator: number = 0
 local aliveTimeCache: { [number]: number } = {}
@@ -16,29 +13,27 @@ local activeMap: Map.Map? = nil
 
 local spawnableLayers: { Layer.Layer } = {}
 local uidToLayer: { [number]: Layer.Layer } = {}
-local uidToPosition: { [number]: Vector3 } = {}
-local positionSet = Set.new()
 local layerCounts: { [Layer.Layer]: number } = {}
 local totalAlive: number = 0
 local callbackBound: boolean = false
 
-local AmmoPickupManager = {}
+local CoinPickupManager = {}
 
 local function getSnowballPickupFolder(): Folder
-    if SnowballPickupFolder and SnowballPickupFolder.Parent then
-        return SnowballPickupFolder
+    if CoinPickupFolder and CoinPickupFolder.Parent then
+        return CoinPickupFolder
     end
 
-    local existing = workspace:FindFirstChild("SnowballPickups")
+    local existing = workspace:FindFirstChild("CoinPickups")
     if existing and existing:IsA("Folder") then
-        SnowballPickupFolder = existing
+        CoinPickupFolder = existing
     else
-        SnowballPickupFolder = Instance.new("Folder")
-        SnowballPickupFolder.Name = "SnowballPickups"
-        SnowballPickupFolder.Parent = workspace
+        CoinPickupFolder = Instance.new("Folder")
+        CoinPickupFolder.Name = "SnowballPickups"
+        CoinPickupFolder.Parent = workspace
     end
 
-    return SnowballPickupFolder
+    return CoinPickupFolder
 end
 
 local function bindRemovalCallback()
@@ -49,12 +44,6 @@ local function bindRemovalCallback()
     SnowballAmmoPickup.setOnRemoveCallback(function(removedId: number)
         if aliveTimeCache[removedId] ~= nil then
             aliveTimeCache[removedId] = nil
-        end
-
-        if uidToPosition[removedId] ~= nil then
-            local position = uidToPosition[removedId]
-            uidToPosition[removedId] = nil
-            positionSet:remove(VectorUtil.SerializeVector3(position))
         end
 
         local layer = uidToLayer[removedId]
@@ -115,19 +104,11 @@ local function trySpawnOne(): boolean
     local tries = 0
     while tries < 6 do
         tries += 1
-        local block : Block.Block = layer:getRandomBlock()
-        local spawnGridPos = Vector3.new(
-                block.LayerPosition.X,
-                layer._id,
-                block.LayerPosition.Y
-            )
-        if block and block.Part and block.Part:IsA("BasePart") and positionSet:contains(VectorUtil.SerializeVector3(spawnGridPos)) == false then
+        local block = layer:getRandomBlock()
+        if block and block.Part and block.Part:IsA("BasePart") then
             local pos = block.Part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
             local uid = SnowballAmmoPickup.new(pos)
-
             if uid then
-                uidToPosition[uid] = spawnGridPos
-                positionSet:add(VectorUtil.SerializeVector3(spawnGridPos))
                 aliveTimeCache[uid] = 0
                 uidToLayer[uid] = layer
                 layerCounts[layer] = (layerCounts[layer] or 0) + 1
@@ -170,12 +151,12 @@ local function onHeartbeat(dt: number)
     end
 end
 
-function AmmoPickupManager.onLoaded()
-    SnowballPickupFolder = getSnowballPickupFolder()
+function CoinPickupManager.onLoaded()
+    CoinPickupFolder = getSnowballPickupFolder()
     bindRemovalCallback()
 end
 
-function AmmoPickupManager.start(map: Map.Map)
+function CoinPickupManager.start(map: Map.Map)
     activeMap = map
     spawnableLayers = {}
     layerCounts = {}
@@ -198,7 +179,7 @@ function AmmoPickupManager.start(map: Map.Map)
     heartbeatConnection = RunService.Heartbeat:Connect(onHeartbeat)
 end
 
-function AmmoPickupManager.stop()
+function CoinPickupManager.stop()
     if heartbeatConnection then
         heartbeatConnection:Disconnect()
         heartbeatConnection = nil
@@ -215,4 +196,4 @@ function AmmoPickupManager.stop()
     activeMap = nil
 end
 
-return AmmoPickupManager
+return CoinPickupManager

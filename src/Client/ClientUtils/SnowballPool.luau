@@ -32,7 +32,7 @@ local function popPart(): Part?
 end
 
 function SnowballPool.init()
-	snowballTemplate = game:GetService("ReplicatedStorage").Resources:WaitForChild("SnowballTemplate")
+	snowballTemplate = game:GetService("ReplicatedStorage"):WaitForChild("Resources"):WaitForChild("SnowballTemplate")
 
 	task.spawn(function()
 		local partCount = 0
