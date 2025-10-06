@@ -14,8 +14,6 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local CoinSound = "rbxassetid://607665037"
 
-
-
 local SummaryWidget = {}
 
 local record = {}
@@ -38,6 +36,7 @@ export type Record = {
 	blocksDestroyed: number,
 	eliminations: number,
 	coinsGained: number,
+	coinsCollected: number, -- coins picked up during the round
 	xpGained: number,
 	winnerBonus: number?,
 }
@@ -158,6 +157,7 @@ function SummaryWidget.show()
 	statsFrame.Blocks.TextLabel.Text = tostring(record.blocksDestroyed or 0)
 	statsFrame.Eliminations.TextLabel.Text = (tostring(record.eliminations or 0)) .. " KOs"
 	statsFrame.TimeAlive.TextLabel.Text = tostring(math.floor(record.timeAlive or 0)) .. "s"
+	statsFrame.Coins.TextLabel.Text = tostring(record.coinsCollected or 0) .. "C Collected"
 
 	local totalCoins = (record.coinsGained or 0) + (record.winnerBonus or 0)
 

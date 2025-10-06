@@ -45,7 +45,7 @@ end
 local function onNewCharacterAdded(player : Player, char : Model)
     local gui = char:WaitForChild(guiName, 5)
     if gui then
-        if ClientStateTracker.inGame() then
+        if ClientStateTracker.getState() == "ACTIVE" then
             showOverhead(gui)
         else
             hideOverhead(gui)
@@ -59,16 +59,32 @@ function ClientOverheadGui.init()
         local connection = player.CharacterAdded:Connect(function(char)
             onNewCharacterAdded(player, char)
         end)
-        table.insert(characterConnections, connection)
+        characterConnections[player.UserId] = connection
     end)
     
     for _, player in ipairs(Players:GetPlayers()) do
         local connection = player.CharacterAdded:Connect(function(char)
             onNewCharacterAdded(player, char)
         end)
-        table.insert(characterConnections, connection)
+        characterConnections[player.UserId] = connection
     end
 
+    Players.PlayerRemoving:Connect(function(player)
+        local connection = characterConnections[player.UserId]
+        if connection then
+            connection:Disconnect()
+            characterConnections[player.UserId] = nil
+        end
+    end)
+
 end
+
+ClientStateTracker.connectActive(function(newState : string)
+    hideAll()
+end)
+
+ClientStateTracker.connectIntermission(function(newState : string)
+    showAll()
+end)
 
 return ClientOverheadGui    

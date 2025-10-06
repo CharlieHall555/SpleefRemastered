@@ -41,7 +41,7 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
     card.Price.Text = tostring(item.cost) .. ""
     card.ImageLabel.Image = item.image
     card.NameLabel.Text = item.title
-    card.Name = repeatChar("a", item.cost)
+    card.Name = repeatChar("a", math.floor(item.cost / 5))
     card.BuyButton.Clickable.Activated:Connect(function()
         MarketplaceService:PromptProductPurchase(LocalPlayer, item.productId)
     end)

@@ -1,9 +1,15 @@
 local RunService = game:GetService("RunService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local SnowballAmmoPickup = require(ModuleDirectory.Ammo.SnowballAmmoPickup)
+local CoinPickup = require(ModuleDirectory.Coins.CoinPickup)
 local Map = require(ModuleDirectory.Map.Map)
 local Layer = require(ModuleDirectory.Map.Layer)
+local Block = require(ModuleDirectory.Map.Block)
+local Set = require(ModuleDirectory.Set)
+local VectorUtil = require(ModuleDirectory.VectorUtil)
+local SnowballPickupManager = require(ModuleDirectory.Ammo.AmmoPickupManager)
+local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local CoinPickupFolder: Folder? = nil
 local heartbeatConnection: RBXScriptConnection? = nil
@@ -13,13 +19,15 @@ local activeMap: Map.Map? = nil
 
 local spawnableLayers: { Layer.Layer } = {}
 local uidToLayer: { [number]: Layer.Layer } = {}
+local uidToPosition: { [number]: Vector3 } = {}
+local positionSet = Set.new()
 local layerCounts: { [Layer.Layer]: number } = {}
 local totalAlive: number = 0
 local callbackBound: boolean = false
 
 local CoinPickupManager = {}
 
-local function getSnowballPickupFolder(): Folder
+local function getCoinPickupFolder(): Folder
     if CoinPickupFolder and CoinPickupFolder.Parent then
         return CoinPickupFolder
     end
@@ -29,11 +37,18 @@ local function getSnowballPickupFolder(): Folder
         CoinPickupFolder = existing
     else
         CoinPickupFolder = Instance.new("Folder")
-        CoinPickupFolder.Name = "SnowballPickups"
+        CoinPickupFolder.Name = "CoinPickups"
         CoinPickupFolder.Parent = workspace
     end
 
     return CoinPickupFolder
+end
+
+local function resetPickedUpCoins()
+    local players = game:GetService("Players"):GetPlayers()
+    for _, player in ipairs(players) do
+        SessionVariables.setValue(player, "coinsCollected", 0)
+    end
 end
 
 local function bindRemovalCallback()
@@ -41,9 +56,15 @@ local function bindRemovalCallback()
         return
     end
 
-    SnowballAmmoPickup.setOnRemoveCallback(function(removedId: number)
+    CoinPickup.setOnRemoveCallback(function(removedId: number)
         if aliveTimeCache[removedId] ~= nil then
             aliveTimeCache[removedId] = nil
+        end
+
+        if uidToPosition[removedId] ~= nil then
+            local position = uidToPosition[removedId]
+            uidToPosition[removedId] = nil
+            positionSet:remove(VectorUtil.SerializeVector3(position))
         end
 
         local layer = uidToLayer[removedId]
@@ -67,7 +88,7 @@ local function chooseLayerForSpawn(): Layer.Layer?
     local belowMin: { Layer.Layer } = {}
     for _, layer in ipairs(spawnableLayers) do
         local count = layerCounts[layer] or 0
-        if count < Config.MIN_AMMO_PICKUP_PER_FLOOR then
+        if count < Config.MIN_COIN_PICKUP_PER_FLOOR then
             table.insert(belowMin, layer)
         end
     end
@@ -83,6 +104,10 @@ local function chooseLayerForSpawn(): Layer.Layer?
     return spawnableLayers[math.random(1, #spawnableLayers)]
 end
 
+function CoinPickupManager.isPositionFree(position : Vector3)
+    return positionSet:contains(VectorUtil.SerializeVector3(position)) == false
+end
+
 local function trySpawnOne(): boolean
     if not activeMap then
         return false
@@ -92,7 +117,7 @@ local function trySpawnOne(): boolean
         return false
     end
 
-    if totalAlive >= Config.MAX_AMMO_PICKUPS then
+    if totalAlive >= Config.MAX_COIN_PICKUPS then
         return false
     end
 
@@ -104,11 +129,19 @@ local function trySpawnOne(): boolean
     local tries = 0
     while tries < 6 do
         tries += 1
-        local block = layer:getRandomBlock()
-        if block and block.Part and block.Part:IsA("BasePart") then
+        local block : Block.Block = layer:getRandomBlock()
+        local spawnGridPos = Vector3.new(
+                block.LayerPosition.X,
+                layer._id,
+                block.LayerPosition.Y
+            )
+        if block and block.Part and block.Part:IsA("BasePart") and SnowballPickupManager.isPositionFree(spawnGridPos) and CoinPickupManager.isPositionFree(spawnGridPos) then
             local pos = block.Part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
-            local uid = SnowballAmmoPickup.new(pos)
+            local uid = CoinPickup.new(pos)
+
             if uid then
+                uidToPosition[uid] = spawnGridPos
+                positionSet:add(VectorUtil.SerializeVector3(spawnGridPos))
                 aliveTimeCache[uid] = 0
                 uidToLayer[uid] = layer
                 layerCounts[layer] = (layerCounts[layer] or 0) + 1
@@ -126,21 +159,21 @@ local function onHeartbeat(dt: number)
         aliveTimeCache[id] = t + dt
     end
 
-    local toRemove: { number } = {}
+    --[[local toRemove: { number } = {}
     for id, t in pairs(aliveTimeCache) do
         if t >= Config.AMMO_PICKUP_LIFETIME then
             table.insert(toRemove, id)
         end
     end
     for _, id in ipairs(toRemove) do
-        SnowballAmmoPickup.remove(id)
-    end
+        CoinPickupManager.remove(id)
+    end]]
 
     spawnAccumulator += dt
-    local interval = Config.AMMO_SPAWN_INTERVAL
+    local interval = Config.COIN_SPAWN_INTERVAL
 
     while spawnAccumulator >= interval do
-        if totalAlive >= Config.MAX_AMMO_PICKUPS then
+        if totalAlive >= Config.MAX_COIN_PICKUPS then
             break
         end
         local spawned = trySpawnOne()
@@ -151,9 +184,26 @@ local function onHeartbeat(dt: number)
     end
 end
 
+
+
 function CoinPickupManager.onLoaded()
-    CoinPickupFolder = getSnowballPickupFolder()
+    CoinPickupFolder = getCoinPickupFolder()
     bindRemovalCallback()
+
+    ServerHitBoxManager.setUpCallback("COIN_PICKUP", function(player : Player, part: BasePart)
+        local parent = part.Parent
+        if not parent then
+            return
+        end
+
+        local coinsCollected = SessionVariables.getValue(player, "coinsCollected") or 0
+        SessionVariables.setValue(player, "coinsCollected", coinsCollected + 1)
+
+        local uid = part:GetAttribute("Id")
+        CoinPickup.remove(uid)
+        print("remove")
+    end)
+
 end
 
 function CoinPickupManager.start(map: Map.Map)
@@ -185,12 +235,16 @@ function CoinPickupManager.stop()
         heartbeatConnection = nil
     end
 
-    SnowballAmmoPickup.reset()
+    resetPickedUpCoins()
+
+    CoinPickup.reset()
 
     aliveTimeCache = {}
     uidToLayer = {}
+    uidToPosition = {}
     layerCounts = {}
     spawnableLayers = {}
+    positionSet:clear()
     totalAlive = 0
     spawnAccumulator = 0
     activeMap = nil

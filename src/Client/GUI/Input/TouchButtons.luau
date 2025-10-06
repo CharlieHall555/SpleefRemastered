@@ -97,6 +97,9 @@ function TouchButtons.onLoaded()
 		jumpButtonImage = jumpButtonBg.ImageLabel
 		powerUpButtonImage = powerUpButtonBg.ImageLabel
 
+		powerUpButtonImage.Visible = (ClientStateTracker.getState() == "ACTIVE")
+		
+
 		powerUpButtonText = powerUpButtonBg.TextLabel
 
 		setHighlighted(actionButtonBg, actionButtonImage, false)
@@ -203,7 +206,7 @@ function TouchButtons.resizeLoop()
 	local margin = (btn >= 120) and 16 or 10
 
 	-- Move the pair slightly further left from the edge
-	local globalShift = math.floor(btn * 0.05)
+	local globalShift = 0
 
 	-- Vertical offset so the action button sits a little higher than jump
 	local actionLift = math.max(12, math.floor(btn * 1.1)) -- "couple px more" on small screens
@@ -218,7 +221,7 @@ function TouchButtons.resizeLoop()
 		powerUpButtonBg.AnchorPoint = Vector2.new(1, 1)
 		powerUpButtonBg.Size = UDim2.fromOffset(btn, btn)
 		powerUpButtonBg.Position =
-			UDim2.new(1, -(rightInset + margin + globalShift + (horizontalGap*1.5)), 1, -(bottomInset + margin + (actionLift*1.5)))
+		UDim2.new(1, -(rightInset + margin + globalShift), 1, -(bottomInset + margin + actionLift))		
 	end
 
 	-- Action: closer to the right edge and slightly higher
@@ -226,7 +229,7 @@ function TouchButtons.resizeLoop()
 		actionButtonBg.AnchorPoint = Vector2.new(1, 1)
 		actionButtonBg.Size = UDim2.fromOffset(btn, btn)
 		actionButtonBg.Position =
-			UDim2.new(1, -(rightInset + margin + globalShift), 1, -(bottomInset + margin + actionLift))
+			UDim2.new(1, -(rightInset + margin + globalShift + (horizontalGap*1.2)), 1, -(bottomInset + margin + (actionLift*1.75)))
 	end
 
 	-- Jump: further left than the action (more inset), slightly lower
@@ -275,8 +278,17 @@ function TouchButtons.setPowerUpCallback(fn: (() -> ())?)
 end
 
 function TouchButtons.setVisibleActionButton(value: boolean): nil
-	actionButtonBg.Visible = value
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		powerUpButtonBg.Visible = value
+	end
 end
+
+function TouchButtons.setVisiblePowerUpButton(value: boolean): nil
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		powerUpButtonBg.Visible = value
+	end
+end
+
 
 function TouchButtons.getGui()
 	return touchButtonsGui

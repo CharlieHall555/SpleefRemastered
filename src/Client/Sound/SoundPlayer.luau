@@ -155,6 +155,7 @@ function SoundPlayer.playSound(soundId: string, options: SoundOptions?): Sound
     sound.Parent = SoundService
     sound.Volume = options.volume or 0.5
     sound.Looped = options.looped or false
+    sound.PlaybackSpeed = options.playbackSpeed or 1
     sound:SetAttribute("playerId", counter)
     playingSounds[counter] = sound
     counter += 1

@@ -8,6 +8,7 @@ local WinnerDetection = require(ModuleDirectory.Stats.WinnerDetection)
 local CoinsManager = require(ModuleDirectory.Monetization.CoinManager)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local RoundSummary = {}
 
@@ -93,6 +94,7 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
             end)
             local aliveUntil = deathTime or roundEnd
             local tAlive = math.max(0, (aliveUntil - round.startTime))
+            tAlive = math.min(tAlive, roundEnd - round.startTime)
 
             local blocks = count(BlockDestructionTracker.getBlocksDestroyedByPlayer(eachPlayer))
             local elims = count(EliminationTracker.getElimationsFor(eachPlayer))
@@ -100,14 +102,17 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
             -- Compute rewards (coins use explicit winner bonus)
             local baseCoins = calcBaseCoins(tAlive, blocks, elims)
             local winnerBonus = isWinner and calcCoinWinBonus(baseCoins) or 0
-            local totalCoins = baseCoins + winnerBonus
+            local coinsCollected = SessionVariables.getValue(eachPlayer, "coinsCollected") or 0
+
+            local coinMultiplier = CoinsManager.getMultiplier(eachPlayer)
+
+            local totalCoins = baseCoins + winnerBonus + coinsCollected
 
             local xpGained = calcXp(isWinner, tAlive, blocks, elims)
 
             totalCoins = CoinsManager.giveCoins(eachPlayer, totalCoins)
             LevelController.giveXp(eachPlayer , xpGained)
-            winnerBonus = CoinsManager.giveCoins(eachPlayer , winnerBonus)
-            EconomyAnalytics.logCoinsTransaction(eachPlayer , totalCoins + winnerBonus , "Source" , "Gameplay")
+            EconomyAnalytics.logCoinsTransaction(eachPlayer , totalCoins , "Source" , "Gameplay")
 
 
             local summary: EndSummary = {
@@ -116,7 +121,8 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
                 eliminations = elims,
                 coinsGained = totalCoins,
                 xpGained = xpGained,
-                winnerBonus = winnerBonus
+                winnerBonus = math.floor(winnerBonus * coinMultiplier),
+                coinsCollected = math.floor(coinsCollected * coinMultiplier)
             }
 
             RemoteEventHandler.FireOnClient(eachPlayer, "ROUND_SUMMARY", summary)

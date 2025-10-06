@@ -56,6 +56,10 @@ ModuleDirectory.Throwable.SnowballManager = serverRoot.Systems.Throwable.Snowbal
 
 ModuleDirectory.Overhead = serverRoot.Systems.OtherGameplay.OverheadGui
 
+ModuleDirectory.Coins = {}
+ModuleDirectory.Coins.CoinPickup = serverRoot.Systems.CoinPickup.CoinPickup
+ModuleDirectory.Coins.CoinPickupManager = serverRoot.Systems.CoinPickup.CoinPickupManager
+
 --//====================================================
 --// Map System
 --//====================================================

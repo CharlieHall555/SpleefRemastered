@@ -21,6 +21,7 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
 local VibrationService = require(ClientModuleDirectory.VibrationService)
+local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 
 local lastMousePos
 
@@ -164,6 +165,20 @@ function MiscBindings.init()
 			SoundPlayer.playSound(DING) -- ding sound
 		end
 	end)
+
+	local CoinSound = "rbxassetid://607665037"
+	HitBoxManager.setUpCallback("COIN_PICKUP", function(part: BasePart)
+		SoundPlayer.playSound(CoinSound)
+	 end)
+
+	ClientStateTracker.connectActive(function()
+		TouchButtons.setVisiblePowerUpButton(true)
+	end)
+
+	ClientStateTracker.connectIntermission(function()
+		TouchButtons.setVisiblePowerUpButton(false)
+	end)
+
 end
 
 

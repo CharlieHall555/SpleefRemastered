@@ -68,9 +68,9 @@ function CoinAmmoPickup.new(spawnPosition: Vector3): number
     local id = _newId()
 
     local part = coinAmmoTemplate:Clone()
-    part.CFrame = CFrame.new(spawnPosition)
+    part.CFrame = CFrame.new(spawnPosition) * CFrame.Angles(math.rad(90), 0, 0)
     local increment = Config.AMMO_PICKUP_VALUE or 1
-    part:AddTag("coin")
+    part:AddTag("COIN_PICKUP")
     part:SetAttribute("Id", id)
     part.Parent = container
 
@@ -81,7 +81,6 @@ function CoinAmmoPickup.new(spawnPosition: Vector3): number
     }
 
     return id
-
 end
 
 function CoinAmmoPickup.get(id: number): CoinPickup?

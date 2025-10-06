@@ -40,8 +40,7 @@ function Respawns.onProfileLoaded()
 	
 		CurrencyGui.AnchorPoint = Vector2.new(CurrencyGui.AnchorPoint.X , 1)
 		local touchButtonsGui = TouchButtons.getGui()
-		
-
+	
 		CurrencyGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(0.3 , 0))
 		CurrencyGui.UIScale.Scale = 1.2
 

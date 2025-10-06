@@ -27,6 +27,10 @@ function CoinManager.hasCoins(player : Player , amount : number) : boolean
     
 end
 
+function CoinManager.getMultiplier(player : Player) : number
+    return PlayerSessionVariables.getValue(player , "coinMultiplier") or 1
+end
+
 function CoinManager.giveCoins(player : Player , amount : number) : nil
 
     local multiplier = PlayerSessionVariables.getValue(player , "coinMultiplier") or 1

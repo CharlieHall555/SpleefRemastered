@@ -30,6 +30,7 @@ local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
 local PodiumManager = require(ModuleDirectory.Round.PodiumManager)
+local CoinPickupManager = require(ModuleDirectory.Coins.CoinPickupManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -110,13 +111,14 @@ local function onRoundEnding(currentRound)
 	end
 
 	RoundSummary.onRoundEnd(currentRound , Winner)
-
+	CoinPickupManager.stop()
 	KnockbackTracker.reset()
 	BlockDestructionTracker.reset()
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
 	task.wait()
 	currentMap:Destroy()
 	PlayerDeathDetector.clearCache()
+	
 	task.wait(1)
 end
 
@@ -130,6 +132,7 @@ local function onRoundActive(currentRound)
 	--ToolManager.giveTools(PlayersInGame.getActivePlayers())
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
 	AmmoPickupManager.start(currentMap)
+	CoinPickupManager.start(currentMap)
 	ClearLobby.clear()
 end
 

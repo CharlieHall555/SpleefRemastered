@@ -94,6 +94,10 @@ local function chooseLayerForSpawn(): Layer.Layer?
     return spawnableLayers[math.random(1, #spawnableLayers)]
 end
 
+function AmmoPickupManager.isPositionFree(position : Vector3)
+    return positionSet:contains(VectorUtil.SerializeVector3(position)) == false
+end
+
 local function trySpawnOne(): boolean
     if not activeMap then
         return false
@@ -121,7 +125,7 @@ local function trySpawnOne(): boolean
                 layer._id,
                 block.LayerPosition.Y
             )
-        if block and block.Part and block.Part:IsA("BasePart") and positionSet:contains(VectorUtil.SerializeVector3(spawnGridPos)) == false then
+        if block and block.Part and block.Part:IsA("BasePart") and AmmoPickupManager.isPositionFree(spawnGridPos) then
             local pos = block.Part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
             local uid = SnowballAmmoPickup.new(pos)
 

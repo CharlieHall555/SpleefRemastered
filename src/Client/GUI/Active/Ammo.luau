@@ -51,17 +51,15 @@ function Ammo.onProfileLoaded()
     end)
 
     if PlatformDetector.getPlatform() == "MOBILE" then
-        AmmoGui.AnchorPoint = Vector2.new(AmmoGui.AnchorPoint.X, 1)
-        local touchButtonsGui = TouchButtons.getGui()
-        local yScale = touchButtonsGui.Position.Y.Scale - touchButtonsGui.Size.Y.Scale
-        AmmoGui.Position = UDim2.new(UDim.new(1, 0), UDim.new(yScale, 0))
-        AmmoGui.UIScale.Scale = 1.2
+        
+		AmmoGui.Position = UDim2.new(UDim.new(1 , 0) , UDim.new(0.3 , 0))
+		AmmoGui.UIScale.Scale = 1.2
     end
 end
 
 function Ammo.shake()
     if not AmmoGui then
-        return
+        return  
     end
 
     local originalPos = AmmoGui.Position
