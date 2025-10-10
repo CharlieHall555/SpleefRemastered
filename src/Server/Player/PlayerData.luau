@@ -202,7 +202,7 @@ end
 
 function PlayerData.getShovels(player: Player): { string }
 	local data = getData(player)
-	return data and (data.shovels or { "DEFAULT" }) or { "DEFAULT" }
+	return data.shovels or { "DEFAULT" }
 end
 
 function PlayerData.setShovels(player : Player , newValue : { string }) : nil
@@ -222,4 +222,26 @@ function PlayerData.addShovel(player: Player, shovelName: string): nil
 	setFieldAndNotify(player, "shovels", shovels)
 end
 
+
+function PlayerData.getAbilities(player: Player): { string }
+	local data = getData(player)
+	return data.abilities or { "NONE" }
+end
+
+function PlayerData.setAbilities(player : Player , newValue : { string }) : nil
+	setFieldAndNotify(player, "abilities", newValue)
+end
+
+function PlayerData.addAbility(player: Player, abilityName: string): nil
+	local data = getData(player)
+	if not data then
+		return
+	end
+	local abilities = data.abilities or {}
+	if table.find(abilities, abilityName) then
+		return
+	end
+	table.insert(abilities, abilityName)
+	setFieldAndNotify(player, "abilities", abilities)
+end
 return PlayerData

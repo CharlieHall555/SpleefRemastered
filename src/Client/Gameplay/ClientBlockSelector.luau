@@ -15,6 +15,7 @@ local enabled = false
 local Camera: Camera?
 local highlight: Highlight?
 local selectedBlock: Part?
+local focusedBlock: Part? -- the block that is either looked at or selected regardless of Max_selection_distance
 local _renderConn: RBXScriptConnection?
 
 local localPlayer = game.Players.LocalPlayer
@@ -28,6 +29,10 @@ local RAYCAST_MAX = 300
 local MAX_SELECTION_DISTANCE = 25
 
 ClientBlockSelector.newBlockSelected = nil
+
+function ClientBlockSelector.getFocused()
+    return focusedBlock
+end
 
 function ClientBlockSelector.getMaxSelectionDistance()
     return MAX_SELECTION_DISTANCE
@@ -173,10 +178,17 @@ local function step(_dt: number)
 
     local result = workspace:Raycast(ray.Origin, ray.Direction, selectionRaycast)
 
-    if result and result.Instance and result.Instance:IsA("Part") and withinDistance(result.Position) and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
+    if result and result.Instance and result.Instance:IsA("Part") and (result.Instance:HasTag("Block") or result.Instance:HasTag("Highlightable")) then
         local hitPart = result.Instance :: Part
-        if hitPart ~= selectedBlock then
-            focus(hitPart)
+        if withinDistance(result.Position) then
+            if hitPart ~= selectedBlock then
+                focus(hitPart)
+            end
+        else
+            if selectedBlock then
+                unfocus()
+            end
+            focusedBlock = hitPart
         end
     else
         if selectedBlock then

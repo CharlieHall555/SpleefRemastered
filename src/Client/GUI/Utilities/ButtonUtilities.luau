@@ -1,7 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local PlayerGui = game.Players.LocalPlayer.PlayerGui
-
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local ButtonUtilities = {}
  
@@ -37,6 +37,15 @@ function ButtonUtilities.setUpButton(buttonRoot : Frame)
 
     clickable.MouseLeave:Connect(function()
         main.BackgroundColor3 = highlight
+    end)
+
+    clickable.Activated:Connect(function()
+        local soundToPlay = buttonRoot:GetAttribute("clickSound")
+        print(soundToPlay)
+        if soundToPlay then
+            SoundPlayer.playSound(soundToPlay , {volume = 0.4})
+        end
+
     end)
 
 end 

@@ -5,10 +5,12 @@ local MarketplaceService = game:GetService("MarketplaceService")
 
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
+local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local ShopItem = require(ClientModuleDirectory.ShopItem)
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
 
@@ -20,9 +22,12 @@ local ShopAbilities = {}
 local abilitiesFrame: Frame
 local itemTemplate: Frame
 local cachedItems: { ShopItem.ShopItem }? = nil
+local buttonConnections = {}
 
 local coinLabel : TextLabel
 local abilityLabel : TextLabel
+
+local onMissingFunds : (number) -> ()
 
 local function repeatChar(char: string, count: number): string
     if not char or char == "" or count <= 0 then
@@ -65,6 +70,27 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
         card.ImageLabel.Image = item.icon
     end
 
+    local buttonConnection = card.BuyButton.Clickable.Activated:Connect(function()
+
+        if (UserProfile.getValue("coins") or 0) < item.cost then
+            print("missing")
+            print(onMissingFunds)
+            if onMissingFunds then
+                onMissingFunds(item.cost - (UserProfile.getValue("coins") or 0))
+            end
+            return
+        end
+
+        RemoteEventHandler.FireOnServer("REQUEST_BUY_ABILITY", item.name)
+    end)
+    table.insert(buttonConnections, buttonConnection)
+
+    buttonConnection = card.EquipButton.Clickable.Activated:Connect(function()
+        RemoteEventHandler.FireOnServer("REQUEST_EQUIP_ABILITY", item.name)
+    end)
+    table.insert(buttonConnections, buttonConnection)
+
+    card.Size = UDim2.new(0.165 / 4, 0, 1, 0)
     card.NameLabel.Text = item.displayName
     card.Name = repeatChar("a", item.cost)
     card.Visible = true
@@ -78,21 +104,31 @@ local function loadItems()
 
     local list = abilitiesFrame:WaitForChild("ScrollingFrame")
     clearChildren(list)
+    for _ , each in buttonConnections do
+        each:Disconnect()
+    end
 
     local source = cachedItems or AbilitiesData
 
     local order = 0
     for _, item: ShopItem.ShopItem in source do
+        print(source)
         order += 1
-        pcall(function()
+        local s , e = pcall(function()
             local card = buildItemCard(item)
             card.LayoutOrder = order
             card.Parent = list
         end)
+        if not s then 
+            warn("Failed to build item card: " .. tostring(e))
+        end
     end
 end
 
-function ShopAbilities.start(frame: Frame, template: Frame)
+function ShopAbilities.start(frame: Frame, template: Frame , missingFundsFunc : (number) -> ())
+
+        
+    onMissingFunds = missingFundsFunc
     abilitiesFrame = frame
     itemTemplate = template
     coinLabel = abilitiesFrame:WaitForChild("Coins")
@@ -100,11 +136,14 @@ function ShopAbilities.start(frame: Frame, template: Frame)
 
     print(UserProfile.getValue("coins") , UserProfile.getValue("ability"))
     coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(UserProfile.getValue("coins") or 0).."C"
-    abilityLabel.Text = "Equipped: " .. tostring(UserProfile.getValue("ability") or "None")
+    local def = AbilitiesData[UserProfile.getValue("ability") or ""] or {displayName = "None"}
+    abilityLabel.Text = "Equipped: " .. tostring(def.displayName)
     loadItems()
 
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
-        abilityLabel.Text = "Equipped: " .. tostring(newValue or "None")
+        loadItems()
+        local def = AbilitiesData[newValue] or {displayName = "None"}
+        abilityLabel.Text = "Equipped: " .. tostring(def.displayName)
     end , "ability")
     
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
@@ -114,6 +153,11 @@ function ShopAbilities.start(frame: Frame, template: Frame)
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
         loadItems()
     end , "abilities")
+
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        abilitiesFrame.ScrollingFrame.ScrollBarThickness = 10
+    end
+
 
     
 end

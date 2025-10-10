@@ -47,12 +47,12 @@ function ConstraintManager.init()
 
 	ProfileManager.setFieldConstraint("ability" , {
 		type = "whitelist",
-		allowedValues = { "DASH" },
+		allowedValues = { "DASH" , "TELEPORT" , "FEATHER-FALLING" , "BALLOONS" , "BOMB" , "INFINITE_AMMO" , "SPRING"},
 	})
 
 	ProfileManager.setFieldConstraint("abilities" , {
 		type = "list",
-		allowedValues = { "DASH" },
+		allowedValues = { "DASH" , "TELEPORT" , "FEATHER-FALLING" , "BALLOONS" , "BOMB" , "INFINITE_AMMO" , "SPRING"},
 		canBeEmpty = false,
 	})
 

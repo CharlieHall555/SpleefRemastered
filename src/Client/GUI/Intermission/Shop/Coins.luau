@@ -11,13 +11,14 @@ local ShopItem = require(ClientModuleDirectory.ShopItem)
 
 -- Data source of purchasable extra lives (array of ShopItem.ShopItem)
 local CoinData = require(ClientModuleDirectory.Coins)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local LocalPlayer = Players.LocalPlayer
 
 local ShopExtraLives = {}
 
 -- State
-local extraLifeFrame: Frame
+local coinFrame: Frame
 local itemTemplate: Frame
 local currentLivesLabel: TextLabel
 
@@ -50,11 +51,11 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
 end
 
 local function loadItems()
-    if not extraLifeFrame or not itemTemplate then
+    if not coinFrame or not itemTemplate then
         return
     end
 
-    local list = extraLifeFrame:WaitForChild("ScrollingFrame")
+    local list = coinFrame:WaitForChild("ScrollingFrame")
     clearChildren(list)
 
     local count = 0
@@ -67,9 +68,9 @@ local function loadItems()
 end
 
 function ShopExtraLives.start(frame: Frame, template: Frame)
-    extraLifeFrame = frame
+    coinFrame = frame
     itemTemplate = template
-    currentLivesLabel = extraLifeFrame:WaitForChild("CurrentLives")
+    currentLivesLabel = coinFrame:WaitForChild("CurrentLives")
 
     currentLivesLabel.Text = "Respawns : " .. (UserProfile.getValue("respawns") or "0")
 
@@ -78,6 +79,10 @@ function ShopExtraLives.start(frame: Frame, template: Frame)
             currentLivesLabel.Text = "Respawns : " .. (newValue or "0")
         end
     end, "respawns")
+
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        coinFrame.ScrollingFrame.ScrollBarThickness = 10
+    end
 
     loadItems()
 end

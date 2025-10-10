@@ -12,6 +12,8 @@ local ShopItem = require(ClientModuleDirectory.ShopItem)
 -- Data source of purchasable extra lives (array of ShopItem.ShopItem)
 local GamePassData = require(ClientModuleDirectory.GamePassData)
 
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+
 local LocalPlayer = Players.LocalPlayer
 
 local ShopExtraLives = {}
@@ -98,6 +100,10 @@ function ShopExtraLives.start(frame: Frame, template: Frame)
     UserSessionVariables.setOnUpdateCallback(function(name: string, value: any)
        loadItems()
     end, "ownedGamepasses")
+
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        gamePassFrame.ScrollingFrame.ScrollBarThickness = 10
+    end
 end
 
 function ShopExtraLives.refresh()

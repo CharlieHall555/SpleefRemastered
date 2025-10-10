@@ -30,6 +30,8 @@ ModuleDirectory.Abilities = {}
 ModuleDirectory.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
 ModuleDirectory.Abilities.Functions = serverRoot.Systems.Abilities.AbilitiesFunctions
 ModuleDirectory.Abilities.Definitions = shareRoot.Data.AbilitiesDefinitions
+ModuleDirectory.Abilities.EndFunctions = serverRoot.Systems.Abilities.EndFunctions
+ModuleDirectory.Abilities.TeleportAbility = serverRoot.Systems.Abilities.TeleportAbility
 
 
 --//====================================================
@@ -59,6 +61,10 @@ ModuleDirectory.Overhead = serverRoot.Systems.OtherGameplay.OverheadGui
 ModuleDirectory.Coins = {}
 ModuleDirectory.Coins.CoinPickup = serverRoot.Systems.CoinPickup.CoinPickup
 ModuleDirectory.Coins.CoinPickupManager = serverRoot.Systems.CoinPickup.CoinPickupManager
+
+ModuleDirectory.Bomb = {}
+ModuleDirectory.Bomb.Bomb = serverRoot.Systems.Bomb.Bomb
+ModuleDirectory.Bomb.BombManager = serverRoot.Systems.Bomb.BombManager
 
 --//====================================================
 --// Map System
@@ -164,6 +170,7 @@ ModuleDirectory.Monetization.ProductBindings = serverRoot.Services.Monetization.
 ModuleDirectory.Monetization.CoinManager = serverRoot.Services.Monetization.CoinManager
 ModuleDirectory.Monetization.ShovelShopManager = serverRoot.Services.Monetization.ShovelShopManager
 ModuleDirectory.Monetization.GamepassManager = serverRoot.Services.Monetization.GamepassManager
+ModuleDirectory.Monetization.AbilityShopManager = serverRoot.Services.Monetization.AbilityShopManager
 
 ModuleDirectory.Monetization.GamepassData = game:GetService("ReplicatedStorage").Data.ShopData.Gamepasses 
 

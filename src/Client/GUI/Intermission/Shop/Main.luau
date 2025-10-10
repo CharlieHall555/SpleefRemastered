@@ -9,17 +9,22 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
+local RunService = game:GetService("RunService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local FrameSystem = require(ClientModuleDirectory.Gui.FrameSystem)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local ShopExtraLives = require(ClientModuleDirectory.Gui.Shop.ExtraLives)
 local ShopAbilities = require(ClientModuleDirectory.Gui.Shop.Abilities)
 local ShopShovels = require(ClientModuleDirectory.Gui.Shop.Shovels)
 local ShopCoins = require(ClientModuleDirectory.Gui.Shop.Coins)
 local ShopGamepass = require(ClientModuleDirectory.Gui.Shop.Gamepass)
+local VibrationService = require(ClientModuleDirectory.VibrationService)
 
 local LocalPlayer = Players.LocalPlayer
+
+local AUTO_HIDE_SECONDS = 10
 
 local ShopMain = {}
 
@@ -36,6 +41,9 @@ local abilityFrame: Frame
 local itemTemplate: Frame
 local coinsFrame: Frame
 local gamepassFrame: Frame
+local missingFundsFrame : Frame
+
+local missingFundsOpen = 0
 
 local initialized = false
 
@@ -68,6 +76,19 @@ local function wireHandlers()
     end)
 end
 
+function ShopMain.missingFunds(amount : number)
+    if not missingFundsFrame then
+        return
+    end
+    missingFundsOpen = os.time()
+    missingFundsFrame.Visible = true
+    missingFundsFrame.Window.AmountMissing.Text = "You are missing " .. string.format("<font color='rgb(255,205,23)'>%dC</font>", amount)
+
+    local errorBlip = "rbxassetid://70373378044427"
+	SoundPlayer.playSound(errorBlip, { volume = 1.5 })
+    VibrationService.light()
+end
+
 function ShopMain.onProfileLoaded()
     if initialized then
         ShopExtraLives.refresh()
@@ -95,6 +116,9 @@ function ShopMain.onProfileLoaded()
     abilityFrame = main:WaitForChild("Abilities")
     coinsFrame = main:WaitForChild("Coins")
     gamepassFrame = main:WaitForChild("Gamepasses")
+    missingFundsFrame = main:WaitForChild("MissingFunds")
+
+    missingFundsFrame.Visible = false
 
     itemTemplate = shopGui:WaitForChild("ItemTemplate")
 
@@ -103,15 +127,41 @@ function ShopMain.onProfileLoaded()
 
     -- Initialize submodules
     ShopExtraLives.start(extraLifeFrame, itemTemplate)
-    ShopAbilities.start(abilityFrame, itemTemplate)
+    ShopAbilities.start(abilityFrame, itemTemplate , ShopMain.missingFunds)
     ShopShovels.start(shovelsFrame, itemTemplate)
     ShopCoins.start(coinsFrame, itemTemplate)
     ShopGamepass.start(gamepassFrame, itemTemplate)
+
+    RunService:BindToRenderStep("autoClosePopup", Enum.RenderPriority.Last.Value, function()
+        
+        if missingFundsFrame.Visible then
+            
+            missingFundsFrame.Window.AutoClosing.Text = "Auto closing in " .. tostring(math.max(0, AUTO_HIDE_SECONDS - (os.time() - missingFundsOpen))) .. "s"
+            if os.time() - missingFundsOpen >= AUTO_HIDE_SECONDS then
+                missingFundsFrame.Visible = false
+            end
+
+        end
+
+    end)
+
+    missingFundsFrame.Window.NoButton.Clickable.Activated:Connect(function()
+        missingFundsFrame.Visible = false
+    end)
+
+    missingFundsFrame.Window.YesButton.Clickable.Activated:Connect(function()
+        missingFundsFrame.Visible = false
+        ShopMain.setFrame(coinsFrame, "Coins")
+    end)
 
     initialized = true
     ShopMain.setFrame(shovelsFrame, "Shovels")
 
 end
+
+
+
+
 
 function ShopMain.setFrame(frame: Frame, title: string)
     if not shopGui then

@@ -6,6 +6,7 @@ local AlertSystem = require(ClientModuleDirectory.Gui.AlertSystem)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local ParticleText = require(ClientModuleDirectory.Gui.ParticleText)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local Debris = game:GetService("Debris")
 local UserInputService = game:GetService("UserInputService")
 local ClientLavaManager = require(ClientModuleDirectory.ClientLavaManager)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
@@ -22,6 +23,7 @@ local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
 local VibrationService = require(ClientModuleDirectory.VibrationService)
 local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
+local ParticlePlayer = require(ClientModuleDirectory.ParticlePlayer)
 
 local lastMousePos
 
@@ -177,6 +179,24 @@ function MiscBindings.init()
 
 	ClientStateTracker.connectIntermission(function()
 		TouchButtons.setVisiblePowerUpButton(false)
+	end)
+
+	RemoteEventHandler.newEventConnection("EXPLOSION", function(pos : Vector3, radius : number)
+		if pos and radius then
+			local explosionSound = "rbxassetid://5801257793" -- explosion sound
+			SoundPlayer.queuePositionalSound(explosionSound, pos, { volume = 0.5 })
+			if ParticlePlayer.getVisible() then
+				local explosionEffect = Instance.new("Explosion")
+				explosionEffect.Position = pos
+				explosionEffect.BlastRadius = math.max(1 , radius)
+				explosionEffect.BlastPressure = 0
+				explosionEffect.Parent = workspace
+				Debris:AddItem(explosionEffect, 5)
+			end
+		end
+		
+		
+
 	end)
 
 end

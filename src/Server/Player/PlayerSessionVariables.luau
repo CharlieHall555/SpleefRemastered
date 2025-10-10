@@ -10,6 +10,7 @@ local default = {
 	coinMultiplier = 1,
 	ownedGamepasses = {},
 	isVip = false,
+	abilityActive = false,
 }
 
 local cache: { [number]: {} } = {}

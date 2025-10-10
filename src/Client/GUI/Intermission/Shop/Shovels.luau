@@ -9,6 +9,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local ShovelsData = require(ClientModuleDirectory.ShovelsData)
 
@@ -157,6 +158,10 @@ function ShopShovels.start(frame: Frame, template: Frame)
     UserProfile.setOnUpdateCallback(function(valueName, newValue)  
         loadItems()
     end , "shovel")
+
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        shovelsFrame.ScrollingFrame.ScrollBarThickness = 10
+    end
     
 end
 

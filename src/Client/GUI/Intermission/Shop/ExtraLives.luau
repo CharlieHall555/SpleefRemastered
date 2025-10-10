@@ -12,6 +12,8 @@ local ShopItem = require(ClientModuleDirectory.ShopItem)
 -- Data source of purchasable extra lives (array of ShopItem.ShopItem)
 local ExtraLivesData = require(ClientModuleDirectory.ExtraLives)
 
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+
 local LocalPlayer = Players.LocalPlayer
 
 local ShopExtraLives = {}
@@ -80,6 +82,10 @@ function ShopExtraLives.start(frame: Frame, template: Frame)
             currentLivesLabel.Text = "Respawns : " .. (newValue or "0")
         end
     end, "respawns")
+
+    if PlatformDetector.getPlatform() == "MOBILE" then
+        extraLifeFrame.ScrollingFrame.ScrollBarThickness = 10
+    end
 
     loadItems()
 end

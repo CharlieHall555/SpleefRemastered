@@ -10,6 +10,7 @@ local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
 local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
+local AbilityDefinitions = require(ModuleDirectory.Abilities.Definitions)
 
 local ServerCommands = {}
 
@@ -147,48 +148,50 @@ function ServerCommands.init()
 		end
 	)
 
-	connectToTrigger(createCommand("giveShovel", "/giveShovel", 255),
+	connectToTrigger(
+		createCommand("giveShovel", "/giveShovel", 255),
 		function(originTextSource: TextSource, unfilteredText: string)
-		local caller = getOriginPlayer(originTextSource)
-		if not caller then
-			return
-		end
-
-		-- Extract quoted shovel name and optional remainder (player ident)
-		-- Matches:
-		--   /giveShovel "VIP"
-		--   /giveShovel "VIP" fazeNinja
-		--   /giveShovel    "VIP"     Some Display Name
-		local shovelName, remainder = unfilteredText:match('^%s*/giveShovel%s+"(.-)"%s*(.*)$')
-
-		if not shovelName or shovelName == "" then
-			systemMessage(caller, 'Usage: /giveShovel "ShovelNameHere" [player]')
-			return
-		end
-
-		local target: Player? = nil
-		remainder = trim(remainder or "")
-
-		if remainder ~= "" then
-			-- support spaces in display names
-			target = findPlayerByIdentifier(remainder)
-			if not target then
-				systemMessage(caller, ("Player '%s' not found."):format(remainder))
+			local caller = getOriginPlayer(originTextSource)
+			if not caller then
 				return
 			end
-		else
-			target = caller
-		end
 
-		local ok = ShovelCustomization.giveShovel(target, shovelName)
+			-- Extract quoted shovel name and optional remainder (player ident)
+			-- Matches:
+			--   /giveShovel "VIP"
+			--   /giveShovel "VIP" fazeNinja
+			--   /giveShovel    "VIP"     Some Display Name
+			local shovelName, remainder = unfilteredText:match('^%s*/giveShovel%s+"(.-)"%s*(.*)$')
 
-		if ok then
-			local who = (caller and caller.Name) or "SYSTEM"
-			systemMessage(caller, ('[SHOVEL] %s gave shovel "%s" to %s.'):format(who, shovelName, target.Name))
-		else
-			systemMessage(caller, "[SHOVEL] Failed to give shovel.")
+			if not shovelName or shovelName == "" then
+				systemMessage(caller, 'Usage: /giveShovel "ShovelNameHere" [player]')
+				return
+			end
+
+			local target: Player? = nil
+			remainder = trim(remainder or "")
+
+			if remainder ~= "" then
+				-- support spaces in display names
+				target = findPlayerByIdentifier(remainder)
+				if not target then
+					systemMessage(caller, ("Player '%s' not found."):format(remainder))
+					return
+				end
+			else
+				target = caller
+			end
+
+			local ok = ShovelCustomization.giveShovel(target, shovelName)
+
+			if ok then
+				local who = (caller and caller.Name) or "SYSTEM"
+				systemMessage(caller, ('[SHOVEL] %s gave shovel "%s" to %s.'):format(who, shovelName, target.Name))
+			else
+				systemMessage(caller, "[SHOVEL] Failed to give shovel.")
+			end
 		end
-	end)
+	)
 
 	connectToTrigger(createCommand("giveCoins", "/coins", 255), function(originTextSource, unfilteredText)
 		local caller = getOriginPlayer(originTextSource)
@@ -228,7 +231,7 @@ function ServerCommands.init()
 		-- apply XP
 		local ok, err = pcall(function()
 			CoinManager.giveCoins(target, amount)
-			EconomyAnalytics.logCoinsTransaction(target , amount , "Source" , "Admin")
+			EconomyAnalytics.logCoinsTransaction(target, amount, "Source", "Admin")
 		end)
 
 		if ok then
@@ -236,6 +239,79 @@ function ServerCommands.init()
 			systemMessage(caller, ("[COINS] %s gave %d coins to %s."):format(who, amount, target.Name))
 		else
 			systemMessage(caller, "[COINS] Failed to give coins: " .. tostring(err))
+		end
+	end)
+
+	connectToTrigger(createCommand("giveAbility", "/giveAbility", 255), function(originTextSource, unfilteredText)
+		local caller = getOriginPlayer(originTextSource)
+		local argsText = trim(unfilteredText or "")
+		local parts = {}
+
+		if not caller then
+			return
+		end
+
+		-- split argsText by spaces
+		for word in string.gmatch(argsText, "%S+") do
+			table.insert(parts, word)
+		end
+
+		print(parts)
+
+		if #parts < 2 then
+			systemMessage(caller, "Usage: /giveAbility <ability>")
+			return
+		end
+
+		-- remove all double quotes from the ability name
+		local abilityName = parts[2]:gsub('"', "")
+
+		local abilities = PlayerData.getAbilities(caller)
+
+		if AbilityDefinitions[abilityName] == nil then
+			systemMessage(caller, "No such ability: " .. abilityName)
+			return
+		end
+
+		if not table.find(abilities, abilityName) then
+			PlayerData.addAbility(caller, abilityName)
+			systemMessage(caller, "Gave you the ability " .. abilityName)
+		else
+			systemMessage(caller, "You already have that ability.")
+		end
+	end)
+
+	connectToTrigger(createCommand("setAbility", "/setAbility", 1), function(originTextSource, unfilteredText)
+		local caller = getOriginPlayer(originTextSource)
+		local argsText = trim(unfilteredText or "")
+		local parts = {}
+
+		if not caller then
+			return
+		end
+
+		-- split argsText by spaces
+		for word in string.gmatch(argsText, "%S+") do
+			table.insert(parts, word)
+		end
+
+		print(parts)
+
+		if #parts < 2 then
+			systemMessage(caller, "Usage: /setAbility <ability>")
+			return
+		end
+
+		-- remove all double quotes from the ability name
+		local abilityName = parts[2]:gsub('"', "")
+
+		local abilities = PlayerData.getAbilities(caller)
+
+		if table.find(abilities, abilityName) then
+			PlayerData.setAbility(caller, abilityName)
+			systemMessage(caller, "Set your ability to " .. abilityName)
+		else
+			systemMessage(caller, "You don't have that ability.")
 		end
 	end)
 

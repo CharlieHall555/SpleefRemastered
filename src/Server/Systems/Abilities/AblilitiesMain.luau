@@ -5,6 +5,8 @@ local AbilitiesDefinitions = require(ModuleDirectory.Abilities.Definitions)
 local AbilitiesFunctions = require(ModuleDirectory.Abilities.Functions)
 local PlayersAlive = require(ModuleDirectory.Round.PlayersInGame)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local AbilitiesEndFunctions = require(ModuleDirectory.Abilities.EndFunctions)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local AbilitiesMain = {}
 
@@ -36,6 +38,11 @@ local function checkCooldown(player: Player, abilityName: string, cooldown: numb
 end
 
 function AbilitiesMain.init()
+
+	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player)
+		SessionVariables.setValue(player, "abilityActive", false)
+	end)
+
 	game:GetService("Players").PlayerRemoving:Connect(function(player)
 		lastUsed[player.UserId] = nil
 	end)
@@ -67,9 +74,18 @@ function AbilitiesMain.fireAbility(player: Player)
 		return
 	end
 
-	local func = AbilitiesFunctions[abilName]
-	if func then
-		func(player, player.Character)
+	local startFunc = AbilitiesFunctions[abilName]
+	if startFunc then
+		startFunc(player, player.Character)
+	end
+
+	local endFunc = AbilitiesEndFunctions[abilName]
+	if endFunc and abilDef.activeTime > 0 then
+		SessionVariables.setValue(player, "abilityActive", true)
+		task.delay(abilDef.activeTime, function()
+			SessionVariables.setValue(player, "abilityActive", false)
+			endFunc(player, player.Character)
+		end)
 	end
 
 	RemoteEventHandler.FireOnClient(player, "FIRE_ABILITY", abilName, {})

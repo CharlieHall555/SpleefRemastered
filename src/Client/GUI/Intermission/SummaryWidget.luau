@@ -154,9 +154,11 @@ function SummaryWidget.show()
 		bonusLabel.Visible = false
 	end
 
+	local timeAlive = math.min(math.floor(record.timeAlive or 0) , record.rouundLength or 0)
+
 	statsFrame.Blocks.TextLabel.Text = tostring(record.blocksDestroyed or 0)
 	statsFrame.Eliminations.TextLabel.Text = (tostring(record.eliminations or 0)) .. " KOs"
-	statsFrame.TimeAlive.TextLabel.Text = tostring(math.floor(record.timeAlive or 0)) .. "s"
+	statsFrame.TimeAlive.TextLabel.Text = tostring(timeAlive) .. "s"
 	statsFrame.Coins.TextLabel.Text = tostring(record.coinsCollected or 0) .. "C Collected"
 
 	local totalCoins = (record.coinsGained or 0) + (record.winnerBonus or 0)
