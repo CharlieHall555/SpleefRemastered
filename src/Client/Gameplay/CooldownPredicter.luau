@@ -36,16 +36,7 @@ function cooldownPredicter.onProfileLoaded()
 		local abilityCooldown = abilityDef.cooldown or 0
 		cooldown = math.clamp(abilityCooldown - (time() - lastUsed), 0, abilityCooldown)
 
-		if PlatformDetector.getPlatform() == "MOBILE" then
-			if cooldown > 0 then
-				TouchButtons.showCooldown()
-				TouchButtons.setCooldown(cooldown + 1)
-			else
-				TouchButtons.hideCooldown()
-			end
-		elseif AbilityBar.getGui() then
-			AbilityBar.setCooldown(cooldown)
-		end
+		AbilityBar.setCooldown(cooldown)
 	end)
 end
 

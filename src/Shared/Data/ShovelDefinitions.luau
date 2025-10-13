@@ -36,5 +36,13 @@ return {
         showInShop = true,
         passLink = "rbxassetid://134332109977759"
     },
+    CrystalShovel = {
+        name = "CrystalShovel",
+        displayName = "Crystal Shovel",
+        image = "rbxassetid://73421576945772",
+        cost = 500,
+        canBuy = true,
+        showInShop = true,
+    },
 
 }

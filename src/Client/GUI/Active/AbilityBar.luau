@@ -23,6 +23,28 @@ local abilityBarMoveable : Frame?
 local abilityText : TextLabel?
 local cooldownText : TextLabel?
 
+local HIGHLIGHT_COLOR = Color3.fromRGB(241, 241, 241)
+local DARK_COLOR = Color3.fromRGB(37, 37, 37)
+
+local function isTouch(input: InputObject): boolean
+	return input.UserInputType == Enum.UserInputType.Touch
+end
+
+local function setHighlighted(bg: Frame, img: ImageLabel, highlighted: boolean)
+	if highlighted then
+		bg.BackgroundColor3 = HIGHLIGHT_COLOR
+        if img then
+            img.ImageColor3 = DARK_COLOR
+        end
+		
+	else
+		bg.BackgroundColor3 = DARK_COLOR
+        if img then
+            img.ImageColor3 = HIGHLIGHT_COLOR
+        end
+	end
+end
+
 function AbilityBar.onProfileLoaded()
     if PlatformDetector.getPlatform() == "MOBILE" then
         AbilityBarGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("AbilityBarMobile")
@@ -32,6 +54,18 @@ function AbilityBar.onProfileLoaded()
                 onPowerUp()
             end
         end)
+
+		AbilityBarGUI.PowerUpButton.Clickable.InputEnded:Connect(function(input)
+			if isTouch(input) then
+				setHighlighted(AbilityBarGUI.PowerUpButton, nil , false)
+			end
+		end)
+
+		AbilityBarGUI.PowerUpButton.Clickable.InputBegan:Connect(function(input)
+			if isTouch(input) then
+				setHighlighted(AbilityBarGUI.PowerUpButton, nil, true)
+			end
+		end)
     else
         AbilityBarGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("AbilityBar")
     end
@@ -41,13 +75,13 @@ function AbilityBar.onProfileLoaded()
 
     cooldownText = AbilityBarGUI.Bar.Cooldown
     abilityBarMoveable = AbilityBarGUI.Bar.Moveable
-    abilityText = AbilityBarGUI:FindFirstChild("AbilityText")
+    abilityText = AbilityBarGUI:FindFirstChild("AbilityName")
 
     local abilityDef = AbilitiesData[UserProfile.getValue("ability")]
     if abilityDef then
+        currentCooldown = abilityDef.cooldown or 0
+        abilityName = abilityDef.displayName
         if abilityText then
-            currentCooldown = abilityDef.cooldown or 0
-            abilityName = abilityDef.displayName
             abilityText.Text = abilityName .. " (Q)"
         end
         
@@ -56,10 +90,12 @@ function AbilityBar.onProfileLoaded()
     UserProfile.setOnUpdateCallback(function(valueName, newValue)
         if valueName == "ability" then
             local abilityDef = AbilitiesData[newValue]
-            if abilityDef and abilityText then
+            if abilityDef then
                 currentCooldown = abilityDef.cooldown or 0
                 abilityName = abilityDef.displayName
-                abilityText.Text = abilityName .. " (Q)"
+                if abilityText then
+                    abilityText.Text = abilityName .. " (Q)"
+                end
             end
         end
     end, "ability")
@@ -82,7 +118,7 @@ function AbilityBar.getGui()
 end
 
 function AbilityBar.setOnPowerUp(fn: (() -> ())?)
-   
+   onPowerUp = fn
 end
 
 function AbilityBar.shake()

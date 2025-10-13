@@ -7,12 +7,12 @@ local ASSIST_ANGLE = math.rad(12)
 local PLAYER_STRENGTH_MULT = 1.35
 
 local overlapsParams = OverlapParams.new()
-overlapsParams.CollisionGroup = "CG_GAMEPLAY"
+overlapsParams.CollisionGroup = "CG_AIM"
 overlapsParams.FilterDescendantsInstances = {}
 overlapsParams.FilterType = Enum.RaycastFilterType.Exclude
 
 local raycastParams = RaycastParams.new()
-raycastParams.CollisionGroup = "CG_GAMEPLAY"
+raycastParams.CollisionGroup = "CG_AIM"
 raycastParams.FilterDescendantsInstances = {}
 raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 

@@ -10,6 +10,7 @@ local ClientBlockSelector = require(ClientModuleDirectory.ClientBlockSelector)
 local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
 local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
 local AbilityActionHandler = require(ClientModuleDirectory.Input.AbilityActionHandler)
+local AbilityBar = require(ClientModuleDirectory.Gui.AbilityBar)
 
 local Controls
 
@@ -104,7 +105,7 @@ function MobileControls.onProfileLoaded()
 	if PlatformDetector.getPlatform() == "MOBILE" then
 		TouchButtons.setJumpCallback(onJumpPressed)
 		TouchButtons.setActionCallback(ActionHandler.mainAttack)
-		TouchButtons.setPowerUpCallback(AbilityActionHandler.useAbility)
+		AbilityBar.setOnPowerUp(AbilityActionHandler.useAbility)
 
 		ModeDetector.connectModeChange(function(Mode)
 			if Mode == "MINE" then

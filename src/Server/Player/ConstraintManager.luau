@@ -42,7 +42,7 @@ function ConstraintManager.init()
 
 	ProfileManager.setFieldConstraint("shovel", {
 		type = "whitelist",
-		allowedValues = { "DEFAULT", "Debug" ,"GOLD", "ICE", "SHADOW", "VIP"},
+		allowedValues = { "DEFAULT", "Debug" ,"GOLD", "ICE", "SHADOW", "VIP" , "CrystalShovel" },
 	})
 
 	ProfileManager.setFieldConstraint("ability" , {
@@ -58,7 +58,7 @@ function ConstraintManager.init()
 
 	ProfileManager.setFieldConstraint("shovels" , {
 		type = "list",
-		allowedValues = { "DEFAULT" , "Debug" , "VIP"},
+		allowedValues = { "DEFAULT" , "Debug" , "VIP" , "CrystalShovel"},
 		canBeEmpty = false,
 	})
 end
