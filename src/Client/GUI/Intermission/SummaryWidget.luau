@@ -154,7 +154,7 @@ function SummaryWidget.show()
 		bonusLabel.Visible = false
 	end
 
-	local timeAlive = math.min(math.floor(record.timeAlive or 0) , record.rouundLength or 0)
+	local timeAlive = math.min(math.floor(record.timeAlive or 0) , record.roundLength or 0)
 
 	statsFrame.Blocks.TextLabel.Text = tostring(record.blocksDestroyed or 0)
 	statsFrame.Eliminations.TextLabel.Text = (tostring(record.eliminations or 0)) .. " KOs"

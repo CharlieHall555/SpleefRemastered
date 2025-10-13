@@ -12,6 +12,8 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 
+local onPowerUp : (() -> ())? = nil
+
 local currentCooldown : number = 0
 local abilityName : string?
 
@@ -23,27 +25,38 @@ local cooldownText : TextLabel?
 
 function AbilityBar.onProfileLoaded()
     if PlatformDetector.getPlatform() == "MOBILE" then
-        return
+        AbilityBarGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("AbilityBarMobile")
+
+        AbilityBarGUI.PowerUpButton.Clickable.Activated:Connect(function()
+            if onPowerUp then
+                onPowerUp()
+            end
+        end)
+    else
+        AbilityBarGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("AbilityBar")
     end
     
-    AbilityBarGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("AbilityBar")
+    
     AbilityBarGUI.Parent = Screens.gameHUD
 
     cooldownText = AbilityBarGUI.Bar.Cooldown
     abilityBarMoveable = AbilityBarGUI.Bar.Moveable
-    abilityText = AbilityBarGUI.AbilityName
+    abilityText = AbilityBarGUI:FindFirstChild("AbilityText")
 
     local abilityDef = AbilitiesData[UserProfile.getValue("ability")]
     if abilityDef then
-        currentCooldown = abilityDef.cooldown or 0
-        abilityName = abilityDef.displayName
-        abilityText.Text = abilityName .. " (Q)"
+        if abilityText then
+            currentCooldown = abilityDef.cooldown or 0
+            abilityName = abilityDef.displayName
+            abilityText.Text = abilityName .. " (Q)"
+        end
+        
     end
 
     UserProfile.setOnUpdateCallback(function(valueName, newValue)
         if valueName == "ability" then
             local abilityDef = AbilitiesData[newValue]
-            if abilityDef then
+            if abilityDef and abilityText then
                 currentCooldown = abilityDef.cooldown or 0
                 abilityName = abilityDef.displayName
                 abilityText.Text = abilityName .. " (Q)"
@@ -66,6 +79,10 @@ end
 
 function AbilityBar.getGui()
     return AbilityBarGUI
+end
+
+function AbilityBar.setOnPowerUp(fn: (() -> ())?)
+   
 end
 
 function AbilityBar.shake()

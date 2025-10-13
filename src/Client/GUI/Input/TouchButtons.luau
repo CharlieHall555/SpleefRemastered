@@ -97,16 +97,14 @@ function TouchButtons.onLoaded()
 		jumpButtonImage = jumpButtonBg.ImageLabel
 		powerUpButtonImage = powerUpButtonBg.ImageLabel
 
-		powerUpButtonImage.Visible = (ClientStateTracker.getState() == "ACTIVE")
-		
+		powerUpButtonBg.Visible = false
+		--powerUpButtonImage.Visible = (ClientStateTracker.getState() == "ACTIVE")
 
 		powerUpButtonText = powerUpButtonBg.TextLabel
 
 		setHighlighted(actionButtonBg, actionButtonImage, false)
 		setHighlighted(jumpButtonBg, jumpButtonImage, false)
 		setHighlighted(powerUpButtonBg, powerUpButtonImage, false)
-
-		TouchButtons.setVisibleActionButton(ClientStateTracker.getState == "ACTIVE")
 
 		actionButtonClickable.InputBegan:Connect(function(input)
 			if isTouch(input) then
@@ -217,19 +215,12 @@ function TouchButtons.resizeLoop()
 
 	local _, rightInset, bottomInset = getInsets()
 
-	if powerUpButtonBg then
-		powerUpButtonBg.AnchorPoint = Vector2.new(1, 1)
-		powerUpButtonBg.Size = UDim2.fromOffset(btn, btn)
-		powerUpButtonBg.Position =
-		UDim2.new(1, -(rightInset + margin + globalShift), 1, -(bottomInset + margin + actionLift))		
-	end
-
 	-- Action: closer to the right edge and slightly higher
 	if actionButtonBg then
 		actionButtonBg.AnchorPoint = Vector2.new(1, 1)
 		actionButtonBg.Size = UDim2.fromOffset(btn, btn)
 		actionButtonBg.Position =
-			UDim2.new(1, -(rightInset + margin + globalShift + (horizontalGap*1.2)), 1, -(bottomInset + margin + (actionLift*1.75)))
+		UDim2.new(1, -(rightInset + margin + globalShift), 1, -(bottomInset + margin + actionLift))	
 	end
 
 	-- Jump: further left than the action (more inset), slightly lower
@@ -279,14 +270,18 @@ end
 
 function TouchButtons.setVisibleActionButton(value: boolean): nil
 	if PlatformDetector.getPlatform() == "MOBILE" then
-		powerUpButtonBg.Visible = value
+		actionButtonBg.Visible = value
 	end
 end
 
 function TouchButtons.setVisiblePowerUpButton(value: boolean): nil
-	if PlatformDetector.getPlatform() == "MOBILE" then
+
+	powerUpButtonBg.Visible = false
+	return
+
+	--[[if PlatformDetector.getPlatform() == "MOBILE" then
 		powerUpButtonBg.Visible = value
-	end
+	end]]
 end
 
 

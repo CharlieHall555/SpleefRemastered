@@ -44,7 +44,7 @@ local out_count = 0
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true
-rayParams.CollisionGroup = "CG_BLOCK_SELECTION"
+rayParams.CollisionGroup = "CG_AIM"
 
 local function ensureCamera(): Camera?
 	if not camera or camera.Parent == nil then
