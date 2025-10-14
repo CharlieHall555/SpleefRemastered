@@ -46,9 +46,9 @@ local function onNewCharacterAdded(player : Player, char : Model)
     local gui = char:WaitForChild(guiName, 5)
     if gui then
         if ClientStateTracker.getState() == "ACTIVE" then
-            showOverhead(gui)
-        else
             hideOverhead(gui)
+        else
+            showOverhead(gui)
         end
     end
 end
