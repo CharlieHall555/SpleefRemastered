@@ -139,7 +139,7 @@ end
 
 function RoundManager.init(): nil
 	TeleportManager.setCallback(onTeleportFail)
-	SuddenDeathTimer.Callback = function(currentT)
+	SuddenDeathTimer.StepCallback = function(currentT)
 		RemoteEventHandler.FireOnAllClients("SUDDEN_DEATH_TIMER_CHANGED", currentT)
 	end
 	SuddenDeathTimer.EndCallback = onSuddenDeathTimerEnd
