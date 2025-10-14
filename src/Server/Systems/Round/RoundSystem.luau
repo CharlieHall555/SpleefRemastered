@@ -164,7 +164,7 @@ end
 function RoundSystem.onSTARTING()
     currentRound = {
         startingPlayers = table.clone(PlayerPool.getActivePool()),
-        startTime = time(),
+        startTime = os.clock(),
         gamemode = "Spleef",
     }
     for _, player in ipairs(PlayerPool.getActivePool()) do

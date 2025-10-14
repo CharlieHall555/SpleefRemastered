@@ -31,14 +31,6 @@ local function count(list)
     return 0
 end
 
--- Utility: server time (fallback)
-local function now()
-    if workspace.GetServerTimeNow then
-        return workspace:GetServerTimeNow()
-    end
-    return time()
-end
-
 -- Clamp helper
 local function clamp(n, lo, hi)
     return math.max(lo, math.min(hi, n))
@@ -82,7 +74,7 @@ local function calcXp(winner: boolean, timeAlive: number, blocksDestroyed: numbe
 end
 
 function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
-    local roundEnd = now()
+    local roundEnd = os.clock()
 
     for _, eachPlayer in ipairs(round.startingPlayers or {}) do
         if eachPlayer and eachPlayer.Parent then
@@ -114,6 +106,9 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
             LevelController.giveXp(eachPlayer , xpGained)
             EconomyAnalytics.logCoinsTransaction(eachPlayer , totalCoins , "Source" , "Gameplay")
 
+            if isWinner then
+                tAlive = roundEnd - round.startTime -- winners are alive full round
+            end
 
             local summary: EndSummary = {
                 timeAlive = tAlive,

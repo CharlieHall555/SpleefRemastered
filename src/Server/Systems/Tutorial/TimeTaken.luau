@@ -9,7 +9,7 @@ function TimeTaken.start(player: Player)
 		warn("[TimeTaken] Tried to start with invalid player")
 		return
 	end
-	startTimes[player.UserId] = os.time()
+	startTimes[player.UserId] = os.clock()
 end
 
 -- Get the time elapsed since start() was called for this player
@@ -20,7 +20,7 @@ function TimeTaken.get(player: Player): number
 	end
 	local start = startTimes[player.UserId]
 	if start then
-		return os.time() - start
+		return os.clock() - start
 	else
 		return 0
 	end

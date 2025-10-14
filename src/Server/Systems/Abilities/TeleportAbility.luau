@@ -24,7 +24,7 @@ function TeleportAbility.init()
 
     RemoteEventHandler.newEventConnection("REQUEST_TELEPORT" , function(player : Player , block : Part)
 
-        if os.time() - (lastTeleport[player.UserId] or 0) < TELEPORT_COOLDOWN then
+        if os.clock() - (lastTeleport[player.UserId] or 0) < TELEPORT_COOLDOWN then
             return
         end
 
@@ -32,7 +32,7 @@ function TeleportAbility.init()
             return
         end
 
-        lastTeleport[player.UserId] = os.time()
+        lastTeleport[player.UserId] = os.clock()
 
         local char : Model = player.Character
 

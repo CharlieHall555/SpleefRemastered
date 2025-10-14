@@ -80,7 +80,7 @@ function ShopMain.missingFunds(amount : number)
     if not missingFundsFrame then
         return
     end
-    missingFundsOpen = os.time()
+    missingFundsOpen = os.clock()
     missingFundsFrame.Visible = true
     missingFundsFrame.Window.AmountMissing.Text = "You are missing " .. string.format("<font color='rgb(255,205,23)'>%dC</font>", amount)
 
@@ -136,8 +136,8 @@ function ShopMain.onProfileLoaded()
         
         if missingFundsFrame.Visible then
             
-            missingFundsFrame.Window.AutoClosing.Text = "Auto closing in " .. tostring(math.max(0, AUTO_HIDE_SECONDS - (os.time() - missingFundsOpen))) .. "s"
-            if os.time() - missingFundsOpen >= AUTO_HIDE_SECONDS then
+            missingFundsFrame.Window.AutoClosing.Text = "Auto closing in " .. tostring(math.max(0, AUTO_HIDE_SECONDS - (os.clock() - missingFundsOpen))) .. "s"
+            if os.clock() - missingFundsOpen >= AUTO_HIDE_SECONDS then
                 missingFundsFrame.Visible = false
             end
 
