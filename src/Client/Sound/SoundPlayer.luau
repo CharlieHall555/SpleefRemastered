@@ -14,26 +14,38 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local Config = require(ClientModuleDirectory.Config)
 local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local Workspace = game:GetService("Workspace")
 
-local SoundPlayer = {}
+local SoundPlayer = {} :: any
 
 local activePlayers: { SpatialSoundPlayer } = {}
 local idlePlayers: { SpatialSoundPlayer } = {}
 local queuedSounds: { { soundId: string, position: Vector3 } } = {}
-local playingSounds: { [number]: Sound } = {}
 
+-- non-spatial sound tracking
+local playingSounds: { [number]: Sound } = {}
 local counter = 0
 local isMuted = false
+
+-- cache of reusable non-spatial sounds by normalized id
+type CacheBucket = { idle: { Sound }, active: { Sound } }
+local soundCache: { [string]: CacheBucket } = {}
+local endedHandlers: { [Sound]: RBXScriptConnection } = {}
 
 -- toggle listeners
 local _toggleListeners: { [number]: (enabled: boolean) -> nil } = {}
 local _nextToggleUid = 1
 
+local function normalizeId(soundId: string): string
+    if soundId:match("^rbxassetid://") then
+        return soundId
+    else
+        return "rbxassetid://" .. soundId
+    end
+end
+
 local function fireToggle(enabled: boolean)
-    -- copy to avoid mutation during iteration
     local snapshot: { (enabled: boolean) -> nil } = {}
     for _, cb in pairs(_toggleListeners) do
         table.insert(snapshot, cb)
@@ -43,11 +55,60 @@ local function fireToggle(enabled: boolean)
     end
 end
 
+local function getBucket(id: string): CacheBucket
+    local bucket = soundCache[id]
+    if not bucket then
+        bucket = { idle = {}, active = {} }
+        soundCache[id] = bucket
+    end
+    return bucket
+end
+
+local function createCachedSound(id: string): Sound
+    local sound = Instance.new("Sound")
+    sound.SoundId = id
+    sound.Parent = SoundService
+    sound:SetAttribute("cacheId", id)
+    endedHandlers[sound] = sound.Ended:Connect(function()
+        local pid = sound:GetAttribute("playerId")
+        if typeof(pid) == "number" then
+            playingSounds[pid] = nil
+        end
+        local cacheId = sound:GetAttribute("cacheId")
+        if typeof(cacheId) == "string" then
+            local bucket = soundCache[cacheId]
+            if bucket then
+                -- move from active to idle
+                for i, s in ipairs(bucket.active) do
+                    if s == sound then
+                        table.remove(bucket.active, i)
+                        break
+                    end
+                end
+                table.insert(bucket.idle, sound)
+            end
+        end
+    end)
+    return sound
+end
+
+local function acquireSound(id: string): Sound
+    local bucket = getBucket(id)
+    local sound: Sound
+    if #bucket.idle > 0 then
+        sound = table.remove(bucket.idle, 1)
+    else
+        sound = createCachedSound(id)
+    end
+    table.insert(bucket.active, sound)
+    return sound
+end
+
 function SoundPlayer.setMuted(value: boolean): nil
     local wasEnabled = not isMuted
     isMuted = value
 
-    if isMuted == false then
+    if isMuted then
         for _, eachSound: Sound in playingSounds do
             eachSound:Stop()
         end
@@ -64,7 +125,6 @@ function SoundPlayer.getIsMuted(): boolean
 end
 
 function SoundPlayer.init()
-    -- create pool of spatial players
     for _ = 1, Config.N_SOUND_PLAYERS do
         local newPart = Instance.new("Part")
         newPart.Transparency = 1
@@ -87,7 +147,6 @@ function SoundPlayer.init()
         table.insert(idlePlayers, player)
     end
 
-    -- process queued sounds whenever a player frees up
     RunService.Heartbeat:Connect(function()
         if #queuedSounds > 0 and #idlePlayers > 0 then
             local req = table.remove(queuedSounds, 1)
@@ -98,36 +157,26 @@ end
 
 function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3, options: SoundOptions?): nil
     options = options or {}
-    -- if no free players, queue request
     if #idlePlayers == 0 then
         table.insert(queuedSounds, { soundId = soundId, position = position })
         return
     end
 
-    -- take one from idle
     local player: SpatialSoundPlayer = table.remove(idlePlayers, 1)
     player.inUse = true
     table.insert(activePlayers, player)
 
-    -- parent and position
     player.part.Parent = Workspace
     player.part.Position = position
 
     player.sound.Volume = options.volume or 0.5
     player.sound.PlaybackSpeed = options.playbackSpeed or 1
-    -- set sound asset
-    if not soundId:match("^rbxassetid://") then
-        player.sound.SoundId = "rbxassetid://" .. soundId
-    else
-        player.sound.SoundId = soundId
-    end
+    player.sound.SoundId = normalizeId(soundId)
 
-    -- play
     if not isMuted then
         player.sound:Play()
     end
 
-    -- cleanup when finished
     player.sound.Ended:Connect(function()
         for idx, p in ipairs(activePlayers) do
             if p == player then
@@ -151,29 +200,20 @@ end
 function SoundPlayer.playSound(soundId: string, options: SoundOptions?): Sound
     options = options or {}
 
-    local sound = Instance.new("Sound")
-    sound.Parent = SoundService
+    local id = normalizeId(soundId)
+    local sound = acquireSound(id)
+
     sound.Volume = options.volume or 0.5
     sound.Looped = options.looped or false
     sound.PlaybackSpeed = options.playbackSpeed or 1
+
     sound:SetAttribute("playerId", counter)
     playingSounds[counter] = sound
     counter += 1
 
-    if not soundId:match("^rbxassetid://") then
-        sound.SoundId = "rbxassetid://" .. soundId
-    else
-        sound.SoundId = soundId
-    end
-
     if not isMuted then
         sound:Play()
     end
-
-    sound.Ended:Connect(function()
-        playingSounds[sound:GetAttribute("playerId")] = nil
-        sound:Destroy()
-    end)
 
     return sound
 end
@@ -192,7 +232,6 @@ end
 return SoundPlayer
 
 --[[ Suggestions:
-- Consider renaming setInMuted to setMuted for clarity.
-- SoundOptions currently supports volume, playbackSpeed, looped; consider centralizing defaults in Config.
-- You may want an explicit SoundPlayer.setEnabled(bool) that mirrors getIsMuted for clearer semantics.
+- Consider adding a max pool size per sound id in Config to cap memory if many variants are played.
+- If you need per-play 3D effects (e.g., equalizer), reset those on acquisition to avoid state carry-over.
 ]]

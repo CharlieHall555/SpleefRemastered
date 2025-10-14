@@ -7,6 +7,7 @@ local PlayersAlive = require(ModuleDirectory.Round.PlayersInGame)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
 local AbilitiesEndFunctions = require(ModuleDirectory.Abilities.EndFunctions)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
+local SpawnProtectionManager = require(ModuleDirectory.Gameplay.SpawnProtectionManager)
 
 local AbilitiesMain = {}
 
@@ -71,6 +72,10 @@ function AbilitiesMain.fireAbility(player: Player)
 	end
 
 	if PlayersAlive.isAlive(player) == false then
+		return
+	end
+
+	if SpawnProtectionManager.isActive(player) then
 		return
 	end
 

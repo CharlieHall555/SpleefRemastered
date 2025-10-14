@@ -11,6 +11,8 @@ local default = {
 	ownedGamepasses = {},
 	isVip = false,
 	abilityActive = false,
+	spawnProtectionActive = false,
+	hasUsedRespawn = false,
 }
 
 local cache: { [number]: {} } = {}
@@ -56,7 +58,7 @@ end
 
 function PlayerSessionVariables.setValue(player: Player, valueName: string, value: any): {}
 	if not cache[player.UserId] then
-		cache[player.UserId] = {}
+		PlayerSessionVariables.create(player)
 	end
 
 	cache[player.UserId][valueName] = value

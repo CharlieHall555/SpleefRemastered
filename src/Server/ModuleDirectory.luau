@@ -142,7 +142,7 @@ ModuleDirectory.Player.PlayerData = serverRoot.Player.PlayerData
 ModuleDirectory.Player.Leaderstats = serverRoot.Player.Leaderstats
 ModuleDirectory.Player.PlayerManager = serverRoot.Player.PlayerManager
 ModuleDirectory.Player.PlayerPositionTracker = serverRoot.Player.PlayerPositionTracker
-ModuleDirectory.Player.SessionVariables = serverRoot.Player.PlayerSessionVariables
+ModuleDirectory.Player.SessionVariables = serverRoot.Player.SessionVariables
 ModuleDirectory.Player.ProfileManager = serverRoot.Player.ProfileManager
 ModuleDirectory.Player.ConstraintManager = serverRoot.Player.ConstraintManager
 

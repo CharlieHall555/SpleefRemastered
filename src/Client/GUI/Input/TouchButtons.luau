@@ -275,13 +275,10 @@ function TouchButtons.setVisibleActionButton(value: boolean): nil
 end
 
 function TouchButtons.setVisiblePowerUpButton(value: boolean): nil
-
-	powerUpButtonBg.Visible = false
-	return
-
-	--[[if PlatformDetector.getPlatform() == "MOBILE" then
-		powerUpButtonBg.Visible = value
-	end]]
+	--power up button is disabled for now
+	if powerUpButtonBg then
+		powerUpButtonBg.Visible = false
+	end
 end
 
 

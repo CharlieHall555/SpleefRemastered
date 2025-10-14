@@ -1,3 +1,5 @@
+local LocalizationService = game:GetService("LocalizationService")
+local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
@@ -7,6 +9,7 @@ local SpawnProtectionManager = require(ModuleDirectory.Gameplay.SpawnProtectionM
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Map = require(ModuleDirectory.Map.Map)
 local SuddenDeath = require(ModuleDirectory.Round.SuddenDeath)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local RespawnManager = {}
 
@@ -29,11 +32,25 @@ function RespawnManager.init()
 	end)
 end
 
+function RespawnManager.onRoundEnd()
+
+	for _, player in Players:GetPlayers() do
+		SessionVariables.setValue(player, "hasUsedRespawn", false)
+		SessionVariables.setValue(player, "spawnProtectionActive", false)
+	end
+
+end
+
 function RespawnManager.setMap(newMap: Map.Map?)
 	currentMap = newMap
 end
 
 function RespawnManager.canRespawn(player: Player): boolean
+
+	if SessionVariables.getValue(player, "spawnProtectionActive") == true then
+		return false
+	end
+
 	if player.character == nil then
 		return false
 	end
@@ -51,6 +68,9 @@ end
 
 function RespawnManager.respawnPlayer(player): boolean
 	if RespawnManager.canRespawn(player) then
+
+		SessionVariables.setValue(player, "hasUsedRespawn", true)
+
 		local topLayer = currentMap:getTopLayer()
 		local randomBlock = topLayer:getRandomBlock()
 		local Position = Vector3.new(0, 150, 0)
@@ -65,7 +85,11 @@ function RespawnManager.respawnPlayer(player): boolean
 			return false
 		end
 
-		PlayerData.incrementRespawns(player , -1)
+		local respawns = PlayerData.getRespawns(player) -- prevent respawns going negative
+		if respawns > 0 then
+			PlayerData.incrementRespawns(player , -1)
+		end
+
 		RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "ACTIVE")
 		SpawnProtectionManager.apply(player)
 		PlayersInGame.addPlayer(player, true)

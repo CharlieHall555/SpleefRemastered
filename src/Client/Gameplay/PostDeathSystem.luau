@@ -9,16 +9,15 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local RespawnScreen = require(ClientModuleDirectory.Gui.RespawnScreen)
 local EliminationScreen = require(ClientModuleDirectory.Gui.EliminationScreen)
 local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
+local PlayerSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
 
 local PostDeathSystem = {}
 
-local hasUsedRespawn = false
 local debounceActive = false
 local CHECK_DELAY_SECONDS = 1
 local DEBOUNCE_WINDOW = 1 -- ignore duplicate death events within this window
 
 local function resetState()
-	hasUsedRespawn = false
 	debounceActive = false
 end
 
@@ -30,8 +29,6 @@ function PostDeathSystem.init()
 	end)
 
 	RemoteEventHandler.newEventConnection("RESPAWN_GRANTED", function(_player)
-		hasUsedRespawn = true
-		-- allow future death handling after a successful respawn
 		debounceActive = false
 	end)
 
@@ -55,7 +52,7 @@ function PostDeathSystem.init()
 
 			local state = ClientStateTracker.getServerState()
 			if state == "ACTIVE" or state == "PREPARING" then
-				if hasUsedRespawn then
+				if (PlayerSessionVariables.getValue("hasUsedRespawn") or false) == true then
 					EliminationScreen.show(player, eliminator)
 				else
 					RespawnScreen.show(LocalPlayer, eliminator)

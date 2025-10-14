@@ -1,12 +1,15 @@
-local LocalizationService = game:GetService("LocalizationService")
+local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local ForceFieldTemplate = game:GetService("ServerStorage"):WaitForChild("Models"):WaitForChild("ForceFieldTemplate")
 local Timer = require(ModuleDirectory.Timer)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local SpawnProtectionManager = {}
 
 local SPAWN_PROTECTION_DURATION = 5
+
+local activeCooldowns = {}
 
 local function calcModelMass(model: Model)
 	local out = 0
@@ -20,12 +23,33 @@ local function calcModelMass(model: Model)
 end
 
 function SpawnProtectionManager.init()
+
+	RemoteEventHandler.newEventConnection("PLAYER_LOADED" , function(player)
+		
+		activeCooldowns[player.UserId] = false
+		SessionVariables.setValue(player, "spawnProtectionActive", false)
+
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		
+
+
+	end)
+
+end
+
+function SpawnProtectionManager.isActive(player)
+	return (activeCooldowns[player.UserId] or false) == true
 end
 
 function SpawnProtectionManager.apply(player: Player)
 	if player.Character == nil then
 		return
 	end
+
+	activeCooldowns[player.UserId] = true
+	SessionVariables.setValue(player, "spawnProtectionActive", true)
 
 	local newForceField = ForceFieldTemplate:Clone()
 
@@ -49,11 +73,15 @@ function SpawnProtectionManager.apply(player: Player)
 	newForce.Attachment0 = player.Character.HumanoidRootPart:FindFirstChild("RootAttachment")
 		or player.Character.HumanoidRootPart:FindFirstAncestorOfClass("Attachment")
 
-	newTimer.Callback = function(time)
+	newTimer.StepCallback = function(time)
 		timerLabel.Text = tostring(math.floor(time)) .. "s"
 	end
 
 	newTimer.EndCallback = function()
+
+		activeCooldowns[player.UserId] = false
+		SessionVariables.setValue(player, "spawnProtectionActive", false)
+
 		if newForce then
 			newForce:Destroy()
 		end

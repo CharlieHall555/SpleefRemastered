@@ -90,6 +90,7 @@ local function onRoundEnding(currentRound)
 	--ToolManager.reset()
 	AmmoPickupManager.stop()
 	AmmoManager.reset()
+	RespawnManager.onRoundEnd()
 	RespawnManager.setMap(nil)
 	BlockFactory.stopAllTweens()
 	local Winner

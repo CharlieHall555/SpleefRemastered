@@ -7,7 +7,7 @@ export type Timer = {
 	Time: number,
 	State: string,
 	EndCallback: () -> (),
-	Callback: (time : number) -> (),
+	StepCallback: (time : number) -> (),
 	Connection: RBXScriptConnection?,
 
 	Start: (self: Timer , startTime : number) -> nil,
@@ -19,8 +19,8 @@ export type Timer = {
 
 local function tickdown(Timer: Timer, deltaTime: number)
 	Timer.Time -= deltaTime
-	if Timer.Callback then
-		Timer.Callback(Timer.Time)
+	if Timer.StepCallback then
+		Timer.StepCallback(Timer.Time)
 	end
 	if Timer.Time <= 0 then
 		if Timer.Connection then
@@ -39,7 +39,7 @@ function Timer.new(): Timer
 	setmetatable(newTimer, Timer)
 	newTimer.Time = 0
 	newTimer.State = "Idle"
-	newTimer.Callback = nil
+	newTimer.StepCallback = nil
 	newTimer.EndCallback = nil
 	newTimer.Connection = nil
 	return newTimer

@@ -128,15 +128,17 @@ function ShopMain.onProfileLoaded()
     -- Initialize submodules
     ShopExtraLives.start(extraLifeFrame, itemTemplate)
     ShopAbilities.start(abilityFrame, itemTemplate , ShopMain.missingFunds)
-    ShopShovels.start(shovelsFrame, itemTemplate)
+    ShopShovels.start(shovelsFrame, itemTemplate ,  ShopMain.missingFunds)
     ShopCoins.start(coinsFrame, itemTemplate)
     ShopGamepass.start(gamepassFrame, itemTemplate)
 
     RunService:BindToRenderStep("autoClosePopup", Enum.RenderPriority.Last.Value, function()
         
         if missingFundsFrame.Visible then
+
+            local timeLeft = math.floor(math.max(0, AUTO_HIDE_SECONDS - (os.clock() - missingFundsOpen)) + 1)
             
-            missingFundsFrame.Window.AutoClosing.Text = "Auto closing in " .. tostring(math.max(0, AUTO_HIDE_SECONDS - (os.clock() - missingFundsOpen))) .. "s"
+            missingFundsFrame.Window.AutoClosing.Text = "Auto closing in " .. tostring(timeLeft) .. "s"
             if os.clock() - missingFundsOpen >= AUTO_HIDE_SECONDS then
                 missingFundsFrame.Visible = false
             end
