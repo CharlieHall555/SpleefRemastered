@@ -24,7 +24,7 @@ export type AimAssistSuggestion = {
 
 local AimAssistController = {}
 
-local DEBUG = false
+local DEBUG = true
 local _debugFolder: Folder? = nil
 local _hitStamp: BasePart? = nil
 local _radiusDisc: BasePart? = nil

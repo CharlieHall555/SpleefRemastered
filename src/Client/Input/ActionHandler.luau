@@ -23,6 +23,7 @@ local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
 local AnimationManager = require(ClientModuleDirectory.AnimationManager)
 local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local VibrationService = require(ClientModuleDirectory.VibrationService)
+local Screens = require(ClientModuleDirectory.Gui.Screens)
 
 local camera: Camera? = nil
 
@@ -44,7 +45,7 @@ local out_count = 0
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true
-rayParams.CollisionGroup = "CG_AIM"
+rayParams.CollisionGroup = "default"
 
 local function ensureCamera(): Camera?
 	if not camera or camera.Parent == nil then
@@ -169,10 +170,9 @@ function ActionHandler.getDirectionMobile(spawnPart: BasePart, reticleGui: GuiOb
 		return Vector3.new(0, 0, -1)
 	end
 
-	local screenX: number, screenY: number
-	local center = (cam.ViewportSize + GuiService:GetGuiInset())* 0.5 
-	screenX, screenY = center.X, center.Y
-
+	local screenSize = Screens:getGeneralSize()
+	local center = (screenSize)* 0.5 
+	local screenX, screenY = center.X, center.Y
 
 	return directionFromScreenPoint(cam, spawnPart, screenX, screenY)
 end

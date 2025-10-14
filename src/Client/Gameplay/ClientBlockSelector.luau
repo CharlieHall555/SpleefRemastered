@@ -4,6 +4,7 @@ local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
 local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local GuiService = game:GetService("GuiService")
+local Screens = require(ClientModuleDirectory.Gui.Screens)
 
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -87,14 +88,15 @@ local function getCenterScreenRay(): Ray
     if not cam then
         return Ray.new(Vector3.zero, Vector3.zAxis)
     end
-    local inset = GuiService:GetGuiInset()
-    local center = (cam.ViewportSize + inset) * 0.5
+    --local inset = GuiService:GetGuiInset()
+    local screenSize = Screens:getGeneralSize()
+    local center = (screenSize) * 0.5
     local p = center
     local unitRay = cam:ViewportPointToRay(p.X, p.Y)
     return Ray.new(unitRay.Origin, unitRay.Direction * RAYCAST_MAX)
 end
 
-function ClientBlockSelector.getMobileSelected(tapPos: Vector2): Instance?
+function ClientBlockSelector.getMobileSelected(tapPos: Vector2): Instance? --never used as far as i can see.
     local cam = workspace.CurrentCamera
     if not cam then
         return nil

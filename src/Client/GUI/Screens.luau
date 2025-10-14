@@ -2,6 +2,8 @@ local localPlayer = game.Players.LocalPlayer
 local Root = localPlayer.PlayerScripts
 local playerGui = localPlayer.PlayerGui
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+local Camera = game.Workspace.CurrentCamera
 
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
@@ -35,6 +37,17 @@ function Screens.init()
         Screens.gameHUD.Enabled = true
     end)
 
+end
+
+function Screens:getGeneralSize()
+
+    if Screens.general then
+        return Screens.general.AbsoluteSize
+    else
+        return Camera.ViewportSize
+    end
+    
+    
 end
 
 return Screens

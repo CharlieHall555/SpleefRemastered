@@ -123,9 +123,10 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
                 xpGained = xpGained,
                 winnerBonus = math.floor(winnerBonus * coinMultiplier),
                 coinsCollected = math.floor(coinsCollected * coinMultiplier),
-                roundLength = roundEnd - round.startTime
+                roundLength = (roundEnd - round.startTime)
             }
 
+    
             print(roundEnd - round.startTime)
 
             RemoteEventHandler.FireOnClient(eachPlayer, "ROUND_SUMMARY", summary)
