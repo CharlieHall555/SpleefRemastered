@@ -49,6 +49,11 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
 
     local equippedAbility = UserProfile.getValue("ability") or ""
 
+    if item.enabled == false then
+        card.Visible = false
+        return card
+    end
+
     if item.name == equippedAbility then
         card.Price.Text = "Equipped"
         card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)

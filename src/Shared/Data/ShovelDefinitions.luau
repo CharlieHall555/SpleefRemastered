@@ -39,7 +39,7 @@ return {
     CrystalShovel = {
         name = "CrystalShovel",
         displayName = "Crystal Shovel",
-        image = "rbxassetid://73421576945772",
+        image = "rbxassetid://100746442407740",
         cost = 500,
         canBuy = true,
         showInShop = true,
