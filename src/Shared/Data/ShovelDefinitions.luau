@@ -34,7 +34,7 @@ return {
         cost = 1,
         canBuy = false,
         showInShop = true,
-        passLink = "rbxassetid://134332109977759"
+        passLink = 1502789277 -- passlink must be a number
     },
     CrystalShovel = {
         name = "CrystalShovel",

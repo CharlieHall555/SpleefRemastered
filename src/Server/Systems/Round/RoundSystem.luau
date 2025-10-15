@@ -75,16 +75,16 @@ function RoundSystem.init()
         RoundSystem.queueEvent(buildEventContext("PREPARING_TIMER_ENDED"))
     end
 
-    roundTimer.Callback = function(time: number)
+    roundTimer.StepCallback = function(time: number)
         --RemoteEventHandler.FireOnAllClients("ROUND_TIMER_CHANGED" , time)
     end
 
-    intermissionTimer.Callback = function(time: number)
+    intermissionTimer.StepCallback = function(time: number)
         RemoteEventHandler.FireOnAllClients("INTERMISSION_TIMER_CHANGED", time)
     end
 
     -- Optional: expose preparing countdown to clients if used
-    preparingTimer.Callback = function(time: number)
+    preparingTimer.StepCallback = function(time: number)
         RemoteEventHandler.FireOnAllClients("PREPARING_TIMER_CHANGED", time)
     end
 

@@ -84,11 +84,12 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 	end
 
 	local connection = card.BuyButton.Clickable.Activated:Connect(function()
+		print(item.passLink)
 		if item.passLink then
 			local success, message = pcall(function()
 				MarketplaceService:PromptGamePassPurchase(LocalPlayer, item.passLink)
 			end)
-			return
+			print(success , message)
 		elseif item.canBuy == false then
 			return
 		else
