@@ -242,6 +242,18 @@ function ServerCommands.init()
 		end
 	end)
 
+	connectToTrigger(createCommand("serverAge", "/serverAge", 1), function(originTextSource, unfilteredText)
+
+		local caller = getOriginPlayer(originTextSource)
+			
+		if not caller then
+			return
+		end
+
+		local running_time = math.floor(time())
+		systemMessage(caller, "Server Age: " .. tostring(running_time or -1) .. " seconds.")
+	end)
+
 	connectToTrigger(createCommand("giveAbility", "/giveAbility", 255), function(originTextSource, unfilteredText)
 		local caller = getOriginPlayer(originTextSource)
 		local argsText = trim(unfilteredText or "")

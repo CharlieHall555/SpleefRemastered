@@ -119,7 +119,7 @@ local function updateClients(newThrowable: Throwable.Throwable)
 		s = workspace:GetServerTimeNow(),
 		uid = newThrowable.uid,
 	}
-	RemoteEventHandler.FireOnAllClients("NEW_THROWABLE", dataToSend)
+	RemoteEventHandler.FireUnreliableOnAllClients("NEW_THROWABLE", dataToSend)
 end
 
 function ThrowableManager.newThrowable(

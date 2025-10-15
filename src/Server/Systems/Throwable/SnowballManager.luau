@@ -17,7 +17,7 @@ local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
 function SnowballManager.init()
-	RemoteEventHandler.newEventConnection("CREATE_SNOWBALL", SnowballManager.createSnowballFor)
+	RemoteEventHandler.newEventConnection("REQUEST_SNOWBALL", SnowballManager.createSnowballFor)
 	ThrowableManager.registerOnHit("snowball", SnowballManager.onHit)
 
 	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO", function(player, otherPart)
@@ -41,12 +41,16 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 			return
 		end
 
+		if block == nil then
+			return
+		end
+
 		BlockFactory.destroyById(blockId, throwable.owner)
 		if throwable.owner and PlayersInGame.isAlive(throwable.owner) then
 			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
 		end
 
-		if block.Regenerates == false then
+		if block and block.Regenerates == false then
 			RemoteEventHandler.FireOnAllClients(
 				"BLOCK_DESTROY_CONFIRMATION",
 				blockId,

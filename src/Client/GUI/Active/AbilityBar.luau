@@ -66,6 +66,19 @@ function AbilityBar.onProfileLoaded()
 				setHighlighted(AbilityBarGUI.PowerUpButton, nil, true)
 			end
 		end)
+
+        UserProfile.setOnUpdateCallback(function(valueName, newValue)
+        if valueName == "ability" then
+            local abilityDef = AbilitiesData[newValue]
+            if abilityDef then
+                currentCooldown = abilityDef.cooldown or 0
+                abilityName = abilityDef.displayName or "Powerup"
+                if AbilityBarGUI.PowerUpButton.TextLabel then
+                    AbilityBarGUI.PowerUpButton.TextLabel.Text = abilityName
+                end
+            end
+        end
+    end, "ability")
     else
         AbilityBarGUI = GuiAssets:WaitForChild("InGame"):WaitForChild("AbilityBar")
     end

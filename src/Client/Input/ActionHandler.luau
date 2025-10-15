@@ -247,7 +247,7 @@ function ActionHandler.mainAttack(action)
 		end
 
 		SoundPlayer.playSound(THROW_SOUND)
-		RemoteEventHandler.FireOnServer("CREATE_SNOWBALL", playerPosition, direction)
+		RemoteEventHandler.FireOnServer("REQUEST_SNOWBALL", playerPosition, direction)
 		ClientTutorial.onAction("SHOOT")
 	end
 end
