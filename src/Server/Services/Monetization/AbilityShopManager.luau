@@ -42,7 +42,7 @@ function AbilityShopManager.init()
         end
 
         CoinManager.takeCoins(player, definition.cost)
-        EconomyAnalytics.logCoinsTransaction(player, -definition.cost, "Sink", "Shop")
+        EconomyAnalytics.logCoinsTransaction(player, definition.cost, "Sink", "Shop")
 
         PlayerData.addAbility(player, abilityName)
         PlayerData.setAbility(player, abilityName)

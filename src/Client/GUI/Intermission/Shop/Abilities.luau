@@ -6,6 +6,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local ShopItem = require(ClientModuleDirectory.ShopItem)
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
@@ -91,6 +92,7 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
     table.insert(buttonConnections, buttonConnection)
 
     buttonConnection = card.EquipButton.Clickable.Activated:Connect(function()
+        SoundPlayer.playSound("rbxassetid://86158976528555" , {volume = 0.5})
         RemoteEventHandler.FireOnServer("REQUEST_EQUIP_ABILITY", item.name)
     end)
     table.insert(buttonConnections, buttonConnection)

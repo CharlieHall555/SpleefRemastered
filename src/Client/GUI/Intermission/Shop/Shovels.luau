@@ -6,6 +6,8 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
+
 
 local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
@@ -107,6 +109,7 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 	table.insert(buttonConnections, connection)
 
 	local connection = card.EquipButton.Clickable.Activated:Connect(function()
+		SoundPlayer.playSound("rbxassetid://86158976528555" , {volume = 0.5})
 		RemoteEventHandler.FireOnServer("REQUEST_EQUIP_SHOVEL", item.name)
 	end)
 	table.insert(buttonConnections, connection)

@@ -36,7 +36,7 @@ function ShovelShopManager.init()
         end
 
         CoinManager.takeCoins(player , definition.cost)
-        EconomyAnalytics.logCoinsTransaction(player, -definition.cost , "Sink" , "Shop")
+        EconomyAnalytics.logCoinsTransaction(player, definition.cost , "Sink" , "Shop")
 
         ShovelCustomization.giveShovel(player, shovelName)
         ShovelCustomization.equipShovel(player, shovelName)

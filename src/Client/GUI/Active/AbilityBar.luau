@@ -67,6 +67,15 @@ function AbilityBar.onProfileLoaded()
 			end
 		end)
 
+		local abilityDef = AbilitiesData[UserProfile.getValue("ability") or ""]
+		if abilityDef then
+			currentCooldown = abilityDef.cooldown or 0
+			abilityName = abilityDef.displayName or "Powerup"
+			if AbilityBarGUI.PowerUpButton.TextLabel then
+				AbilityBarGUI.PowerUpButton.TextLabel.Text = abilityName
+			end
+		end
+
         UserProfile.setOnUpdateCallback(function(valueName, newValue)
         if valueName == "ability" then
             local abilityDef = AbilitiesData[newValue]
