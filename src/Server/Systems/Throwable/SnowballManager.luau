@@ -111,8 +111,13 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 	local active = PlayersInGame.isAlive(player)
 
 	if active then
-		Onboarding.action(player, "SHOT")
+		task.spawn(function()
+			pcall(function()
+				Onboarding.action(player, "SHOT")
+			end)
+		end)
 		AmmoManager.incrementAmmo(player, -1)
+		print("decrease ammo")
 	end
 
 	ThrowableManager.newThrowable(spawnPosition, direction, "snowball", player ,active)

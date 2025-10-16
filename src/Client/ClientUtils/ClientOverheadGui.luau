@@ -19,7 +19,7 @@ local function showOverhead(gui : BillboardGui)
 end
 
 local function hideAll()
-    for _, player in ipairs(game.Players:GetPlayers()) do
+    for _, player in game.Players:GetPlayers() do
         local char = player.Character
         if char then
             local gui = char:FindFirstChild(guiName)
@@ -31,7 +31,7 @@ local function hideAll()
 end
 
 local function showAll()
-    for _, player in ipairs(game.Players:GetPlayers()) do
+    for _, player in game.Players:GetPlayers() do
         local char = player.Character
         if char then
             local gui = char:FindFirstChild(guiName)

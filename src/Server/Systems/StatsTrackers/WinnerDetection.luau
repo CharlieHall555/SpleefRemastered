@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
 
@@ -18,9 +19,9 @@ function WinnerDetection.getWinner(playerList: { Player }): Player
     for _, player in ipairs(playerList) do
         local deathTime = PlayerDeathDetector.getDeathTime(player)
 
-        if deathTime == nil then
-            table.insert(alive, player) -- still alive
-        else
+        if deathTime == nil and Players:FindFirstChild(player.Name) then
+            table.insert(alive, player) -- still alive and player is still in game
+        elseif deathTime then
             if deathTime > latestTime then
                 latestTime = deathTime
                 latest = { player }

@@ -125,7 +125,12 @@ local function normalizeConstraint(constraint: any): FieldConstraint?
 end
 
 local function getTemplateDefault(fieldName: string): any
-	return (ProfileTemplate :: any)[fieldName]
+	local defaultValue = (ProfileTemplate)[fieldName]
+	if typeof(defaultValue) == "table" then
+		return table.clone(defaultValue)
+	else
+		return defaultValue
+	end
 end
 
 local function applyConstraint(fieldName: string, value: any): any

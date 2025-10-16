@@ -1,13 +1,14 @@
---non persistent varaibles to be stored about player that may be needed by many scripts.
+-- non persistent variables to be stored about player that may be needed by many scripts.
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Players = game:GetService("Players")
 
 local PlayerSessionVariables = {}
 
+-- Use "coinsMultiplier" to match the rest of your codebase
 local default = {
 	platform = "PC",
-	coinMultiplier = 1,
+	coinsMultiplier = 1,
 	ownedGamepasses = {},
 	isVip = false,
 	abilityActive = false,
@@ -15,14 +16,15 @@ local default = {
 	hasUsedRespawn = false,
 }
 
-local cache: { [number]: {} } = {}
+
+local cache: { [number]: { [string]: any } } = {}
 
 function PlayerSessionVariables.init()
 	Players.PlayerAdded:Connect(function(player: Player)
 		PlayerSessionVariables.create(player)
 	end)
 
-	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player, platform)
+	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player, platform: string)
 		PlayerSessionVariables.setValue(player, "platform", platform)
 	end)
 
@@ -30,17 +32,22 @@ function PlayerSessionVariables.init()
 end
 
 function PlayerSessionVariables.create(player: Player)
-	if not cache[player.UserId] then
-		cache[player.UserId] = {}
+	local uid = player.UserId
+	if not cache[uid] then
+		cache[uid] = {}
 	end
 
-	for defaultKey, defaultValue in default do
-		if cache[player.UserId] and cache[player.UserId][defaultKey] == nil then
-			cache[player.UserId][defaultKey] = defaultValue
+	for defaultKey, defaultValue in pairs(default) do
+		if cache[uid][defaultKey] == nil then
+			if type(defaultValue) == "table" then
+				cache[uid][defaultKey] = table.clone(defaultValue)
+			else
+				cache[uid][defaultKey] = defaultValue
+			end
 		end
 	end
 
-	for key, value in cache[player.UserId] do
+	for key, value in pairs(cache[uid]) do
 		RemoteEventHandler.FireOnClient(player, "SESSION_VARIABLE_UPDATED", key, value, true)
 	end
 end
@@ -50,20 +57,24 @@ function PlayerSessionVariables.cleanup(player: Player)
 end
 
 function PlayerSessionVariables.getValue(player: Player, valueName: string): any
-	if not cache[player.UserId] then
-		return nil
+	local userTbl = cache[player.UserId]
+	if not userTbl then return nil end
+	local v = userTbl[valueName]
+	if typeof(v) == "table" then
+		return table.clone(v)
 	end
-	return cache[player.UserId][valueName]
+	return v
 end
 
-function PlayerSessionVariables.setValue(player: Player, valueName: string, value: any): {}
-	if not cache[player.UserId] then
+function PlayerSessionVariables.setValue(player: Player, valueName: string, value: any)
+	local uid = player.UserId
+	if not cache[uid] then
 		PlayerSessionVariables.create(player)
 	end
 
-	cache[player.UserId][valueName] = value
-    print("Set" , valueName , "to" , value)
-	RemoteEventHandler.FireOnClient(player, "SESSION_VARIABLE_UPDATED", valueName, value, false)
+	cache[uid][valueName] = value
+
+	RemoteEventHandler.FireOnClient(player, "SESSION_VARIABLE_UPDATED", valueName, cache[uid][valueName], false)
 end
 
 return PlayerSessionVariables

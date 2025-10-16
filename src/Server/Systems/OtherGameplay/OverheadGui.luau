@@ -18,7 +18,7 @@ local function giveOverhead(player : Player , character: Model)
 	newGui.WinsLabel.Text = " ["  ..tostring(PlayerData.getWins(player) or 0) .." Wins]"
 	newGui.WinsLabel.Visible = true
 
-	if PlayerSessionVariables.getValue(player , "isVIP") then
+	if (PlayerSessionVariables.getValue(player , "isVip") or false) == true then
 		newGui.NameLabel.TextColor3 = Color3.fromRGB(255, 205, 23)
 		newGui.NameLabel.Text = "[VIP] " ..  player.DisplayName
 	end

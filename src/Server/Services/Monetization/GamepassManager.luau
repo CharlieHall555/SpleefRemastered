@@ -17,7 +17,7 @@ onJoinFunctions["1502155612"] = function(player)
 end
 
 onJoinFunctions["1502789277"] = function(player)
-    PlayerSessionVariables.setValue(player , "isVIP" , true)
+    PlayerSessionVariables.setValue(player , "isVip" , true)
     ShovelCustomization.giveShovel(player , "VIP")
     Overhead.refreshForPlayer(player)
 end
@@ -29,7 +29,7 @@ onBuyFunctions["1502155612"] = function(player)
 end
 
 onBuyFunctions["1502789277"] = function(player)
-    PlayerSessionVariables.setValue(player , "isVIP" , true)
+    PlayerSessionVariables.setValue(player , "isVip" , true)
     ShovelCustomization.giveShovel(player , "VIP")
     Overhead.refreshForPlayer(player)
 end
@@ -73,7 +73,7 @@ function GamepassManager.determineOnwership(player)
         
         local success, owns = pcall(function()
             return MarketplaceService:UserOwnsGamePassAsync(player.UserId, gamepassId)
-        end)
+        end)    
 
         if success and owns then
             local ownedGamepasses = PlayerSessionVariables.getValue(player , "ownedGamepasses") or {}

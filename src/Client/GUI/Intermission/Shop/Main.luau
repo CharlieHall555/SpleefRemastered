@@ -161,10 +161,6 @@ function ShopMain.onProfileLoaded()
 
 end
 
-
-
-
-
 function ShopMain.setFrame(frame: Frame, title: string)
     if not shopGui then
         return

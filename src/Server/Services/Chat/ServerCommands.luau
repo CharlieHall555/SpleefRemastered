@@ -11,6 +11,7 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
 local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
 local AbilityDefinitions = require(ModuleDirectory.Abilities.Definitions)
+local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
 
 local ServerCommands = {}
 
@@ -148,8 +149,22 @@ function ServerCommands.init()
 		end
 	)
 
+
+	connectToTrigger(createCommand("debugThrowables" , "/debugThrowables", 255), function(originTextSource, unfilteredText)
+		local caller = getOriginPlayer(originTextSource)
+		if not caller then
+			return
+		end
+
+		ThrowableManager.toggleDebug()
+
+		local newDebugValue = ThrowableManager.getDebug() or 0
+
+		systemMessage(caller, "Throwable debug mode is now " .. tostring(newDebugValue))
+	end)
+
 	connectToTrigger(
-		createCommand("giveShovel", "/giveShovel", 255),
+		createCommand("giveShovel", "/giveShovel", 244),
 		function(originTextSource: TextSource, unfilteredText: string)
 			local caller = getOriginPlayer(originTextSource)
 			if not caller then

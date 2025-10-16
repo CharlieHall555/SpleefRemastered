@@ -36,6 +36,14 @@ local function generateUID(): string
 	return "s_" .. tostring(_nextId)
 end
 
+function ThrowableManager.toggleDebug()
+	DEBUG = not DEBUG
+end
+
+function ThrowableManager.getDebug()
+	return DEBUG
+end
+
 function ThrowableManager.init(): nil
 	for eachType, eachTable in pairs(ThrowableDefinitions) do
 		gravityTable[eachType] = Vector3.new(0, -eachTable.gravity, 0)
@@ -73,10 +81,12 @@ function ThrowableManager.mainLoop(dt: number): nil
 			stamp.CFrame = CFrame.new(newPos)
 			stamp.Anchored = true
 			stamp.CanCollide = false
+			stamp.CanQuery = false
+			stamp.CanTouch = false
 			stamp.Transparency = 0
 			stamp.BrickColor = BrickColor.new("Bright red")
 			stamp.Parent = workspace
-			Debris:AddItem(stamp, 5)
+			Debris:AddItem(stamp, 15)
 		end
 
 		-- Swept-box collision (Blockcast) between oldPos and newPos
@@ -97,10 +107,12 @@ function ThrowableManager.mainLoop(dt: number): nil
 				stamp.CFrame = CFrame.new(hit.Position)
 				stamp.Anchored = true
 				stamp.CanCollide = false
+				stamp.CanQuery = false
+				stamp.CanTouch = false
 				stamp.Transparency = 0
 				stamp.BrickColor = BrickColor.new("Parsley green")
 				stamp.Parent = workspace
-				Debris:AddItem(stamp, 5)
+				Debris:AddItem(stamp, 15)
 			end
 			ThrowableManager.onHit(th, hit)
 			ThrowableManager.removeThrowable(uid)
