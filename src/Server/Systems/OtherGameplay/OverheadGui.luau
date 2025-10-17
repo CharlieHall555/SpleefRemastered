@@ -50,8 +50,6 @@ local function giveOverhead(player : Player , character: Model)
 		newGui.NameLabel.Text = "[" .. rank .. "] " .. player.DisplayName
 		newGui.NameLabel.TextColor3 = rankColorMappings[rank] or Color3.fromRGB(255, 255, 255)
 		newGui.NameLabel.Visible = true
-	else
-		newGui.NameLabel.Visible = false
 	end
 	
 end

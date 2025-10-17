@@ -31,7 +31,6 @@ function SnowballManager.init()
 end
 
 function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult , active : boolean)
-	print("hit " .. hit.Instance.Name)
 	local blockId = hit.Instance:GetAttribute("Id")
 	if blockId then
 		local block: Block.Block = LoadedBlocks[blockId]

@@ -55,9 +55,9 @@ end
 
 
 function RoundStatus.outOfAmmo(value: boolean)
-	if StatusGUI then
-		StatusGUI.AmmoWarning.Visible = value
-	end
+	--if StatusGUI then
+	--	StatusGUI.AmmoWarning.Visible = value
+	--end
 end
 
 function RoundStatus.onProfileLoaded()
@@ -98,15 +98,15 @@ function RoundStatus.onProfileLoaded()
 		end
 	end)
 
-	local AMMO_ORIGIN = StatusGUI.AmmoWarning.Position
+	--local AMMO_ORIGIN = StatusGUI.AmmoWarning.Position
 
-	StatusGUI.State.Changed:Connect(function(property)
+	--[[StatusGUI.State.Changed:Connect(function(property)
 		if StatusGUI.State.Visible == true then
 			StatusGUI.AmmoWarning.Position = AMMO_ORIGIN
 		else
 			StatusGUI.AmmoWarning.Position = StatusGUI.State.Position
 		end
-	end)
+	end)]]--
 		
 end
 

@@ -39,6 +39,7 @@ ClientModuleDirectory.Gui.FrameSystem = Root.Gui.Intermission.FrameSystem
 ClientModuleDirectory.Gui.MobileShopButton = Root.Gui.Intermission.MobileShopButton
 ClientModuleDirectory.Gui.AbilityBar = Root.Gui.Active.AbilityBar
 ClientModuleDirectory.Gui.Coin = Root.Gui.Active.Coin
+ClientModuleDirectory.Gui.ReviveMessage = Root.Gui.Active.ReviveMessage
 
 ClientModuleDirectory.BackShovel = Root.Visuals.BackShovel
 

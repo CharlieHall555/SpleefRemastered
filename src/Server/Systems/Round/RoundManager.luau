@@ -31,6 +31,7 @@ local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
 local PodiumManager = require(ModuleDirectory.Round.PodiumManager)
 local CoinPickupManager = require(ModuleDirectory.Coins.CoinPickupManager)
+local VectorUtil = require(ModuleDirectory.VectorUtil)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -56,6 +57,7 @@ end
 local function onRoundStarting(currentRound: RoundSystem.Round)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 	currentMap = MapGenerator.generate(MapSaves[MapSelection.getNextMap()])
+	print("MapSpawn: @" .. VectorUtil.SerializeVector3(currentMap.OriginPosition))
 	task.wait(1)
 
 	for _, each in currentRound.startingPlayers do

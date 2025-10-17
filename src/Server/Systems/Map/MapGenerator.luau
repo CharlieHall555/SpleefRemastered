@@ -21,6 +21,11 @@ function MapGenerator.generate(params : MapDataFactory.MapDataCreationParams) : 
     --load background
     local template = BackgroundFolder:FindFirstChild(backgroundName) or BackgroundFolder.Background1
     local newBackground = template:Clone()
+
+    if newBackground.PrimaryPart == nil then
+        error("Background model " .. newBackground.Name .. " is missing a PrimaryPart.")
+    end
+
     newBackground:PivotTo(CFrame.new(params.originPosition or Vector3.new(0,0,0)))
     newBackground.Parent = game.Workspace
 
