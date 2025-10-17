@@ -86,5 +86,4 @@ function GamepassManager.determineOnwership(player)
 
 end
 
-
 return GamepassManager

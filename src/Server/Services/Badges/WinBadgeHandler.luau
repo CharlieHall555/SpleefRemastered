@@ -15,6 +15,9 @@ local BADGE_THRESHOLDS = {
     { wins = 30, badgeId = 2531584604594114 },
     { wins = 40, badgeId = 1259452529201159 },
     { wins = 50, badgeId = 3568272104756041 },
+    { wins = 75, badgeId = 3121763563243459 },
+    { wins = 100, badgeId = 3267341400035428 },
+    { wins = 250 , badgeId = 258978240109355 },
 }
 
 function WinBadgeHandler.playerAwardedWin(player: Player, totalWins: number)

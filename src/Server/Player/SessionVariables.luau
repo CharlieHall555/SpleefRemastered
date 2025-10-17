@@ -14,6 +14,8 @@ local default = {
 	abilityActive = false,
 	spawnProtectionActive = false,
 	hasUsedRespawn = false,
+	isDev = false,
+	inGroup = false
 }
 
 

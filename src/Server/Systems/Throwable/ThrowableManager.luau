@@ -98,9 +98,9 @@ function ThrowableManager.mainLoop(dt: number): nil
 		local rayParms = PlayerRaycastParamsHandler.get(th.owner) or defaultRayParams
 		local hit: RaycastResult? = workspace:Blockcast(castCFrame, castSize, direction, rayParms)
 
-		if oldPos.Y < -100 then
-			ThrowableManager.removeThrowable(uid)
-		elseif hit then
+		--[[if oldPos.Y < -100 then
+			ThrowableManager.removeThrowable(uid)]]--
+		if hit then
 			if DEBUG then
 				local stamp = Instance.new("Part")
 				stamp.Size = Vector3.new(1, 1, 1)

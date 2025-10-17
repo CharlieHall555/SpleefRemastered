@@ -1,3 +1,4 @@
+local LocalizationService = game:GetService("LocalizationService")
 local OverheadTemplate: BillboardGui = game:GetService("ServerStorage"):WaitForChild("Overhead")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
@@ -9,7 +10,33 @@ local Players = game:GetService("Players")
 local OverheadGui = {}
 local connections: { [Player]: { RBXScriptConnection } } = {}
 
+local rankColorMappings = {
+	["VIP"] = Color3.fromRGB(255, 205, 23),
+	["MEMBER"] = Color3.fromRGB(0, 170, 255),
+	["DEVELOPER"] = Color3.fromRGB(217, 0, 255),
+}
+
+local function computeRank(player)
+
+	if (PlayerSessionVariables.getValue(player , "isDev") or false) == true then
+		return "DEVELOPER"
+	elseif (PlayerSessionVariables.getValue(player , "isVip") or false) == true then
+		return "VIP"	
+	elseif (PlayerSessionVariables.getValue(player , "inGroup") or false) == true then
+		return "MEMBER"
+	else
+		return nil
+	end
+
+end
+
 local function giveOverhead(player : Player , character: Model)
+
+	local overhead = player.Character:FindFirstChild("OverheadNametag")
+	if overhead then
+		overhead:Destroy()
+	end
+
 	local newGui = OverheadTemplate:Clone()
 	newGui.Parent = character
 	newGui.Name = "OverheadNametag"
@@ -18,11 +45,15 @@ local function giveOverhead(player : Player , character: Model)
 	newGui.WinsLabel.Text = " ["  ..tostring(PlayerData.getWins(player) or 0) .." Wins]"
 	newGui.WinsLabel.Visible = true
 
-	if (PlayerSessionVariables.getValue(player , "isVip") or false) == true then
-		newGui.NameLabel.TextColor3 = Color3.fromRGB(255, 205, 23)
-		newGui.NameLabel.Text = "[VIP] " ..  player.DisplayName
+	local rank = computeRank(player)
+	if rank then
+		newGui.NameLabel.Text = "[" .. rank .. "] " .. player.DisplayName
+		newGui.NameLabel.TextColor3 = rankColorMappings[rank] or Color3.fromRGB(255, 255, 255)
+		newGui.NameLabel.Visible = true
+	else
+		newGui.NameLabel.Visible = false
 	end
-
+	
 end
 
 function OverheadGui.refreshForPlayer(player : Player)
@@ -37,6 +68,7 @@ function OverheadGui.refreshForPlayer(player : Player)
 end
 
 function OverheadGui.init()
+
 	RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
 		connections[player] = {}
 

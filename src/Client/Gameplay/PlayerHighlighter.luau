@@ -38,6 +38,11 @@ end
 function PlayerHighlighter.highlightPlayer(player: Player)
     -- Check if the player already has a highlight
     if highlights[player] then
+        pcall(function()
+            highlights[player]:Destroy()
+            highlights[player] = nil
+        end)
+        warn("Player " .. player.Name .. " is already highlighted.")
         return -- Do nothing if already highlighted
     end
 

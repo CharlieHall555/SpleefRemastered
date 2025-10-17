@@ -8,6 +8,7 @@ local Config = require(game:GetService("ServerScriptService").ServerConfiguratio
 local KnockbackTracker = require(ModuleDirectory.Stats.KnockbackTracker)
 local KnockbackUtilities = require(ModuleDirectory.KnockbackUtilities)
 local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local lastHitCache: { [number]: number } = {}
 
@@ -73,6 +74,10 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Play
 	if not hitPlayer then
 		applyKnockbackServer(char , dir , power)
 		RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION_CHAR", char)
+		return
+	end
+
+	if (SessionVariables.getValue(hitPlayer , "spawnProtectionActive") or false) == true then
 		return
 	end
 

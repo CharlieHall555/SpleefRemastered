@@ -14,7 +14,6 @@ local SpectateController = {}
 
 local playersAlive: { Player } = {}
 
-
 local enabled = false
 
 local currentIndex: number? = nil
@@ -23,276 +22,290 @@ local camera: Camera? = nil
 local charDestroyedConnection: RBXScriptConnection? = nil
 
 local function setUpGuiConnections()
-    
-    GUISpectateControls.connectOnExit(function()
-        SpectateController.exit()
-    end)
+	GUISpectateControls.connectOnExit(function()
+		SpectateController.exit()
+	end)
 
-    GUISpectateControls.connectOnBack(function()
-        SpectateController.previousIndex()
-    end)
+	GUISpectateControls.connectOnBack(function()
+		SpectateController.previousIndex()
+	end)
 
-    GUISpectateControls.connectOnNext(function()
-        SpectateController.nextIndex()
-    end)
+	GUISpectateControls.connectOnNext(function()
+		SpectateController.nextIndex()
+	end)
 
-    GUISpectateControls.connectOnCelebrate(function()
-        if currentTarget then
-            RemoteEventHandler.FireOnServer("REQUEST_CHEER" , currentTarget)
-        end
-    end)
+	GUISpectateControls.connectOnCelebrate(function()
+		if currentTarget then
+			RemoteEventHandler.FireOnServer("REQUEST_CHEER", currentTarget)
+		end
+	end)
 
-    EnterSpectateButton.connectOnClick(function()
-        SpectateController.enter()
-    end)
-
+	EnterSpectateButton.connectOnClick(function()
+		SpectateController.enter()
+	end)
 end
 
 local function bindIndex(index: number, list: {})
-    local n = #list
-    if n == 0 then
-        return nil
-    end
-    return ((index - 1) % n) + 1
+	local n = #list
+	if n == 0 then
+		return nil
+	end
+	return ((index - 1) % n) + 1
 end
 
 local function clearCharConn()
-    if charDestroyedConnection then
-        charDestroyedConnection:Disconnect()
-        charDestroyedConnection = nil
-    end
+	if charDestroyedConnection then
+		charDestroyedConnection:Disconnect()
+		charDestroyedConnection = nil
+	end
 end
 
 local function setCameraToLocal()
-    if not camera then
-        return
-    end
-    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    camera.CameraType = Enum.CameraType.Custom
-    if hum then
-        camera.CameraSubject = hum
-    end
+	if not camera then
+		return
+	end
+	local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	camera.CameraType = Enum.CameraType.Custom
+	if hum then
+		camera.CameraSubject = hum
+	end
 end
 
 local function setTarget(player: Player): boolean
-    if not camera then
-        return false
-    end
+	if not camera then
+		return false
+	end
 
-    local character = player.Character
-    if not character then
-        return false
-    end
+	local character = player.Character
+	if not character then
+		return false
+	end
 
-    local hum = character:FindFirstChildOfClass("Humanoid")
-    if not hum then
-        return false
-    end
+	local hum = character:FindFirstChildOfClass("Humanoid")
+	if not hum then
+		return false
+	end
 
-    clearCharConn()
-    charDestroyedConnection = player.CharacterRemoving:Connect(function()
-        -- When this target's character is removed, drop them from the list.
-        local pos = table.find(playersAlive, player)
-        if pos then
-            table.remove(playersAlive, pos)
-        end
-        currentTarget = nil
-        SpectateController.previousIndex()
-    end)
+	clearCharConn()
+	charDestroyedConnection = player.CharacterRemoving:Connect(function()
+		-- When this target's character is removed, drop them from the list.
+		local pos = table.find(playersAlive, player)
+		if pos then
+			table.remove(playersAlive, pos)
+		end
+		currentTarget = nil
+		SpectateController.previousIndex()
+	end)
 
-    camera.CameraType = Enum.CameraType.Follow
-    camera.CameraSubject = hum
-    GUISpectateControls.setPlayerSpectating(player.Name)
+	camera.CameraType = Enum.CameraType.Follow
+	camera.CameraSubject = hum
+	GUISpectateControls.setPlayerSpectating(player.Name)
 
-    currentTarget = player
-    return true
+	currentTarget = player
+	return true
 end
 
 local function onPlayerListUpdate()
-    if not enabled then
-        return
-    end
+	if not enabled then
+		return
+	end
 
-    if #playersAlive == 0 then
-        currentIndex = nil
-        currentTarget = nil
-        clearCharConn()
-        SpectateController.exit()
-        return
-    end
+	if #playersAlive == 0 then
+		currentIndex = nil
+		currentTarget = nil
+		clearCharConn()
+		SpectateController.exit()
+		return
+	end
 
-    if currentTarget then
-        local pos = table.find(playersAlive, currentTarget)
-        if pos then
-            currentIndex = pos
-            return
-        end
-    end
+	if currentTarget then
+		local pos = table.find(playersAlive, currentTarget)
+		if pos then
+			currentIndex = pos
+			return
+		end
+	end
 
-    local nextIndex = bindIndex((currentIndex or 1) - 1, playersAlive)
-    if nextIndex then
-        currentIndex = nextIndex
-        setTarget(playersAlive[currentIndex])
-    else
-        SpectateController.exit()
-    end
+	local nextIndex = bindIndex((currentIndex or 1) - 1, playersAlive)
+	if nextIndex then
+		currentIndex = nextIndex
+		setTarget(playersAlive[currentIndex])
+	else
+		SpectateController.exit()
+	end
 end
 
 local function removePlayer(player: Player)
-    local pos = table.find(playersAlive, player)
-    if pos then
-        table.remove(playersAlive, pos)
-        onPlayerListUpdate()
-    end
+	local pos = table.find(playersAlive, player)
+	if pos then
+		table.remove(playersAlive, pos)
+		onPlayerListUpdate()
+	end
+end
+
+local function addPlayerIfMissing(player: Player)
+	if not table.find(playersAlive, player) then
+		table.insert(playersAlive, player)
+	end
 end
 
 local function canEnterSpecate(): boolean
-    return (ClientStateTracker.getServerState() == "ACTIVE" or ClientStateTracker.getServerState() == "PREPARING") and ClientStateTracker.getState() == "INTERMISSION"
+	return (ClientStateTracker.getServerState() == "ACTIVE" or ClientStateTracker.getServerState() == "PREPARING")
+		and ClientStateTracker.getState() == "INTERMISSION"
 end
 
 local function setUpHardExits()
-    ClientStateTracker.connectActive(function()
-        SpectateController.exit()
-    end)
+	ClientStateTracker.connectActive(function()
+		SpectateController.exit()
+	end)
 
-    ClientStateTracker.connectRoundStarting(function()
-        SpectateController.exit()
-    end)
+	ClientStateTracker.connectRoundStarting(function()
+		SpectateController.exit()
+	end)
 
-    ClientStateTracker.connectServerStateChange(function(newServerState)
-        if newServerState == "INTERMISSION" then
-            playersAlive = {}
-            SpectateController.exit()
-        end
-    end)
+	ClientStateTracker.connectServerStateChange(function(newServerState)
+		if newServerState == "INTERMISSION" then
+			playersAlive = {}
+			SpectateController.exit()
+		end
+	end)
 
-    LocalPlayer.CharacterAdded:Connect(function(character)
-        SpectateController.exit()
-    end)
+	LocalPlayer.CharacterAdded:Connect(function(character)
+		SpectateController.exit()
+	end)
 end
 
 function SpectateController.onLoaded()
-    camera = workspace.CurrentCamera
-    setUpHardExits()
+	camera = workspace.CurrentCamera
+	setUpHardExits()
 
-    RemoteEventHandler.newEventConnection("SEND_STARTING_PLAYERS", function(startingPlayers: { Player })
-        playersAlive = startingPlayers or {}
-        onPlayerListUpdate()
-    end)
+	RemoteEventHandler.newEventConnection("SEND_STARTING_PLAYERS", function(startingPlayers: { Player })
+		playersAlive = startingPlayers or {}
+		onPlayerListUpdate()
+	end)
 
-    RemoteEventHandler.newEventConnection("PLAYER_DIED", function(player: Player)
-        removePlayer(player)
-    end)
+	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(player: Player)
+		removePlayer(player)
+	end)
 
-    setUpGuiConnections()
+	RemoteEventHandler.newEventConnection("PLAYER_REVIVED", function(player: Player)
+		-- Re-add to spectate list if they aren't already there
+		addPlayerIfMissing(player)
+
+		if enabled then
+			onPlayerListUpdate()
+			if currentTarget == nil and table.find(playersAlive, player) then
+				setTarget(player)
+				currentIndex = table.find(playersAlive, player)
+			end
+		end
+	end)
+
+	setUpGuiConnections()
 end
 
 function SpectateController.enter(): nil
-    if enabled then
-        return
-    end
+	if enabled then
+		return
+	end
 
-    if not canEnterSpecate() then
-        return
-    end
+	if not canEnterSpecate() then
+		return
+	end
 
-    if #playersAlive == 0 then
-        playersAlive = RemoteEventHandler.InvokeOnServer("QUERY_ALIVE" , 2)
-    end
+	if #playersAlive == 0 then
+		playersAlive = RemoteEventHandler.InvokeOnServer("QUERY_ALIVE", 2)
+	end
 
-    if #playersAlive == 0 then
+	if #playersAlive == 0 then
 		print("no players alive")
-        return
-    end
+		return
+	end
 
-    enabled = true
-    EnterSpectateButton.hide()
-    GUISpectateControls.show()
+	enabled = true
+	EnterSpectateButton.hide()
+	GUISpectateControls.show()
 
-    if PlatformDetector.getPlatform() == "MOBILE" then
-        MobileCamera.disable()
-    end
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		MobileCamera.disable()
+	end
 
-    currentIndex = currentIndex or 1
-    currentIndex = bindIndex(currentIndex, playersAlive)
-    if currentIndex == nil then
-        enabled = false
-        return
-    end
+	currentIndex = currentIndex or 1
+	currentIndex = bindIndex(currentIndex, playersAlive)
+	if currentIndex == nil then
+		enabled = false
+		return
+	end
 
-    if not setTarget(playersAlive[currentIndex]) then
-        -- Try to advance until a valid target is found or give up.
-        for i = 1, #playersAlive do
-            currentIndex = bindIndex((currentIndex or 1) + 1, playersAlive)
-            if currentIndex and setTarget(playersAlive[currentIndex]) then
-                break
-            end
-        end
-        if not currentTarget then
-            enabled = false
-            setCameraToLocal()
-        end
-    end
+	if not setTarget(playersAlive[currentIndex]) then
+		-- Try to advance until a valid target is found or give up.
+		for i = 1, #playersAlive do
+			currentIndex = bindIndex((currentIndex or 1) + 1, playersAlive)
+			if currentIndex and setTarget(playersAlive[currentIndex]) then
+				break
+			end
+		end
+		if not currentTarget then
+			enabled = false
+			setCameraToLocal()
+		end
+	end
 end
 
 function SpectateController.exit(): nil
-    if not enabled then
-        return
-    end
+	if not enabled then
+		return
+	end
 
-    enabled = false
-    if PlatformDetector.getPlatform() == "MOBILE" then
-        MobileCamera.enable()
-    end
-    GUISpectateControls.hide()
-    
-   
-    
-    EnterSpectateButton.show()
+	enabled = false
+	if PlatformDetector.getPlatform() == "MOBILE" then
+		MobileCamera.enable()
+	end
+	GUISpectateControls.hide()
 
-    clearCharConn()
-    currentTarget = nil
-    currentIndex = nil
-    setCameraToLocal()
+	EnterSpectateButton.show()
+
+	clearCharConn()
+	currentTarget = nil
+	currentIndex = nil
+	setCameraToLocal()
 end
 
 function SpectateController.getEnabled(): boolean
-    return enabled
+	return enabled
 end
 
 function SpectateController.nextIndex()
-    if not enabled or #playersAlive == 0 then
-        return
-    end
-    currentIndex = bindIndex((currentIndex or 1) + 1, playersAlive)
-    if currentIndex then
-        if not setTarget(playersAlive[currentIndex]) then
-            removePlayer(playersAlive[currentIndex])
-        end
-    end
+	if not enabled or #playersAlive == 0 then
+		return
+	end
+	currentIndex = bindIndex((currentIndex or 1) + 1, playersAlive)
+	if currentIndex then
+		if not setTarget(playersAlive[currentIndex]) then
+			removePlayer(playersAlive[currentIndex])
+		end
+	end
 end
 
 function SpectateController.previousIndex()
-    if not enabled or #playersAlive == 0 then
-        return
-    end
-    currentIndex = bindIndex((currentIndex or 1) - 1, playersAlive)
-    if currentIndex then
-        if not setTarget(playersAlive[currentIndex]) then
-            removePlayer(playersAlive[currentIndex])
-        end
-    end
+	if not enabled or #playersAlive == 0 then
+		return
+	end
+	currentIndex = bindIndex((currentIndex or 1) - 1, playersAlive)
+	if currentIndex then
+		if not setTarget(playersAlive[currentIndex]) then
+			removePlayer(playersAlive[currentIndex])
+		end
+	end
 end
 
 function SpectateController.toggle()
-
 	if enabled == false then
 		SpectateController.enter()
 	else
 		SpectateController.exit()
 	end
-	
 end
 
 return SpectateController

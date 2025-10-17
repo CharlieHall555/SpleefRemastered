@@ -207,6 +207,8 @@ ModuleDirectory.ShovelDefinitions = game:GetService("ReplicatedStorage").Data.Sh
 
 ModuleDirectory.Set = game:GetService("ReplicatedStorage").Utilities.Set
 
+ModuleDirectory.GroupRanks = serverRoot.Systems.OtherGameplay.GroupRanks
+
 -- Remote Handlers
 
 return ModuleDirectory

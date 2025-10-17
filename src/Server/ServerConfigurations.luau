@@ -2,6 +2,7 @@ return {
 
     LEADERBOARD_API_ENDPOINT = "https://leaderboardapi-production.up.railway.app",
     GROUP_ID = 34337368,
+    DEV_ID = 5025209448,
 
     --//====================================================
     --// Performance / Part Pooling
