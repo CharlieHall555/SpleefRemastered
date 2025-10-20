@@ -103,6 +103,8 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 				end
 			else
                 RemoteEventHandler.FireOnServer("REQUEST_BUY_SHOVEL", item.name)
+				local coinSound = "rbxassetid://86832085549408"
+				SoundPlayer.playSound(coinSound)
 			end
 		end
 	end)

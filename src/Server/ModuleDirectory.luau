@@ -25,6 +25,7 @@ ModuleDirectory.Round.SuddenDeath = serverRoot.Systems.Round.SuddenDeath
 ModuleDirectory.Round.MapSelection = serverRoot.Systems.Round.MapSelection
 ModuleDirectory.Round.ClearLobby = serverRoot.Systems.Round.ClearLobby
 ModuleDirectory.Round.PodiumManager = serverRoot.Systems.Round.PodiumManager
+ModuleDirectory.Round.AFKTracker = serverRoot.Systems.Round.AFKTracker
 
 ModuleDirectory.Abilities = {}
 ModuleDirectory.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
@@ -145,6 +146,7 @@ ModuleDirectory.Player.PlayerPositionTracker = serverRoot.Player.PlayerPositionT
 ModuleDirectory.Player.SessionVariables = serverRoot.Player.SessionVariables
 ModuleDirectory.Player.ProfileManager = serverRoot.Player.ProfileManager
 ModuleDirectory.Player.ConstraintManager = serverRoot.Player.ConstraintManager
+ModuleDirectory.Player.PlayTimeTracker = serverRoot.Player.PlayTimeTracker
 
 --//====================================================
 --// Utilities
@@ -160,6 +162,9 @@ ModuleDirectory.ListUtil = game:GetService("ReplicatedStorage").Utilities.ListUt
 --// Utilities
 --//====================================================
 
+ModuleDirectory.Rewards = {}
+ModuleDirectory.Rewards.RewardsMain = serverRoot.Systems.Rewards.RewardsMain
+ModuleDirectory.Rewards.RewardData = game:GetService("ReplicatedStorage").Data.DailyRewards
 
 -- Loaded Assets
 

@@ -37,9 +37,11 @@ ClientModuleDirectory.Gui.TutorialStatus = Root.Gui.Tutorial.TutorialStatus
 ClientModuleDirectory.Gui.TutorialLeave = Root.Gui.Tutorial.TutorialLeave
 ClientModuleDirectory.Gui.FrameSystem = Root.Gui.Intermission.FrameSystem
 ClientModuleDirectory.Gui.MobileShopButton = Root.Gui.Intermission.MobileShopButton
+ClientModuleDirectory.Gui.MobileRewardButton = Root.Gui.Intermission.MobileRewardButton
 ClientModuleDirectory.Gui.AbilityBar = Root.Gui.Active.AbilityBar
 ClientModuleDirectory.Gui.Coin = Root.Gui.Active.Coin
 ClientModuleDirectory.Gui.ReviveMessage = Root.Gui.Active.ReviveMessage
+
 
 ClientModuleDirectory.BackShovel = Root.Visuals.BackShovel
 
@@ -75,6 +77,11 @@ ClientModuleDirectory.Gui.Shop.Shovels = Root.Gui.Intermission.Shop.Shovels
 ClientModuleDirectory.Gui.Shop.Coins = Root.Gui.Intermission.Shop.Coins 
 ClientModuleDirectory.Gui.Shop.Gamepass = Root.Gui.Intermission.Shop.Gamepass
 
+ClientModuleDirectory.Gui.AFKWarning = Root.Gui.Active.AFKWarning
+
+ClientModuleDirectory.AbilitiesZone = Root.Zones.AbilitiesZone
+
+ClientModuleDirectory.Gui.DailyRewardsGui = Root.Gui.Intermission.DailyRewards
 
 --ClientModuleDirectory.Gui.InivteGUI = Root.Gui.SurfaceGUIs.InviteGui
 
@@ -219,6 +226,9 @@ ClientModuleDirectory.Gui.InviteGui = Root.Gui.Intermission.InviteGui
 
 ClientModuleDirectory.AbilitiesData = SharedRoot.Data.AbilitiesDefinitions
 ClientModuleDirectory.ShovelsData = SharedRoot.Data.ShovelDefinitions
+
+ClientModuleDirectory.RewardsData = SharedRoot.Data.DailyRewards
+
 
 return ClientModuleDirectory
 

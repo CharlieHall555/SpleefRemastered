@@ -244,4 +244,32 @@ function PlayerData.addAbility(player: Player, abilityName: string): nil
 	table.insert(abilities, abilityName)
 	setFieldAndNotify(player, "abilities", abilities)
 end
+
+function PlayerData.setLastRewardSession(player: Player , value: number): nil
+	local data = getData(player)
+	if not data then
+		return
+	end
+	print("rewardSession" , value)
+	setFieldAndNotify(player, "lastRewardSession", value)
+end
+
+function PlayerData.getLastRewardSession(player: Player): number
+	local data = getData(player)
+	return data.lastRewardSession or -1
+end
+
+function PlayerData.setClaimedRewards(player : Player , value : { number }) : nil
+	local data = getData(player)
+	if not data then
+		return
+	end
+	setFieldAndNotify(player, "dailyRewardClaims", value)
+
+end
+function PlayerData.getClaimedRewards(player : Player) : {number}
+	local data = getData(player)
+	return data.dailyRewardClaims or {}
+end
+
 return PlayerData

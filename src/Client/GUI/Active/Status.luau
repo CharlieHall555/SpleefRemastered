@@ -107,7 +107,12 @@ function RoundStatus.onProfileLoaded()
 			StatusGUI.AmmoWarning.Position = StatusGUI.State.Position
 		end
 	end)]]--
-		
+	
 end
+
+function RoundStatus.getStateGui()
+	return StatusGUI.State
+end
+
 
 return RoundStatus

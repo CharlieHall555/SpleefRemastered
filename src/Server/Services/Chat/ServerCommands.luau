@@ -12,6 +12,7 @@ local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
 local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
 local AbilityDefinitions = require(ModuleDirectory.Abilities.Definitions)
 local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
+local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
 
 local ServerCommands = {}
 
@@ -207,6 +208,53 @@ function ServerCommands.init()
 			end
 		end
 	)
+
+	connectToTrigger(createCommand("giveRespawns", "/respawns", 255), function(originTextSource, unfilteredText)
+		local caller = getOriginPlayer(originTextSource)
+		local argsText = trim(unfilteredText or "")
+		local parts = {}
+		for token in string.gmatch(argsText, "%S+") do
+			table.insert(parts, token)
+		end
+
+		if #parts < 2 then
+			systemMessage(caller, "Usage: /respawns <amount> [player]")
+			return
+		end
+
+		local amount = tonumber(parts[2])
+		if not amount or amount <= 0 then
+			systemMessage(caller, "Invalid amount. Usage: /respawns <positive number> [player]")
+			return
+		end
+
+		local target: Player? = nil
+		if #parts >= 3 then
+			local ident = table.concat(parts, " ", 3)
+			target = findPlayerByIdentifier(ident)
+			if not target then
+				systemMessage(caller, ("Player '%s' not found."):format(ident))
+				return
+			end
+		else
+			target = caller
+			if not target then
+				systemMessage(caller, "Could not resolve the calling player.")
+				return
+			end
+		end
+
+		local ok, err = pcall(function()
+			PlayerData.incrementRespawns(target, amount)
+		end)
+
+		if ok then
+			local who = (caller and caller.Name) or "SYSTEM"
+			systemMessage(caller, ("[RESPAWN] %s gave %d respawns to %s."):format(who, amount, target.Name))
+		else
+			systemMessage(caller, "[RESPAWN] Failed to give respawns: " .. tostring(err))
+		end
+	end)
 
 	connectToTrigger(createCommand("giveCoins", "/coins", 255), function(originTextSource, unfilteredText)
 		local caller = getOriginPlayer(originTextSource)

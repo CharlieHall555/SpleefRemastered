@@ -9,7 +9,7 @@ local PlayerPositionTracker = {}
 -- State
 local lastUpdateTime = {} -- [userId] = timestamp
 local unresponsivePlayers = {} -- set: [userId] = true
-local cache = {} -- [userId] = Vector3
+local cache : {[number] : Vector3} = {} -- 
 
 -- Threshold cached for performance
 local UNRESPONSIVE_THRESHOLD = Configurations.UNRESPONSIVE_CLIENT_THRESHOLD

@@ -47,6 +47,7 @@ local missingFundsOpen = 0
 
 local initialized = false
 
+
 local function bindSelectionButtons()
     buttonSelection.ExtraLife.Clickable.Activated:Connect(function()
         ShopMain.setFrame(extraLifeFrame, "Extra Lives")
@@ -177,6 +178,14 @@ end
 
 function ShopMain.getVisible()
     return shopGui and shopGui.Visible or false
+end
+
+function ShopMain.openAbilitiesFrame()
+    if shopGui and abilityFrame then
+        print("lol")
+        ShopMain.setFrame(abilityFrame, "Abilities")
+        ShopMain.show()
+    end
 end
 
 function ShopMain.show()

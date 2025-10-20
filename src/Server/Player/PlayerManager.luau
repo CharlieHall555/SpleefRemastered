@@ -3,6 +3,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Leaderstats = require(ModuleDirectory.Player.Leaderstats)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
+local PlayTimeTracker = require(ModuleDirectory.Player.PlayTimeTracker)
 
 local PlayerManager = {}
 
@@ -34,6 +35,7 @@ end
 
 function PlayerManager.onProfileLoad(player)
     Leaderstats.updateStat(player , "Wins" , PlayerData.getWins(player))
+    PlayTimeTracker.trackPlayer(player)
 end
 
 return PlayerManager

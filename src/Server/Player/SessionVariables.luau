@@ -15,7 +15,8 @@ local default = {
 	spawnProtectionActive = false,
 	hasUsedRespawn = false,
 	isDev = false,
-	inGroup = false
+	inGroup = false,
+	playTime = 0,
 }
 
 

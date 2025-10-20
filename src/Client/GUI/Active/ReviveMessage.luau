@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -7,6 +8,8 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
+local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local localPlayer = Players.LocalPlayer
 
@@ -21,6 +24,8 @@ local messageStroke: UIStroke? = nil
 local isAnimating = false
 local inTweens: { Tween } = {}
 local outTweens: { Tween } = {}
+
+local originPosition = nil
 
 -- Tunables
 local TWEEN_IN_TIME = 0.15
@@ -65,6 +70,7 @@ local function connectAssets()
     local guiAssets = ReplicatedStorage:WaitForChild("GuiAssets")
     local inGameFolder = guiAssets:WaitForChild("InGame")
     reviveMessageGui = inGameFolder:WaitForChild("ReviveMessage") :: Frame
+    originPosition = reviveMessageGui.Position
     reviveMessageGui.Parent = Screens.gameHUD
     reviveMessageGui.Visible = false
 
@@ -72,7 +78,7 @@ local function connectAssets()
     if messageLabel then
         messageStroke = messageLabel:FindFirstChildOfClass("UIStroke")
     end
-
+ 
     -- start hidden
     setTransparencyInstant(1, 1, 1)
 end
@@ -81,8 +87,8 @@ function ReviveMessage.onLoaded()
     connectAssets()
 
     RemoteEventHandler.newEventConnection("PLAYER_REVIVED", function(player: Player)
-        if player ~= localPlayer then
-            ReviveMessage.show(localPlayer.DisplayName)
+        if player ~= localPlayer and ClientStateTracker.getState() == "ACTIVE" then
+            ReviveMessage.show(player.DisplayName)
         end
     end)
 end
@@ -93,6 +99,15 @@ function ReviveMessage.show(playerName: string)
     end
     if isAnimating then
         return -- debounce: ignore if animation is running
+    end
+
+    local stateLabel = RoundStatus.getStateGui()
+    if stateLabel and stateLabel.Visible == true then
+        reviveMessageGui.Position = originPosition
+    elseif stateLabel then
+        reviveMessageGui.Position = stateLabel.Position
+    else
+        reviveMessageGui.Position = originPosition
     end
 
     isAnimating = true

@@ -139,6 +139,7 @@ function UserProfile.onProfileLoaded()
 
     -- Listen for server-side updates
     _profileEventId = RemoteEventHandler.newEventConnection("PROFILE_UPDATE", function(valueName: string, newValue: any, json: boolean?)
+        print(valueName , newValue)
         UserProfile.receiveFromServer(valueName, newValue, json)
     end)
 end

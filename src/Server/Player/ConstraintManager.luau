@@ -61,6 +61,16 @@ function ConstraintManager.init()
 		allowedValues = { "DEFAULT" , "Debug" , "VIP" , "CrystalShovel"},
 		canBeEmpty = false,
 	})
+
+	ProfileManager.setFieldConstraint("dailyRewardClaims" , {
+		type = "list",
+		allowedValues = { 1 , 2 , 3},
+		canBeEmpty = true,
+	})
+
+	ProfileManager.setFieldConstraint("lastRewardSession", {
+		type = "number",
+	})
 end
 
 return ConstraintManager

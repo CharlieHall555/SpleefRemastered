@@ -47,13 +47,15 @@ local ProfileTemplate = {
 	ability = "DASH",
 	abilities = { "DASH" },
 	shovels = { "DEFAULT" },
+	lastRewardSession = -1,
+	dailyRewardClaims = {}
 }
 
 local ProfileService = require(game:GetService("ServerScriptService").External.ProfileStore)
 
 local database = "PRODUCTION"
 if RunService:IsStudio() then
-	database = "TEST20"
+	database = "TEST28"
 else
 	database = "PRODUCTION"
 end

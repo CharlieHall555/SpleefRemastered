@@ -88,6 +88,8 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
         end
 
         RemoteEventHandler.FireOnServer("REQUEST_BUY_ABILITY", item.name)
+        local coinSound = "rbxassetid://86832085549408"
+		SoundPlayer.playSound(coinSound)
     end)
     table.insert(buttonConnections, buttonConnection)
 
@@ -165,6 +167,7 @@ function ShopAbilities.start(frame: Frame, template: Frame , missingFundsFunc : 
         abilitiesFrame.ScrollingFrame.ScrollBarThickness = 10
     end
 
+    
 
     
 end
