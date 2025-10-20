@@ -17,7 +17,6 @@ local function runTimeLoop(time : number , dt : number)
     for _ , eachPlayer in trackedPlayers do
         
         local count = SessionVariables.getValue(eachPlayer , "playTime")
-        dt *= 30
         SessionVariables.setValue(eachPlayer , "playTime" , count + dt)
 
     end

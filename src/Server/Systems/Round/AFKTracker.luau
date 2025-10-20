@@ -10,7 +10,7 @@ local RunService = game:GetService("RunService")
 
 local AFKTracker = {}
 
-local AFK_ELIMINATION_TIME = 33
+local AFK_ELIMINATION_TIME = 25
 
 local lastPositionByUid: { [number]: Vector3 } = {}
 

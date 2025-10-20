@@ -15,7 +15,7 @@ local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
 
-local AFK_ELIMINATION_TIME = 32
+local AFK_ELIMINATION_TIME = 25
 local ALERT_TIME = 5
 
 local AFKGui: Frame?
