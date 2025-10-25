@@ -9,6 +9,7 @@ local LocalPlayer = Players.LocalPlayer
 local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local EnterSpectateButton = require(ClientModuleDirectory.Gui.SpectateButton)
+local PCSettingsWidget = require(ClientModuleDirectory.Gui.PCSettingsWidget)
 
 local SpectateController = {}
 
@@ -229,6 +230,8 @@ function SpectateController.enter(): nil
 
 	if PlatformDetector.getPlatform() == "MOBILE" then
 		MobileCamera.disable()
+	else
+		PCSettingsWidget.hide()
 	end
 
 	currentIndex = currentIndex or 1
@@ -261,6 +264,8 @@ function SpectateController.exit(): nil
 	enabled = false
 	if PlatformDetector.getPlatform() == "MOBILE" then
 		MobileCamera.enable()
+	else
+		PCSettingsWidget.show()
 	end
 	GUISpectateControls.hide()
 

@@ -43,7 +43,6 @@ function PlayerHighlighter.highlightPlayer(player: Player)
             highlights[player] = nil
         end)
         warn("Player " .. player.Name .. " is already highlighted.")
-        return -- Do nothing if already highlighted
     end
 
     local character = player.Character

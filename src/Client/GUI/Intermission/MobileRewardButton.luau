@@ -53,12 +53,16 @@ function MobileRewardButton.onLoaded()
         ButtonGUI.Visible = true
     end)
 
-     ClientStateTracker.connectActive(function()
+    ClientStateTracker.connectActive(function()
         ButtonGUI.Visible = false
     end)
 
     ButtonGUI.Clickable.Activated:Connect(function()
         DailyRewards.show()
+    end)
+
+    ClientStateTracker.connectTutorial(function()
+        ButtonGUI.Visible = false
     end)
 
     RewardsStar.Visible = DailyRewards.hasClaimable()

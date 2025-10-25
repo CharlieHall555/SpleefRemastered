@@ -1,3 +1,4 @@
+---@diagnostic disable: invalid-class-name
 local DailyRewards = {}
 
 local Root = game.Players.LocalPlayer.PlayerScripts

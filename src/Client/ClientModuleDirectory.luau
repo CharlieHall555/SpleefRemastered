@@ -41,6 +41,8 @@ ClientModuleDirectory.Gui.MobileRewardButton = Root.Gui.Intermission.MobileRewar
 ClientModuleDirectory.Gui.AbilityBar = Root.Gui.Active.AbilityBar
 ClientModuleDirectory.Gui.Coin = Root.Gui.Active.Coin
 ClientModuleDirectory.Gui.ReviveMessage = Root.Gui.Active.ReviveMessage
+ClientModuleDirectory.Gui.TutorialTip = Root.Gui.Tutorial.TutorialTip
+ClientModuleDirectory.Gui.ConfirmLeave = Root.Gui.Tutorial.ConfirmLeave -- tutorial leave gui
 
 
 ClientModuleDirectory.BackShovel = Root.Visuals.BackShovel
@@ -229,6 +231,8 @@ ClientModuleDirectory.ShovelsData = SharedRoot.Data.ShovelDefinitions
 
 ClientModuleDirectory.RewardsData = SharedRoot.Data.DailyRewards
 
+ClientModuleDirectory.TutorialData = Root.Tutorial.TutorialData
+ClientModuleDirectory.TutorialFunctions = Root.Tutorial.TutorialFunctions
 
 return ClientModuleDirectory
 

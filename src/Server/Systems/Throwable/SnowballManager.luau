@@ -13,6 +13,7 @@ local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager
 local SnowballAmmoPickup = require(ModuleDirectory.Ammo.SnowballAmmoPickup)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
@@ -66,7 +67,8 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 end
 
 function SnowballManager.createSnowballFor(player, playerPosition, direction)
-	if PlayersInGame.isAlive(player) and (AmmoManager.getAmmo(player) or 0) < 1 and AmmoManager.isInfiniteAmmo() == false then
+	-- separate this logic out to make it clearer to debug
+	if (PlayersInGame.isAlive(player) or SessionVariables.getValue(player, "inTutorial")) and (AmmoManager.getAmmo(player) or 0) < 1 and AmmoManager.isInfiniteAmmo() == false then
 		return
 	end
 
@@ -117,6 +119,8 @@ function SnowballManager.createSnowballFor(player, playerPosition, direction)
 		end)
 		AmmoManager.incrementAmmo(player, -1)
 		print("decrease ammo")
+	elseif SessionVariables.getValue(player, "inTutorial") then
+		AmmoManager.incrementAmmo(player, -1)
 	end
 
 	ThrowableManager.newThrowable(spawnPosition, direction, "snowball", player ,active)

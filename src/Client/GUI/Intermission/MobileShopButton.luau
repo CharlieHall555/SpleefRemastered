@@ -35,7 +35,11 @@ function MobileShopButton.onLoaded()
         ButtonGUI.Visible = true
     end)
 
-     ClientStateTracker.connectActive(function()
+    ClientStateTracker.connectActive(function()
+        ButtonGUI.Visible = false
+    end)
+
+    ClientStateTracker.connectTutorial(function()
         ButtonGUI.Visible = false
     end)
 

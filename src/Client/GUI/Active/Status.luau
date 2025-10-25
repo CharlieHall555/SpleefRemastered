@@ -83,17 +83,19 @@ function RoundStatus.onProfileLoaded()
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED", function(aliveNow: number, maxAlive: number)
-		StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
+		if ClientStateTracker.getState() == "ACTIVE" then
+			StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
+		end
 	end)
 
 	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
-		if ClientStateTracker.getServerState() == "PREPARING" then
+		if ClientStateTracker.getState() == "ACTIVE" then
 			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
 		end
 	end)
 
 	RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED", function(time)
-		if ClientStateTracker.getServerState() == "ACTIVE" then
+		if ClientStateTracker.getState() == "ACTIVE" then
 			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
 		end
 	end)
@@ -107,6 +109,21 @@ function RoundStatus.onProfileLoaded()
 			StatusGUI.AmmoWarning.Position = StatusGUI.State.Position
 		end
 	end)]]--
+	
+	ClientStateTracker.connectActive(function()
+		StatusGUI.Visible = true
+	end)
+
+	ClientStateTracker.connectTutorial(function()
+		StatusGUI.Visible = false
+        StatusGUI.TopBar.AliveLabel.Text = 1 .. " / " .. 1
+		StatusGUI.State.Text = "Tutorial"
+		StatusGUI.TopBar.TimerLabel.Text = 0
+		StatusGUI.State.Visible = true
+		StatusGUI.State.Fire1.Visible = false
+		StatusGUI.State.Fire2.Visible = false
+    end)
+
 	
 end
 

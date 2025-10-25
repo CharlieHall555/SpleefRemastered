@@ -19,7 +19,7 @@ function WinnerDetection.getWinner(playerList: { Player }): Player
     for _, player in ipairs(playerList) do
         local deathTime = PlayerDeathDetector.getDeathTime(player)
 
-        if deathTime == nil and Players:FindFirstChild(player.Name) then
+        if deathTime == nil and player.Parent then
             table.insert(alive, player) -- still alive and player is still in game
         elseif deathTime then
             if deathTime > latestTime then

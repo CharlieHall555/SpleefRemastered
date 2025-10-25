@@ -123,11 +123,7 @@ function MiscBindings.init()
 			SpectateButton.show()
 		end
 	end)
-
-	ClientStateTracker.connectTutorial(function()
-		SpectateButton.hide()
-	end)
-
+	
 	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH", function()
 		SoundPlayer.playSound("rbxassetid://88338250840662", { volume = 0.38 })
 	end)

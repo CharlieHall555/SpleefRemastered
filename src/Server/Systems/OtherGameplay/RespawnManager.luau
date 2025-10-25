@@ -10,6 +10,7 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Map = require(ModuleDirectory.Map.Map)
 local SuddenDeath = require(ModuleDirectory.Round.SuddenDeath)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
+local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
 
 local RespawnManager = {}
 
@@ -92,6 +93,7 @@ function RespawnManager.respawnPlayer(player): boolean
 
 		RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "ACTIVE")
 		SpawnProtectionManager.apply(player)
+		PlayerDeathDetector.clearDeathTime(player)
 		PlayersInGame.addPlayer(player, true)
 		RemoteEventHandler.FireOnClient(player , "REHIGHLIGHT_PLAYERS" , PlayersInGame.getActivePlayers())
 		RemoteEventHandler.FireOnAllClients("PLAYER_REVIVED", player)

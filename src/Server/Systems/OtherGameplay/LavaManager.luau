@@ -5,21 +5,37 @@ local LavaManager = {}
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local RunService = game:GetService("RunService")
+local TeleportManager = require(ModuleDirectory.Round.TeleportManager)
+
 local lava = nil
 local frameCounter = 0
 
+local function safeKill(Char) 
+	local humanoid = Char:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.Health = 0
+	end
+end
+
 function LavaManager.init()
 	ServerHitBoxManager.setUpCallback("Lava", function(player, otherPart)
-		if RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "PREPARING" then
+
+		if SessionVariables.getValue(player , "inTutorial") == true then
+			
+			local tutorialMap = TeleportManager.getMap(player)
+			if tutorialMap then	
+				TeleportManager.teleport(player , tutorialMap.OriginPosition + Vector3.new(0 , 50 , 0) , true)
+			elseif player.Character then
+				safeKill(player.Character)
+			end
+
+		elseif  RoundSystem.getState() == "ACTIVE" or RoundSystem.getState() == "PREPARING" then
 			if player.Character == nil then
 				return
 			end
-
-			local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-			if humanoid then
-				humanoid.Health = 0
-			end
+			safeKill(player.Character)
 		end
 	end)
 

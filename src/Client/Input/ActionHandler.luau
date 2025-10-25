@@ -213,7 +213,7 @@ function ActionHandler.mainAttack(action)
 			return
 		else -- shoot
 			if
-				ClientStateTracker.getState() == "ACTIVE"
+				(ClientStateTracker.getState() == "ACTIVE" or ClientStateTracker.getState() == "TUTORIAL")
 				and ClientAmmoTracker.getAmmo() <= 0
 				and ClientAmmoTracker.getIsInfinite() == false
 			then

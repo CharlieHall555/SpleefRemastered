@@ -24,7 +24,7 @@ function Screens.init()
     Screens.intermissionHUD = playerGui:WaitForChild("IntermissionHud")
     Screens.touchControls = playerGui:WaitForChild("CustomTouchControls")
 
-    Screens.gameHUD.Enabled = (ClientStateTracker.getState() == "ACTIVE")
+    Screens.gameHUD.Enabled = (ClientStateTracker.getState() == "ACTIVE" or ClientStateTracker.getState() == "TUTORIAL")
     Screens.intermissionHUD.Enabled = not Screens.gameHUD.Enabled
 
     ClientStateTracker.connectIntermission(function()
@@ -36,6 +36,12 @@ function Screens.init()
         Screens.intermissionHUD.Enabled = false
         Screens.gameHUD.Enabled = true
     end)
+
+    ClientStateTracker.connectTutorial(function()
+        print("TUTORIAL")
+		Screens.intermissionHUD.Enabled = false
+        Screens.gameHUD.Enabled = true
+	end)
 
 end
 

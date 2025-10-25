@@ -118,6 +118,18 @@ function PCSettingsWidget.setStarVisible(value : boolean)
     end
 end
 
+function PCSettingsWidget.show()
+    if widgetGui then
+        widgetGui.Visible = true
+    end
+end
+
+function PCSettingsWidget.hide()
+    if widgetGui then
+        widgetGui.Visible = false
+    end
+end
+
 function PCSettingsWidget.onLoaded()
     if PlatformDetector.getPlatform() ~= "PC" then
         return
@@ -142,6 +154,11 @@ function PCSettingsWidget.onLoaded()
     musicIcon = widgetGui.Music.ImageLabel
 
     ClientStateTracker.connectActive(function()
+        ShopButton.Visible = false
+        RewardsButton.Visible = false
+    end)
+
+    ClientStateTracker.connectTutorial(function()
         ShopButton.Visible = false
         RewardsButton.Visible = false
     end)

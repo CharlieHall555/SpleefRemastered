@@ -70,6 +70,10 @@ function PlayerDeathDetector.setUpConnection(player: Player)
 	end)
 end
 
+function PlayerDeathDetector.clearDeathTime(player: Player): number? --used on a revival
+	playerDeathCache[player.UserId] = nil
+end
+
 function PlayerDeathDetector.getDeathTime(player: Player): number?
 	local record = playerDeathCache[player.UserId]
 	if record then

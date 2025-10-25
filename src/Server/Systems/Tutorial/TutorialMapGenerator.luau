@@ -12,32 +12,22 @@ local TutorialMapTemplate = require(game:GetService("ServerScriptService").Syste
 local tutorialMapGenerator = {}
 
 -- Track maps per user and a slot index for spatial separation.
-local _mapsByUser: { [number]: Map.Map } = {}
-local _slotByUser: { [number]: number } = {}
-local _usedSlots: { [number]: boolean } = {}
+local mapsByUser: { [number]: Map.Map } = {}
+local slotByUser: { [number]: number } = {}
+local usedSlots: { [number]: boolean } = {}
 
 -- Grid spacing so maps don't overlap; tweak as needed.
 local CELL_X = 1500
 local CELL_Z = 1500
 local BASE_Y = 4000
 
--- optional: distribute on a simple grid to keep worlds nicely spaced
 local function slotToOrigin(slot: number): Vector3
 	-- 0-index internally for nicer grid math
 	local n = math.max(0, slot - 1)
-	local cols = 10 -- change to pack denser/wider
+	local cols = 10 
 	local row = math.floor(n / cols)
 	local col = n % cols
 	return Vector3.new(col * CELL_X, BASE_Y, row * CELL_Z)
-end
-
-local function deepCopy(tbl)
-	if type(tbl) ~= "table" then return tbl end
-	local copy = {}
-	for k, v in pairs(tbl) do
-		copy[deepCopy(k)] = deepCopy(v)
-	end
-	return copy
 end
 
 local function getMapOrigin(map: Map.Map): Vector3
@@ -46,62 +36,48 @@ local function getMapOrigin(map: Map.Map): Vector3
 end
 
 function tutorialMapGenerator.getMap(player: Player): Map.Map?
-	return _mapsByUser[player.UserId]
+	return mapsByUser[player.UserId]
 end
 
 function tutorialMapGenerator.getMapOrigin(player: Player): Vector3?
-	local map = _mapsByUser[player.UserId]
+	local map = mapsByUser[player.UserId]
 	return map and getMapOrigin(map) or nil
 end
 
-function tutorialMapGenerator.ensureMap(player: Player): Map.Map
+function tutorialMapGenerator.generateMap(player: Player): Map.Map
 	local uid = player.UserId
-	if _mapsByUser[uid] then
-		return _mapsByUser[uid]
+	if mapsByUser[uid] then
+		return mapsByUser[uid]
 	end
 
-	-- Find the smallest available slot
 	local slot = 1
-	while _usedSlots[slot] do
+	while usedSlots[slot] do
 		slot += 1
 	end
-	_slotByUser[uid] = slot
-	_usedSlots[slot] = true
+	slotByUser[uid] = slot
+	usedSlots[slot] = true
 
-	-- clone template without mutating the shared module table
-	local tpl = deepCopy(TutorialMapTemplate)
+	local tpl = table.clone(TutorialMapTemplate)
 	local origin = slotToOrigin(slot)
-	-- normalise the expected field name the generator uses (handle a few common names)
-	if tpl.originPosition ~= nil then
-		tpl.originPosition = origin
-	elseif tpl.OriginPosition ~= nil then
-		tpl.OriginPosition = origin
-	else
-		-- fall back to a standard key MapGenerator understands in your codebase
-		tpl.OriginPosition = origin
-	end
+	tpl.OriginPosition = origin
 
 	local newMap: Map.Map = MapGenerator.generate(tpl)
-	print(newMap.background)
-	_mapsByUser[uid] = newMap
+	mapsByUser[uid] = newMap
 	return newMap
 end
 
 function tutorialMapGenerator.deleteMap(player: Player)
 	local uid = player.UserId
-	local map = _mapsByUser[uid]
+	local map = mapsByUser[uid]
 	if map then
-		-- Your Map class likely has :Destroy(); if not, clean descendants/instances here.
-		pcall(function()
-			if map.Destroy then map:Destroy() end
-		end)
+		map:Destroy()
 	end
-	_mapsByUser[uid] = nil
-	local slot = _slotByUser[uid]
+	mapsByUser[uid] = nil
+	local slot = slotByUser[uid]
 	if slot then
-		_usedSlots[slot] = nil
+		usedSlots[slot] = nil
 	end
-	_slotByUser[uid] = nil
+	slotByUser[uid] = nil
 end
 
 return tutorialMapGenerator

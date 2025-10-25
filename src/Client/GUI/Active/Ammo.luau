@@ -72,6 +72,25 @@ function Ammo.onProfileLoaded()
 		AmmoGui.Position = UDim2.new(UDim.new(0.99, -25), UDim.new(0.3, 0))
 		AmmoGui.UIScale.Scale = 1.2
 	end
+
+	local Arrow = AmmoGui.Arrow
+	
+	if Arrow then
+		local tween = TweenService:Create(
+		Arrow,
+		TweenInfo.new(0.5 , Enum.EasingStyle.Sine , Enum.EasingDirection.InOut , -1 , true),
+		{Position = UDim2.fromScale(-0.4 , 0.5)}
+	)
+	tween:Play()
+	end
+
+end
+
+function Ammo.setArrowVisible(value)
+	local Arrow = AmmoGui.Arrow
+	if Arrow then
+		Arrow.Visible = value
+	end
 end
 
 function Ammo.shake()

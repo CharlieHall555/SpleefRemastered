@@ -49,9 +49,6 @@ function StatusGui.onProfileLoaded()
 		Status.Visible = true
 	end)
 
-	ClientStateTracker.connectTutorial(function()
-		Status.Visible = false
-	end)
 end
 
 return StatusGui

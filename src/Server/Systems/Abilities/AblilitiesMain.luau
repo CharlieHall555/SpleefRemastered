@@ -62,8 +62,9 @@ function AbilitiesMain.fireAbility(player: Player)
 	end
 
 	local abilCooldown = abilDef.cooldown
+	local inTutorial = SessionVariables.getValue(player, "inTutorial")
 
-	if RoundSystem.getState() ~= "ACTIVE" then
+	if not inTutorial and RoundSystem.getState() ~= "ACTIVE" then
 		return
 	end
 
@@ -71,7 +72,7 @@ function AbilitiesMain.fireAbility(player: Player)
 		return
 	end
 
-	if PlayersAlive.isAlive(player) == false then
+	if not inTutorial and PlayersAlive.isAlive(player) == false then
 		return
 	end
 

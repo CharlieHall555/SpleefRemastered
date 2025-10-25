@@ -54,6 +54,7 @@ function PlayerPool.setOnChange(fn : ()->()) :nil
     onChange = fn
 end
 
+--safe to call if player is not in active pool.
 function PlayerPool.removeFromPool(player: Player): nil
     for i, p in ipairs(activePool) do
         if p == player then

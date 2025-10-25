@@ -133,7 +133,6 @@ ModuleDirectory.Tutorial = {}
 ModuleDirectory.Tutorial.TutorialManager = serverRoot.Systems.Tutorial.TutorialManager
 ModuleDirectory.Tutorial.tutorialMapGenerator = serverRoot.Systems.Tutorial.TutorialMapGenerator
 ModuleDirectory.Tutorial.Dummy = serverRoot.Systems.Tutorial.Npc
-ModuleDirectory.Tutorial.TimeTaken = serverRoot.Systems.Tutorial.TimeTaken
 
 --//====================================================
 --// Player Systems
@@ -189,6 +188,13 @@ ModuleDirectory.Analytics.LeaderboardUpdater = serverRoot.Services.Analytics.Lea
 ModuleDirectory.Analytics.LeaderboardGetter = serverRoot.Services.Analytics.LeaderboardGetter
 ModuleDirectory.Analytics.EventAnalytics = serverRoot.Services.Analytics.EventAnalytics
 ModuleDirectory.Analytics.EconomyAnalytics = serverRoot.Services.Analytics.EconomyAnalytics
+
+ModuleDirectory.Challenge = {}
+ModuleDirectory.Challenge.LobbyChallengeMain = serverRoot.Systems.LobbyChallenges.LobbyChallengeMain
+ModuleDirectory.Challenge.ChallengeStart = serverRoot.Systems.LobbyChallenges.ChallengeStart        
+ModuleDirectory.Challenge.ChallengeEnd = serverRoot.Systems.LobbyChallenges.ChallengeEnd
+ModuleDirectory.Challenge.ChallengeLoop = serverRoot.Systems.LobbyChallenges.ChallengeLoop
+ModuleDirectory.Challenge.ChallengeSnowball = serverRoot.Systems.LobbyChallenges.Models.ChallengeSnowball
 
 ModuleDirectory.Badges = {}
 ModuleDirectory.Badges.PlayerBadgeHandler = serverRoot.Services.Badges.PlayerBadgeHander

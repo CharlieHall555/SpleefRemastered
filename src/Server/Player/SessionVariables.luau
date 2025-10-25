@@ -80,4 +80,16 @@ function PlayerSessionVariables.setValue(player: Player, valueName: string, valu
 	RemoteEventHandler.FireOnClient(player, "SESSION_VARIABLE_UPDATED", valueName, cache[uid][valueName], false)
 end
 
+function PlayerSessionVariables.incrementValue(player: Player, valueName: string, amount: any)
+
+	local value = PlayerSessionVariables.getValue(player, valueName)
+	if typeof(value) == "number" and typeof(amount) == "number" then
+		value = value + amount
+		PlayerSessionVariables.setValue(player, valueName, value)
+	else
+		warn("Tried to increment non-number session variable: " .. valueName)
+	end
+	
+end
+
 return PlayerSessionVariables

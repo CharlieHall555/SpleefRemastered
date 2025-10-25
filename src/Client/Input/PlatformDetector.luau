@@ -27,4 +27,12 @@ function PlatformDetector.getPlatform(): Platform
     return platform
 end
 
+function PlatformDetector.getScreenSize() : Vector2
+
+    local camera = workspace.CurrentCamera
+    local screenSize = camera.ViewportSize
+    return screenSize or Vector2.new(1000 , 1000)
+
+end
+
 return PlatformDetector
