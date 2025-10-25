@@ -44,6 +44,7 @@ local ProfileTemplate = {
 	wins = 0,
 	roundsPlayed = 0,
 	hasJoinedBefore = false,
+	hasCompletedTutorial = false,
 	ability = "DASH",
 	abilities = { "DASH" },
 	shovels = { "DEFAULT" },
@@ -55,7 +56,7 @@ local ProfileService = require(game:GetService("ServerScriptService").External.P
 
 local database = "PRODUCTION"
 if RunService:IsStudio() then
-	database = "TEST29"
+	database = "TEST30"
 else
 	database = "PRODUCTION"
 end

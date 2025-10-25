@@ -36,6 +36,10 @@ function ConstraintManager.init()
 		type = "boolean",
 	})
 
+	ProfileManager.setFieldConstraint("hasCompletedTutorial" , {
+		type = "boolean"
+	})
+
 	ProfileManager.setFieldConstraint("hasJoinedBefore", {
 		type = "boolean",
 	})

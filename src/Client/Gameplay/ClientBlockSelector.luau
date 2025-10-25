@@ -5,6 +5,8 @@ local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local GuiService = game:GetService("GuiService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+local CrossHair = require(ClientModuleDirectory.Gui.CrossHair)
 
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -123,6 +125,8 @@ end
 local function focus(part: Part)
     if PlatformDetector.getPlatform() == "PC" then
         MouseIcon.shovel()
+    else
+        CrossHair.shovel()
     end
 
     selectedBlock = part
@@ -137,7 +141,13 @@ end
 
 local function unfocus()
     if PlatformDetector.getPlatform() == "PC" then
-        MouseIcon.reset()
+        if ClientStateTracker.getState() == "ACTIVE" or ClientStateTracker.getState() == "TUTORIAL" then
+            MouseIcon.snowball()
+        else
+            MouseIcon.reset()
+        end
+    else
+        CrossHair.snowball()
     end
 
     if selectedBlock ~= nil then

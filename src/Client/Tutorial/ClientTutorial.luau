@@ -8,6 +8,7 @@ local ConfirmLeave = require(ClientModuleDirectory.Gui.ConfirmLeave)
 local TutorialData = require(ClientModuleDirectory.TutorialData)
 local TutorialFunctions = require(ClientModuleDirectory.TutorialFunctions)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local currentStep = nil
 local currentStepData : TutorialData.TutorialStage = {}
@@ -42,7 +43,7 @@ function ClientTutorial.init()
 	end)
 
 	ConfirmLeave.onLeave(function()
-		ClientTutorial.complete()
+		ClientTutorial.complete(true)
 	end)
 
 end
@@ -58,7 +59,7 @@ function ClientTutorial.nextStep()
 	currentStepChange = tick()
 
 	if not currentStepData then
-		ClientTutorial.complete()
+		ClientTutorial.complete(false)
 	end
 
 	ClientTutorial.showCurrent()
@@ -79,16 +80,18 @@ function ClientTutorial.nextStep()
 end
 
 function ClientTutorial.showCurrent()
+	local stepMessage = ("(%d/%d)"):format(currentStep or 0, #TutorialData or 1) or ""
+
 	if PlatformDetector.getPlatform() == "MOBILE" then
-		TutorialTip.setText(currentStepData.messageMobile or "")
+		TutorialTip.setText(stepMessage .. " " .. currentStepData.messageMobile or "")
 	else
-		TutorialTip.setText(currentStepData.messagePC or "")
+		TutorialTip.setText(stepMessage .. " " .. currentStepData.messagePC or "")
 	end
 	TutorialTip.setImage(currentStepData.image or FALLBACK_IMAGE)
 end
 
 function ClientTutorial.start()
-
+	SoundPlayer.playSound("rbxassetid://97218547862968", { volume = 0.5 })	
 	currentStep = 0
 	currentStepData = {}
 	ClientTutorial.nextStep()
@@ -96,17 +99,25 @@ function ClientTutorial.start()
 	
 end
 
-function ClientTutorial.complete()
+function ClientTutorial.complete(skipped : boolean)
 	currentStep = 0
 	currentStepChange = 0
 	currentStepData = {}
-	RemoteEventHandler.FireOnServer("TUTORIAL_COMPLETE")
+	if skipped == true then
+		RemoteEventHandler.FireOnServer("TUTORIAL_COMPLETE" , false)
+	else
+		RemoteEventHandler.FireOnServer("TUTORIAL_COMPLETE" , true)
+	end
+	
 end
 
 function ClientTutorial.onAction(actionName : string)
 	if currentStepData and actionName == currentStepData.actionToComplete then
 		if actionName ~= "AUTO_COMPLETE" and timeSinceLastStep() < ACTION_THRESHOLD then
 			return
+		end
+		if actionName ~= "AUTO_COMPLETE" then
+			SoundPlayer.playSound("rbxassetid://1788243907", { volume = 0.5 })	
 		end
 		ClientTutorial.nextStep()
 	end

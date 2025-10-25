@@ -21,7 +21,13 @@ local PlayerPool = require(ModuleDirectory.Round.PlayerPool)
 local TutorialManager = require(ModuleDirectory.Tutorial.TutorialManager)
 
 RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
-	TutorialManager.start(player)
+
+	local hasCompletedTutorial = PlayerData.getHasCompletedTutorial(player) or false
+	if hasCompletedTutorial then
+		PlayerPool.addToPool(player)
+	else
+		TutorialManager.start(player)
+	end
 end)
 
 local RoundSystem = require(ModuleDirectory.Round.RoundSystem)

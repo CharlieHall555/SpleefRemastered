@@ -272,4 +272,19 @@ function PlayerData.getClaimedRewards(player : Player) : {number}
 	return data.dailyRewardClaims or {}
 end
 
+function PlayerData.setHasCompletedTutorial(player : Player , value : boolean) : nil
+	local data = getData(player)
+	if not data then
+		return
+	end
+	setFieldAndNotify(player, "hasCompletedTutorial", value)
+end 
+
+function PlayerData.getHasCompletedTutorial(player : Player) : boolean
+	local data = getData(player)
+	return data and data.hasCompletedTutorial or false
+end
+
+
+
 return PlayerData

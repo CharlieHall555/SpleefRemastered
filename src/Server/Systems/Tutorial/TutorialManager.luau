@@ -7,6 +7,9 @@ local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerPool = require(ModuleDirectory.Round.PlayerPool)
 local AmmoManager = require(ModuleDirectory.Ammo.AmmoManager)
+local PlayerData = require(ModuleDirectory.Player.PlayerData)
+local EventAnalytics = require(ModuleDirectory.Analytics.EventAnalytics)
+local LavaManager = require(ModuleDirectory.Gameplay.LavaManager)
 
 local TutorialManager = {}
 
@@ -14,12 +17,9 @@ local LobbySpawn
 
 function TutorialManager.init()
 	
-	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETE" , function(player : Player)
+	LavaManager.getMap = TutorialManager.getMap
 
-		TutorialManager.stop(player)
-		
-	end)
-
+	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETE" , TutorialManager.stop)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
 
 end
@@ -35,15 +35,23 @@ function TutorialManager.start(player : Player)
 	AmmoManager.setUp({player})
 end
 
-function TutorialManager.stop(player : Player)
-	SessionVariables.setValue(player , "inTutorial" , false	)
+function TutorialManager.stop(player : Player , completed : boolean)
+	SessionVariables.setValue(player , "inTutorial" , false)
 	TeleportManager.teleport(player , LobbySpawn.Position + Vector3.new(0 , 6 , 0) , true)
 	RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "INTERMISSION")
-	PlayerPool.addToPool(player)
+	PlayerData.setHasCompletedTutorial(player , completed)
+	if completed then
+		EventAnalytics:logEvent(player , "TUTORIAL_COMPLETE" , 1 , {})
+	else
+		EventAnalytics:logEvent(player , "TUTORIAL_SKIPPED" , 1 , {})
+	end
 	task.spawn(function()
 		task.wait()
 		TutorialMapGen.deleteMap(player)
+		task.wait(2)
+		PlayerPool.addToPool(player)
 	end)
+
 end
 
 function TutorialManager.getMap(player : Player)

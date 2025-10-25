@@ -24,6 +24,8 @@ local ModeDetector = require(ClientModuleDirectory.Input.ModeDetector)
 local VibrationService = require(ClientModuleDirectory.VibrationService)
 local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 local ParticlePlayer = require(ClientModuleDirectory.ParticlePlayer)
+local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
+
 
 local lastMousePos
 
@@ -115,6 +117,10 @@ function MiscBindings.init()
 		elseif newState == "INTERMISSION" then
 			SpectateButton.hide()
 		end
+	end)
+
+	ClientStateTracker.connectIntermission(function()
+		MouseIcon.reset()
 	end)
 
 	ClientStateTracker.connectIntermission(function()

@@ -20,8 +20,8 @@ function SetUp.init()
 
     if RunService:IsStudio() then
         
-        Config.REQUIRED_PLAYERS = 2
-        Config.PLAYERS_TO_END = 1   
+        Config.REQUIRED_PLAYERS = 1
+        Config.PLAYERS_TO_END = 0
         Config.INTERMISSION_TIME = 10
 
     end
