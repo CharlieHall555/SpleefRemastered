@@ -19,7 +19,7 @@ local LobbySpawn
 
 function TutorialManager.init()
 	
-	LavaManager.getMap = TutorialManager.getMap
+	LavaManager.getTutorialMap = TutorialManager.getTutorialMap
 
 	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETE" , TutorialManager.stop)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
@@ -67,7 +67,7 @@ function TutorialManager.stop(player : Player , completed : boolean)
 	end
 end
 
-function TutorialManager.getMap(player : Player)
+function TutorialManager.getTutorialMap(player : Player)
 	return TutorialMapGen.getMap(player)
 end
 

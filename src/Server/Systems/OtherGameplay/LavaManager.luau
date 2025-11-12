@@ -20,10 +20,10 @@ local HIT_COOLDOWN_SEC = 1.0
 local lastHitAt: { [Player]: number } = {}
 
 -- Provide a safe default; can be overridden elsewhere via setter.
-function LavaManager.getMap(_player) return nil end
-function LavaManager.setGetMap(fn)
+function LavaManager.getTutorialMap(_player) return nil end
+function LavaManager.setGetTutorialMap(fn)
 	if type(fn) == "function" then
-		LavaManager.getMap = fn
+		LavaManager.getTutorialMap = fn
 	end
 end
 
@@ -79,8 +79,8 @@ local function handleLavaContactForCharacter(char: Model)
 	if inTutorial then
 		-- Guard getMap call
 		local tutorialMap = nil
-		if type(LavaManager.getMap) == "function" then
-			tutorialMap = LavaManager.getMap(player)
+		if type(LavaManager.getTutorialMap) == "function" then
+			tutorialMap = LavaManager.getTutorialMap(player)
 		end
 
 		if tutorialMap and tutorialMap.OriginPosition then

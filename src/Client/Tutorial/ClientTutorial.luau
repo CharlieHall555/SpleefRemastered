@@ -83,9 +83,9 @@ function ClientTutorial.showCurrent()
 	local stepMessage = ("(%d/%d)"):format(currentStep or 0, #TutorialData or 1) or ""
 
 	if PlatformDetector.getPlatform() == "MOBILE" then
-		TutorialTip.setText(stepMessage .. " " .. currentStepData.messageMobile or "")
+		TutorialTip.setText(stepMessage .. " " .. (currentStepData.messageMobile or ""))
 	else
-		TutorialTip.setText(stepMessage .. " " .. currentStepData.messagePC or "")
+		TutorialTip.setText(stepMessage .. " " .. (currentStepData.messagePC or ""))
 	end
 	TutorialTip.setImage(currentStepData.image or FALLBACK_IMAGE)
 end

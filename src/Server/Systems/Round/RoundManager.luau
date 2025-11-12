@@ -33,6 +33,8 @@ local PodiumManager = require(ModuleDirectory.Round.PodiumManager)
 local CoinPickupManager = require(ModuleDirectory.Coins.CoinPickupManager)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local Overhead = require(ModuleDirectory.Overhead)
+local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
+local TutorialManager = require(ModuleDirectory.Tutorial.TutorialManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -102,7 +104,7 @@ local function onRoundEnding(currentRound)
 		Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
 		Onboarding.action(Winner, "WON")
 		if Winner then
-			--pcall(PodiumManager.setChar , Winner)	
+			--pcall(PodiumManager.setChar , Winner)
 			PlayerData.incrementWins(Winner, 1)
 			LeaderboardUpdater.incrementWins(Winner.UserId, 1)
 			local totalWins = PlayerData.getWins(Winner)
@@ -116,7 +118,7 @@ local function onRoundEnding(currentRound)
 		end
 	end
 
-	RoundSummary.onRoundEnd(currentRound , Winner)
+	RoundSummary.onRoundEnd(currentRound, Winner)
 	CoinPickupManager.stop()
 	KnockbackTracker.reset()
 	EliminationTracker.reset()
@@ -125,7 +127,7 @@ local function onRoundEnding(currentRound)
 	task.wait()
 	currentMap:Destroy()
 	PlayerDeathDetector.clearCache()
-	
+
 	task.wait(1)
 end
 
@@ -153,7 +155,7 @@ function RoundManager.init(): nil
 	RoundSystem.connectPreparing(onRoundPreparing)
 	RoundSystem.connectEnding(onRoundEnding)
 	RoundSystem.connectIntermission(onRoundIntermission)
-	RoundSystem.connectActive(onRoundActive)	
+	RoundSystem.connectActive(onRoundActive)
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
 
@@ -163,15 +165,30 @@ function RoundManager.init(): nil
 end
 
 function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
-	RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
-	local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
+	if SessionVariables.getValue(playerWhoDied, "inTutorial") == true then
 
-	if wasAlive then
-		RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied, Eliminator)
-	end
+		local tutorailMap = TutorialManager.getTutorialMap(playerWhoDied)
+		print(tutorailMap)
+		if tutorailMap and tutorailMap.OriginPosition then
+			local TELEPORT_OFFSET = Vector3.new(0, 50, 0)
+			task.spawn(function()
+				task.wait(1)
+				if SessionVariables.getValue(playerWhoDied, "inTutorial") == true then
+					TeleportManager.teleport(playerWhoDied, tutorailMap.OriginPosition + TELEPORT_OFFSET, true)
+				end
+			end)
+		end
+	else
+		RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
+		local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
 
-	if Eliminator then
-		RemoteEventHandler.FireOnClient(Eliminator, "ELIMINATION", playerWhoDied)
+		if wasAlive then
+			RemoteEventHandler.FireOnAllClients("PLAYER_DIED", playerWhoDied, Eliminator)
+		end
+
+		if Eliminator then
+			RemoteEventHandler.FireOnClient(Eliminator, "ELIMINATION", playerWhoDied)
+		end
 	end
 end
 
