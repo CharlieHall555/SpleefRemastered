@@ -141,11 +141,7 @@ end
 
 local function unfocus()
     if PlatformDetector.getPlatform() == "PC" then
-        if ClientStateTracker.getState() == "ACTIVE" or ClientStateTracker.getState() == "TUTORIAL" then
-            MouseIcon.snowball()
-        else
-            MouseIcon.reset()
-        end
+        MouseIcon.reset()
     else
         CrossHair.snowball()
     end

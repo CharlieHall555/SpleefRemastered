@@ -15,7 +15,7 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local COIN_IMAGE = "rbxassetid://99780735877626"
 local LIVE_IMAGE = "rbxassetid://77250827436146"
-local SOUND_COIN = "rbxassetid://86832085549408"
+local CLAIM_SOUND = "rbxassetid://86832085549408"
 
 local onClaimableChanged: (claimable: boolean) -> () = function() end
 
@@ -164,7 +164,7 @@ function DailyRewards.onProfileLoaded()
         if clickable and clickable:IsA("TextButton") then
             clickable.Activated:Connect(function()
                 RemoteEventHandler.FireOnServer("CLAIM_REWARD", buttonIndex)
-                SoundPlayer.playSound(SOUND_COIN)
+                SoundPlayer.playSound(CLAIM_SOUND)
             end)
         end
     end

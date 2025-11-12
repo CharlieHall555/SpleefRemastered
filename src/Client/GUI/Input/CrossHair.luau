@@ -8,8 +8,8 @@ local Player = game.Players.LocalPlayer
 
 local CrossHairGui: ImageLabel
 
-local SMALL_SHOVEL = "rbxassetid://112984427793297"
-local SMALL_SNOWBALL = "rbxassetid://91214120728139"
+local SMALL_SHOVEL = "rbxassetid://98922370359948"
+local SMALL_SNOWBALL = "rbxassetid://107305582144675"
 local CROSS_HAIR_DEFAULT = "rbxassetid://81890874267120"
 
 local CrossHair = {}

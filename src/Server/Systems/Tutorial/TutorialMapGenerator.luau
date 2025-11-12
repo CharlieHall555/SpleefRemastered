@@ -59,7 +59,7 @@ function tutorialMapGenerator.generateMap(player: Player): Map.Map
 
 	local tpl = table.clone(TutorialMapTemplate)
 	local origin = slotToOrigin(slot)
-	tpl.OriginPosition = origin
+	tpl.originPosition = origin
 
 	local newMap: Map.Map = MapGenerator.generate(tpl)
 	mapsByUser[uid] = newMap

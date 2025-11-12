@@ -83,9 +83,7 @@ function RoundStatus.onProfileLoaded()
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED", function(aliveNow: number, maxAlive: number)
-		if ClientStateTracker.getState() == "ACTIVE" then
-			StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
-		end
+		StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
 	end)
 
 	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)

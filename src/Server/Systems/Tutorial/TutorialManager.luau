@@ -1,5 +1,6 @@
 -- TutorialManager.lua
 
+local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local TeleportManager = require(ModuleDirectory.Round.TeleportManager)
 local TutorialMapGen = require(ModuleDirectory.Tutorial.tutorialMapGenerator)
@@ -11,6 +12,7 @@ local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local EventAnalytics = require(ModuleDirectory.Analytics.EventAnalytics)
 local LavaManager = require(ModuleDirectory.Gameplay.LavaManager)
 
+
 local TutorialManager = {}
 
 local LobbySpawn
@@ -21,6 +23,14 @@ function TutorialManager.init()
 
 	RemoteEventHandler.newEventConnection("TUTORIAL_COMPLETE" , TutorialManager.stop)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
+
+	Players.PlayerRemoving:Connect(function(player : Player)
+		local hasCompletedTutorial = PlayerData.getHasCompletedTutorial(player)
+		local playTime = SessionVariables.getValue(player , "playTime") or -1
+		if hasCompletedTutorial == false then
+			EventAnalytics.logEvent(player , "LEFT_TUTORIAL" , 1 , {playTime = playTime})
+		end
+	end)
 
 end
 
@@ -39,19 +49,22 @@ function TutorialManager.stop(player : Player , completed : boolean)
 	SessionVariables.setValue(player , "inTutorial" , false)
 	TeleportManager.teleport(player , LobbySpawn.Position + Vector3.new(0 , 6 , 0) , true)
 	RemoteEventHandler.FireOnClient(player, "CHANGE_STATE", "INTERMISSION")
-	PlayerData.setHasCompletedTutorial(player , completed)
-	if completed then
-		EventAnalytics:logEvent(player , "TUTORIAL_COMPLETE" , 1 , {})
-	else
-		EventAnalytics:logEvent(player , "TUTORIAL_SKIPPED" , 1 , {})
-	end
+	PlayerData.setHasCompletedTutorial(player , true)
 	task.spawn(function()
 		task.wait()
 		TutorialMapGen.deleteMap(player)
+		TeleportManager.teleport(player , LobbySpawn.Position + Vector3.new(0 , 6 , 0) , true)
 		task.wait(2)
 		PlayerPool.addToPool(player)
 	end)
 
+	local playTime = SessionVariables.getValue(player , "playTime") or -1
+
+	if completed then
+		EventAnalytics.logEvent(player , "TUTORIAL_COMPLETE" , 1 , {playTime = playTime})
+	else
+		EventAnalytics.logEvent(player , "TUTORIAL_SKIPPED" , 1 , {playTime = playTime})
+	end
 end
 
 function TutorialManager.getMap(player : Player)

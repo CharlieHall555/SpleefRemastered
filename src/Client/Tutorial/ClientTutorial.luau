@@ -91,7 +91,8 @@ function ClientTutorial.showCurrent()
 end
 
 function ClientTutorial.start()
-	SoundPlayer.playSound("rbxassetid://97218547862968", { volume = 0.5 })	
+	local SuccessSound = "rbxassetid://86832085549408"
+	SoundPlayer.playSound(SuccessSound, { volume = 0.5 })
 	currentStep = 0
 	currentStepData = {}
 	ClientTutorial.nextStep()
