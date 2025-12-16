@@ -82,6 +82,8 @@ ClientModuleDirectory.Gui.Shop.Gamepass = Root.Gui.Intermission.Shop.Gamepass
 ClientModuleDirectory.Gui.AFKWarning = Root.Gui.Active.AFKWarning
 
 ClientModuleDirectory.AbilitiesZone = Root.Zones.AbilitiesZone
+ClientModuleDirectory.InvitePlayersZone = Root.Zones.InvitePlayersZone
+
 
 ClientModuleDirectory.Gui.DailyRewardsGui = Root.Gui.Intermission.DailyRewards
 
