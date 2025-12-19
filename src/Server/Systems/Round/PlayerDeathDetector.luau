@@ -1,6 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
-local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
+local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local Players = game:GetService("Players")
 
 local connections = {}

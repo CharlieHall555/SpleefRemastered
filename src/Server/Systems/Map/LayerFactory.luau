@@ -36,6 +36,7 @@ function LayerFactory.create(params: LayerCreationParams,plane: PlaneFactory.Pla
         center.Z - halfHeight
     )
 
+
     local layerInstance = Layer.new(center, Vector2.new(width, height))
     layerInstance:setSpawnsAmmo(params.spawnsAmmo or false)
 

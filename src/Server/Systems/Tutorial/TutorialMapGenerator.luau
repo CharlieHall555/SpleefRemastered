@@ -32,7 +32,7 @@ end
 
 local function getMapOrigin(map: Map.Map): Vector3
 	-- Be tolerant of naming differences
-	return (map.OriginPosition or map.originPosition or map.Origin or Vector3.new())
+	return (map.originPosition or map.originPosition or map.Origin or Vector3.new())
 end
 
 function tutorialMapGenerator.getMap(player: Player): Map.Map?

@@ -5,9 +5,9 @@ local RunService = game:GetService("RunService")
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
-local TeleportManager = require(ModuleDirectory.Round.TeleportManager)
+local TeleportManager = require(ModuleDirectory.Systems.Round.TeleportManager)
 
 local lava: Part? = nil
 local frameCounter = 0
@@ -83,9 +83,9 @@ local function handleLavaContactForCharacter(char: Model)
 			tutorialMap = LavaManager.getTutorialMap(player)
 		end
 
-		if tutorialMap and tutorialMap.OriginPosition then
+		if tutorialMap and tutorialMap.originPosition then
 			local TELEPORT_OFFSET = Vector3.new(0, 50, 0)
-			TeleportManager.teleport(player, tutorialMap.OriginPosition + TELEPORT_OFFSET, true)
+			TeleportManager.teleport(player, tutorialMap.originPosition + TELEPORT_OFFSET, true)
 		else
 			killIfHasCharacter(player)
 		end

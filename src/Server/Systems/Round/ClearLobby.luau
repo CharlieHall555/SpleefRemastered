@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlayersAlive = require(ModuleDirectory.Round.PlayersInGame)
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local PlayersAlive = require(ModuleDirectory.Systems.Round.PlayersInGame)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 
 local clearParams = OverlapParams.new()
 clearParams.CollisionGroup = "CG_GAMEPLAY"

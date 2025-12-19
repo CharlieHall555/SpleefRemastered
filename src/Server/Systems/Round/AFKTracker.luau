@@ -1,8 +1,8 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Players = game:GetService("Players")
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
-local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
+local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local PlayerPositionTracker = require(ModuleDirectory.Player.PlayerPositionTracker)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 

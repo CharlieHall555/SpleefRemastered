@@ -7,12 +7,12 @@ local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local Block = require(ModuleDirectory.Map.Block)
 local LoadedBlocks = require(ModuleDirectory.Map.LoadedBlocks)
 local SnowballManager = {}
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local AmmoManager = require(ModuleDirectory.Ammo.AmmoManager)
 local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
 local SnowballAmmoPickup = require(ModuleDirectory.Ammo.SnowballAmmoPickup)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
-local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp

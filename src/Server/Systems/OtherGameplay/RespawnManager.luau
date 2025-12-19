@@ -2,15 +2,15 @@ local LocalizationService = game:GetService("LocalizationService")
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
-local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
-local TeleportManager = require(ModuleDirectory.Round.TeleportManager)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
+local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
+local TeleportManager = require(ModuleDirectory.Systems.Round.TeleportManager)
 local SpawnProtectionManager = require(ModuleDirectory.Gameplay.SpawnProtectionManager)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Map = require(ModuleDirectory.Map.Map)
-local SuddenDeath = require(ModuleDirectory.Round.SuddenDeath)
+local SuddenDeath = require(ModuleDirectory.Systems.Round.SuddenDeath)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
-local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
+local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 
 local RespawnManager = {}
 
@@ -78,7 +78,7 @@ function RespawnManager.respawnPlayer(player): boolean
 		if randomBlock then
 			Position = randomBlock.Part.Position + Vector3.new(0, 30, 0)
 		else
-			Position = currentMap.OriginPosition + Vector3.new(0, 150, 0)
+			Position = currentMap.originPosition + Vector3.new(0, 150, 0)
 		end
 
 		local success = TeleportManager.teleport(player, Position, false)

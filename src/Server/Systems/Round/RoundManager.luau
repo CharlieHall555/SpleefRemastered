@@ -1,15 +1,15 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
-local TeleportManager = require(ModuleDirectory.Round.TeleportManager)
-local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
+local TeleportManager = require(ModuleDirectory.Systems.Round.TeleportManager)
+local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local Timer = require(ModuleDirectory.Timer)
 local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
 local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
-local SuddenDeath = require(ModuleDirectory.Round.SuddenDeath)
+local SuddenDeath = require(ModuleDirectory.Systems.Round.SuddenDeath)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 local currentMap = nil
-local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
-local WinnerDetection = require(ModuleDirectory.Stats.WinnerDetection)
+local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
+local WinnerDetection = require(ModuleDirectory.Systems.Stats.WinnerDetection)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Leaderstats = require(ModuleDirectory.Player.Leaderstats)
 local AmmoManager = require(ModuleDirectory.Ammo.AmmoManager)
@@ -19,22 +19,25 @@ local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
 local MapSaves = require(ModuleDirectory.Map.Saves)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local ServerStatus = require(ModuleDirectory.ServerStatus)
-local MapSelection = require(ModuleDirectory.Round.MapSelection)
+local MapSelection = require(ModuleDirectory.Systems.Round.MapSelection)
 local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
-local ClearLobby = require(ModuleDirectory.Round.ClearLobby)
+local ClearLobby = require(ModuleDirectory.Systems.Round.ClearLobby)
 local WinBadgeHandler = require(ModuleDirectory.Badges.WinBadgeHandler)
-local KnockbackTracker = require(ModuleDirectory.Stats.KnockbackTracker)
-local EliminationTracker = require(ModuleDirectory.Stats.EliminationTracker)
-local RoundSummary = require(ModuleDirectory.Stats.RoundSummary)
+local KnockbackTracker = require(ModuleDirectory.Systems.Stats.KnockbackTracker)
+local EliminationTracker = require(ModuleDirectory.Systems.Stats.EliminationTracker)
+local RoundSummary = require(ModuleDirectory.Systems.Stats.RoundSummary)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
-local PodiumManager = require(ModuleDirectory.Round.PodiumManager)
+local PodiumManager = require(ModuleDirectory.Systems.Round.PodiumManager)
 local CoinPickupManager = require(ModuleDirectory.Coins.CoinPickupManager)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local Overhead = require(ModuleDirectory.Overhead)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local TutorialManager = require(ModuleDirectory.Tutorial.TutorialManager)
+local AgentManager = require(ModuleDirectory.Systems.Agent.AgentManager)
+local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
+local MapUtilities = require(ModuleDirectory.Map.MapUtilities)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -57,18 +60,30 @@ local function onSuddenDeathTimerEnd()
 	RemoteEventHandler.FireOnAllClients("START_SUDDEN_DEATH")
 end
 
-local function onRoundStarting(currentRound: RoundSystem.Round)
+local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd this fires first 
+
+
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 	currentMap = MapGenerator.generate(MapSaves[MapSelection.getNextMap()])
-	print("MapSpawn: @" .. VectorUtil.SerializeVector3(currentMap.OriginPosition))
+	print("MapSpawn: @" .. VectorUtil.SerializeVector3(currentMap.originPosition))
 	task.wait(1)
 
 	for _, each in currentRound.startingPlayers do
 		Onboarding.action(each, "JOINED_ROUND")
 	end
+
+	TileScoring.setCurrentMap(currentMap)
+	MapUtilities.setCurrentMap(currentMap)
+
+
+	AgentManager.spawnNAgentsOnMap(currentMap, 1)
+
+	TileScoring.start()
+
 end
 
-local function onRoundPreparing(currentRound)
+
+local function onRoundPreparing(currentRound) -- and then this
 	RemoteEventHandler.FireOnClients(
 		PlayersInGame.getActivePlayers(),
 		"SEND_STARTING_PLAYERS",
@@ -87,6 +102,11 @@ local function onRoundPreparing(currentRound)
 		end
 		TeleportManager.teleport(eachPlayer, Position)
 	end
+
+	AgentManager.activateAgents()
+
+
+
 end
 
 local function onRoundEnding(currentRound)
@@ -94,6 +114,7 @@ local function onRoundEnding(currentRound)
 	SuddenDeathTimer:End()
 	--ToolManager.reset()
 	AmmoPickupManager.stop()
+	TileScoring.stop()
 
 	AmmoManager.reset()
 	RespawnManager.onRoundEnd()
@@ -169,12 +190,12 @@ function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
 
 		local tutorailMap = TutorialManager.getTutorialMap(playerWhoDied)
 		print(tutorailMap)
-		if tutorailMap and tutorailMap.OriginPosition then
+		if tutorailMap and tutorailMap.originPosition then
 			local TELEPORT_OFFSET = Vector3.new(0, 50, 0)
 			task.spawn(function()
 				task.wait(1)
 				if SessionVariables.getValue(playerWhoDied, "inTutorial") == true then
-					TeleportManager.teleport(playerWhoDied, tutorailMap.OriginPosition + TELEPORT_OFFSET, true)
+					TeleportManager.teleport(playerWhoDied, tutorailMap.originPosition + TELEPORT_OFFSET, true)
 				end
 			end)
 		end

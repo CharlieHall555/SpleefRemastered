@@ -24,8 +24,8 @@ export type EventContext = {
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlayerPool = require(ModuleDirectory.Round.PlayerPool)
-local PlayersInGame = require(ModuleDirectory.Round.PlayersInGame)
+local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
+local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local Timer = require(ModuleDirectory.Timer)
 local RunService = game:GetService("RunService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)

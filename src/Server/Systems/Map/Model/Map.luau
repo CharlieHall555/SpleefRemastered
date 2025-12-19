@@ -3,9 +3,9 @@ local Layer = require(ModuleDirectory.Map.Layer)
 local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
 
 export type Map = {
-    OriginPosition: Vector3,
-    Layers: { Layer.Layer },
-    Count: number,
+    originPosition: Vector3,
+    layers: { Layer.Layer },
+    count: number,
     background : Model?,
 
     new: (originPosition: Vector3) -> Map,
@@ -21,21 +21,25 @@ Map.__index = Map
 
 function Map.new(originPosition: Vector3): Map
     local self = setmetatable({}, Map)
-    self.OriginPosition = originPosition
-    self.Layers = {}
-    self.Count = 0
+    self.originPosition = originPosition
+    self.layers = {}
+    self.count = 0
     return self
 end
 
 ---@diagnostic disable-next-line: undefined-type
 function Map:addLayer(Layer:Layer.Layer): nil
-    table.insert(self.Layers, Layer)
-    self.Count += 1
+    table.insert(self.layers, Layer)
+    self.count += 1
+end
+
+function Map:getLayer(n : number) : Layer.Layer?
+    return self.layers[n]  
 end
 
 function Map:getTopLayer(): Layer.Layer ?
-    for i = #self.Layers, 1, -1 do
-        local Layer = self.Layers[i]
+    for i = #self.layers, 1, -1 do
+        local Layer = self.layers[i]
         if not Layer:isEmpty() then
             return Layer
         end
@@ -43,11 +47,15 @@ function Map:getTopLayer(): Layer.Layer ?
     return nil
 end
 
+function Map:getSize() : Vector2
+    return self:getTopLayer().size
+end
+
 function Map:getRandomLayer(): Layer.Layer?
-    if #self.Layers == 0 then
+    if #self.layers == 0 then
         return nil
     end
-    return self.Layers[math.random(1, #self.Layers)]
+    return self.layers[math.random(1, #self.layers)]
 end
 
 
@@ -55,9 +63,9 @@ function Map:Destroy()
     if self.background then
         self.background:Destroy()
     end
-    for _ , each in self.Layers do
+    for _ , each in self.layers do
         
-        for _, blk in ipairs(table.clone(each.Blocks)) do
+        for _, blk in ipairs(table.clone(each.blocks)) do
             BlockFactory.destroy(blk)
         end
         each:Destroy()

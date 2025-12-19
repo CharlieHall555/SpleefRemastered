@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlayerDeathDetector = require(ModuleDirectory.Round.PlayerDeathDetector)
+local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 
 local WinnerDetection = {}
 local _rng = Random.new()

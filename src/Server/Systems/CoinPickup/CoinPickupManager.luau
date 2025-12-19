@@ -215,7 +215,7 @@ function CoinPickupManager.start(map: Map.Map)
     totalAlive = 0
     spawnAccumulator = 0
 
-    for _, layer in ipairs(activeMap.Layers) do
+    for _, layer in ipairs(activeMap.layers) do
         if layer:getSpawnsAmmo() then
             table.insert(spawnableLayers, layer)
             layerCounts[layer] = 0

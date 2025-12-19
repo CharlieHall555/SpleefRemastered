@@ -10,8 +10,9 @@ function MapBuilder.build(param: MapDataFactory.MapData): Map.Map
     local origin = param.originPosition
 
     local map = Map.new(origin)
-    for _, layerOutput in ipairs(layers) do
+    for layerN, layerOutput in ipairs(layers) do
         local Layer = LayerFactory.create(layerOutput.layerParams, layerOutput.planeInfo)
+        Layer.LayerIndex = layerN
         map:addLayer(Layer)
         task.wait()
     end

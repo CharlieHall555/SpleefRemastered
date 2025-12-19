@@ -9,7 +9,7 @@ local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructio
 local ObstacleFactory = require(ModuleDirectory.Map.ObstacleFactory)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-
+local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
 
 local BlockFactory = {
     _activeTweens = {}
@@ -56,9 +56,8 @@ function BlockFactory.destroy(block: Block.Block , player : Player?): nil
             BlockDestructionTracker.blockDestroyed(block._blockId , player)
             parentGrid:removeBlock(block)
         end
+        TileScoring.onBlockDestroyed(parentGrid.LayerIndex , block.LayerPosition)
     end
-
-
 
     block:Destroy()
 end

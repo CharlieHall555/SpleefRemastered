@@ -1,7 +1,7 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
-local PlayersAlive = require(ModuleDirectory.Round.PlayersInGame)
+local PlayersAlive = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local AbilitiesFunctions = {}

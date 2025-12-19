@@ -17,7 +17,7 @@ local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
 local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
-local PlayerPool = require(ModuleDirectory.Round.PlayerPool)
+local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
 local TutorialManager = require(ModuleDirectory.Tutorial.TutorialManager)
 
 RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
@@ -30,5 +30,5 @@ RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
 	end
 end)
 
-local RoundSystem = require(ModuleDirectory.Round.RoundSystem)
+local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 RoundSystem.main()	

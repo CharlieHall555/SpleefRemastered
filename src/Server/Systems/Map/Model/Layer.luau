@@ -4,10 +4,10 @@ local LoadedLayers = require(ModuleDirectory.Map.LoadedLayers)
 
 export type Layer = {
     _id: number,
-    Size: Vector2,
-    Blocks: { Block.Block },
-    TileMap: { [number]: { [number]: Block.Block? } },
-    OriginPosition: Vector3,
+    size: Vector2,
+    blocks: { Block.Block },
+    tileMap: { [number]: { [number]: Block.Block? } },
+    originPosition: Vector3,
 
     new: (originPosition: Vector3, size: Vector2) -> Layer,
     addBlock: (self: Layer, block: Block.Block, position: Vector2) -> nil,
@@ -25,21 +25,22 @@ local nextLayerId = 0
 local Layer = {}
 Layer.__index = Layer
 
-function Layer.new(originPosition: Vector3, size: Vector2): Layer
+function Layer.new(originPosition: Vector3, size: Vector2 , layerIndex : number?): Layer
     nextLayerId += 1
 
     local self = setmetatable({}, Layer)
     self._id = nextLayerId
-    self.Size = size
-    self.OriginPosition = originPosition
-    self.Blocks = {}
-    self.TileMap = {}
+    self.size = size
+    self.originPosition = originPosition
+    self.blocks = {}
+    self.LayerIndex = layerIndex or 0
+    self.tileMap = {}
     self.spawnsAmmo = false
 
     for x = 1, size.X do
-        self.TileMap[x] = {}
+        self.tileMap[x] = {}
         for y = 1, size.Y do
-            self.TileMap[x][y] = nil
+            self.tileMap[x][y] = nil
         end
     end
 
@@ -48,12 +49,12 @@ function Layer.new(originPosition: Vector3, size: Vector2): Layer
 end
 
 function Layer:addBlock(block: Block.Block, position: Vector2): nil
-    table.insert(self.Blocks, block)
-    self.TileMap[position.X][position.Y] = block
+    table.insert(self.blocks, block)
+    self.tileMap[position.X][position.Y] = block
 end
 
 function Layer:getBlock(position: Vector2): Block.Block?
-    return (self.TileMap[position.X] and self.TileMap[position.X][position.Y]) or nil
+    return (self.tileMap[position.X] and self.tileMap[position.X][position.Y]) or nil
 end
 
 function Layer:setSpawnsAmmo(value : boolean)
@@ -66,35 +67,35 @@ end
 
 function Layer:removeBlock(block: Block.Block): nil
     local pos = block.LayerPosition
-    if self.TileMap[pos.X] then
-        self.TileMap[pos.X][pos.Y] = nil
+    if self.tileMap[pos.X] then
+        self.tileMap[pos.X][pos.Y] = nil
     end
 
-    local idx = table.find(self.Blocks, block)
+    local idx = table.find(self.blocks, block)
     if idx then
-        table.remove(self.Blocks, idx)
+        table.remove(self.blocks, idx)
     end
 end
 
 function Layer:getRandomBlock(): Block.Block?
-    if #self.Blocks == 0 then
+    if #self.blocks == 0 then
         return nil
     end
-    return self.Blocks[math.random(1, #self.Blocks)]
+    return self.blocks[math.random(1, #self.blocks)]
 end
 
 function Layer:Destroy(): nil
     LoadedLayers[self._id] = nil
-    for _, blk in ipairs(self.Blocks) do
+    for _, blk in ipairs(self.blocks) do
         blk:Destroy()
     end
-    self.Blocks = {}
-    self.TileMap = {}
+    self.blocks = {}
+    self.tileMap = {}
     
 end
 
 function Layer:isEmpty(): boolean
-    return #self.Blocks == 0
+    return #self.blocks == 0
 end
 
 return Layer
