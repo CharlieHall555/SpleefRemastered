@@ -176,6 +176,11 @@ local function calcProxScores()
 			local dist: number = node.dist
 
 			local proxScore = SCORE_SCALE * (1 / (1 + (FALLOFF * dist)))
+			
+			-- Make source tiles less attractive than surrounding tiles
+			if dist == 0 then
+				proxScore *= 0.5  -- Apply 70% penalty to source tile
+			end
 
 			local posKey = VectorUtil.SerializeVector2(pos)
 			local tile: TileScore? = scoreGrid[layerY][posKey]

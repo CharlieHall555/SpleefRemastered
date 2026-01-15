@@ -7,7 +7,7 @@ local CharacterGeneration = require(ModuleDirectory.Systems.Agent.CharacterGener
 
 local AgentManager = {}
 
-local charAgent : {[Model]:Agent.Agent} = {}
+local charAgent: { [Model]: Agent.Agent } = {}
 
 function AgentManager.tick(a: Agent.Agent, deltaTime: number)
 	-- Currently no per-tick behaviour
@@ -20,10 +20,15 @@ function AgentManager.preDestroy(a: Agent.Agent)
 end
 
 local function onAgentCompletedWander(a: Agent.Agent)
-	print("wandercomplete")
+	if a == nil or a.alive == false then
+		return
+	end
 
 	task.spawn(function()
-		task.wait(a.wanderTime or 1)
+		if a.threatState == 0 then
+			task.wait((a.wanderTime or 1) + (math.random(-25 , 25) / 100))
+		end
+
 		a:wander()
 	end)
 end
@@ -46,19 +51,26 @@ function AgentManager.generateAgent(params: Agent.AgentCreationParams): Agent.Ag
 end
 
 function AgentManager.activateAgents()
-
-
-    for _, agent in Agent.getAll() do
-        agent:wander()
-    end
- 
+	for _, agent in Agent.getAll() do
+		agent:wander()
+	end
 end
 
-function AgentManager.getAgentFromCharacter(char : Model) : Agent.Agent?
+function AgentManager.getAgentFromCharacter(char: Model): Agent.Agent?
 	return charAgent[char]
 end
 
-function AgentManager.spawnNAgentsOnMap(currentMap: {}, n: number)
+function AgentManager.sendAgentModels(players: { Player })
+	local agentModels = {}
+
+	for _, eachAgent in Agent.getAll() do
+		table.insert(agentModels , eachAgent.model)
+	end
+
+	RemoteEventHandler.FireOnClients(players, "SEND_STARTING_AGENTS", agentModels)
+end
+
+function AgentManager.createAgentsFor(currentMap: {}, n: number)
 	local topLayer = currentMap:getTopLayer()
 
 	for i = 1, n do
@@ -70,11 +82,10 @@ function AgentManager.spawnNAgentsOnMap(currentMap: {}, n: number)
 
 		local newAgent = AgentManager.generateAgent({
 			spawnLocation = Position,
-			wanderRadius = 7   , -- blocks
+			wanderRadius = 7, -- blocks
 		})
 
 		charAgent[newAgent.model] = newAgent
-
 	end
 end
 

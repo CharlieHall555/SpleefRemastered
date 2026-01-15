@@ -18,6 +18,17 @@ function PlayerHighlighter.init()
         PlayerHighlighter.highlightPlayers(players)
     end)
 
+    RemoteEventHandler.newEventConnection("SEND_STARTING_AGENTS" , function(agentModels : {Model})
+        
+
+        for _ , eachModel in agentModels do
+            
+            PlayerHighlighter.highlightModel(eachModel)
+
+        end
+        
+    end)
+
     RemoteEventHandler.newEventConnection("REHIGHLIGHT_PLAYERS" , function(players)
         PlayerHighlighter.highlightPlayers(players)
     end)
@@ -29,7 +40,6 @@ function PlayerHighlighter.init()
     end)
 
     ClientStateTracker.connectIntermission(function()
-        print("Hi")
         PlayerHighlighter.reset()
     end)
 
@@ -55,6 +65,25 @@ function PlayerHighlighter.highlightPlayer(player: Player)
 
         highlights[player] = newHighlight
     end
+end
+
+function PlayerHighlighter.highlightModel(model : Model)
+    -- Check if the model already has a highlight
+    if highlights[model] then
+        pcall(function()
+            highlights[model]:Destroy()
+            highlights[model] = nil
+        end)
+        warn("Model " .. model.Name .. " is already highlighted.")
+    end
+
+    -- Clone the template and set its parent
+    local newHighlight = highlightTemplate:Clone()
+    newHighlight.Parent = localPlayer.PlayerGui
+    newHighlight.Adornee = model
+    newHighlight.Enabled = true
+
+    highlights[model] = newHighlight
 end
 
 function PlayerHighlighter.highlightPlayers(players: {Player})

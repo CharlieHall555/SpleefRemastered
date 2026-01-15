@@ -1,9 +1,13 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local Agent
+
 local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
 local MapUtilities = require(ModuleDirectory.Systems.Map.MapUtilities)
 local AgentAnimations = require(ModuleDirectory.Systems.Agent.AgentAnimations)
+local AgentUtil = require(ModuleDirectory.Systems.Agent.AgentUtil)
+local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 --AgentAnimations.running(agent)
 --AgentAnimations.idle(agent)
@@ -11,6 +15,10 @@ local AgentAnimations = require(ModuleDirectory.Systems.Agent.AgentAnimations)
 local PathfindingService = game:GetService("PathfindingService")
 
 local Movement = {}
+
+function Movement.init()
+	Agent = require(ModuleDirectory.Systems.Agent.Agent)
+end
 
 Movement.getScoresAt = nil --this will be set to the TileScoring.getScoresAt function during Agent.init()
 
@@ -32,14 +40,14 @@ local function fireWanderComplete(agent)
 	-- callback is stored on the Agent module table (set by Agent.setUpCallback)
 	AgentAnimations.idle(agent)
 	if agent.onWanderCompleteCallback then
-		agent.onWanderCompleteCallback(agent)
+		task.defer(agent.onWanderCompleteCallback, agent)
 	end
 end
 
 -- internal: centralised waypoint handler
-local function reachedWaypoint(agent, reached: boolean)
+local function reachedWaypoint(agent: Agent.Agent, reached: boolean)
 	-- If we don't have a humanoid or agent is dead, stop
-	if not agent or not agent.humanoid or agent.health <= 0 then
+	if agent == nil or agent.alive == false or agent.humanoid == nil then
 		disconnectMove(agent)
 		return
 	end
@@ -66,26 +74,127 @@ local function reachedWaypoint(agent, reached: boolean)
 	agent.humanoid:MoveTo(nextPos)
 end
 
-function Movement.stop(agent)
+function Movement.stop(agent: Agent.Agent)
 	disconnectMove(agent)
 end
-function Movement.resetWander(agent)
+
+function Movement.resetWander(agent: Agent.Agent)
 	if not agent then
 		return
 	end
 
-	-- Stop current movement / disconnect old MoveToFinished listener
 	disconnectMove(agent)
 
-	-- Clear any existing path state (optional but keeps things tidy)
 	agent.waypoints = {}
 	agent.waypointIndex = 0
 
-	-- Start a brand new wander
+	-- Clear intent too (optional, but usually what "reset" implies)
+	agent.subGoalWorld = nil
+	agent.subGoalExpiresAt = 0
+
 	Movement.wander(agent)
 end
 
-function Movement.wander(agent)
+local function chooseSubGoal(agent, originWorld, layerY, originTile)
+	-- bigger than your immediate step radius
+	local subRadius = 12
+
+	-- sample random offsets a few times until we find a valid tile
+	for _ = 1, 12 do
+		local ox = math.random(-subRadius, subRadius)
+		local oy = math.random(-subRadius, subRadius)
+
+		if not (ox == 0 and oy == 0) then
+			-- If you have a way to query a tile/block at an offset, use it.
+			-- Since you already get scores via getScoresAt, we can reuse that:
+			local scores = Movement.getScoresAt(layerY, originTile, subRadius)
+			if scores then
+				local key = VectorUtil.SerializeVector2(Vector2.new(ox, oy))
+				local tileScore = scores[key]
+				if tileScore and tileScore.blockId then
+					local blk = LoadedBlocks[tileScore.blockId]
+					if blk and blk.Part then
+						local subgoalPos = blk:getWorldPosition() + Vector3.new(0, 5, 0)
+						AgentUtil.placeStamp(agent, "subgoal", subgoalPos, Color3.new(0.011764, 0.231372, 0.741176))
+						return subgoalPos
+					end
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+local function subGoalScore(agent, tileScore)
+	if not agent.subGoalWorld then
+		return 0
+	end
+
+	-- tileScore.position looks like Vector2 grid pos in your debug print
+	-- Convert tile position -> world position via LoadedBlocks if possible
+	if not tileScore.blockId then
+		return 0
+	end
+
+	local blk = LoadedBlocks[tileScore.blockId]
+	if not blk or not blk.Part then
+		return 0
+	end
+
+	local tileWorld = blk:getWorldPosition()
+	local d = (tileWorld - agent.subGoalWorld).Magnitude
+
+	-- turn distance into a 0..1-ish attraction (tweak 20 to taste)
+	local attraction = 1 / (1 + (d / 20))
+
+	return attraction * (agent.subGoalWeight or 0.6)
+end
+
+local function getForwardDir(agent: Agent.Agent): Vector3
+	local pp = agent.model and agent.model.PrimaryPart
+	if not pp then
+		return Vector3.new(0, 0, -1)
+	end
+
+	local look = pp.CFrame.LookVector
+	return Vector3.new(look.X, 0, look.Z).Unit
+end
+
+local function forwardBiasScore(agent: Agent.Agent, originWorld: Vector3, tileScore): number
+	local blk = tileScore.blockId and LoadedBlocks[tileScore.blockId]
+	if not blk or not blk.Part then
+		return 0
+	end
+
+	local targetWorld = blk:getWorldPosition()
+	local toTarget = targetWorld - originWorld
+	toTarget = Vector3.new(toTarget.X, 0, toTarget.Z)
+
+	-- if candidate is basically same position, no bias
+	if toTarget.Magnitude < 1e-3 then
+		return 0
+	end
+
+	local moveDir = toTarget.Unit
+	local forwardDir = getForwardDir(agent)
+
+	local dot = forwardDir:Dot(moveDir) -- [-1, 1]
+
+	-- Map to [0, 1] where:
+	-- behind (-1) => 0
+	-- side (0)    => 0.5
+	-- ahead (1)   => 1
+	local mapped = (dot + 1) * 0.5
+
+	-- Optional: make it "mostly forward" by squashing sideways
+	-- Raising to a power > 1 favours high values more.
+	mapped = mapped ^ (agent.forwardBiasPower)
+
+	return mapped * (agent.forwardBiasWeight)
+end
+
+function Movement.wander(agent: Agent.Agent)
 	if not agent.model or not agent.model.PrimaryPart or not agent.humanoid then
 		return nil
 	end
@@ -102,13 +211,24 @@ function Movement.wander(agent)
 	local originTile = MapUtilities.snapTile2(originWorld)
 	local layerY = MapUtilities.getLayerFromAgentPos(originWorld) -- should return 15/30/45 etc
 
-	local radius = 3
+	local radius = math.ceil(agent.wanderRadius / ServerConfigurations.BLOCK_SIZE)
 	local offsetScores = Movement.getScoresAt(layerY, originTile, radius) -- keyed by offset Vector2
 
 	-- If nothing returned, bail
 	if not offsetScores then
 		fireWanderComplete(agent)
 		return nil
+	end
+
+	local now = os.clock()
+
+	if
+		not agent.subGoalWorld
+		or (agent.subGoalExpiresAt and now >= agent.subGoalExpiresAt)
+		or ((agent.model.PrimaryPart.Position - agent.subGoalWorld).Magnitude < 8)
+	then
+		agent.subGoalWorld = chooseSubGoal(agent, originWorld, layerY, originTile)
+		agent.subGoalExpiresAt = now + math.random(2, 10)
 	end
 
 	-- Pick the best tile:
@@ -127,8 +247,19 @@ function Movement.wander(agent)
 					continue
 				end
 
-				local s = tileScore.NeighborScore + tileScore.ProxScore
-				s = randomNoise(s)
+				local prox = tileScore.ProxScore
+				if agent.threatState == 1 and agent.aggressive == 0 then
+					prox = -prox
+				end
+
+				local base = tileScore.NeighborScore + prox
+
+				local goal = subGoalScore(agent, tileScore)
+
+				-- Blend: you can also multiply ProxScore down slightly if you want
+				local fwd = forwardBiasScore(agent, originWorld, tileScore)
+				local s = base + goal + fwd
+				s = randomNoise(s) -- scoring
 
 				if s > bestTileScore + 1e-6 then
 					bestTileScore = s
@@ -141,14 +272,6 @@ function Movement.wander(agent)
 			end
 		end
 	end
-
-	print(
-		"[Movement.wander] best tile score:",
-		bestTileScore,
-		VectorUtil.SerializeVector2(bestTileData.position),
-		bestTileData.NeighborScore,
-		bestTileData.ProxScore
-	)
 
 	if not bestTileData then
 		-- no valid tiles in radius
@@ -178,7 +301,7 @@ function Movement.wander(agent)
 		AgentRadius = 3,
 		AgentHeight = 6,
 		AgentCanJump = false,
-		WaypointSpacing = 2,
+		WaypointSpacing = 5,
 	})
 	path:ComputeAsync(originWorld, targetWorld)
 

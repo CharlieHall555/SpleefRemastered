@@ -5,7 +5,7 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayersAlive = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
-local BombManager = require(ModuleDirectory.Bomb.BombManager)
+local BombManager = require(ModuleDirectory.Systems.Bomb.BombManager)
 
 local AbilitiesFunctions = {}
 

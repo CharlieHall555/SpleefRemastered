@@ -4,13 +4,15 @@ local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-local VISION_UPDATE_INTERVAL = 0.5
+local VISION_UPDATE_INTERVAL = 0.25
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local CharacterGeneration  = require(ModuleDirectory.Systems.Agent.CharacterGeneration)
 
+local AgentUtil = require(ModuleDirectory.Systems.Agent.AgentUtil)
 local AgentMovement = require(ModuleDirectory.Systems.Agent.Movement)
 local AgentCombat = require(ModuleDirectory.Systems.Agent.Combat)
+local AgentHitbox = require(ModuleDirectory.Systems.Agent.AgentHitbox)
 
 local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
 
@@ -39,6 +41,12 @@ export type Agent = {
 	wanderTime: number,
 	threatState : number,
 	moveConnection: RBXScriptConnection?,
+	subGoalWorld : Vector3?,
+	subGoalExpiresAt : number?,
+	subGoalWeight : number,
+	threatRadius : number,
+	alive : boolean,
+	aggressive : number
 }
 
 export type AgentCreationParams = {
@@ -92,10 +100,11 @@ function Agent.new(params: AgentCreationParams): Agent
 	self.model = CharacterGeneration.generateDummy("Lvl1 Dummy")
 	self.humanoid = self.model:FindFirstChildOfClass("Humanoid") :: Humanoid
 
-	self.wanderTime = params.wanderTime or 1
+	self.wanderTime = params.wanderTime or 0.1
 
 	self.playersArround = {}
-
+	
+	self.threatState = 0
 	self.id = HttpService:GenerateGUID(false)
 	self.wanderRadius = params.wanderRadius or 20
 
@@ -103,16 +112,23 @@ function Agent.new(params: AgentCreationParams): Agent
 	self.model:AddTag("AGENT")
 
 	self.waypoints = {}
-	self.waypointIndex = 1
+	self.waypointIndex = 1	
 	self.moveConnection = nil
+	self.alive = true
+	self.threatRadius = 12.5
+	self.aggressive = math.random(0 , 1)
 
 	self.tickLastDamaged = 0
 	self.tickLastAttacked = 0
+	self.subGoalWeight = 0.5 + (math.random(-5 , 5) / 100)
 	self.tickVisionUpdate = 0
 
+	self.forwardBiasWeight = 0.25 -- strong bias is
+	self.forwardBiasPower = 0.5 -- how “mostly forward” it is
+
+	AgentHitbox.setup(self)
+
 	loadedAgents[self.id] = self
-	print("hiiiii")
-	print(self.id)
 	return self
 end
 
@@ -160,12 +176,19 @@ function Agent:Destroy(): nil
 	return nil
 end
 
-function Agent:tick(deltaTime)
+function Agent.tick(self : Agent , deltaTime)
 	-- update vision on interval (placeholder; keep your logic here later)
 	self.tickVisionUpdate += deltaTime
 	if self.tickVisionUpdate >= VISION_UPDATE_INTERVAL then
 		self.tickVisionUpdate = 0
-		-- vision / aggro update could go here
+
+		local playersAgentsAround = AgentUtil.getPlayersInRadius(self , self.threatRadius)
+		if #playersAgentsAround > 1 then -- assuming the agent is always within its own radius
+			self.threatState = 1
+		else
+			self.threatState = 0
+		end
+
 	end
 
 	if self.agentType == "PASSIVE" then

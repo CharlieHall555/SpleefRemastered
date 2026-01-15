@@ -9,8 +9,8 @@ local ShovelCustomization = require(ModuleDirectory.Systems.Tool.ShovelCustomiza
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local EconomyAnalytics = require(ModuleDirectory.Services.Analytics.EconomyAnalytics)
 local CoinManager = require(ModuleDirectory.Services.Monetization.CoinManager)
-local AbilityDefinitions = require(ModuleDirectory.Abilities.Definitions)
-local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
+local AbilityDefinitions = require(ModuleDirectory.Systems.Abilities.Definitions)
+local ThrowableManager = require(ModuleDirectory.Systems.Throwable.ThrowableManager)
 local RespawnManager = require(ModuleDirectory.Systems.Gameplay.RespawnManager)
 
 local ServerCommands = {}

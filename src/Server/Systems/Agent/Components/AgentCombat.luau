@@ -1,6 +1,13 @@
 local Debris = game:GetService("Debris")
 
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local Agent
+
 local Combat = {}
+
+function Combat.init()
+	Agent = require(ModuleDirectory.Systems.Agent.Agent)
+end
 
 local function disconnectMove(agent)
 	if agent._moveConnection then
@@ -16,10 +23,12 @@ local function fireDied(agent, damagingPlayer)
 	end
 end
 
-function Combat.die(agent)
+function Combat.die(agent: Agent.Agent)
 	if not agent.model then
 		return nil
 	end
+
+	agent.alive = false
 
 	if agent.healthBar then
 		agent.healthBar:setEnabled(false)
@@ -44,7 +53,7 @@ function Combat.die(agent)
 	return nil
 end
 
-function Combat.takeDamage(agent, value: number, damagingPlayer)
+function Combat.takeDamage(agent: Agent.Agent, value: number, damagingPlayer)
 	if agent.model == nil then
 		warn("Agent has no model")
 		return nil

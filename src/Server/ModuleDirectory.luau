@@ -42,12 +42,12 @@ ModuleDirectory.Systems.Round.AFKTracker = serverRoot.Systems.Round.AFKTracker
 --//====================================================
 --// Abilities System
 --//====================================================
-ModuleDirectory.Abilities = {}
-ModuleDirectory.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
-ModuleDirectory.Abilities.Functions = serverRoot.Systems.Abilities.AbilitiesFunctions
-ModuleDirectory.Abilities.Definitions = sharedRoot.Data.AbilitiesDefinitions
-ModuleDirectory.Abilities.EndFunctions = serverRoot.Systems.Abilities.EndFunctions
-ModuleDirectory.Abilities.TeleportAbility = serverRoot.Systems.Abilities.TeleportAbility
+ModuleDirectory.Systems.Abilities = {}
+ModuleDirectory.Systems.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
+ModuleDirectory.Systems.Abilities.Functions = serverRoot.Systems.Abilities.AbilitiesFunctions
+ModuleDirectory.Systems.Abilities.Definitions = sharedRoot.Data.AbilitiesDefinitions
+ModuleDirectory.Systems.Abilities.EndFunctions = serverRoot.Systems.Abilities.EndFunctions
+ModuleDirectory.Systems.Abilities.TeleportAbility = serverRoot.Systems.Abilities.TeleportAbility
 
 --//====================================================
 --// Agent System
@@ -60,6 +60,8 @@ ModuleDirectory.Systems.Agent.Movement = serverRoot.Systems.Agent.Components.Age
 ModuleDirectory.Systems.Agent.Combat = serverRoot.Systems.Agent.Components.AgentCombat
 ModuleDirectory.Systems.Agent.TileScoring = serverRoot.Systems.Agent.TileScoring
 ModuleDirectory.Systems.Agent.AgentAnimations = serverRoot.Systems.Agent.Components.AgentAnimations
+ModuleDirectory.Systems.Agent.AgentUtil = serverRoot.Systems.Agent.Components.AgentUtil
+ModuleDirectory.Systems.Agent.AgentHitbox = serverRoot.Systems.Agent.Components.AgentHitbox
 
 --//====================================================
 --// Stats Tracker System
@@ -74,26 +76,26 @@ ModuleDirectory.Systems.Stats.EliminationTracker = serverRoot.Systems.StatsTrack
 --//====================================================
 --// Throwable System
 --//====================================================
-ModuleDirectory.Throwable = {}
-ModuleDirectory.Throwable.Throwable = serverRoot.Systems.Throwable.Throwable
-ModuleDirectory.Throwable.ThrowableManager = serverRoot.Systems.Throwable.ThrowableManager
-ModuleDirectory.Throwable.ThrowableData = sharedRoot.Types.ThrowableData
-ModuleDirectory.Throwable.PlayerRaycastParamsHandler = serverRoot.Systems.Throwable.PlayerRaycastParmsHandler
-ModuleDirectory.Throwable.SnowballManager = serverRoot.Systems.Throwable.SnowballManager
+ModuleDirectory.Systems.Throwable = {}
+ModuleDirectory.Systems.Throwable.Throwable = serverRoot.Systems.Throwable.Throwable
+ModuleDirectory.Systems.Throwable.ThrowableManager = serverRoot.Systems.Throwable.ThrowableManager
+ModuleDirectory.Systems.Throwable.ThrowableData = sharedRoot.Types.ThrowableData
+ModuleDirectory.Systems.Throwable.PlayerRaycastParamsHandler = serverRoot.Systems.Throwable.PlayerRaycastParmsHandler
+ModuleDirectory.Systems.Throwable.SnowballManager = serverRoot.Systems.Throwable.SnowballManager
 
 --//====================================================
 --// Coins System
 --//====================================================
-ModuleDirectory.Coins = {}
-ModuleDirectory.Coins.CoinPickup = serverRoot.Systems.CoinPickup.CoinPickup
-ModuleDirectory.Coins.CoinPickupManager = serverRoot.Systems.CoinPickup.CoinPickupManager
+ModuleDirectory.Systems.Coins = {}
+ModuleDirectory.Systems.Coins.CoinPickup = serverRoot.Systems.CoinPickup.CoinPickup
+ModuleDirectory.Systems.Coins.CoinPickupManager = serverRoot.Systems.CoinPickup.CoinPickupManager
 
 --//====================================================
 --// Bomb System
 --//====================================================
-ModuleDirectory.Bomb = {}
-ModuleDirectory.Bomb.Bomb = serverRoot.Systems.Bomb.Bomb
-ModuleDirectory.Bomb.BombManager = serverRoot.Systems.Bomb.BombManager
+ModuleDirectory.Systems.Bomb = {}
+ModuleDirectory.Systems.Bomb.Bomb = serverRoot.Systems.Bomb.Bomb
+ModuleDirectory.Systems.Bomb.BombManager = serverRoot.Systems.Bomb.BombManager
 
 --//====================================================
 --// Map System
@@ -246,7 +248,7 @@ ModuleDirectory.Challenge.ChallengeSnowball = serverRoot.Systems.LobbyChallenges
 ModuleDirectory.PartPool = sharedRoot.Utilities.PartPool
 ModuleDirectory.VectorUtil = sharedRoot.Utilities.VectorUtil
 ModuleDirectory.Timer = sharedRoot.Utilities.Timer
-ModuleDirectory.ThrowableDefinitions = sharedRoot.Data.ThrowableDefinitions
+ModuleDirectory.Systems.ThrowableDefinitions = sharedRoot.Data.ThrowableDefinitions
 ModuleDirectory.ListUtil = sharedRoot.Utilities.ListUtil
 ModuleDirectory.LogHandler = sharedRoot.Utilities.LogHandler
 ModuleDirectory.KnockbackUtilities = sharedRoot.Utilities.KnockbackUtilities

@@ -1,3 +1,6 @@
+local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local Agent
+
 local AgentAnimations = {}
 
 -- You can add more ids later; keep this simple for now.
@@ -24,7 +27,7 @@ local function ensureAnimator(h: Humanoid): Animator?
 	return animator
 end
 
-local function ensureLoaded(agent: {}): (Humanoid?, Animator?, { [string]: AnimationTrack }?)
+local function ensureLoaded(agent: Agent.Agent): (Humanoid?, Animator?, { [string]: AnimationTrack }?)
 	if not agent or not agent.humanoid then
 		return nil, nil, nil
 	end
@@ -82,10 +85,10 @@ local function stopAllExcept(tracks: { [string]: AnimationTrack }, keepName: str
 end
 
 function AgentAnimations.init()
-	-- optional: nothing required; kept for API symmetry
+	Agent = require(ModuleDirectory.Systems.Agent.Agent)
 end
 
-function AgentAnimations.idle(agent: {})
+function AgentAnimations.idle(agent: Agent.Agent)
 	local humanoid, _, tracks = ensureLoaded(agent)
 	if not humanoid or not tracks then
 		return
@@ -105,7 +108,7 @@ function AgentAnimations.idle(agent: {})
 	end
 end
 
-function AgentAnimations.running(agent: {})
+function AgentAnimations.running(agent: Agent.Agent)
 	local humanoid, _, tracks = ensureLoaded(agent)
 	if not humanoid or not tracks then
 		return

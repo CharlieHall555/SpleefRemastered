@@ -30,7 +30,7 @@ local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Services.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Systems.Gameplay.RespawnManager)
 local PodiumManager = require(ModuleDirectory.Systems.Round.PodiumManager)
-local CoinPickupManager = require(ModuleDirectory.Coins.CoinPickupManager)
+local CoinPickupManager = require(ModuleDirectory.Systems.Coins.CoinPickupManager)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local Overhead = require(ModuleDirectory.Overhead)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
@@ -75,8 +75,13 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 	TileScoring.setCurrentMap(currentMap)
 	MapUtilities.setCurrentMap(currentMap)
 
+	if Config.BOTS_ACTIVE then
+		local agentsToFill = Config.TARGET_PLAYER_COUNT - #currentRound.startingPlayers
+		if agentsToFill > 0 then
+			AgentManager.createAgentsFor(currentMap, agentsToFill)
 
-	AgentManager.spawnNAgentsOnMap(currentMap, 1)
+		end
+	end
 
 	TileScoring.start()
 
@@ -104,6 +109,7 @@ local function onRoundPreparing(currentRound) -- and then this
 	end
 
 	AgentManager.activateAgents()
+	AgentManager.sendAgentModels(PlayersInGame.getActivePlayers())
 
 
 

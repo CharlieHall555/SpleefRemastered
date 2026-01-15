@@ -23,7 +23,7 @@ local AFKGui: Frame?
 local AFKWarning = {}
 
 function AFKWarning.onProfileLoaded()
-    AFKGui = GuiAssets:WaitForChild("InGame"):WaitForChild("AFKWarning"):Clone()
+    --[[AFKGui = GuiAssets:WaitForChild("InGame"):WaitForChild("AFKWarning"):Clone()
     AFKGui.Parent = Screens.gameHUD
     AFKGui.Visible = false
 
@@ -43,7 +43,7 @@ function AFKWarning.onProfileLoaded()
 
     ClientStateTracker.connectActive(function()
         AFKGui.Visible = false
-    end)
+    end)]]
 
 end
 
