@@ -7,6 +7,8 @@ local CharacterGeneration = require(ModuleDirectory.Systems.Agent.CharacterGener
 
 local AgentManager = {}
 
+local charAgent : {[Model]:Agent.Agent} = {}
+
 function AgentManager.tick(a: Agent.Agent, deltaTime: number)
 	-- Currently no per-tick behaviour
 end
@@ -52,6 +54,10 @@ function AgentManager.activateAgents()
  
 end
 
+function AgentManager.getAgentFromCharacter(char : Model) : Agent.Agent?
+	return charAgent[char]
+end
+
 function AgentManager.spawnNAgentsOnMap(currentMap: {}, n: number)
 	local topLayer = currentMap:getTopLayer()
 
@@ -64,8 +70,11 @@ function AgentManager.spawnNAgentsOnMap(currentMap: {}, n: number)
 
 		local newAgent = AgentManager.generateAgent({
 			spawnLocation = Position,
-			wanderRadius = 10   ,
+			wanderRadius = 7   , -- blocks
 		})
+
+		charAgent[newAgent.model] = newAgent
+
 	end
 end
 

@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Bomb = require(ModuleDirectory.Bomb.Bomb)
-local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
+local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 local bombs = {}

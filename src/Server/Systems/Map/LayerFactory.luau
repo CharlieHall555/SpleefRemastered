@@ -6,11 +6,11 @@ export type LayerCreationParams = {
 }
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
-local Layer = require(ModuleDirectory.Map.Layer)
-local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
+local PlaneFactory = require(ModuleDirectory.Systems.Map.PlaneFactory)
+local Layer = require(ModuleDirectory.Systems.Map.Layer)
+local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local ObstacleFactory = require(ModuleDirectory.Map.ObstacleFactory)
+local ObstacleFactory = require(ModuleDirectory.Systems.Map.ObstacleFactory)
 
 --Config.MAX_PARTS_PER_FRAME_PER_LAYER
 

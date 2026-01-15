@@ -1,8 +1,12 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
-local LoadedBlocks = require(ModuleDirectory.Map.LoadedBlocks)
-local MapUtilities = require(ModuleDirectory.Map.MapUtilities)
+local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
+local MapUtilities = require(ModuleDirectory.Systems.Map.MapUtilities)
+local AgentAnimations = require(ModuleDirectory.Systems.Agent.AgentAnimations)
+
+--AgentAnimations.running(agent)
+--AgentAnimations.idle(agent)
 
 local PathfindingService = game:GetService("PathfindingService")
 
@@ -16,11 +20,17 @@ local function disconnectMove(agent)
 		agent.moveConnection:Disconnect()
 		agent.moveConnection = nil
 	end
+	AgentAnimations.idle(agent)
+end
+
+local function randomNoise(baseScore)
+	return baseScore + (math.random() - 0.5) * 0.1
 end
 
 -- internal: fire wander complete callback if present
 local function fireWanderComplete(agent)
 	-- callback is stored on the Agent module table (set by Agent.setUpCallback)
+	AgentAnimations.idle(agent)
 	if agent.onWanderCompleteCallback then
 		agent.onWanderCompleteCallback(agent)
 	end
@@ -59,19 +69,33 @@ end
 function Movement.stop(agent)
 	disconnectMove(agent)
 end
+function Movement.resetWander(agent)
+	if not agent then
+		return
+	end
+
+	-- Stop current movement / disconnect old MoveToFinished listener
+	disconnectMove(agent)
+
+	-- Clear any existing path state (optional but keeps things tidy)
+	agent.waypoints = {}
+	agent.waypointIndex = 0
+
+	-- Start a brand new wander
+	Movement.wander(agent)
+end
 
 function Movement.wander(agent)
 	if not agent.model or not agent.model.PrimaryPart or not agent.humanoid then
 		return nil
 	end
-	if not Movement.getScoresAt or not Movement.getLayerFromAgentPos then
-		warn("[Movement.wander] TileScoring hooks not set (getScoresAt / getLayerFromAgentPos).")
+	if not Movement.getScoresAt then
+		warn("[Movement.wander] TileScoring hooks not set (getScoresAt).")
 		fireWanderComplete(agent)
 		return nil
 	end
 
 	disconnectMove(agent)
-
 
 	-- choose best scoring tile within radius (block distance = grid offsets)
 	local originWorld = agent.model.PrimaryPart.Position
@@ -80,7 +104,6 @@ function Movement.wander(agent)
 
 	local radius = 3
 	local offsetScores = Movement.getScoresAt(layerY, originTile, radius) -- keyed by offset Vector2
-
 
 	-- If nothing returned, bail
 	if not offsetScores then
@@ -95,29 +118,37 @@ function Movement.wander(agent)
 	local bestTileScore = -math.huge
 	local bestTileData: {} = nil
 
-	for offset : string, tileScore in pairs(offsetScores) do
+	for offset: string, tileScore in pairs(offsetScores) do
 		local offsetVector = VectorUtil.DeserializeVector2(offset)
 		if tileScore ~= nil then
 			-- ignore the center tile (optional)
 			if not (offsetVector.X == 0 and offsetVector.Y == 0) then
-
-				if not tileScore then	
+				if not tileScore then
 					continue
 				end
 
 				local s = tileScore.NeighborScore + tileScore.ProxScore
+				s = randomNoise(s)
 
-				-- small random wobble so multiple NPCs don't pick identical "best"
-				-- (keep tiny so it doesn't override scoring)
-				s += (math.random() - 0.5) * 0.02
-
-				if s > bestTileScore then
+				if s > bestTileScore + 1e-6 then
 					bestTileScore = s
 					bestTileData = tileScore
+				elseif math.abs(s - bestTileScore) <= 1e-6 then
+					if math.random() < 0.5 then
+						bestTileData = tileScore
+					end
 				end
 			end
 		end
 	end
+
+	print(
+		"[Movement.wander] best tile score:",
+		bestTileScore,
+		VectorUtil.SerializeVector2(bestTileData.position),
+		bestTileData.NeighborScore,
+		bestTileData.ProxScore
+	)
 
 	if not bestTileData then
 		-- no valid tiles in radius
@@ -143,7 +174,12 @@ function Movement.wander(agent)
 	local targetWorld = targetBlock:getWorldPosition() + Vector3.new(0, 5, 0)
 
 	-- Compute path (same as before)
-	local path = PathfindingService:CreatePath()
+	local path = PathfindingService:CreatePath({
+		AgentRadius = 3,
+		AgentHeight = 6,
+		AgentCanJump = false,
+		WaypointSpacing = 2,
+	})
 	path:ComputeAsync(originWorld, targetWorld)
 
 	if path.Status ~= Enum.PathStatus.Success then
@@ -168,6 +204,7 @@ function Movement.wander(agent)
 
 	if #agent.waypoints >= 2 then
 		agent.waypointIndex = 1
+		AgentAnimations.running(agent)
 		reachedWaypoint(agent, true)
 	else
 		disconnectMove(agent)

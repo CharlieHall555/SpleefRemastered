@@ -3,14 +3,14 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local TeleportManager = require(ModuleDirectory.Systems.Round.TeleportManager)
-local TutorialMapGen = require(ModuleDirectory.Tutorial.tutorialMapGenerator)
+local TutorialMapGen = require(ModuleDirectory.Systems.Tutorial.tutorialMapGenerator)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
-local AmmoManager = require(ModuleDirectory.Ammo.AmmoManager)
+local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
-local EventAnalytics = require(ModuleDirectory.Analytics.EventAnalytics)
-local LavaManager = require(ModuleDirectory.Gameplay.LavaManager)
+local EventAnalytics = require(ModuleDirectory.Services.Analytics.EventAnalytics)
+local LavaManager = require(ModuleDirectory.Systems.Gameplay.LavaManager)
 
 
 local TutorialManager = {}

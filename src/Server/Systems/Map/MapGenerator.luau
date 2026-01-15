@@ -1,12 +1,12 @@
 local MapGenerator = {}
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LavaManager = require(ModuleDirectory.Gameplay.LavaManager)
-local LayerGenerator = require(ModuleDirectory.Map.LayerFactory)
-local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
-local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
-local MapBuilder = require(ModuleDirectory.Map.MapBuilder)
-local Map = require(ModuleDirectory.Map.Map)
+local LavaManager = require(ModuleDirectory.Systems.Gameplay.LavaManager)
+local LayerGenerator = require(ModuleDirectory.Systems.Map.LayerFactory)
+local PlaneFactory = require(ModuleDirectory.Systems.Map.PlaneFactory)
+local MapDataFactory = require(ModuleDirectory.Systems.Map.MapDataFactory)
+local MapBuilder = require(ModuleDirectory.Systems.Map.MapBuilder)
+local Map = require(ModuleDirectory.Systems.Map.Map)
 local BackgroundFolder : Folder?
 
 function MapGenerator.init()

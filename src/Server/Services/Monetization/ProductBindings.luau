@@ -1,11 +1,11 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local ProductManager = require(ModuleDirectory.Monetization.ProductManager)
+local ProductManager = require(ModuleDirectory.Services.Monetization.ProductManager)
 local ProductList = require(ModuleDirectory.ProductList)
-local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
+local RespawnManager = require(ModuleDirectory.Systems.Gameplay.RespawnManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
-local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
-local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
+local CoinManager = require(ModuleDirectory.Services.Monetization.CoinManager)
+local EconomyAnalytics = require(ModuleDirectory.Services.Analytics.EconomyAnalytics)
 
 local ProductBindings = {}
 

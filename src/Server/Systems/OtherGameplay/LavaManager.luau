@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
+local ServerHitBoxManager = require(ModuleDirectory.Systems.Gameplay.ServerHitBoxManager)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local TeleportManager = require(ModuleDirectory.Systems.Round.TeleportManager)

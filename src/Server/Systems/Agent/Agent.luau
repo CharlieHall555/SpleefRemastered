@@ -37,6 +37,7 @@ export type Agent = {
 	tickLastAttacked: number,
 	tickVisionUpdate: number,
 	wanderTime: number,
+	threatState : number,
 	moveConnection: RBXScriptConnection?,
 }
 

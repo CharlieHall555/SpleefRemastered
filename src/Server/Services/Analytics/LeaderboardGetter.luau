@@ -23,8 +23,6 @@ export type RefreshCompletedFn = (success: boolean) -> nil
 
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
-local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local HttpService = game:GetService("HttpService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)

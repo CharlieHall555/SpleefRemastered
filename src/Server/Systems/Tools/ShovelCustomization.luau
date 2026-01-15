@@ -2,7 +2,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local Players = game:GetService("Players")
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
-local ToolManager = require(ModuleDirectory.Tool.ToolManager)
+local ToolManager = require(ModuleDirectory.Systems.Tool.ToolManager)
 
 local ShovelCustomization = {}
 

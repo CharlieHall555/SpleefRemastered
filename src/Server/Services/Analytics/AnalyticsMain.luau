@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local ProfileManager = require(ModuleDirectory.Player.ProfileManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 

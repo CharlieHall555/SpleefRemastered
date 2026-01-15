@@ -1,6 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local Layer = require(ModuleDirectory.Map.Layer)
-local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
+local Layer = require(ModuleDirectory.Systems.Map.Layer)
+local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
 
 export type Map = {
     originPosition: Vector3,

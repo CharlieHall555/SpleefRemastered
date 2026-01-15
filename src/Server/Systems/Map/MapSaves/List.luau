@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
+local MapDataFactory = require(ModuleDirectory.Systems.Map.MapDataFactory)
 local MapSaves = script.Parent
 
 export type MapSaves = { [number]: MapDataFactory.MapDataCreationParams }

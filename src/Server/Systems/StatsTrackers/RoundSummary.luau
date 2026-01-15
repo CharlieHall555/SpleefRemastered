@@ -1,13 +1,13 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local BlockDestructionTracker = require(ModuleDirectory.Gameplay.BlockDestructionTracker)
+local BlockDestructionTracker = require(ModuleDirectory.Systems.Gameplay.BlockDestructionTracker)
 local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 local EliminationTracker = require(ModuleDirectory.Systems.Stats.EliminationTracker)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local WinnerDetection = require(ModuleDirectory.Systems.Stats.WinnerDetection)
-local CoinsManager = require(ModuleDirectory.Monetization.CoinManager)
+local CoinsManager = require(ModuleDirectory.Services.Monetization.CoinManager)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
-local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
+local EconomyAnalytics = require(ModuleDirectory.Services.Analytics.EconomyAnalytics)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 
 local RoundSummary = {}

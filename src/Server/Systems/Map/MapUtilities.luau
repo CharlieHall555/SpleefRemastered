@@ -20,26 +20,35 @@ function MapUtilities.getLayerFromAgentPos(agentPosition: Vector3): number?
 
 end
 
+local function roundToNearest(n: number): number
+	if n >= 0 then
+		return math.floor(n + 0.5)
+	else
+		return math.ceil(n - 0.5)
+	end
+end
+
 function MapUtilities.snapTile2(v3: Vector3): Vector2
-	-- Map info
-	local origin: Vector3 = currentMap.originPosition -- center of map
-	local mapSize: Vector2 = currentMap:getSize()     -- size in tiles (X, Z)
+	local origin: Vector3 = currentMap.originPosition -- center
+	local mapSize: Vector2 = currentMap:getSize()
 	local TILE_SIZE = ServerConfigurations.BLOCK_SIZE
 
-	-- Convert world position to map-local space
 	local localX = (v3.X - origin.X) / TILE_SIZE
 	local localZ = (v3.Z - origin.Z) / TILE_SIZE
 
-	-- Snap to nearest tile
-	local tileX = math.floor(localX + 0.5)
-	local tileZ = math.floor(localZ + 0.5)
+	-- convert centered coords to 0..size-1
+	local localX01 = localX + (mapSize.X - 1) / 2
+	local localZ01 = localZ + (mapSize.Y - 1) / 2
 
-	-- Optional: clamp to map bounds
+	local tileX = roundToNearest(localX01)
+	local tileZ = roundToNearest(localZ01)
+
 	tileX = math.clamp(tileX, 0, mapSize.X - 1)
 	tileZ = math.clamp(tileZ, 0, mapSize.Y - 1)
 
 	return Vector2.new(tileX, tileZ)
 end
+
 
 
 return MapUtilities

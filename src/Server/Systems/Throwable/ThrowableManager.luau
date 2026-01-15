@@ -8,7 +8,7 @@ local VectorUtil = require(ModuleDirectory.VectorUtil)
 local ThrowableDefinitions = require(ModuleDirectory.ThrowableDefinitions)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerRaycastParamsHandler = require(ModuleDirectory.Throwable.PlayerRaycastParamsHandler)
-local KnockBackManager = require(ModuleDirectory.Gameplay.KnockBackManager)
+local KnockBackManager = require(ModuleDirectory.Systems.Gameplay.KnockBackManager)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 -- NOTE: the key name below matches your comment (even with the typo)

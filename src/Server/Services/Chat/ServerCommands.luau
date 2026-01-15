@@ -1,18 +1,17 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
 local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local TextChatService = game:GetService("TextChatService")
 local Players = game:GetService("Players")
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local GroupService = game:GetService("GroupService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
-local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
+local ShovelCustomization = require(ModuleDirectory.Systems.Tool.ShovelCustomization)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
-local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
-local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
+local EconomyAnalytics = require(ModuleDirectory.Services.Analytics.EconomyAnalytics)
+local CoinManager = require(ModuleDirectory.Services.Monetization.CoinManager)
 local AbilityDefinitions = require(ModuleDirectory.Abilities.Definitions)
 local ThrowableManager = require(ModuleDirectory.Throwable.ThrowableManager)
-local RespawnManager = require(ModuleDirectory.Gameplay.RespawnManager)
+local RespawnManager = require(ModuleDirectory.Systems.Gameplay.RespawnManager)
 
 local ServerCommands = {}
 

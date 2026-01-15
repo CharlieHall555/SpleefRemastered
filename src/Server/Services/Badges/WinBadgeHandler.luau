@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local BadgeService = game:GetService("BadgeService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local playerBadgeHandler = require(ModuleDirectory.Badges.PlayerBadgeHandler)
+local playerBadgeHandler = require(ModuleDirectory.Services.Badges.PlayerBadgeHandler)
 
 local WinBadgeHandler = {}
 

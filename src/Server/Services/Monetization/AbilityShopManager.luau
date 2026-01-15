@@ -1,12 +1,10 @@
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
-local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
-local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
+local CoinManager = require(ModuleDirectory.Services.Monetization.CoinManager)
 local AbilityDefinitions = require(ModuleDirectory.Abilities.Definitions)
-local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
+local EconomyAnalytics = require(ModuleDirectory.Services.Analytics.EconomyAnalytics)
 
 local AbilityShopManager = {}
 

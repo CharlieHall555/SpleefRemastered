@@ -1,24 +1,34 @@
+--//====================================================
+--// ModuleDirectory
+--//====================================================
+
 local serverRoot = game:GetService("ServerScriptService")
 local sharedRoot = game:GetService("ReplicatedStorage")
 local ModuleDirectory = {}
 
--- Core Scripts
+--//====================================================
+--// Core Scripts
+--//====================================================
 ModuleDirectory.ServerEventHandler = serverRoot.Core.ServerEventHandler
 ModuleDirectory.ValueBinder = serverRoot.Core.ValueBinder
 ModuleDirectory.RemoteEventHandler = sharedRoot.RemoteEventHandler
 ModuleDirectory.Setup = serverRoot.Core.Setup
 ModuleDirectory.ServerStatus = serverRoot.ServerStatus
 
+ModuleDirectory.DebugTools = {}
+ModuleDirectory.DebugTools.TileScoreDebug = serverRoot.DebugTools.TileScoreDebug
+
+--//====================================================
+--// Systems Root
+--//====================================================
 ModuleDirectory.Systems = {}
 
 --//====================================================
 --// Round System
 --//====================================================
-
-
 ModuleDirectory.Systems.Round = {}
 ModuleDirectory.Systems.Round.PlayerPool = serverRoot.Systems.Round.PlayerPool
-ModuleDirectory.Systems.Round.PlayersInGame =serverRoot.Systems.Round.PlayersInGame
+ModuleDirectory.Systems.Round.PlayersInGame = serverRoot.Systems.Round.PlayersInGame
 ModuleDirectory.Systems.Round.PlayerDeathDetector = serverRoot.Systems.Round.PlayerDeathDetector
 ModuleDirectory.Systems.Round.TeleportManager = serverRoot.Systems.Round.TeleportManager
 ModuleDirectory.Systems.Round.RoundManager = serverRoot.Systems.Round.RoundManager
@@ -29,6 +39,9 @@ ModuleDirectory.Systems.Round.ClearLobby = serverRoot.Systems.Round.ClearLobby
 ModuleDirectory.Systems.Round.PodiumManager = serverRoot.Systems.Round.PodiumManager
 ModuleDirectory.Systems.Round.AFKTracker = serverRoot.Systems.Round.AFKTracker
 
+--//====================================================
+--// Abilities System
+--//====================================================
 ModuleDirectory.Abilities = {}
 ModuleDirectory.Abilities.Main = serverRoot.Systems.Abilities.AblilitiesMain
 ModuleDirectory.Abilities.Functions = serverRoot.Systems.Abilities.AbilitiesFunctions
@@ -36,11 +49,9 @@ ModuleDirectory.Abilities.Definitions = sharedRoot.Data.AbilitiesDefinitions
 ModuleDirectory.Abilities.EndFunctions = serverRoot.Systems.Abilities.EndFunctions
 ModuleDirectory.Abilities.TeleportAbility = serverRoot.Systems.Abilities.TeleportAbility
 
-
 --//====================================================
---// AGENT System
+--// Agent System
 --//====================================================
-
 ModuleDirectory.Systems.Agent = {}
 ModuleDirectory.Systems.Agent.AgentManager = serverRoot.Systems.Agent.AgentManager
 ModuleDirectory.Systems.Agent.Agent = serverRoot.Systems.Agent.Agent
@@ -48,22 +59,21 @@ ModuleDirectory.Systems.Agent.CharacterGeneration = serverRoot.Systems.Agent.Cha
 ModuleDirectory.Systems.Agent.Movement = serverRoot.Systems.Agent.Components.AgentMovement
 ModuleDirectory.Systems.Agent.Combat = serverRoot.Systems.Agent.Components.AgentCombat
 ModuleDirectory.Systems.Agent.TileScoring = serverRoot.Systems.Agent.TileScoring
+ModuleDirectory.Systems.Agent.AgentAnimations = serverRoot.Systems.Agent.Components.AgentAnimations
 
 --//====================================================
---// StatsTracker System
+--// Stats Tracker System
 --//====================================================
-
 ModuleDirectory.Systems.Stats = {}
 ModuleDirectory.Systems.Stats.WinnerDetection = serverRoot.Systems.StatsTrackers.WinnerDetection
 ModuleDirectory.Systems.Stats.TouchedBlockTracker = serverRoot.Systems.StatsTrackers.TouchedBlockTracker
-ModuleDirectory.Systems.Stats.RoundSummary =  serverRoot.Systems.StatsTrackers.RoundSummary
+ModuleDirectory.Systems.Stats.RoundSummary = serverRoot.Systems.StatsTrackers.RoundSummary
 ModuleDirectory.Systems.Stats.KnockbackTracker = serverRoot.Systems.StatsTrackers.KnockbackTracker
 ModuleDirectory.Systems.Stats.EliminationTracker = serverRoot.Systems.StatsTrackers.EliminationTracker
 
 --//====================================================
 --// Throwable System
 --//====================================================
-
 ModuleDirectory.Throwable = {}
 ModuleDirectory.Throwable.Throwable = serverRoot.Systems.Throwable.Throwable
 ModuleDirectory.Throwable.ThrowableManager = serverRoot.Systems.Throwable.ThrowableManager
@@ -71,12 +81,16 @@ ModuleDirectory.Throwable.ThrowableData = sharedRoot.Types.ThrowableData
 ModuleDirectory.Throwable.PlayerRaycastParamsHandler = serverRoot.Systems.Throwable.PlayerRaycastParmsHandler
 ModuleDirectory.Throwable.SnowballManager = serverRoot.Systems.Throwable.SnowballManager
 
-ModuleDirectory.Overhead = serverRoot.Systems.OtherGameplay.OverheadGui
-
+--//====================================================
+--// Coins System
+--//====================================================
 ModuleDirectory.Coins = {}
 ModuleDirectory.Coins.CoinPickup = serverRoot.Systems.CoinPickup.CoinPickup
 ModuleDirectory.Coins.CoinPickupManager = serverRoot.Systems.CoinPickup.CoinPickupManager
 
+--//====================================================
+--// Bomb System
+--//====================================================
 ModuleDirectory.Bomb = {}
 ModuleDirectory.Bomb.Bomb = serverRoot.Systems.Bomb.Bomb
 ModuleDirectory.Bomb.BombManager = serverRoot.Systems.Bomb.BombManager
@@ -84,70 +98,85 @@ ModuleDirectory.Bomb.BombManager = serverRoot.Systems.Bomb.BombManager
 --//====================================================
 --// Map System
 --//====================================================
+ModuleDirectory.Systems.Map = {}
 
-ModuleDirectory.Map = {}
 -- Models
-ModuleDirectory.Map.Block = serverRoot.Systems.Map.Model.Block
-ModuleDirectory.Map.Layer = serverRoot.Systems.Map.Model.Layer
-ModuleDirectory.Map.Map = serverRoot.Systems.Map.Model.Map
-ModuleDirectory.Map.Saves = serverRoot.Systems.Map.MapSaves.List
-ModuleDirectory.Map.Obstacle = serverRoot.Systems.Map.Model.Obstacle
-ModuleDirectory.Map.MapUtilities = serverRoot.Systems.Map.MapUtilities
+ModuleDirectory.Systems.Map.Block = serverRoot.Systems.Map.Model.Block
+ModuleDirectory.Systems.Map.Layer = serverRoot.Systems.Map.Model.Layer
+ModuleDirectory.Systems.Map.Map = serverRoot.Systems.Map.Model.Map
+ModuleDirectory.Systems.Map.Obstacle = serverRoot.Systems.Map.Model.Obstacle
+ModuleDirectory.Systems.Map.MapUtilities = serverRoot.Systems.Map.MapUtilities
+ModuleDirectory.Systems.Map.Saves = serverRoot.Systems.Map.MapSaves.List
+ModuleDirectory.Systems.Map.Materials = serverRoot.Systems.Map.MapSaves.Materials
 
 -- Factories
-ModuleDirectory.Map.BlockFactory = serverRoot.Systems.Map.BlockFactory
-ModuleDirectory.Map.PlaneFactory = serverRoot.Systems.Map.PlaneFactory
-ModuleDirectory.Map.LayerFactory = serverRoot.Systems.Map.LayerFactory
-ModuleDirectory.Map.MapDataFactory = serverRoot.Systems.Map.MapDataFactory
-ModuleDirectory.Map.ObstacleFactory = serverRoot.Systems.Map.ObstacleFactory
+ModuleDirectory.Systems.Map.BlockFactory = serverRoot.Systems.Map.BlockFactory
+ModuleDirectory.Systems.Map.PlaneFactory = serverRoot.Systems.Map.PlaneFactory
+ModuleDirectory.Systems.Map.LayerFactory = serverRoot.Systems.Map.LayerFactory
+ModuleDirectory.Systems.Map.MapDataFactory = serverRoot.Systems.Map.MapDataFactory
+ModuleDirectory.Systems.Map.ObstacleFactory = serverRoot.Systems.Map.ObstacleFactory
 
 -- Builders / Generators
-ModuleDirectory.Map.MapBuilder = serverRoot.Systems.Map.MapBuilder
-ModuleDirectory.Map.MapGenerator = serverRoot.Systems.Map.MapGenerator
+ModuleDirectory.Systems.Map.MapBuilder = serverRoot.Systems.Map.MapBuilder
+ModuleDirectory.Systems.Map.MapGenerator = serverRoot.Systems.Map.MapGenerator
 
-ModuleDirectory.Map.Materials = serverRoot.Systems.Map.MapSaves.Materials
-
-ModuleDirectory.Map.LoadedBlocks = serverRoot.Systems.Map.Loaded.Block
-ModuleDirectory.Map.LoadedLayers = serverRoot.Systems.Map.Loaded.Layer
-
---//====================================================
---// Gameplay Managers
---//====================================================
-
-ModuleDirectory.Ammo = {}
-ModuleDirectory.Ammo.SnowballAmmoPickup = serverRoot.Systems.Ammo.SnowballAmmoPickup
-ModuleDirectory.Ammo.AmmoPickupManager =  serverRoot.Systems.Ammo.AmmoPickupManager
-ModuleDirectory.Ammo.AmmoManager =  serverRoot.Systems.Ammo.AmmoManager
-
-ModuleDirectory.Gameplay = {}
-
-ModuleDirectory.Gameplay.BlockDestructionTracker = serverRoot.Systems.OtherGameplay.BlockDestructionTracker
-ModuleDirectory.Gameplay.ServerHitBoxManager = serverRoot.Systems.OtherGameplay.ServerHitBoxManager
-ModuleDirectory.Gameplay.KickManager = serverRoot.Services.KickManager
-
-ModuleDirectory.Gameplay.KnockBackManager = serverRoot.Systems.OtherGameplay.KnockbackManager
-ModuleDirectory.Gameplay.BlockDestruction = serverRoot.Systems.OtherGameplay.BlockDestruction
-ModuleDirectory.Gameplay.LavaManager = serverRoot.Systems.OtherGameplay.LavaManager
-
-ModuleDirectory.Gameplay.SpawnProtectionManager = serverRoot.Systems.OtherGameplay.SpawnProtectionManager
-ModuleDirectory.Gameplay.RespawnManager = serverRoot.Systems.OtherGameplay.RespawnManager
-
-ModuleDirectory.ServerSpectateController = serverRoot.Systems.Spectate.ServerSpectateController
-
-ModuleDirectory.Tool = {}
-ModuleDirectory.Tool.ToolManager = serverRoot.Systems.Tools.ToolManager
-ModuleDirectory.Tool.BackShovel = serverRoot.Systems.Tools.BackShovel
-ModuleDirectory.Tool.ShovelCustomization = serverRoot.Systems.Tools.ShovelCustomization
-
+-- Loaded
+ModuleDirectory.Systems.Map.LoadedBlocks = serverRoot.Systems.Map.Loaded.Block
+ModuleDirectory.Systems.Map.LoadedLayers = serverRoot.Systems.Map.Loaded.Layer
 
 --//====================================================
---// Tutorial
+--// Ammo System
 --//====================================================
+ModuleDirectory.Systems.Ammo = {}
+ModuleDirectory.Systems.Ammo.SnowballAmmoPickup = serverRoot.Systems.Ammo.SnowballAmmoPickup
+ModuleDirectory.Systems.Ammo.AmmoPickupManager = serverRoot.Systems.Ammo.AmmoPickupManager
+ModuleDirectory.Systems.Ammo.AmmoManager = serverRoot.Systems.Ammo.AmmoManager
 
-ModuleDirectory.Tutorial = {}
-ModuleDirectory.Tutorial.TutorialManager = serverRoot.Systems.Tutorial.TutorialManager
-ModuleDirectory.Tutorial.tutorialMapGenerator = serverRoot.Systems.Tutorial.TutorialMapGenerator
-ModuleDirectory.Tutorial.Dummy = serverRoot.Systems.Tutorial.Npc
+--//====================================================
+--// Gameplay (OtherGameplay + Services used in gameplay)
+--//====================================================
+ModuleDirectory.Systems.Gameplay = {}
+ModuleDirectory.Systems.Gameplay.BlockDestructionTracker = serverRoot.Systems.OtherGameplay.BlockDestructionTracker
+ModuleDirectory.Systems.Gameplay.ServerHitBoxManager = serverRoot.Systems.OtherGameplay.ServerHitBoxManager
+ModuleDirectory.Systems.Gameplay.KnockBackManager = serverRoot.Systems.OtherGameplay.KnockbackManager
+ModuleDirectory.Systems.Gameplay.BlockDestruction = serverRoot.Systems.OtherGameplay.BlockDestruction
+ModuleDirectory.Systems.Gameplay.LavaManager = serverRoot.Systems.OtherGameplay.LavaManager
+ModuleDirectory.Systems.Gameplay.SpawnProtectionManager = serverRoot.Systems.OtherGameplay.SpawnProtectionManager
+ModuleDirectory.Systems.Gameplay.RespawnManager = serverRoot.Systems.OtherGameplay.RespawnManager
+ModuleDirectory.Systems.Gameplay.KickManager = serverRoot.Services.KickManager
+
+-- Standalone gameplay items (kept at top-level like original)
+ModuleDirectory.Overhead = serverRoot.Systems.OtherGameplay.OverheadGui
+ModuleDirectory.GroupRanks = serverRoot.Systems.OtherGameplay.GroupRanks
+
+--//====================================================
+--// Spectate System
+--//====================================================
+ModuleDirectory.Systems.Spectate = {}
+ModuleDirectory.Systems.Spectate.ServerSpectateController = serverRoot.Systems.Spectate.ServerSpectateController
+
+--//====================================================
+--// Tools System
+--//====================================================
+ModuleDirectory.Systems.Tool = {}
+ModuleDirectory.Systems.Tool.ToolManager = serverRoot.Systems.Tools.ToolManager
+ModuleDirectory.Systems.Tool.BackShovel = serverRoot.Systems.Tools.BackShovel
+ModuleDirectory.Systems.Tool.ShovelCustomization = serverRoot.Systems.Tools.ShovelCustomization
+
+--//====================================================
+--// Tutorial System
+--//====================================================
+ModuleDirectory.Systems.Tutorial = {}
+ModuleDirectory.Systems.Tutorial.TutorialManager = serverRoot.Systems.Tutorial.TutorialManager
+ModuleDirectory.Systems.Tutorial.tutorialMapGenerator = serverRoot.Systems.Tutorial.TutorialMapGenerator
+ModuleDirectory.Systems.Tutorial.Dummy = serverRoot.Systems.Tutorial.Npc
+
+--//====================================================
+--// Rewards System
+--//====================================================
+ModuleDirectory.Systems.Rewards = {}
+ModuleDirectory.Systems.Rewards.RewardsMain = serverRoot.Systems.Rewards.RewardsMain
+ModuleDirectory.Systems.Rewards.RewardData = sharedRoot.Data.DailyRewards
 
 --//====================================================
 --// Player Systems
@@ -162,81 +191,73 @@ ModuleDirectory.Player.ProfileManager = serverRoot.Player.ProfileManager
 ModuleDirectory.Player.ConstraintManager = serverRoot.Player.ConstraintManager
 ModuleDirectory.Player.PlayTimeTracker = serverRoot.Player.PlayTimeTracker
 
+-- Level System (kept as top-level like original)
+ModuleDirectory.LevelSystem = {}
+ModuleDirectory.LevelSystem.LevelUtilities = sharedRoot.Utilities.LevelUtilities
+ModuleDirectory.LevelSystem.LevelController = serverRoot.Player.LevelSystem.LevelController
+
 --//====================================================
---// Utilities
+--// Services
+--//====================================================
+ModuleDirectory.Services = {}
+
+-- Monetization
+ModuleDirectory.Services.Monetization = {}
+ModuleDirectory.Services.Monetization.ProductManager = serverRoot.Services.Monetization.ProductManager
+ModuleDirectory.Services.Monetization.ProductBindings = serverRoot.Services.Monetization.ProductBindings
+ModuleDirectory.Services.Monetization.CoinManager = serverRoot.Services.Monetization.CoinManager
+ModuleDirectory.Services.Monetization.ShovelShopManager = serverRoot.Services.Monetization.ShovelShopManager
+ModuleDirectory.Services.Monetization.GamepassManager = serverRoot.Services.Monetization.GamepassManager
+ModuleDirectory.Services.Monetization.AbilityShopManager = serverRoot.Services.Monetization.AbilityShopManager
+ModuleDirectory.Services.Monetization.GamepassData = sharedRoot.Data.ShopData.Gamepasses
+
+-- Analytics
+ModuleDirectory.Services.Analytics = {}
+ModuleDirectory.Services.Analytics.Onboarding = serverRoot.Services.Analytics.Onboarding
+ModuleDirectory.Services.Analytics.Main = serverRoot.Services.Analytics.AnalyticsMain
+ModuleDirectory.Services.Analytics.LeaderboardUpdater = serverRoot.Services.Analytics.LeaderboardUpdater
+ModuleDirectory.Services.Analytics.LeaderboardGetter = serverRoot.Services.Analytics.LeaderboardGetter
+ModuleDirectory.Services.Analytics.EventAnalytics = serverRoot.Services.Analytics.EventAnalytics
+ModuleDirectory.Services.Analytics.EconomyAnalytics = serverRoot.Services.Analytics.EconomyAnalytics
+
+-- Badges
+ModuleDirectory.Services.Badges = {}
+ModuleDirectory.Services.Badges.PlayerBadgeHandler = serverRoot.Services.Badges.PlayerBadgeHander
+ModuleDirectory.Services.Badges.WinBadgeHandler = serverRoot.Services.Badges.WinBadgeHandler
+
+-- Chat
+ModuleDirectory.Chat = {}
+ModuleDirectory.Chat.ServerCommands = serverRoot.Services.Chat.ServerCommands
+ModuleDirectory.Chat.ServerVoice = serverRoot.Services.Chat.ServerVoice
+
+--//====================================================
+--// Lobby Challenges
+--//====================================================
+ModuleDirectory.Challenge = {}
+ModuleDirectory.Challenge.LobbyChallengeMain = serverRoot.Systems.LobbyChallenges.LobbyChallengeMain
+ModuleDirectory.Challenge.ChallengeStart = serverRoot.Systems.LobbyChallenges.ChallengeStart
+ModuleDirectory.Challenge.ChallengeEnd = serverRoot.Systems.LobbyChallenges.ChallengeEnd
+ModuleDirectory.Challenge.ChallengeLoop = serverRoot.Systems.LobbyChallenges.ChallengeLoop
+ModuleDirectory.Challenge.ChallengeSnowball = serverRoot.Systems.LobbyChallenges.Models.ChallengeSnowball
+
+--//====================================================
+--// Shared Utilities / Data (top-level like original)
 --//====================================================
 ModuleDirectory.PartPool = sharedRoot.Utilities.PartPool
 ModuleDirectory.VectorUtil = sharedRoot.Utilities.VectorUtil
 ModuleDirectory.Timer = sharedRoot.Utilities.Timer
 ModuleDirectory.ThrowableDefinitions = sharedRoot.Data.ThrowableDefinitions
-ModuleDirectory.LogHandler = sharedRoot.Utilities.LogHandler
 ModuleDirectory.ListUtil = sharedRoot.Utilities.ListUtil
-
---//====================================================
---// Utilities
---//====================================================
-
-ModuleDirectory.Rewards = {}
-ModuleDirectory.Rewards.RewardsMain = serverRoot.Systems.Rewards.RewardsMain
-ModuleDirectory.Rewards.RewardData = sharedRoot.Data.DailyRewards
-
--- Loaded Assets
-
-
-ModuleDirectory.Monetization = {}
-ModuleDirectory.Monetization.ProductManager = serverRoot.Services.Monetization.ProductManager
-ModuleDirectory.Monetization.ProductBindings = serverRoot.Services.Monetization.ProductBindings
-ModuleDirectory.Monetization.CoinManager = serverRoot.Services.Monetization.CoinManager
-ModuleDirectory.Monetization.ShovelShopManager = serverRoot.Services.Monetization.ShovelShopManager
-ModuleDirectory.Monetization.GamepassManager = serverRoot.Services.Monetization.GamepassManager
-ModuleDirectory.Monetization.AbilityShopManager = serverRoot.Services.Monetization.AbilityShopManager
-
-ModuleDirectory.Monetization.GamepassData = sharedRoot.Data.ShopData.Gamepasses 
-
---//====================================================
---// Analytics
---//====================================================
-ModuleDirectory.Analytics = {}
-ModuleDirectory.Analytics.Onboarding = serverRoot.Services.Analytics.Onboarding
-ModuleDirectory.Analytics.Main =serverRoot.Services.Analytics.AnalyticsMain
-ModuleDirectory.Analytics.LeaderboardUpdater = serverRoot.Services.Analytics.LeaderboardUpdater
-ModuleDirectory.Analytics.LeaderboardGetter = serverRoot.Services.Analytics.LeaderboardGetter
-ModuleDirectory.Analytics.EventAnalytics = serverRoot.Services.Analytics.EventAnalytics
-ModuleDirectory.Analytics.EconomyAnalytics = serverRoot.Services.Analytics.EconomyAnalytics
-
-ModuleDirectory.Challenge = {}
-ModuleDirectory.Challenge.LobbyChallengeMain = serverRoot.Systems.LobbyChallenges.LobbyChallengeMain
-ModuleDirectory.Challenge.ChallengeStart = serverRoot.Systems.LobbyChallenges.ChallengeStart        
-ModuleDirectory.Challenge.ChallengeEnd = serverRoot.Systems.LobbyChallenges.ChallengeEnd
-ModuleDirectory.Challenge.ChallengeLoop = serverRoot.Systems.LobbyChallenges.ChallengeLoop
-ModuleDirectory.Challenge.ChallengeSnowball = serverRoot.Systems.LobbyChallenges.Models.ChallengeSnowball
-
-ModuleDirectory.Badges = {}
-ModuleDirectory.Badges.PlayerBadgeHandler = serverRoot.Services.Badges.PlayerBadgeHander
-ModuleDirectory.Badges.WinBadgeHandler = serverRoot.Services.Badges.WinBadgeHandler
-
 ModuleDirectory.LogHandler = sharedRoot.Utilities.LogHandler
-
-ModuleDirectory.LevelSystem = {}
-ModuleDirectory.LevelSystem.LevelUtilities = sharedRoot.Utilities.LevelUtilities
-ModuleDirectory.LevelSystem.LevelController = serverRoot.Player.LevelSystem.LevelController
-
-ModuleDirectory.Chat = {}
-ModuleDirectory.Chat.ServerCommands = serverRoot.Services.Chat.ServerCommands
-ModuleDirectory.Chat.ServerVoice = serverRoot.Services.Chat.ServerVoice
-
-ModuleDirectory.ProductList = sharedRoot.ProductsList
-
 ModuleDirectory.KnockbackUtilities = sharedRoot.Utilities.KnockbackUtilities
-
-ModuleDirectory.ShovelDefinitions = sharedRoot.Data.ShovelDefinitions
-
 ModuleDirectory.Set = sharedRoot.Utilities.Set
-
-ModuleDirectory.GroupRanks = serverRoot.Systems.OtherGameplay.GroupRanks
-
 ModuleDirectory.LayerUtilities = sharedRoot.Utilities.LayerUtilities
 
--- Remote Handlers
+-- Shared definitions / lists
+ModuleDirectory.ProductList = sharedRoot.ProductsList
+ModuleDirectory.ShovelDefinitions = sharedRoot.Data.ShovelDefinitions
 
+--//====================================================
+--// Return
+--//====================================================
 return ModuleDirectory

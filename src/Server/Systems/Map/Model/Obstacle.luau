@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local Block = require(ModuleDirectory.Map.Block)
+local Block = require(ModuleDirectory.Systems.Map.Block)
 
 local ObstacleModels: Folder?
  local ObstaclesFolder : Folder?

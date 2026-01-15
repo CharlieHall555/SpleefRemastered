@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local MapSaves = require(ModuleDirectory.Map.Saves)
+local MapSaves = require(ModuleDirectory.Systems.Map.Saves)
 
 local mapNames: {string} = {}
 local MapSelection = {}

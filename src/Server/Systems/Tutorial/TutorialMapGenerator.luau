@@ -4,8 +4,8 @@
 local Players = game:GetService("Players")
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local MapGenerator = require(ModuleDirectory.Map.MapGenerator)
-local Map = require(ModuleDirectory.Map.Map)
+local MapGenerator = require(ModuleDirectory.Systems.Map.MapGenerator)
+local Map = require(ModuleDirectory.Systems.Map.Map)
 
 local TutorialMapTemplate = require(game:GetService("ServerScriptService").Systems.Map.MapSaves.TutorialMap)
 

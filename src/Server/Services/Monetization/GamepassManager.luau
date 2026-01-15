@@ -1,10 +1,8 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
-local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerSessionVariables = require(ModuleDirectory.Player.SessionVariables)
-local GamepassData = require(ModuleDirectory.Monetization.GamepassData)
-local ShovelCustomization = require(ModuleDirectory.Tool.ShovelCustomization)
+local GamepassData = require(ModuleDirectory.Services.Monetization.GamepassData)
+local ShovelCustomization = require(ModuleDirectory.Systems.Tool.ShovelCustomization)
 local MarketplaceService = game:GetService("MarketplaceService")
 local Overhead = require(ModuleDirectory.Overhead)
 

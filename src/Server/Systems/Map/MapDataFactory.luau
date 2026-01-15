@@ -1,6 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local PlaneFactory = require(ModuleDirectory.Map.PlaneFactory)
-local LayerFactory = require(ModuleDirectory.Map.LayerFactory)
+local PlaneFactory = require(ModuleDirectory.Systems.Map.PlaneFactory)
+local LayerFactory = require(ModuleDirectory.Systems.Map.LayerFactory)
 
 export type MapDataCreationParams = {
 	originPosition: Vector3,

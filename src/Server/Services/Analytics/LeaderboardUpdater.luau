@@ -1,7 +1,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LevelUtilities = require(ModuleDirectory.LevelSystem.LevelUtilities)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local HttpService = game:GetService("HttpService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)

@@ -1,12 +1,12 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
+local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
-local LoadedBlocks = require(ModuleDirectory.Map.LoadedBlocks)
+local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
 local Config =require(game:GetService("ServerScriptService").ServerConfigurations)
-local Block = require(ModuleDirectory.Map.Block)
-local AmmoManager = require(ModuleDirectory.Ammo.AmmoManager)
-local Onboarding = require(ModuleDirectory.Analytics.Onboarding)
+local Block = require(ModuleDirectory.Systems.Map.Block)
+local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
+local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 
 local BlockDestruction = {}

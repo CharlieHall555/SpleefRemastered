@@ -9,7 +9,7 @@ local ChallengeLoop = require(ModuleDirectory.Challenge.ChallengeLoop)
 
 local ChallengeSnowball = require(ModuleDirectory.Challenge.ChallengeSnowball)
 
-local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
+local ServerHitBoxManager = require(ModuleDirectory.Systems.Gameplay.ServerHitBoxManager)
 
 export type challengeState = {
 	timeRunning: number,

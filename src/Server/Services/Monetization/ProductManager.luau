@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local MarketplaceService = game:GetService("MarketplaceService")
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local KickManager = require(ModuleDirectory.Gameplay.KickManager)
+local KickManager = require(ModuleDirectory.Systems.Gameplay.KickManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local ProductList = require(ModuleDirectory.ProductList)
 

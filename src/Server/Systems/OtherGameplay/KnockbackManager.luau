@@ -2,13 +2,15 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
+local ServerHitBoxManager = require(ModuleDirectory.Systems.Gameplay.ServerHitBoxManager)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local KnockbackTracker = require(ModuleDirectory.Systems.Stats.KnockbackTracker)
 local KnockbackUtilities = require(ModuleDirectory.KnockbackUtilities)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
+local AgentManager = require(ModuleDirectory.Systems.Agent.AgentManager)
+local AgentMovement = require(ModuleDirectory.Systems.Agent.Movement)
 
 local lastHitCache: { [number]: number } = {}
 
@@ -76,6 +78,12 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Play
 		RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION_CHAR", char)
 		return
 	end
+
+	local hitAgent = AgentManager.getAgentFromCharacter(char)
+	if hitAgent then
+		AgentMovement.resetWander(hitAgent)
+	end
+
 
 	if (SessionVariables.getValue(hitPlayer , "spawnProtectionActive") or false) == true then
 		return

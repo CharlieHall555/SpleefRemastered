@@ -1,8 +1,8 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local Map = require(ModuleDirectory.Map.Map)
+local Map = require(ModuleDirectory.Systems.Map.Map)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
-local BlockFactory = require(ModuleDirectory.Map.BlockFactory)
+local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
 
 local isActive = false
 

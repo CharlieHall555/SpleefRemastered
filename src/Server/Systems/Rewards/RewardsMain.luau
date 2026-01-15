@@ -3,9 +3,9 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local PlayTimeTracker = require(ModuleDirectory.Player.PlayTimeTracker)
-local RewardData = require(ModuleDirectory.Rewards.RewardData)
-local CoinManager = require(ModuleDirectory.Monetization.CoinManager)
-local EconomyAnalytics = require(ModuleDirectory.Analytics.EconomyAnalytics)
+local RewardData = require(ModuleDirectory.Systems.Rewards.RewardData)
+local CoinManager = require(ModuleDirectory.Services.Monetization.CoinManager)
+local EconomyAnalytics = require(ModuleDirectory.Services.Analytics.EconomyAnalytics)
 
 local RewardsMain = {}
 

@@ -1,7 +1,7 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LayerFactory = require(ModuleDirectory.Map.LayerFactory)
-local MapDataFactory = require(ModuleDirectory.Map.MapDataFactory)
-local Map = require(ModuleDirectory.Map.Map)
+local LayerFactory = require(ModuleDirectory.Systems.Map.LayerFactory)
+local MapDataFactory = require(ModuleDirectory.Systems.Map.MapDataFactory)
+local Map = require(ModuleDirectory.Systems.Map.Map)
 
 local MapBuilder = {}
 

@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local ServerHitBoxManager = require(ModuleDirectory.Gameplay.ServerHitBoxManager)
+local ServerHitBoxManager = require(ModuleDirectory.Systems.Gameplay.ServerHitBoxManager)
 
 local TouchedBlockTracker = {}
 

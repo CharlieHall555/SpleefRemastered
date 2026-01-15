@@ -2,12 +2,13 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
+local TileScoreDebug = require(ModuleDirectory.DebugTools.TileScoreDebug)
 
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local TouchedBlockTracker = require(ModuleDirectory.Systems.Stats.TouchedBlockTracker)
 
-local LoadedLayers = require(ModuleDirectory.Map.LoadedLayers)
-local LoadedBlocks = require(ModuleDirectory.Map.LoadedBlocks)
+local LoadedLayers = require(ModuleDirectory.Systems.Map.LoadedLayers)
+local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
 
 local TileScoring = {}
 
@@ -21,7 +22,7 @@ local neighborCount : {[number] : {[string] : number}} = {}
 
 
 export type TileScore = {
-	Position : Vector2,
+	position : Vector2,
 	layerY : number,
 	ProxScore : number,
 	NeighborScore : number,
@@ -57,7 +58,7 @@ local function initScoreGrid()
 			local pos2 = VectorUtil.DeserializeVector2(posKey)
 
 			scoreGrid[layerY][posKey] = {
-				Position = pos2,
+				position = pos2,
 				layerY = layerY,
 				Score = 0,
 				NeighborScore = 0,
@@ -94,7 +95,7 @@ local function calcProxScores()
 
 	local MAX_DIST = 16
 	local FALLOFF = 0.35
-	local SCORE_SCALE = 1
+	local SCORE_SCALE = 3
 
 	-- Reset all scores
 	for _, layerScores in pairs(scoreGrid) do
@@ -126,8 +127,8 @@ local function calcProxScores()
 		-- *** KEY CHANGE ***
 		-- Use the layer's Y-position key (the same key as combinedLayer/scoreGrid).
 		-- Prefer a real property if you have it:
-		--   local layerY = loadedLayer.originPosition.Y
-		-- Fallback: if your LoadedLayer has YPosition or similar, use that.
+		--   local layerY = loadedLayer.originposition.Y
+		-- Fallback: if your LoadedLayer has Yposition or similar, use that.
 		local layerY = loadedLayer.originPosition.Y
 
 		local pos = snapTile(currentBlock.LayerPosition)
@@ -308,10 +309,12 @@ function TileScoring.getScoresAt(layer: number, position: Vector2, radius: numbe
 			local key = VectorUtil.SerializeVector2(tilePos)
 
 			-- if tile doesn't exist / destroyed, this will be nil (as requested)
-			results[VectorUtil.SerializeVector2(offset)] = layerScores[key] or false
-			if results[VectorUtil.SerializeVector2(offset)] == false then
-				print( key)
-			end	
+			local value = layerScores[key] 
+			if value then
+				results[VectorUtil.SerializeVector2(offset)] = table.clone(value)
+			else
+				results[VectorUtil.SerializeVector2(offset)] = false
+			end
 		end
 	end
 
@@ -325,6 +328,7 @@ function TileScoring.start()
 	task.spawn(function()
 		while roundActive do
 			TileScoring.calcStep()
+			--TileScoreDebug.displayDebug(scoreGrid)
 			task.wait(7)
 		end
 	end)

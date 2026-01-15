@@ -7,7 +7,7 @@ local PlayersAlive = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local AbilitiesEndFunctions = require(ModuleDirectory.Abilities.EndFunctions)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
-local SpawnProtectionManager = require(ModuleDirectory.Gameplay.SpawnProtectionManager)
+local SpawnProtectionManager = require(ModuleDirectory.Systems.Gameplay.SpawnProtectionManager)
 
 local AbilitiesMain = {}
 
