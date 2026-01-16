@@ -38,6 +38,7 @@ ModuleDirectory.Systems.Round.MapSelection = serverRoot.Systems.Round.MapSelecti
 ModuleDirectory.Systems.Round.ClearLobby = serverRoot.Systems.Round.ClearLobby
 ModuleDirectory.Systems.Round.PodiumManager = serverRoot.Systems.Round.PodiumManager
 ModuleDirectory.Systems.Round.AFKTracker = serverRoot.Systems.Round.AFKTracker
+ModuleDirectory.Systems.Round.AgentsInGame = serverRoot.Systems.Round.AgentsInGame
 
 --//====================================================
 --// Abilities System

@@ -83,6 +83,7 @@ function RoundStatus.onProfileLoaded()
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED", function(aliveNow: number, maxAlive: number)
+		print("PLayers in game" , aliveNow , maxAlive)
 		StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
 	end)
 

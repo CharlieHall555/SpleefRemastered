@@ -59,7 +59,7 @@ function PlayerHighlighter.highlightPlayer(player: Player)
     if character then
         -- Clone the template and set its parent
         local newHighlight = highlightTemplate:Clone()
-        newHighlight.Parent = localPlayer.PlayerGui
+        newHighlight.Parent = character
         newHighlight.Adornee = character
         newHighlight.Enabled = true
 
@@ -79,7 +79,7 @@ function PlayerHighlighter.highlightModel(model : Model)
 
     -- Clone the template and set its parent
     local newHighlight = highlightTemplate:Clone()
-    newHighlight.Parent = localPlayer.PlayerGui
+    newHighlight.Parent = model
     newHighlight.Adornee = model
     newHighlight.Enabled = true
 

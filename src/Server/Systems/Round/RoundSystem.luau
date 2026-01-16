@@ -15,6 +15,7 @@ export type Round = {
     startingPlayers: { Player },
     startTime: number,
     gamemode: string,
+    nPlayersAndAgents : number
 }
 
 export type EventContext = {
@@ -26,6 +27,7 @@ export type EventContext = {
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
+local AgentsInGame = require(ModuleDirectory.Systems.Round.AgentsInGame)
 local Timer = require(ModuleDirectory.Timer)
 local RunService = game:GetService("RunService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -54,6 +56,12 @@ local transitions = {
     onACTIVE = nil :: ((Round) -> ())?,
     onINTERMISSION = nil :: ((Round) -> ())?,
 }
+
+local function nPlayersAndAgents()
+
+    return AgentsInGame.getSize() + PlayersInGame.getSize()
+    
+end
 
 function RoundSystem.init()
     PlayerPool.setOnChange(RoundSystem.onPlayerPoolChange)
@@ -166,20 +174,24 @@ function RoundSystem.onSTARTING()
         startingPlayers = table.clone(PlayerPool.getActivePool()),
         startTime = os.clock(),
         gamemode = "Spleef",
+        nPlayersAndAgents = nPlayersAndAgents()
     }
     for _, player in ipairs(PlayerPool.getActivePool()) do
         PlayersInGame.addPlayer(player , false)
     end
 
-    RemoteEventHandler.FireOnAllClients(
-        "PLAYERS_IN_GAME_CHANGED",
-        #PlayersInGame.getActivePlayers(),
-        #currentRound.startingPlayers
-    )
-
 end
 
 function RoundSystem.onPREPARING()
+
+    currentRound.nPlayersAndAgents = nPlayersAndAgents()
+
+    RemoteEventHandler.FireOnAllClients(
+        "PLAYERS_IN_GAME_CHANGED",
+        nPlayersAndAgents(),
+        currentRound.nPlayersAndAgents
+    )
+
     local prepTime = (Config.PREPARING_TIME) or 0
     if prepTime > 0 then
         preparingTimer:Start(prepTime)
@@ -220,6 +232,7 @@ function RoundSystem.changeState(newState: RoundState): nil
 
     if newState == "ENDING" then
         PlayersInGame.clear()
+        AgentsInGame.clear()
         RoundSystem.queueEvent(buildEventContext("END_COMPLETE"))
     elseif newState == "STARTING" then
         RoundSystem.queueEvent(buildEventContext("STARTUP_COMPLETE"))
@@ -233,7 +246,7 @@ end
 function RoundSystem.onActivePoolChange(playersInActive: { Player })
     RoundSystem.queueEvent(buildEventContext("ACTIVE_POOL_CHANGED"))
 
-    RemoteEventHandler.FireOnAllClients("PLAYERS_IN_GAME_CHANGED" , #playersInActive , #currentRound.startingPlayers)
+    RemoteEventHandler.FireOnAllClients("PLAYERS_IN_GAME_CHANGED" , nPlayersAndAgents() , #currentRound.nPlayersAndAgents)
 end
 
 function RoundSystem.connectStarting(fn: (Round) -> ())

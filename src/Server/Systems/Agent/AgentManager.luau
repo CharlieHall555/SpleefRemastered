@@ -4,6 +4,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Agent = require(ModuleDirectory.Systems.Agent.Agent)
 local CharacterGeneration = require(ModuleDirectory.Systems.Agent.CharacterGeneration)
+local AgentsInGame = require(ModuleDirectory.Systems.Round.AgentsInGame)
 
 local AgentManager = {}
 
@@ -44,10 +45,10 @@ function AgentManager.onLoaded()
 end
 
 function AgentManager.generateAgent(params: Agent.AgentCreationParams): Agent.Agent
-	local agent = Agent.new(params)
-	agent.model.PrimaryPart.CFrame = CFrame.new(params.spawnLocation)
-
-	return agent
+	local newAgent = Agent.new(params)
+	newAgent.model.PrimaryPart.CFrame = CFrame.new(params.spawnLocation)
+	AgentsInGame.addAgent(newAgent)
+	return newAgent
 end
 
 function AgentManager.activateAgents()

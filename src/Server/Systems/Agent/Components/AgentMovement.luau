@@ -32,7 +32,7 @@ local function disconnectMove(agent)
 end
 
 local function randomNoise(baseScore)
-	return baseScore + (math.random() - 0.5) * 0.1
+	return baseScore + (math.random() - 0.5) * 0.25
 end
 
 -- internal: fire wander complete callback if present
@@ -97,7 +97,7 @@ end
 
 local function chooseSubGoal(agent, originWorld, layerY, originTile)
 	-- bigger than your immediate step radius
-	local subRadius = 12
+	local subRadius = 20
 
 	-- sample random offsets a few times until we find a valid tile
 	for _ = 1, 12 do

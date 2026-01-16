@@ -24,10 +24,6 @@ function PlayersInGame.isAlive(player: Player): boolean
     return false
 end
 
-function PlayersInGame.addAgent()
-    
-end
-
 function PlayersInGame.addPlayer(player: Player , fireOnChangeCallback : boolean?): nil
     -- Prevent duplicates
     for _, p in ipairs(activePlayers) do
@@ -83,6 +79,7 @@ function PlayersInGame.init()
 
     end)
     
+
 end
 
 return PlayersInGame
