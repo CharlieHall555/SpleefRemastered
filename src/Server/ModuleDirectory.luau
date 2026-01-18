@@ -56,15 +56,15 @@ ModuleDirectory.Systems.Abilities.TeleportAbility = serverRoot.Systems.Abilities
 ModuleDirectory.Systems.Agent = {}
 ModuleDirectory.Systems.Agent.AgentManager = serverRoot.Systems.Agent.AgentManager
 ModuleDirectory.Systems.Agent.Agent = serverRoot.Systems.Agent.Agent
-ModuleDirectory.Systems.Agent.CharacterGeneration = serverRoot.Systems.Agent.CharacterGeneration
-ModuleDirectory.Systems.Agent.Movement = serverRoot.Systems.Agent.Components.AgentMovement
-ModuleDirectory.Systems.Agent.Combat = serverRoot.Systems.Agent.Components.AgentCombat
-ModuleDirectory.Systems.Agent.TileScoring = serverRoot.Systems.Agent.TileScoring
-ModuleDirectory.Systems.Agent.AgentAnimations = serverRoot.Systems.Agent.Components.AgentAnimations
-ModuleDirectory.Systems.Agent.AgentUtil = serverRoot.Systems.Agent.Components.AgentUtil
-ModuleDirectory.Systems.Agent.AgentHitbox = serverRoot.Systems.Agent.Components.AgentHitbox
 ModuleDirectory.Systems.Agent.AgentPersonalities = serverRoot.Systems.Agent.AgentPersonalities
-ModuleDirectory.Systems.Agent.Pathfinding = serverRoot.Systems.Agent.Pathfinding
+
+ModuleDirectory.Systems.Agent.AgentMovement = serverRoot.Systems.Agent.Components.AgentMovement
+ModuleDirectory.Systems.Agent.AgentCombat = serverRoot.Systems.Agent.Components.AgentCombat
+
+
+ModuleDirectory.Systems.Agent.CharacterGeneration = serverRoot.Systems.Agent.Helpers.CharacterGeneration
+ModuleDirectory.Systems.Agent.TileScoring = serverRoot.Systems.Agent.Helpers.TileScoring
+ModuleDirectory.Systems.Agent.Pathfinding = serverRoot.Systems.Agent.Helpers.Pathfinding
 
 --//====================================================
 --// Stats Tracker System
@@ -129,7 +129,6 @@ ModuleDirectory.Systems.Ammo.AmmoManager = serverRoot.Systems.Ammo.AmmoManager
 --// Gameplay (OtherGameplay + Services used in gameplay)
 --//====================================================
 ModuleDirectory.Systems.Gameplay = {}
-ModuleDirectory.Systems.Map.BlockDestructionTracker = serverRoot.Systems.OtherGameplay.BlockDestructionTracker
 ModuleDirectory.Systems.Gameplay.ServerHitBoxManager = serverRoot.Systems.OtherGameplay.ServerHitBoxManager
 ModuleDirectory.Systems.Gameplay.KnockBackManager = serverRoot.Systems.OtherGameplay.KnockbackManager
 ModuleDirectory.Systems.Gameplay.LavaManager = serverRoot.Systems.OtherGameplay.LavaManager

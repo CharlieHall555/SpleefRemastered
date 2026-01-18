@@ -7,9 +7,8 @@ local loadedPaths = {}
 local Pathfinding = {}
 
 export type path = {
-    pathId : string,-- use httpservice 
-    waypoints : {[number] : Block.Block},
-    changedCallback : () -> ()
+	pathId: string, -- use httpservice
+	waypoints: { [number]: Block.Block },
 }
 
 local HttpService = game:GetService("HttpService")
@@ -134,24 +133,26 @@ local function aStar(layer: Layer.Layer, startPos: Vector2, goalPos: Vector2): {
 	end
 end
 
-function Pathfinding.findPath(layer: Layer.Layer, startPos: Vector2, toPos: Vector2): path
+function Pathfinding.findPath(layer: Layer.Layer, startPos: Vector2, toPos: Vector2): path?
 	local startBlock = layer:getBlock(startPos)
 	local goalBlock = layer:getBlock(toPos)
+	
+	if not startBlock or not goalBlock then
+		return nil
+	end
+
+	-- compute
+	local result = aStar(layer, startPos, toPos)
+	if #result == 0 then
+		return nil
+	end
 
 	local newPath: path = {
 		pathId = HttpService:GenerateGUID(false),
 		waypoints = {},
-		changedCallback = function() end,
 	}
 
-	if not startBlock or not goalBlock then
-		loadedPaths[newPath.pathId] = newPath
-		return newPath
-	end
-
-	-- compute
-	newPath.waypoints = aStar(layer, startPos, toPos)
-
+	newPath.waypoints = result
 	loadedPaths[newPath.pathId] = newPath
 	return newPath
 end

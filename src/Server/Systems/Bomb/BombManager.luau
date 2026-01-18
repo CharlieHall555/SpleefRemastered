@@ -3,6 +3,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local Bomb = require(ModuleDirectory.Systems.Bomb.Bomb)
 local Block = require(ModuleDirectory.Systems.Map.Block)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
 
 local bombs = {}
 
@@ -23,7 +24,7 @@ local function onExplode(id :number, pos : number , radius : number, owner : Pla
 
     for i, part in pairs(parts) do
         local blockId = part:GetAttribute("Id")
-        Block.destroyById(blockId , owner)
+        BlockDestruction.destroyBlock(blockId , owner)
     end
 
     bombs[id] = nil

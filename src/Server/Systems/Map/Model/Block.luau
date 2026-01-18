@@ -19,7 +19,7 @@ export type Block = {
 	type: string?,
 
 	setParentLayerId: (self: Block, parentLayerId: string) -> nil,
-	getParentLayer: (self: Block) -> any?, -- you can tighten this to Layer.Layer? once Layer type is clean
+	getParentLayer: (self: Block) -> Layer?, -- you can tighten this to Layer.Layer? once Layer type is clean
 
 	setLayerPosition: (self: Block, newLayerPosition: Vector2) -> nil,
 	setWorldPosition: (self: Block, newWorldPosition: Vector3) -> nil,
@@ -27,6 +27,7 @@ export type Block = {
 
 	show: (self: Block) -> nil,
 	hide: (self: Block) -> nil,
+	isActive: (self: Block) -> boolean,
 	destroy: (self: Block) -> nil,
 }
 
@@ -152,15 +153,14 @@ function Block.new(blockConfig: BlockConfig?): Block
 	self.state = "VISIBLE"
 	self.layerPosition = blockConfig.layerPosition or Vector2.new(0,0)
 	self.parentLayerId = nil
-	self.layerPosition = Vector2.new(0, 0)
 	self.falling = false
 
 	loadedBlocks[self.id] = self
 	return self
 end
 
-function Block:setParentLayerId(parentLayerId: string): nil
-	self.parentLayerId = parentLayerId
+function Block:setParentLayer(parentLayer: Layer): nil
+	self.parentLayerId = parentLayer.id
 end
 
 function Block:getParentLayer()
@@ -221,6 +221,10 @@ function Block:hide(): nil
 	self.state = "HIDDEN"
 end
 
+function Block.isActive(self : Block) : boolean
+	return self and self.state == "VISIBLE" 
+end
+
 function Block.destroy(self : Block): nil
 
 
@@ -258,6 +262,11 @@ function Block.destroy(self : Block): nil
 
 	if blockDestroyedCallback then
 		blockDestroyedCallback(self)
+	end
+
+	if self.parentLayerId then
+		local parentLayer = self:getParentLayer()
+		parentLayer:removeBlock(self)
 	end
 
 	loadedBlocks[self.id] = nil

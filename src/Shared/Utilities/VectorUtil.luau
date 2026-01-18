@@ -16,7 +16,7 @@ function VectorUtil.SerializeVector3(vec : Vector3) : string
         .. ")"
 end
 
-function VectorUtil.DeserializeVector2(posString: string): Vector2
+function VectorUtil.deserializeVector2(posString: string): Vector2
     -- Expect format "(x,y)"
     local x, y = posString:match("%(([-%d%.]+),%s*([-%d%.]+)%)")
 

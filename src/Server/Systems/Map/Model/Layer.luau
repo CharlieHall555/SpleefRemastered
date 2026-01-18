@@ -1,5 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local VectorUtil = require(ModuleDirectory.VectorUtil)
 local Block , Map
 
 type Block = Block.Block
@@ -24,11 +25,16 @@ export type Layer = {
 
 	new: (config: LayerConfig) -> Layer,
 	get: (id: string) -> Layer?,
+	combine: (layer1: Layer, layer2: Layer) -> Layer,
 	setParentMap: (self: Layer, map: Map) -> nil,
 	getMap: (self: Layer) -> Map?,
 	addBlock: (self: Layer, block: Block, position: Vector2) -> nil,
 	getBlock: (self: Layer, position: Vector2) -> Block?,
+	getNeighbors: (self: Layer, position: Vector2) -> { [string]: Block? },
+	isEdge: (self: Layer, position: Vector2) -> boolean,
+	IsEmpty: (self: Layer, position: Vector2) -> boolean,
 	removeBlock: (self: Layer, block: Block) -> nil,
+	getBlocks: (self: Layer) -> {Block},
 	getRandomBlock: (self: Layer) -> Block?,
 	destroy: (self: Layer) -> nil,
 	isEmpty: (self: Layer) -> boolean,
@@ -88,7 +94,49 @@ end
 
 -- Get block at grid position
 function Layer.getBlock(self: Layer, position: Vector2): Block?
+	-- Check if position is within bounds
+	if position.X < 1 or position.X > self.size.X or
+	   position.Y < 1 or position.Y > self.size.Y then
+		return nil
+	end
+	
 	return (self.tileMap[position.X] and self.tileMap[position.X][position.Y]) or nil
+end
+
+function Layer.getNeighbors(self: Layer, position: Vector2): { [string]: Block? }
+	local neighbors = {}
+	
+	-- Define 4-directional neighbors (cardinal directions)
+	local directions = {
+		Vector2.new(0, 1),   -- Up
+		Vector2.new(0, -1),  -- Down
+		Vector2.new(-1, 0),  -- Left
+		Vector2.new(1, 0),   -- Right
+	}
+	
+	for _, direction in ipairs(directions) do
+		local neighborPos = position + direction
+		local block = self:getBlock(neighborPos)
+			if block then
+				local key = VectorUtil.SerializeVector2(direction)
+				neighbors[key] = block
+			end
+	end
+	
+	return neighbors
+end
+
+function Layer.isEdge(self: Layer , position : Vector2) : boolean
+	local neighbors = self:getNeighbors(position)
+	local count = 0
+	for _ in pairs(neighbors) do
+		count += 1
+	end
+	return count < 4
+end
+
+function Layer.IsEmpty(self: Layer , position : Vector2) : boolean
+	return self:getBlock(position) == nil
 end
 
 -- Remove block
@@ -104,6 +152,10 @@ function Layer.removeBlock(self: Layer, block: Block): nil
 	end
 end
 
+function Layer.getBlocks(self : Layer) : {Block}
+	return self.blocks
+end
+
 -- Random block
 function Layer.getRandomBlock(self: Layer): Block?
 	if #self.blocks == 0 then
@@ -114,6 +166,12 @@ end
 
 -- Destroy layer
 function Layer.destroy(self: Layer): nil
+
+	local parentMap = self:getMap()
+	if parentMap then
+		parentMap:removeLayer(self)
+	end
+
 	loadedLayers[self.id] = nil
 
 	for _, blk in ipairs(self.blocks) do

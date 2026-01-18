@@ -7,17 +7,17 @@ local Players = game:GetService("Players")
 local VISION_UPDATE_INTERVAL = 0.25
 
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+
+local Layer , Map
+
+local Pathfinding = require(ModuleDirectory.Systems.Agent.Pathfinding)
 local CharacterGeneration  = require(ModuleDirectory.Systems.Agent.CharacterGeneration)
-
-local AgentUtil = require(ModuleDirectory.Systems.Agent.AgentUtil)
-local AgentMovement = require(ModuleDirectory.Systems.Agent.Movement)
-local AgentCombat = require(ModuleDirectory.Systems.Agent.Combat)
-local AgentHitbox = require(ModuleDirectory.Systems.Agent.AgentHitbox)
-
 local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
 
-local onDiedCallback : ((any, Player?) -> nil)?
-local onWanderCompleteCallback : ((any) -> nil)?
+local AgentMovement = require(ModuleDirectory.Systems.Agent.AgentMovement)
+local AgentCombat = require(ModuleDirectory.Systems.Agent.AgentCombat)
+
+local currentMap : Map.Map? = nil;
 
 local Agent = {}
 Agent.__index = Agent
@@ -31,29 +31,33 @@ export type AgentConfig = {
 	forwardBiasWeight: number,
 	forwardBiasPower: number,
 	threatRadius: number,
-	aggression: number,
+	underThreatProxMultiplier: number,
 	scoreNoiseAmp: number,
+	connectionWeight : number,
+	proximityWeight : number,
 }
 
 export type Agent = {
 	model: Model,
-	health: number,
 	id: string,
-	spawnLocation: Vector3,
-	maxHealth: number,
+	config: AgentConfig,
+	wanderActive: boolean,
 	humanoid: Humanoid,
-	waypoints: { Vector3 },
-	waypointIndex: number,
-	playersAround: { [number]: Player },
-	tickLastDamaged: number,
-	tickLastAttacked: number,
-	tickVisionUpdate: number,
-	threatState: number,
-	moveConnection: RBXScriptConnection?,
-	subGoalWorld: Vector3?,
-	subGoalExpiresAt: number?,
-	alive: boolean,
-	AgentConfig: AgentConfig,
+	threatened : boolean,
+	visionTimer: number,
+	connections: { [string]: RBXScriptConnection },
+
+	movementState : MovementState,
+	combatState : CombatState,
+	
+	respawn: (self: Agent) -> nil,
+	startWander: (self: Agent) -> nil,
+	stopWander: (self: Agent) -> nil,
+	resetWander: (self: Agent) -> nil,
+	die: (self: Agent) -> nil,
+	destroy: (self: Agent) -> nil,
+	getLayerCurrentlyOn: (self: Agent) -> Layer.Layer?,
+	snapToGrid: (self: Agent) -> {layerIndex: number, layerPosition: Vector2}?,
 }
 
 export type AgentCreationParams = {
@@ -62,13 +66,25 @@ export type AgentCreationParams = {
 	AgentConfig: AgentConfig?,
 }
 
+export type MovementState = {
+
+	currentPath : Pathfinding.path?,
+	waypointN : number?,
+	subGoalPos : Vector3?
+
+}
+
+export type CombatState = {
+
+	threats : ({{ [number] : Agent | Player }})?
+
+}
+
 local loadedAgents: { [string]: Agent } = {}
 
-function Agent.setUpCallback(onDied: (Agent, Player?) -> nil, onWanderComplete: (Agent) -> nil): nil
-	onDiedCallback = onDied
-	onWanderCompleteCallback = onWanderComplete
-
-	return nil
+function Agent.setCurrentMap(n : Map.Map)
+	currentMap = n
+	
 end
 
 function Agent.getAll()
@@ -87,167 +103,124 @@ function Agent.getByModel(model: Model): Agent?
 	return loadedAgents[selfId]
 end
 
-function Agent.init()
-	AgentMovement.getScoresAt = TileScoring.getScoresAt
-	AgentMovement.getLayerFromAgentPos = TileScoring.getLayerFromAgentPos
-end
+
 
 function Agent.new(params: AgentCreationParams): Agent
-	local self: Agent = setmetatable({}, Agent)
-
-	self.health = params.maxHealth or 100
-	self.maxHealth = params.maxHealth or 100
-	self.spawnLocation = params.spawnLocation
-
-	self.onDiedCallback = onDiedCallback
-	self.onWanderCompleteCallback = onWanderCompleteCallback
-
-	self.model = CharacterGeneration.generateDummy("Lvl1 Dummy")
-	self.humanoid = self.model:FindFirstChildOfClass("Humanoid") :: Humanoid
-
-	local defaultAgentConfig: AgentConfig = {
-		wanderRadius = 20,
-		wanderTime = 0.1,
-		subGoalWeight = 0.9 + (math.random(-5, 5) / 100),
-		forwardBiasWeight = 0.25,
-		forwardBiasPower = 0.5,
-		threatRadius = 12.5,
-		aggression = math.random(0, 1),
-		scoreNoiseAmp = 0.10
+	local self : Agent = setmetatable({}, Agent)
+	self.id = HttpService:GenerateGUID(false)
+	self.config = params.AgentConfig or {
+		wanderRadius = 10,
+		wanderTime = 5,
+		subGoalWeight = 1,
+		forwardBiasWeight = 1,
+		forwardBiasPower = 2,
+		threatRadius = 10,
+		underThreatProxMultiplier = 2,
+		scoreNoiseAmp = 0.1,
+		connectionWeight = 1,
+		proximityWeight = 1,
+	}
+	self.connections = {} -- should be cleaned up on destroy
+	self.model = CharacterGeneration.generateCharacter(params.spawnLocation, params.maxHealth)
+	self.model:SetAttribute("AgentId", self.id)
+	self.humanoid = self.model:FindFirstChild("Humanoid")
+	self.threatened = false
+	self.visionTimer = 0
+	
+	self.movementState = {
+		currentPath = nil,
+		waypointN = 0,
+		subGoalPos = Vector3.zero
+	}
+	
+	self.combatState = {
+		threats = {}
 	}
 
-	-- Merge with supplied params (override defaults)
-	if params.AgentConfig then
-		for key, value in pairs(params.AgentConfig) do
-			defaultAgentConfig[key] = value
-		end
-	end
-
-	self.AgentConfig = defaultAgentConfig
-
-	self.playersAround = {}
-	
-	self.threatState = 0
-	self.id = HttpService:GenerateGUID(false)
-
-	self.model:SetAttribute("AgentId", self.id)
-	self.model:AddTag("AGENT")
-
-	self.waypoints = {}
-	self.waypointIndex = 1	
-	self.moveConnection = nil
-	self.alive = true
-
-	self.tickLastDamaged = 0
-	self.tickLastAttacked = 0
-	self.tickVisionUpdate = 0
-
-	self.humanoid.Died:Connect(function()
-		self:die()
+	self.connections["MoveToFinished"] = self.humanoid.MoveToFinished:Connect(function(reached)
+		AgentMovement.agentCompletedWanderStep(self , reached)
 	end)
-
-	self.humanoid.Destroying:Connect(function()
-		self:die()
-	end)
-
-	AgentHitbox.setup(self)
 
 	loadedAgents[self.id] = self
 	return self
 end
 
-function Agent:respawn()
-	-- stop movement + cleanup old model
-	AgentMovement.stop(self)
+function Agent.respawn(self: Agent)
 
-	if self.model then
-		Debris:AddItem(self.model, 1)
-	end
-
-	self.health = self.maxHealth
-	self.model = CharacterGeneration.generateDummy("Lvl1 Dummy")
-	self.humanoid = self.model:FindFirstChildOfClass("Humanoid") :: Humanoid
-
-	self.model:SetAttribute("AgentId", self.id)
-	self.model:AddTag("AGENT")
-
-	if self.model.PrimaryPart then
-		self.model.PrimaryPart.CFrame = CFrame.new(self.spawnLocation)
-	end
 end
 
-function Agent:wander(): nil
-	return AgentMovement.wander(self)
+function Agent.startWander(self: Agent): nil
+
 end
 
-function Agent:takeDamage(value: number, damagingPlayer: Player?): nil
-	return AgentCombat.takeDamage(self, value, damagingPlayer)
+function Agent.stopWander(self: Agent): nil
+	
 end
 
-function Agent:die(): nil
-	AgentMovement.stop(self)
-
-	if not self.model then
-		return nil
-	end
-
-	self.alive = false
-
-	if self.onDiedCallback then
-		self.onDiedCallback(self)
-	end
-
-	if self._moveConnection then
-		self._moveConnection:Disconnect()
-		self._moveConnection = nil
-	end
-
-	for _, child in pairs(self.model:GetDescendants()) do
-		if child.Name == "NameTagTemplate" then
-			child:Destroy()
-		end
-
-		if child:IsA("Motor6D") then
-			child:Destroy()
-		elseif child:IsA("BasePart") then
-			Debris:AddItem(child, 2)
-		end
-	end
-
-	Debris:AddItem(self.model, 5)
-
-	return nil
+function Agent.resetWander(self: Agent)
+	
 end
 
-function Agent:Destroy(): nil
+function Agent.die(self: Agent): nil
+
+end
+
+function Agent.destroy(self: Agent): nil
+	loadedAgents[self.id] = nil
 	if self.model then
 		self.model:Destroy()
 	end
-
-	loadedAgents[self.id] = nil
-	return nil
+	self.eventQueue = {}
 end
 
-function Agent.tick(self: Agent, deltaTime: number)
-	-- Update vision on interval
-	self.tickVisionUpdate += deltaTime
-	if self.tickVisionUpdate >= VISION_UPDATE_INTERVAL and self.alive then
-		self.tickVisionUpdate = 0
-
-		local playersAgentsAround = AgentUtil.getPlayersInRadius(self, self.AgentConfig.threatRadius)
-		if #playersAgentsAround > 1 then -- assuming the self is always within its own radius
-			self.threatState = 1
-		else
-			self.threatState = 0
+function Agent.getLayerCurrentlyOn(self: Agent) : Layer.Layer?
+	if not currentMap then
+		return nil
+	else
+		local rootPart = self.model:FindFirstChild("HumanoidRootPart") or self.model.PrimaryPart
+		if not rootPart then
+			return nil
 		end
+		return currentMap:getClosestLayerTo(rootPart.Position.Y)
+	end
+end
 
+function Agent.snapToGrid(self: Agent) : {layerIndex: number, layerPosition: Vector2}
+	if not currentMap then
+		return nil
+	end
+	local rootPart = self.model:FindFirstChild("HumanoidRootPart") or self.model.PrimaryPart
+	if not rootPart then
+		return nil
+	end
+	return currentMap:snapPositionToGrid(rootPart.Position)
+end
+
+function Agent.init()
+	Layer = require(ModuleDirectory.Systems.Map.Layer)
+	Map = require(ModuleDirectory.Systems.Map.Map)
+end
+
+function Agent.visionUpdate(self : Agent)
+	
+	local threats , threatCount = AgentCombat.getPlayersInRadius(self , self.config.threatRadius)
+	self.combatState.threats = threats
+
+	if threatCount > 0 then
+		self.threatened = true
+	else
+		self.threatened = false
 	end
 
-	if self.selfType == "PASSIVE" then
-		return
-	end
+end
 
-	-- aggressive behaviour placeholder
+function Agent.tick(self : Agent , dt : number)
+	self.visionTimer += dt
+	
+	if self.visionTimer >= VISION_UPDATE_INTERVAL then
+		self.visionTimer = 0
+		self:visionUpdate()
+	end
 end
 
 return Agent

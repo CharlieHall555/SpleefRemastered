@@ -10,6 +10,7 @@ local Layer = require(ModuleDirectory.Systems.Map.Layer)
 local MapSaves = require(ModuleDirectory.Systems.Map.MapSaves)
 local PlaneGenerator = require(ModuleDirectory.Systems.Map.PlaneGenerator)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
+local LavaManager = require(ModuleDirectory.Systems.Gameplay.LavaManager)
 
 --ServerConfigurations.MAX_PARTS_PER_FRAME_PER_LAYER
 
@@ -31,8 +32,14 @@ local function cloneAndPlaceBackground(mapData: MapSaves.MapSave): Model
 		error("Background model " .. newBackground.Name .. " is missing a PrimaryPart.")
 	end
 
+	local lavaPart = newBackground:FindFirstChild("Lava")
+	if lavaPart then
+		LavaManager.setLava(lavaPart)
+	end
+
 	newBackground:PivotTo(CFrame.new(mapData.originPosition or Vector3.new(0, 0, 0)))
 	newBackground.Parent = game.Workspace
+
 
 	return newBackground
 end
@@ -52,6 +59,10 @@ local function createAndAttachLayer(newMap: Map.Map, origin: Vector3, index: num
 	}
 
 	local newLayer = Layer.new(eachLayerConfig)
+	
+	local relativeHeight = newLayer.originPosition.Y - newMap.originPosition.Y
+	local layerOnHeight = newMap:getLayerAtHeight(relativeHeight)
+
 	newMap:addLayer(newLayer)
 	newLayer:setParentMap(newMap)
 	return newLayer
@@ -85,7 +96,6 @@ local function placeBlocksForPlaneData(
         origin.Z - halfHeight
     )
 
-
 	-- Throttle block creation so we don't spawn too many parts in one frame
 	local maxPerFrame = ServerConfigurations.MAX_PARTS_PER_FRAME_PER_LAYER
 	if maxPerFrame == nil or maxPerFrame <= 0 then
@@ -98,7 +108,7 @@ local function placeBlocksForPlaneData(
 		for y, eachPlaceInfo: PlaneGenerator.PlaceInfo in eachRow do
 			if eachPlaceInfo.place then
 				local newBlockConfig: Block.BlockConfig = {
-					material = params.material,
+					material = eachPlaceInfo.material or "grass",
 					worldPosition = originCorner
 						+ Vector3.new(
 							ServerConfigurations.BLOCK_SIZE * x,
@@ -110,7 +120,7 @@ local function placeBlocksForPlaneData(
 
 				local newBlock = Block.new(newBlockConfig)
 				newLayer:addBlock(newBlock, Vector2.new(x, y))
-				newBlock:setParentLayerId(newLayer)
+				newBlock:setParentLayer(newLayer)
 
 				placedThisFrame += 1
 				if placedThisFrame >= maxPerFrame then
@@ -125,9 +135,11 @@ end
 --yields
 function MapGenerator.generate(mapData: MapSaves.MapSave): Map.Map
 	local backgroundModel = cloneAndPlaceBackground(mapData)
+	print(backgroundModel)
 	local origin = resolveOriginAndPersist(mapData, backgroundModel)
 
 	local newMap = Map.new(origin)
+	newMap:setBackground(backgroundModel)
 
 	for index, eachLayerParams: MapSaves.LayerParams in (mapData.layerParams or {}) do
         local layerOrigin = Vector3.new(origin.X , origin.Y + eachLayerParams.height , origin.Z)
@@ -136,6 +148,8 @@ function MapGenerator.generate(mapData: MapSaves.MapSave): Map.Map
 		placeBlocksForPlaneData(newLayer, layerOrigin, eachLayerParams, planeData)
         
 	end
+
+	print(newMap)
 
 	return newMap
 end

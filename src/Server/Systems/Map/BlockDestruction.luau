@@ -3,25 +3,80 @@ local Block = require(ModuleDirectory.Systems.Map.Block)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local Config =require(game:GetService("ServerScriptService").ServerConfigurations)
-local Block = require(ModuleDirectory.Systems.Map.Block)
 local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
 local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
-local BlockDestructionTracker = require(ModuleDirectory.Systems.Map.BlockDestructionTracker)
+
+export type DestroyRecord = {
+    player: Player?,
+    time: number,
+    blockId: number
+}
 
 local BlockDestruction = {}
 
 local Agent
 
-function BlockDestruction.init()
-    
-    RemoteEventHandler.newEventConnection("REQUEST_DESTROY_BLOCK", BlockDestruction.destroyBlockFor)
-	Agent = require(ModuleDirectory.Systems.Agent.Agent)
+-- Destruction tracking
+local destroyCache: { [string]: DestroyRecord } = {} -- blockId -> record
+local playerCache: { [number]: { number } } = {} -- userId -> list of blockIds
 
+local function getUserId(p: Player?): number?
+    return p and p.UserId or nil
 end
 
-function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
+function BlockDestruction.reset()
+    table.clear(destroyCache)
+    table.clear(playerCache)
+end
+
+function BlockDestruction.getBlocksDestroyedByPlayer(playerOrUserId: Player | number): { number }
+    local userId = typeof(playerOrUserId) == "number" and (playerOrUserId :: number) or getUserId(playerOrUserId :: Player)
+    if not userId then
+        return {}
+    end
+    local list = playerCache[userId]
+    if not list then
+        return {}
+    end
+    return list
+end
+
+function BlockDestruction.getDestroyRecord(blockId: number): DestroyRecord?
+    return destroyCache[blockId]
+end
+
+local function blockDestroyed(blockId: number, player: Player?)
+	if blockId == nil then
+		warn("blockId cannot be nil.")
+		return
+	end
+
+    if destroyCache[blockId] then
+        return
+    end
+
+    local record: DestroyRecord = {
+        player = player,
+        time = time(),
+        blockId = blockId
+    }
+    destroyCache[blockId] = record
+
+    local userId = getUserId(player)
+    if userId then
+        local list = playerCache[userId]
+        if not list then
+            list = {}
+            playerCache[userId] = list
+        end
+        list[#list + 1] = blockId
+    end
+end
+
+--this function is only used for a direct block request from a player (aka they've clicked a block at close range and will break)
+local function destroyBlockRequest(player : Player , blockId : number)
 
 	print("destory request")
 
@@ -64,8 +119,8 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
 	if block then
 		local parentLayer = block:getParentLayer()
 	
-		BlockDestructionTracker.blockDestroyed(block.id , player)
-    	TileScoring.onBlockDestroyed(parentLayer.layerIndex , block.LayerPosition)
+		blockDestroyed(block.id , player)
+    	TileScoring.onBlockDestroyed(parentLayer.layerIndex , block.layerPosition)
 		block:destroy()
 	end
 
@@ -81,24 +136,32 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
     
 end
 
-function BlockDestruction.destroyBlockAgent(blockId : number) -- will only be called on server 
-	local blockToDestroy : Block.Block? = Block.get(blockId)
+function BlockDestruction.destroyBlock(block : number | Block.Block , fromPlayer : Player?) -- will only be called on server 
+	local blockToDestroy
+	if block == nil then
+		warn("Block to destroy cannot be nil must be a block instance or block.id.")
+	elseif typeof(block) == "string" or typeof(block) == "number" then
+		blockToDestroy = Block.get(block)
+	else
+		blockToDestroy = block
+	end
+
+	blockDestroyed(blockToDestroy.id , fromPlayer)
 
 	if blockToDestroy == nil then
-		warn("Agent destruction failed: block is nil")
+		warn("Destruction failed: block is nil")
 		return
 	end
 
-	if RoundSystem.getState() ~= "ACTIVE" and blockToDestroy.TutorialBlock == false then
-		return
-	end
+	blockToDestroy:destroy()
 
-	local blockPosition = blockToDestroy.Part.Position
-	Block.destroyById(blockId, Agent)
-	
-	RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION", blockId, blockToDestroy, blockPosition, nil, "spade")
 end
 
+function BlockDestruction.init()
+    
+    RemoteEventHandler.newEventConnection("REQUEST_DESTROY_BLOCK", destroyBlockRequest)
+	Agent = require(ModuleDirectory.Systems.Agent.Agent)
 
+end
 
 return BlockDestruction

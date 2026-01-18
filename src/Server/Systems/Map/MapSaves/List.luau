@@ -23,6 +23,10 @@ export type MapSaves = {
 	Desert: MapSave,
 }
 
+export type PlaceInfo = {
+	
+}
+
 local MapSaves = {
 	Grasslands = require(MapSaves.Grasslands),
 	Icefields = require(MapSaves.Icefields),

@@ -12,10 +12,8 @@ local AgentManager = {}
 local charAgent: { [Model]: Agent.Agent } = {}
 local agentDeathCallback
 
-function AgentManager.tick(a: Agent.Agent, deltaTime: number)
-	-- Currently no per-tick behaviour
-end
 
+--used for round manager
 function AgentManager.setOnAgentDeath(fn: (a: Agent.Agent) -> nil)
 	agentDeathCallback = fn
 end
@@ -40,23 +38,7 @@ function AgentManager.preDestroy(a: Agent.Agent)
 	a:destroy()
 end
 
-local function onAgentCompletedWander(a: Agent.Agent)
-	if a == nil or a.alive == false then
-		return
-	end
-
-	task.spawn(function()
-		if a.threatState == 0 then
-			task.wait(a.AgentConfig.wanderTime)
-		end
-
-		a:wander()
-	end)
-end
-
 function AgentManager.onLoaded()
-	Agent.setUpCallback(onAgentDied, onAgentCompletedWander)
-
 	RunService.Heartbeat:Connect(function(deltaTime)
 		for each_id, each in Agent.getAll() do
 			each:tick(deltaTime)

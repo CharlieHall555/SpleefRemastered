@@ -16,7 +16,12 @@ export type Map = {
     new: (originPosition: Vector3) -> Map,
     get: (id: string) -> Map?,
     addLayer: (self: Map, layer: Layer) -> nil,
+    removeLayer: (self: Map, layer: Layer) -> nil,
     getLayer: (self: Map, n: number) -> Layer?,
+    getLayerAtHeight: (self: Map, height: number) -> Layer?,
+    getClosestLayerTo: (self: Map, worldLayerHeight: number) -> Layer?,
+    snapPositionToGrid: (self: Map, worldPosition: Vector3) -> {layerIndex: number, layerPosition: Vector2},
+    getLayers: (self: Map) -> {Layer},
     getTopLayer: (self: Map) -> Layer?,
     getSize: (self: Map) -> Vector2,
     getRandomLayer: (self: Map) -> Layer?,
@@ -32,6 +37,7 @@ function Map.new(originPosition: Vector3): Map
     local self = setmetatable({}, Map)
     self.originPosition = originPosition
     self.layers = {}
+    self.background = nil
     self.count = 0
     self.id = HttpService:GenerateGUID(false)
     self.worldHeightToLayer = {}
@@ -39,22 +45,90 @@ function Map.new(originPosition: Vector3): Map
     return self
 end
 
+function Map.setBackground(self: Map , newBackground : Model?)
+    self.background = newBackground
+end
+
+function Map.getBackground(self: Map)
+    return self.background
+end
+
 function Map.get(id : string) : Map?
     return loadedMaps[id]
 end
 
+function Map.removeLayer(self : Map , layer : Layer) : nil
+    -- Remove from layers array
+    local idx = table.find(self.layers, layer)
+    if idx then
+        table.remove(self.layers, idx)
+        self.count -= 1
+    end
+    
+    -- Remove from worldHeightToLayer mapping
+    local height = layer.originPosition.Y - self.originPosition.Y
+    if self.worldHeightToLayer[height] == layer then
+        self.worldHeightToLayer[height] = nil
+    end
+end
+
+function Map.snapPositionToGrid(self: Map , worldPosition: Vector3) : {layerIndex : number , layerPosition : Vector2}
+    
+	local layer = self:getClosestLayerTo(worldPosition.Y)
+	assert(layer ~= nil, "[Map] snapPositionToGrid: No layer found")
+
+	local localX = worldPosition.X - self.originPosition.X
+	local localZ = worldPosition.Z - self.originPosition.Z
+
+	-- Tile size should be a constant or stored on map/layer
+	local tileSize = self.tileSize or layer.tileSize
+	assert(tileSize ~= nil, "[Map] snapPositionToGrid: Missing tileSize")
+
+	local gridX = math.floor((localX / tileSize) + 0.5)
+	local gridY = math.floor((localZ / tileSize) + 0.5)
+
+	return {
+		layerIndex = layer.layerIndex,
+		layerPosition = Vector2.new(gridX, gridY),
+	}
+    
+end
+
+function Map.getClosestLayerTo(self: Map , worldHeight: number): Layer?
+    local closestLayer: Layer? = nil
+    local closestDist = math.huge
+
+    for _, layer in self:getLayers() do
+        local layerY = layer.worldY -- or however you store it
+        local d = math.abs(worldHeight - layerY)
+
+        if d < closestDist then
+            closestDist = d
+            closestLayer = layer
+        end
+    end
+
+    return closestLayer
+end
+
 function Map.addLayer(self: Map, layer: Layer): nil
     table.insert(self.layers, layer)
-    if self.worldHeightToLayer[layer.originPosition.Y] then
-        warn("Layer already exists at this world height: " .. tostring(layer.originPosition.Y) .. " overwriting.")
-        self.worldHeightToLayer[layer.originPosition.Y] = layer
+    if self.worldHeightToLayer[layer.originPosition.Y - self.originPosition.Y] then
+        self.worldHeightToLayer[layer.originPosition.Y - self.originPosition.Y] = layer
+        warn("OVerwriting existing layer at height " .. tostring(layer.originPosition.Y - self.originPosition.Y))
+    else
+        self.worldHeightToLayer[layer.originPosition.Y - self.originPosition.Y] = layer
     end
   
     self.count += 1
 end
 
-function Map.getLayerAtWorldHeight(self : Map , worldHeight : number) : Layer?
-   return self.worldHeightToLayer[worldHeight]
+function Map.getLayerAtHeight(self : Map , height : number) : Layer?
+   return self.worldHeightToLayer[height]
+end
+
+function Map.getLayers(self: Map) : {Layer}
+    return self.layers
 end
 
 function Map.getLayer(self: Map, n: number): Layer?

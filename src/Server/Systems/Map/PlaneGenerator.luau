@@ -1,8 +1,9 @@
 export type PlaceInfo = {
-    place: boolean
+    place: boolean,
+    material: string?
 }
 
-export type Cell = "PLACE" | "EMPTY"
+export type Cell = {filled : "EMPTY | PLACE" , Material : string}
 
 export type PlaneCreationParams = {
     size: Vector2,
@@ -15,6 +16,18 @@ export type PlaneData = { [number]: { [number]: PlaceInfo } }
 local PlaneGenerator = {}
 PlaneGenerator.__index = PlaneGenerator
 
+local function getCell(params : PlaneCreationParams, x : number , y : number) : Cell?
+    if not params.tileMap then
+        return nil
+    end
+    
+    if params.tileMap[x] then
+        return params.tileMap[x][y]
+    end
+    
+    return nil
+end
+
 function PlaneGenerator.create(params: PlaneCreationParams): PlaneData
     local width = math.floor(params.size.X)
     local height = math.floor(params.size.Y)
@@ -22,15 +35,16 @@ function PlaneGenerator.create(params: PlaneCreationParams): PlaneData
 
     local planeGrid: PlaneData = {}
 
-    if shape == "Square" then
+    if shape == "SQUARE" then
         for x = 1, width do
             planeGrid[x] = {}
             for y = 1, height do
-                planeGrid[x][y] = { place = true }
+                local cell = getCell(params, x, y)
+                planeGrid[x][y] = { place = true, material = cell and cell.Material or nil }
             end
         end
 
-    elseif shape == "Circle" then
+    elseif shape == "CIRCLE" then
         local cx = (width + 1) / 2
         local cy = (height + 1) / 2
         local radius = math.min(width, height) / 2
@@ -41,11 +55,12 @@ function PlaneGenerator.create(params: PlaneCreationParams): PlaneData
                 local dx = x - cx
                 local dy = y - cy
                 local inside = (dx * dx + dy * dy) <= (radius * radius)
-                planeGrid[x][y] = { place = inside }
+                local cell = getCell(params, x, y)
+                planeGrid[x][y] = { place = inside, material = cell and cell.Material or nil }
             end
         end
 
-    elseif shape == "Override" then
+    elseif shape == "TILEMAP" then
         local tileMap = params.tileMap
         if not tileMap then
             error("PlaneFactory.create: shape 'Override' requires params.tileMap")
@@ -54,26 +69,28 @@ function PlaneGenerator.create(params: PlaneCreationParams): PlaneData
         -- Build from tileMap, ignoring size if dimensions differ
         for x, col in pairs(tileMap) do
             planeGrid[x] = {}
-            for y, tile in pairs(col) do
-                planeGrid[x][y] = { place = (tile == "PLACE") }
+            for y, cell in pairs(col) do
+                planeGrid[x][y] = { place = (cell.filled == "PLACE"), material = cell.Material }
             end
         end
 
-    elseif shape == "Checked_Even" then
+    elseif shape == "CHECKED_EVEN" then
         for x = 1, width do
             planeGrid[x] = {}
             for y = 1, height do
                 local isEven = ((x + y) % 2) == 0
-                planeGrid[x][y] = { place = isEven }
+                local cell = getCell(params, x, y)
+                planeGrid[x][y] = { place = isEven, material = cell and cell.Material or nil }
             end
         end
 
-    elseif shape == "Checked_Odd" then
+    elseif shape == "CHECKED_ODD" then
         for x = 1, width do
             planeGrid[x] = {}
             for y = 1, height do
                 local isOdd = ((x + y) % 2) == 1
-                planeGrid[x][y] = { place = isOdd }
+                local cell = getCell(params, x, y)
+                planeGrid[x][y] = { place = isOdd, material = cell and cell.Material or nil }
             end
         end
 

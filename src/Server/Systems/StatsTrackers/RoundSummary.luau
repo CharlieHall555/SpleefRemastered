@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local BlockDestructionTracker = require(ModuleDirectory.Systems.Map.BlockDestructionTracker)
+local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
 local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 local EliminationTracker = require(ModuleDirectory.Systems.Stats.EliminationTracker)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
@@ -88,7 +88,7 @@ function RoundSummary.onRoundEnd(round: RoundSystem.Round, winner: Player?)
             local tAlive = math.max(0, (aliveUntil - round.startTime))
             tAlive = math.min(tAlive, roundEnd - round.startTime)
 
-            local blocks = count(BlockDestructionTracker.getBlocksDestroyedByPlayer(eachPlayer))
+            local blocks = count(BlockDestruction.getBlocksDestroyedByPlayer(eachPlayer))
             local elims = count(EliminationTracker.getElimationsFor(eachPlayer))
 
             -- Compute rewards (coins use explicit winner bonus)

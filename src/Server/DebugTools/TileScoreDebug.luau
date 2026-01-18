@@ -160,7 +160,7 @@ function TileScoreDebug.displayDebug(tileScoreInfo: any, layerY: number?, center
 			end
 
 			for posKey, score in pairs(layerTable) do
-				local pos2 = VectorUtil.DeserializeVector2(posKey)
+				local pos2 = VectorUtil.deserializeVector2(posKey)
 				local tilePos = snap2(pos2)
 
 				local bid = score.blockId
@@ -189,7 +189,7 @@ function TileScoreDebug.displayDebug(tileScoreInfo: any, layerY: number?, center
 
 		for offsetKey, score in pairs(tileScoreInfo) do
 			if score ~= false and score ~= nil then
-				local offset = VectorUtil.DeserializeVector2(offsetKey)
+				local offset = VectorUtil.deserializeVector2(offsetKey)
 				local tilePos = snap2(center + offset)
 
 				local bid = score.blockId

@@ -12,6 +12,8 @@ local SnowballAmmoPickup = require(ModuleDirectory.Systems.Ammo.SnowballAmmoPick
 local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
+local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
+
 
 local _lastSnowballFired: { [number]: number } = {} -- userId -> last fire timestamp
 
@@ -43,7 +45,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 			return
 		end
 
-		Block.destroyById(blockId, throwable.owner)
+		BlockDestruction.destroyBlock(blockId, throwable.owner)
 		if throwable.owner and PlayersInGame.isAlive(throwable.owner) then
 			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
 		end

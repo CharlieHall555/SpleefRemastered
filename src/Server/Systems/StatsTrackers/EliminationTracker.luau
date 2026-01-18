@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local BlockDestructionTracker = require(ModuleDirectory.Systems.Map.BlockDestructionTracker)
+local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
 local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 local TouchedBlockTracker = require(ModuleDirectory.Systems.Stats.TouchedBlockTracker)
 local KnockbackTracker = require(ModuleDirectory.Systems.Stats.KnockbackTracker)
@@ -51,7 +51,7 @@ local function resolveTileBreakKO(victim: Player, deathTime: number): Player?
 
     for _, touch in ipairs(touches) do
         if touch and touch.blockId and touch.time then
-            local record = BlockDestructionTracker.getDestroyRecord(touch.blockId)
+            local record = BlockDestruction.getDestroyRecord(touch.blockId)
             if record and record.time and record.player and record.player ~= victim then
                 local breakDt = deathTime - record.time
                 local touchedBeforeBreakOk = (not REQUIRE_TOUCH_BEFORE_BREAK) or (record.time >= touch.time)
