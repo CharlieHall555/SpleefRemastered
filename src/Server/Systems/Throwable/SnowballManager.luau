@@ -3,9 +3,7 @@ local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local ThrowableManager = require(ModuleDirectory.Systems.Throwable.ThrowableManager)
 local Throwable = require(ModuleDirectory.Systems.Throwable.Throwable)
-local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
 local Block = require(ModuleDirectory.Systems.Map.Block)
-local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
 local SnowballManager = {}
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
@@ -34,7 +32,7 @@ end
 function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult , active : boolean)
 	local blockId = hit.Instance:GetAttribute("Id")
 	if blockId then
-		local block: Block.Block = LoadedBlocks[blockId]
+		local block: Block.Block = Block.get(blockId)
 		local blockPosition = hit.Instance.Position
 
 		if active == false and hit.Instance:HasTag("TutorialBlock") == false then
@@ -45,7 +43,7 @@ function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResul
 			return
 		end
 
-		BlockFactory.destroyById(blockId, throwable.owner)
+		Block.destroyById(blockId, throwable.owner)
 		if throwable.owner and PlayersInGame.isAlive(throwable.owner) then
 			Onboarding.action(throwable.owner, "SNOWBALL_BROKEN_BLOCK")
 		end

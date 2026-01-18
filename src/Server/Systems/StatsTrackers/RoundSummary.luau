@@ -1,5 +1,5 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local BlockDestructionTracker = require(ModuleDirectory.Systems.Gameplay.BlockDestructionTracker)
+local BlockDestructionTracker = require(ModuleDirectory.Systems.Map.BlockDestructionTracker)
 local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 local EliminationTracker = require(ModuleDirectory.Systems.Stats.EliminationTracker)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)

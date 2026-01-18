@@ -1,11 +1,7 @@
 --!strict
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
-local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
-
-local function getBlcokFromId(id: number)
-	return LoadedBlocks[id]
-end
+local Block = require(ModuleDirectory.Systems.Map.Block)
 
 local TileScoreDebug = {}
 
@@ -172,7 +168,7 @@ function TileScoreDebug.displayDebug(tileScoreInfo: any, layerY: number?, center
 					continue
 				end
 
-				local blockData = getBlcokFromId(bid)
+				local blockData = Block.get(bid)
 				local adornee: BasePart? = blockData and blockData.Part
 
 				if adornee and adornee:IsA("BasePart") then
@@ -201,7 +197,7 @@ function TileScoreDebug.displayDebug(tileScoreInfo: any, layerY: number?, center
 					continue
 				end
 
-				local blockData = getBlcokFromId(bid)
+				local blockData = Block.get(bid)
 				local adornee: BasePart? = blockData and blockData.Part
 
 				if adornee and adornee:IsA("BasePart") then

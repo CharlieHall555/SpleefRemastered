@@ -2,24 +2,20 @@ export type PlaceInfo = {
     place: boolean
 }
 
-export type Tile = "PLACE" | "EMPTY"
+export type Cell = "PLACE" | "EMPTY"
 
 export type PlaneCreationParams = {
     size: Vector2,
     shape: "Circle" | "Square" | "Override" | "Checked_Even" | "Checked_Odd",
-    tileMap: ({ [number]: { [number]: Tile } })?,
-    height : number,
-    spwans_ammo : boolean,
-    material : string,
+    tileMap: ({ [number]: { [number]: Cell } })?,
 }
 
 export type PlaneData = { [number]: { [number]: PlaceInfo } }
 
+local PlaneGenerator = {}
+PlaneGenerator.__index = PlaneGenerator
 
-local PlaneFactory = {}
-PlaneFactory.__index = PlaneFactory
-
-function PlaneFactory.create(params: PlaneCreationParams): PlaneData
+function PlaneGenerator.create(params: PlaneCreationParams): PlaneData
     local width = math.floor(params.size.X)
     local height = math.floor(params.size.Y)
     local shape = params.shape
@@ -88,4 +84,4 @@ function PlaneFactory.create(params: PlaneCreationParams): PlaneData
     return planeGrid
 end
 
-return PlaneFactory
+return PlaneGenerator

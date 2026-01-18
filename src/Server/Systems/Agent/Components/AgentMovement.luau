@@ -1,16 +1,12 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local Agent
 
-local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
-local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
-local MapUtilities = require(ModuleDirectory.Systems.Map.MapUtilities)
 local AgentAnimations = require(ModuleDirectory.Systems.Agent.AgentAnimations)
 local AgentUtil = require(ModuleDirectory.Systems.Agent.AgentUtil)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
 local Pathfinding = require(ModuleDirectory.Systems.Agent.Pathfinding)
 local Block = require(ModuleDirectory.Systems.Map.Block)
-local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 
 local PathfindingService = game:GetService("PathfindingService")
 
@@ -23,38 +19,7 @@ end
 -- This will be set to TileScoring.getScoresAt during Agent.init()
 Movement.getScoresAt = nil
 
-local function worldToGrid2(world: Vector3): Vector2
-	-- snapTile2 returns whatever your grid coord is (looks like Vector2)
-	return MapUtilities.snapTile2(world)
-end
 
-local function blockToWaypointWorld(block: Block.Block): Vector3?
-	if not block or not block.Part then
-		return nil
-	end
-	return block:getWorldPosition() + Vector3.new(0, 5, 0)
-end
-
-local function getLayerObjectFromAgent(agent: Agent.Agent, originWorld: Vector3)
-	local layerY = MapUtilities.getLayerFromAgentPos(originWorld)
-	local map = MapUtilities.getCurrentMap()
-	if not map then warn("no map set"); return nil end
-	print(layerY , "LayerY")
-
-	local groupedLayers = LayerUtilities.groupLayers(map.layers)
-	return LayerUtilities.getLayer(groupedLayers, layerY)
-end
-local function worldToGrid2(world: Vector3): Vector2
-	-- snapTile2 returns whatever your grid coord is (looks like Vector2)
-	return MapUtilities.snapTile2(world)
-end
-
-local function blockToWaypointWorld(block: Block.Block): Vector3?
-	if not block or not block.Part then
-		return nil
-	end
-	return block:getWorldPosition() + Vector3.new(0, 5, 0)
-end
 
 -- Safely disconnect movement and set idle animation
 local function disconnectMove(agent)
@@ -157,7 +122,7 @@ local function chooseSubGoal(agent, originWorld, layerY, originTile)
 				local key = VectorUtil.SerializeVector2(Vector2.new(ox, oy))
 				local tileScore = scores[key]
 				if tileScore and tileScore.blockId then
-					local blk = LoadedBlocks[tileScore.blockId]
+					local blk = Block.get(tileScore.blockId)
 					if blk and blk.Part then
 						local subgoalPos = blk:getWorldPosition() + Vector3.new(0, 5, 0)
 						AgentUtil.placeStamp(agent, "subgoal", subgoalPos, Color3.new(0.011764, 0.231372, 0.741176))
@@ -182,7 +147,7 @@ local function subGoalScore(agent, tileScore)
 		return 0
 	end
 
-	local blk = LoadedBlocks[tileScore.blockId]
+	local blk = Block.get(tileScore.blockId)
 	if not blk or not blk.Part then
 		return 0
 	end
@@ -207,7 +172,7 @@ local function getForwardDir(agent: Agent.Agent): Vector3
 end
 
 local function forwardBiasScore(agent: Agent.Agent, originWorld: Vector3, tileScore): number
-	local blk = tileScore.blockId and LoadedBlocks[tileScore.blockId]
+	local blk = tileScore.blockId and Block.get(tileScore.blockId)
 	if not blk or not blk.Part then
 		return 0
 	end
@@ -338,7 +303,7 @@ function Movement.wander(agent: Agent.Agent)
 		return nil
 	end
 
-	local targetBlock = LoadedBlocks[bestTargetBlockId]
+	local targetBlock = Block.get(bestTargetBlockId)
 	if not targetBlock or not targetBlock.Part then
 		print("[Movement.wander] best target block not found or has no part")
 		fireWanderComplete(agent)
@@ -346,7 +311,10 @@ function Movement.wander(agent: Agent.Agent)
 	end
 
 	local targetWorld = targetBlock:getWorldPosition() + Vector3.new(0, 5, 0)
-
+	
+	if 1 == 1 then
+		return
+	end
 	-- Compute path (same as before)
 	-- === Custom grid pathfinding ===
 	local startGrid = worldToGrid2(originWorld)

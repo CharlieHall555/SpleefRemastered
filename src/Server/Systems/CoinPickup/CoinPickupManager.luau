@@ -131,9 +131,9 @@ local function trySpawnOne(): boolean
         tries += 1
         local block : Block.Block = layer:getRandomBlock()
         local spawnGridPos = Vector3.new(
-                block.LayerPosition.X,
-                layer._id,
-                block.LayerPosition.Y
+                block.layerPosition.X,
+                layer.originPosition.Y,
+                block.layerPosition.Y
             )
         if block and block.Part and block.Part:IsA("BasePart") and SnowballPickupManager.isPositionFree(spawnGridPos) and CoinPickupManager.isPositionFree(spawnGridPos) then
             local pos = block.Part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)

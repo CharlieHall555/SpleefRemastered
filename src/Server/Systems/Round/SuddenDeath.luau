@@ -2,7 +2,7 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local Map = require(ModuleDirectory.Systems.Map.Map)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
-local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
+local Block = require(ModuleDirectory.Systems.Map.Block)
 
 local isActive = false
 
@@ -51,7 +51,7 @@ function SuddenDeath.destroyRandomBlock(map: Map.Map): nil
     end
     local randomBlock = randomLayer:getRandomBlock()
     if randomBlock then
-        BlockFactory.slowDestroy(randomBlock)
+        Block.slowDestroy(randomBlock)
     end
 end
 

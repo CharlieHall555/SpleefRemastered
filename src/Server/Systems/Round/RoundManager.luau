@@ -4,9 +4,9 @@ local TeleportManager = require(ModuleDirectory.Systems.Round.TeleportManager)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local Timer = require(ModuleDirectory.Timer)
 local MapGenerator = require(ModuleDirectory.Systems.Map.MapGenerator)
-local MapDataFactory = require(ModuleDirectory.Systems.Map.MapDataFactory)
+local MapSaves = require(ModuleDirectory.Systems.Map.MapSaves)
 local SuddenDeath = require(ModuleDirectory.Systems.Round.SuddenDeath)
-local BlockFactory = require(ModuleDirectory.Systems.Map.BlockFactory)
+local Block = require(ModuleDirectory.Systems.Map.Block)
 local currentMap = nil
 local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
 local WinnerDetection = require(ModuleDirectory.Systems.Stats.WinnerDetection)
@@ -16,11 +16,10 @@ local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
 local AmmoPickupManager = require(ModuleDirectory.Systems.Ammo.AmmoPickupManager)
 local ToolManager = require(ModuleDirectory.Systems.Tool.ToolManager)
 local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
-local MapSaves = require(ModuleDirectory.Systems.Map.Saves)
 local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local ServerStatus = require(ModuleDirectory.ServerStatus)
 local MapSelection = require(ModuleDirectory.Systems.Round.MapSelection)
-local BlockDestructionTracker = require(ModuleDirectory.Systems.Gameplay.BlockDestructionTracker)
+local BlockDestructionTracker = require(ModuleDirectory.Systems.Map.BlockDestructionTracker)
 local ClearLobby = require(ModuleDirectory.Systems.Round.ClearLobby)
 local WinBadgeHandler = require(ModuleDirectory.Services.Badges.WinBadgeHandler)
 local KnockbackTracker = require(ModuleDirectory.Systems.Stats.KnockbackTracker)
@@ -37,7 +36,6 @@ local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local TutorialManager = require(ModuleDirectory.Systems.Tutorial.TutorialManager)
 local AgentManager = require(ModuleDirectory.Systems.Agent.AgentManager)
 local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
-local MapUtilities = require(ModuleDirectory.Systems.Map.MapUtilities)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -64,7 +62,9 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 
 
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
-	currentMap = MapGenerator.generate(MapSaves[MapSelection.getNextMap()])
+	local nextMapData = MapSaves.getMap(MapSelection.getNextMap())
+	currentMap = MapGenerator.generate(nextMapData)
+	print("CurrentMap" , currentMap)
 	print("MapSpawn: @" .. VectorUtil.SerializeVector3(currentMap.originPosition))
 	task.wait(1)
 
@@ -73,7 +73,6 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 	end
 
 	TileScoring.setCurrentMap(currentMap)
-	MapUtilities.setCurrentMap(currentMap)
 
 	if Config.BOTS_ACTIVE then
 		local agentsToFill = Config.TARGET_PLAYER_COUNT - #currentRound.startingPlayers
@@ -100,10 +99,17 @@ local function onRoundPreparing(currentRound) -- and then this
 
 	for _, eachPlayer in PlayersInGame.getActivePlayers() do
 		local topLayer = currentMap:getTopLayer()
+		if not topLayer then
+			warn("[RoundManager] Failed to get top layer for player teleport:", eachPlayer.Name)
+			continue
+		end
+		
 		local randomBlock = topLayer:getRandomBlock()
 		local Position = Vector3.new(0, 150, 0)
 		if randomBlock then
-			Position = randomBlock.Part.Position + Vector3.new(0, 15, 0)
+			Position = randomBlock:getWorldPosition() + Vector3.new(0, 15, 0)
+		else
+			warn("[RoundManager] No random block available for player:", eachPlayer.Name)
 		end
 		TeleportManager.teleport(eachPlayer, Position)
 	end
@@ -118,22 +124,28 @@ end
 local function onRoundEnding(currentRound)
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
-	--ToolManager.reset()
 	AmmoPickupManager.stop()
 	TileScoring.stop()
 
 	AmmoManager.reset()
 	RespawnManager.onRoundEnd()
 	RespawnManager.setMap(nil)
-	BlockFactory.stopAllTweens()
+	Block.stopAllTweens()
 	local Winner
 	if ServerStatus.get() == "OK" then
 		Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
-		Onboarding.action(Winner, "WON")
 		if Winner then
+			Onboarding.action(Winner, "WON")
 			--pcall(PodiumManager.setChar , Winner)
-			PlayerData.incrementWins(Winner, 1)
-			LeaderboardUpdater.incrementWins(Winner.UserId, 1)
+			
+			local success, err = pcall(function()
+				PlayerData.incrementWins(Winner, 1)
+				LeaderboardUpdater.incrementWins(Winner.UserId, 1)
+			end)
+			if not success then
+				warn("[RoundManager] Failed to increment wins for winner:", Winner.Name, "Error:", err)
+			end
+			
 			local totalWins = PlayerData.getWins(Winner)
 			Leaderstats.updateStat(Winner, "Wins", totalWins)
 			WinBadgeHandler.playerAwardedWin(Winner, totalWins)
@@ -153,7 +165,14 @@ local function onRoundEnding(currentRound)
 	BlockDestructionTracker.reset()
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
 	task.wait()
-	currentMap:Destroy()
+	
+	local success, err = pcall(function()
+		currentMap:destroy()
+	end)
+	if not success then
+		warn("[RoundManager] Failed to destroy map:", err)
+	end
+	
 	PlayerDeathDetector.clearCache()
 
 	task.wait(1)
@@ -170,7 +189,13 @@ local function onRoundActive(currentRound)
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
 	AmmoPickupManager.start(currentMap)
 	CoinPickupManager.start(currentMap)
-	ClearLobby.clear()
+	
+	local success, err = pcall(function()
+		ClearLobby.clear()
+	end)
+	if not success then
+		warn("[RoundManager] Failed to clear lobby:", err)
+	end
 end
 
 function RoundManager.init(): nil
@@ -186,7 +211,18 @@ function RoundManager.init(): nil
 	RoundSystem.connectActive(onRoundActive)
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
 	AgentManager.setOnAgentDeath(RoundManager.onAgentDeath)
-	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
+	
+	LobbySpawn = game.Workspace:WaitForChild("Lobby", 10)
+	if not LobbySpawn then
+		warn("[RoundManager] Failed to find Lobby in Workspace")
+		return
+	end
+	
+	LobbySpawn = LobbySpawn:WaitForChild("SpawnLocation", 10)
+	if not LobbySpawn then
+		warn("[RoundManager] Failed to find SpawnLocation in Lobby")
+		return
+	end
 
 	RemoteEventHandler.newEventConnection("QUERY_SERVER_STATE", function(player)
 		return RoundSystem.getState()

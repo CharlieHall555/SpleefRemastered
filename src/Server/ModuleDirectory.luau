@@ -109,25 +109,13 @@ ModuleDirectory.Systems.Map = {}
 ModuleDirectory.Systems.Map.Block = serverRoot.Systems.Map.Model.Block
 ModuleDirectory.Systems.Map.Layer = serverRoot.Systems.Map.Model.Layer
 ModuleDirectory.Systems.Map.Map = serverRoot.Systems.Map.Model.Map
-ModuleDirectory.Systems.Map.Obstacle = serverRoot.Systems.Map.Model.Obstacle
-ModuleDirectory.Systems.Map.MapUtilities = serverRoot.Systems.Map.MapUtilities
-ModuleDirectory.Systems.Map.Saves = serverRoot.Systems.Map.MapSaves.List
+ModuleDirectory.Systems.Map.MapSaves = serverRoot.Systems.Map.MapSaves.List
 ModuleDirectory.Systems.Map.Materials = serverRoot.Systems.Map.MapSaves.Materials
-
--- Factories
-ModuleDirectory.Systems.Map.BlockFactory = serverRoot.Systems.Map.BlockFactory
-ModuleDirectory.Systems.Map.PlaneFactory = serverRoot.Systems.Map.PlaneFactory
-ModuleDirectory.Systems.Map.LayerFactory = serverRoot.Systems.Map.LayerFactory
-ModuleDirectory.Systems.Map.MapDataFactory = serverRoot.Systems.Map.MapDataFactory
-ModuleDirectory.Systems.Map.ObstacleFactory = serverRoot.Systems.Map.ObstacleFactory
-
--- Builders / Generators
-ModuleDirectory.Systems.Map.MapBuilder = serverRoot.Systems.Map.MapBuilder
+ModuleDirectory.Systems.Map.PlaneGenerator = serverRoot.Systems.Map.PlaneGenerator
 ModuleDirectory.Systems.Map.MapGenerator = serverRoot.Systems.Map.MapGenerator
+ModuleDirectory.Systems.Map.BlockDestruction = serverRoot.Systems.Map.BlockDestruction
 
 -- Loaded
-ModuleDirectory.Systems.Map.LoadedBlocks = serverRoot.Systems.Map.Loaded.Block
-ModuleDirectory.Systems.Map.LoadedLayers = serverRoot.Systems.Map.Loaded.Layer
 
 --//====================================================
 --// Ammo System
@@ -141,10 +129,9 @@ ModuleDirectory.Systems.Ammo.AmmoManager = serverRoot.Systems.Ammo.AmmoManager
 --// Gameplay (OtherGameplay + Services used in gameplay)
 --//====================================================
 ModuleDirectory.Systems.Gameplay = {}
-ModuleDirectory.Systems.Gameplay.BlockDestructionTracker = serverRoot.Systems.OtherGameplay.BlockDestructionTracker
+ModuleDirectory.Systems.Map.BlockDestructionTracker = serverRoot.Systems.OtherGameplay.BlockDestructionTracker
 ModuleDirectory.Systems.Gameplay.ServerHitBoxManager = serverRoot.Systems.OtherGameplay.ServerHitBoxManager
 ModuleDirectory.Systems.Gameplay.KnockBackManager = serverRoot.Systems.OtherGameplay.KnockbackManager
-ModuleDirectory.Systems.Gameplay.BlockDestruction = serverRoot.Systems.OtherGameplay.BlockDestruction
 ModuleDirectory.Systems.Gameplay.LavaManager = serverRoot.Systems.OtherGameplay.LavaManager
 ModuleDirectory.Systems.Gameplay.SpawnProtectionManager = serverRoot.Systems.OtherGameplay.SpawnProtectionManager
 ModuleDirectory.Systems.Gameplay.RespawnManager = serverRoot.Systems.OtherGameplay.RespawnManager
@@ -256,7 +243,7 @@ ModuleDirectory.ListUtil = sharedRoot.Utilities.ListUtil
 ModuleDirectory.LogHandler = sharedRoot.Utilities.LogHandler
 ModuleDirectory.KnockbackUtilities = sharedRoot.Utilities.KnockbackUtilities
 ModuleDirectory.Set = sharedRoot.Utilities.Set
-ModuleDirectory.LayerUtilities = sharedRoot.Utilities.LayerUtilities
+
 
 -- Shared definitions / lists
 ModuleDirectory.ProductList = sharedRoot.ProductsList

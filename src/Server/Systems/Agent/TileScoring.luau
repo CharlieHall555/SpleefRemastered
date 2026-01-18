@@ -1,21 +1,17 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
-local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local TileScoreDebug = require(ModuleDirectory.DebugTools.TileScoreDebug)
-
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local TouchedBlockTracker = require(ModuleDirectory.Systems.Stats.TouchedBlockTracker)
 
-local LoadedLayers = require(ModuleDirectory.Systems.Map.LoadedLayers)
-local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
+local Map , Layer , Block
 
 local TileScoring = {}
 
-local currentMap = nil
-local groupedLayers: { [number]: {} } = {}
 
--- IMPORTANT: keys are layerY (e.g. 15, 30, 45)
+local currentMap = nil
+
 local combinedLayer: { [number]: { [string]: {} } } = {}
 local scoreGrid: { [number]: { [string]: any } } = {}
 local neighborCount: { [number]: { [string]: number } } = {}
@@ -116,12 +112,12 @@ local function calcProxScores()
 		end
 
 		local first = records[1]
-		local currentBlock = LoadedBlocks[first.blockId]
+		local currentBlock = Block.get(first.blockId)
 		if not currentBlock then
 			continue
 		end
 
-		local loadedLayer = LoadedLayers[currentBlock._LayerId]
+		local loadedLayer = Layer.get(currentBlock._LayerId)
 		if not loadedLayer then
 			continue
 		end
@@ -238,13 +234,6 @@ end
 
 function TileScoring.setCurrentMap(cMap)
 	currentMap = cMap
-	groupedLayers = LayerUtilities.groupLayers(currentMap.layers)
-
-	-- combineLayers must also be keyed by layerY for this to work (sounds like it is)
-	combinedLayer = LayerUtilities.combineLayers(currentMap.layers)
-
-	initScoreGrid()
-	initNeighborCount()
 end
 
 function TileScoring.onBlockDestroyed(layerY: number, blockPosition: Vector2)
@@ -337,6 +326,14 @@ end
 
 function TileScoring.stop()
 	roundActive = false
+end
+
+function TileScoring.init()
+
+	Layer = require(ModuleDirectory.Systems.Map.Layer)
+	Map = require(ModuleDirectory.Systems.Map.Map)
+	Block = require(ModuleDirectory.Systems.Map.Block)
+	
 end
 
 return TileScoring
