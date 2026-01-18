@@ -8,9 +8,9 @@ local MapUtilities = require(ModuleDirectory.Systems.Map.MapUtilities)
 local AgentAnimations = require(ModuleDirectory.Systems.Agent.AgentAnimations)
 local AgentUtil = require(ModuleDirectory.Systems.Agent.AgentUtil)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
-
---AgentAnimations.running(agent)
---AgentAnimations.idle(agent)
+local Pathfinding = require(ModuleDirectory.Systems.Agent.Pathfinding)
+local Block = require(ModuleDirectory.Systems.Map.Block)
+local LayerUtilities = require(ModuleDirectory.LayerUtilities)
 
 local PathfindingService = game:GetService("PathfindingService")
 
@@ -20,9 +20,43 @@ function Movement.init()
 	Agent = require(ModuleDirectory.Systems.Agent.Agent)
 end
 
-Movement.getScoresAt = nil --this will be set to the TileScoring.getScoresAt function during Agent.init()
+-- This will be set to TileScoring.getScoresAt during Agent.init()
+Movement.getScoresAt = nil
 
--- internal: disconnect safely
+local function worldToGrid2(world: Vector3): Vector2
+	-- snapTile2 returns whatever your grid coord is (looks like Vector2)
+	return MapUtilities.snapTile2(world)
+end
+
+local function blockToWaypointWorld(block: Block.Block): Vector3?
+	if not block or not block.Part then
+		return nil
+	end
+	return block:getWorldPosition() + Vector3.new(0, 5, 0)
+end
+
+local function getLayerObjectFromAgent(agent: Agent.Agent, originWorld: Vector3)
+	local layerY = MapUtilities.getLayerFromAgentPos(originWorld)
+	local map = MapUtilities.getCurrentMap()
+	if not map then warn("no map set"); return nil end
+	print(layerY , "LayerY")
+
+	local groupedLayers = LayerUtilities.groupLayers(map.layers)
+	return LayerUtilities.getLayer(groupedLayers, layerY)
+end
+local function worldToGrid2(world: Vector3): Vector2
+	-- snapTile2 returns whatever your grid coord is (looks like Vector2)
+	return MapUtilities.snapTile2(world)
+end
+
+local function blockToWaypointWorld(block: Block.Block): Vector3?
+	if not block or not block.Part then
+		return nil
+	end
+	return block:getWorldPosition() + Vector3.new(0, 5, 0)
+end
+
+-- Safely disconnect movement and set idle animation
 local function disconnectMove(agent)
 	if agent.moveConnection then
 		agent.moveConnection:Disconnect()
@@ -31,20 +65,31 @@ local function disconnectMove(agent)
 	AgentAnimations.idle(agent)
 end
 
-local function randomNoise(baseScore)
-	return baseScore + (math.random() - 0.5) * 0.25
+local function applyScoreNoise(agent: Agent.Agent, baseScore: number): number
+	local amp = agent.AgentConfig.scoreNoiseAmp
+	if amp == nil or amp <= 0 then
+		return baseScore
+	end
+
+	-- symmetric noise in [-amp, +amp]
+	local noise = (math.random() * 2 - 1) * amp
+	return baseScore + noise
 end
 
--- internal: fire wander complete callback if present
-local function fireWanderComplete(agent)
-	-- callback is stored on the Agent module table (set by Agent.setUpCallback)
+-- Fire wander complete callback if present
+local function fireWanderComplete(agent: Agent.Agent)
 	AgentAnimations.idle(agent)
-	if agent.onWanderCompleteCallback then
-		task.defer(agent.onWanderCompleteCallback, agent)
+	if agent.onWanderCompleteCallback and agent.alive then
+		-- Temporarily clear callback to prevent re-entrancy
+		local callback = agent.onWanderCompleteCallback
+		agent.onWanderCompleteCallback = nil
+		task.defer(function()
+			callback(agent)
+		end)
 	end
 end
 
--- internal: centralised waypoint handler
+-- Handle waypoint reached event
 local function reachedWaypoint(agent: Agent.Agent, reached: boolean)
 	-- If we don't have a humanoid or agent is dead, stop
 	if agent == nil or agent.alive == false or agent.humanoid == nil then
@@ -148,7 +193,7 @@ local function subGoalScore(agent, tileScore)
 	-- turn distance into a 0..1-ish attraction (tweak 20 to taste)
 	local attraction = 1 / (1 + (d / 20))
 
-	return attraction * (agent.subGoalWeight or 0.6)
+	return attraction * agent.AgentConfig.subGoalWeight
 end
 
 local function getForwardDir(agent: Agent.Agent): Vector3
@@ -189,9 +234,9 @@ local function forwardBiasScore(agent: Agent.Agent, originWorld: Vector3, tileSc
 
 	-- Optional: make it "mostly forward" by squashing sideways
 	-- Raising to a power > 1 favours high values more.
-	mapped = mapped ^ (agent.forwardBiasPower)
+	mapped = mapped ^ agent.AgentConfig.forwardBiasPower
 
-	return mapped * (agent.forwardBiasWeight)
+	return mapped * agent.AgentConfig.forwardBiasWeight
 end
 
 function Movement.wander(agent: Agent.Agent)
@@ -208,10 +253,16 @@ function Movement.wander(agent: Agent.Agent)
 
 	-- choose best scoring tile within radius (block distance = grid offsets)
 	local originWorld = agent.model.PrimaryPart.Position
-	local originTile = MapUtilities.snapTile2(originWorld)
-	local layerY = MapUtilities.getLayerFromAgentPos(originWorld) -- should return 15/30/45 etc
 
-	local radius = math.ceil(agent.wanderRadius / ServerConfigurations.BLOCK_SIZE)
+	local s, originTile, layerY = pcall(function()
+		return MapUtilities.snapTile2(originWorld), MapUtilities.getLayerFromAgentPos(originWorld)
+	end)
+
+	if not s then
+		warn("something went wrong here")
+		return
+	end
+	local radius = math.ceil(agent.AgentConfig.wanderRadius / ServerConfigurations.BLOCK_SIZE)
 	local offsetScores = Movement.getScoresAt(layerY, originTile, radius) -- keyed by offset Vector2
 
 	-- If nothing returned, bail
@@ -248,18 +299,18 @@ function Movement.wander(agent: Agent.Agent)
 				end
 
 				local prox = tileScore.ProxScore
-				if agent.threatState == 1 and agent.aggressive == 0 then
-					prox = -prox
+
+				if agent.threatState == 1 then
+					prox = prox * (2 * agent.AgentConfig.aggression - 1)
 				end
 
 				local base = tileScore.NeighborScore + prox
 
 				local goal = subGoalScore(agent, tileScore)
 
-				-- Blend: you can also multiply ProxScore down slightly if you want
 				local fwd = forwardBiasScore(agent, originWorld, tileScore)
 				local s = base + goal + fwd
-				s = randomNoise(s) -- scoring
+				s = applyScoreNoise(agent, s)
 
 				if s > bestTileScore + 1e-6 then
 					bestTileScore = s
@@ -297,28 +348,47 @@ function Movement.wander(agent: Agent.Agent)
 	local targetWorld = targetBlock:getWorldPosition() + Vector3.new(0, 5, 0)
 
 	-- Compute path (same as before)
-	local path = PathfindingService:CreatePath({
-		AgentRadius = 3,
-		AgentHeight = 6,
-		AgentCanJump = false,
-		WaypointSpacing = 5,
-	})
-	path:ComputeAsync(originWorld, targetWorld)
+	-- === Custom grid pathfinding ===
+	local startGrid = worldToGrid2(originWorld)
+	local goalGrid = worldToGrid2(targetWorld)
 
-	if path.Status ~= Enum.PathStatus.Success then
+	-- get the Layer.Layer object your pathfinder expects
+	local layerObj = getLayerObjectFromAgent(agent, originWorld)
+	if not layerObj then
+		print("[Movement.wander] no layer object")
 		fireWanderComplete(agent)
-		print("[Movement.wander] pathfinding failed")
 		return nil
 	end
 
-	local pathWaypoints = path:GetWaypoints()
+	local foundPath = Pathfinding.findPath(layerObj, startGrid, goalGrid)
+
+	-- foundPath should be your Pathfinding.path { pathId, waypoints (Block.Block array), ... }
+	if not foundPath or not foundPath.waypoints or #foundPath.waypoints == 0 then
+		print("[Movement.wander] custom pathfinding failed")
+		fireWanderComplete(agent)
+		return nil
+	end
 
 	agent.waypoints = {}
-	for _, wp in ipairs(pathWaypoints) do
-		table.insert(agent.waypoints, wp.Position)
+
+	-- Convert blocks -> world positions
+	for _, blk in ipairs(foundPath.waypoints) do
+		local wpWorld = blockToWaypointWorld(blk)
+		if wpWorld then
+			table.insert(agent.waypoints, wpWorld)
+		end
+	end
+
+	-- If conversion produced nothing, bail
+	if #agent.waypoints == 0 then
+		print("[Movement.wander] path had no valid world waypoints")
+		fireWanderComplete(agent)
+		return nil
 	end
 
 	agent.waypointIndex = 1
+	AgentAnimations.running(agent)
+	agent.humanoid:MoveTo(agent.waypoints[agent.waypointIndex])
 
 	local humanoid = agent.humanoid
 	agent.moveConnection = humanoid.MoveToFinished:Connect(function(reached)

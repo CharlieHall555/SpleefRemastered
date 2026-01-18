@@ -109,6 +109,13 @@ function MiscBindings.init()
 		end
 	end)
 
+	RemoteEventHandler.newEventConnection("AGENT_DIED", function(playerWhoDied: Player)
+		SoundPlayer.playSound(lightning, { volume = 0.3 })
+		if playerWhoDied == LocalPlayer then
+			VibrationService.medium()
+		end
+	end)
+
 	RemoteEventHandler.newEventConnection("AMMO_GAINED", MiscBindings.onSnowballGained)
 
 	ClientStateTracker.connectServerStateChange(function(newState)
@@ -147,7 +154,13 @@ function MiscBindings.init()
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
-		SystemMessage.send(winner.DisplayName .. " WON", Color3.new(0.862745, 0.890196, 0.352941), true)
+
+		if playerName and winner then
+			SystemMessage.send(winner.DisplayName .. " WON", Color3.new(0.862745, 0.890196, 0.352941), true)
+		else
+			SystemMessage.send("NOBODY " .. " WON", Color3.new(0.862745, 0.890196, 0.352941), true)
+		end
+
 	end)
 
 	ClientStateTracker.connectActive(function()

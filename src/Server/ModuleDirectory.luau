@@ -63,6 +63,8 @@ ModuleDirectory.Systems.Agent.TileScoring = serverRoot.Systems.Agent.TileScoring
 ModuleDirectory.Systems.Agent.AgentAnimations = serverRoot.Systems.Agent.Components.AgentAnimations
 ModuleDirectory.Systems.Agent.AgentUtil = serverRoot.Systems.Agent.Components.AgentUtil
 ModuleDirectory.Systems.Agent.AgentHitbox = serverRoot.Systems.Agent.Components.AgentHitbox
+ModuleDirectory.Systems.Agent.AgentPersonalities = serverRoot.Systems.Agent.AgentPersonalities
+ModuleDirectory.Systems.Agent.Pathfinding = serverRoot.Systems.Agent.Pathfinding
 
 --//====================================================
 --// Stats Tracker System

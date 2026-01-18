@@ -18,6 +18,10 @@ function LayerUtilities.groupLayers(layers: {}): { [number]: {} }
 	return output
 end
 
+function LayerUtilities.getLayer(groupedLayers: { [number]: {} }, layerPosition: number): {}?
+	return groupedLayers[layerPosition]
+end
+
 function LayerUtilities.combineLayers(layers : {}) : {[number] : {[Vector2] : {}}}
     local output : {[number] : {[Vector2] : {}}} = {}
 

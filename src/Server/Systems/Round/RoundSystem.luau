@@ -32,6 +32,7 @@ local Timer = require(ModuleDirectory.Timer)
 local RunService = game:GetService("RunService")
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local Agent
 
 local eventsQueue: { EventContext } = {}
 local processorBusy = false
@@ -64,8 +65,11 @@ local function nPlayersAndAgents()
 end
 
 function RoundSystem.init()
+    Agent = ModuleDirectory.Systems.Agent.Agent
+
     PlayerPool.setOnChange(RoundSystem.onPlayerPoolChange)
     PlayersInGame.setOnChange(RoundSystem.onActivePoolChange)
+    AgentsInGame.setOnChange(RoundSystem.onActiveAgentsChange)
     RunService.Stepped:Connect(RoundSystem.mainLoop)
 
     intermissionTimer = Timer.new()
@@ -153,6 +157,8 @@ function RoundSystem.processEvent(eventToProcess: EventContext): nil
             RoundSystem.changeState("ENDING")
         elseif eventToProcess.name == "ACTIVE_POOL_CHANGED" then
             if #PlayersInGame.getActivePlayers() <= Config.PLAYERS_TO_END then
+                RoundSystem.changeState("ENDING")
+            elseif nPlayersAndAgents() <= Config.REQ_PLAYERS_AND_AGENTS then
                 RoundSystem.changeState("ENDING")
             end
         end
@@ -246,7 +252,13 @@ end
 function RoundSystem.onActivePoolChange(playersInActive: { Player })
     RoundSystem.queueEvent(buildEventContext("ACTIVE_POOL_CHANGED"))
 
-    RemoteEventHandler.FireOnAllClients("PLAYERS_IN_GAME_CHANGED" , nPlayersAndAgents() , #currentRound.nPlayersAndAgents)
+    RemoteEventHandler.FireOnAllClients("PLAYERS_IN_GAME_CHANGED" , nPlayersAndAgents() , currentRound.nPlayersAndAgents)
+end
+
+function RoundSystem.onActiveAgentsChange(agent: { Agent.Agent })
+    RemoteEventHandler.FireOnAllClients("PLAYERS_IN_GAME_CHANGED" , nPlayersAndAgents() , currentRound.nPlayersAndAgents)
+        RoundSystem.queueEvent(buildEventContext("ACTIVE_POOL_CHANGED"))
+
 end
 
 function RoundSystem.connectStarting(fn: (Round) -> ())

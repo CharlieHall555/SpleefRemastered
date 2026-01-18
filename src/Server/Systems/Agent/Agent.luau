@@ -24,36 +24,42 @@ Agent.__index = Agent
 
 export type AgentType = "PASSIVE" | "AGGRESSIVE"
 
+export type AgentConfig = {
+	wanderRadius: number,
+	wanderTime: number,
+	subGoalWeight: number,
+	forwardBiasWeight: number,
+	forwardBiasPower: number,
+	threatRadius: number,
+	aggression: number,
+	scoreNoiseAmp: number,
+}
+
 export type Agent = {
 	model: Model,
 	health: number,
 	id: string,
 	spawnLocation: Vector3,
 	maxHealth: number,
-	wanderRadius: number,
 	humanoid: Humanoid,
 	waypoints: { Vector3 },
 	waypointIndex: number,
-	playersArround: { [number]: Player },
+	playersAround: { [number]: Player },
 	tickLastDamaged: number,
 	tickLastAttacked: number,
 	tickVisionUpdate: number,
-	wanderTime: number,
-	threatState : number,
+	threatState: number,
 	moveConnection: RBXScriptConnection?,
-	subGoalWorld : Vector3?,
-	subGoalExpiresAt : number?,
-	subGoalWeight : number,
-	threatRadius : number,
-	alive : boolean,
-	aggressive : number
+	subGoalWorld: Vector3?,
+	subGoalExpiresAt: number?,
+	alive: boolean,
+	AgentConfig: AgentConfig,
 }
 
 export type AgentCreationParams = {
 	spawnLocation: Vector3,
 	maxHealth: number?,
-	wanderRadius: number?,
-	wanderTime: number?,
+	AgentConfig: AgentConfig?,
 }
 
 local loadedAgents: { [string]: Agent } = {}
@@ -74,17 +80,16 @@ function Agent.getById(id: string)
 end
 
 function Agent.getByModel(model: Model): Agent?
-	local agentId = model:GetAttribute("AgentId")
-	if not agentId then
+	local selfId = model:GetAttribute("AgentId")
+	if not selfId then
 		return nil
 	end
-	return loadedAgents[agentId]
+	return loadedAgents[selfId]
 end
 
 function Agent.init()
 	AgentMovement.getScoresAt = TileScoring.getScoresAt
 	AgentMovement.getLayerFromAgentPos = TileScoring.getLayerFromAgentPos
-	AgentMovement.snapTile2 = TileScoring.snapTile2
 end
 
 function Agent.new(params: AgentCreationParams): Agent
@@ -100,13 +105,30 @@ function Agent.new(params: AgentCreationParams): Agent
 	self.model = CharacterGeneration.generateDummy("Lvl1 Dummy")
 	self.humanoid = self.model:FindFirstChildOfClass("Humanoid") :: Humanoid
 
-	self.wanderTime = params.wanderTime or 0.1
+	local defaultAgentConfig: AgentConfig = {
+		wanderRadius = 20,
+		wanderTime = 0.1,
+		subGoalWeight = 0.9 + (math.random(-5, 5) / 100),
+		forwardBiasWeight = 0.25,
+		forwardBiasPower = 0.5,
+		threatRadius = 12.5,
+		aggression = math.random(0, 1),
+		scoreNoiseAmp = 0.10
+	}
 
-	self.playersArround = {}
+	-- Merge with supplied params (override defaults)
+	if params.AgentConfig then
+		for key, value in pairs(params.AgentConfig) do
+			defaultAgentConfig[key] = value
+		end
+	end
+
+	self.AgentConfig = defaultAgentConfig
+
+	self.playersAround = {}
 	
 	self.threatState = 0
 	self.id = HttpService:GenerateGUID(false)
-	self.wanderRadius = params.wanderRadius or 20
 
 	self.model:SetAttribute("AgentId", self.id)
 	self.model:AddTag("AGENT")
@@ -115,16 +137,18 @@ function Agent.new(params: AgentCreationParams): Agent
 	self.waypointIndex = 1	
 	self.moveConnection = nil
 	self.alive = true
-	self.threatRadius = 12.5
-	self.aggressive = math.random(0 , 1)
 
 	self.tickLastDamaged = 0
 	self.tickLastAttacked = 0
-	self.subGoalWeight = 0.5 + (math.random(-5 , 5) / 100)
 	self.tickVisionUpdate = 0
 
-	self.forwardBiasWeight = 0.25 -- strong bias is
-	self.forwardBiasPower = 0.5 -- how “mostly forward” it is
+	self.humanoid.Died:Connect(function()
+		self:die()
+	end)
+
+	self.humanoid.Destroying:Connect(function()
+		self:die()
+	end)
 
 	AgentHitbox.setup(self)
 
@@ -150,7 +174,6 @@ function Agent:respawn()
 	if self.model.PrimaryPart then
 		self.model.PrimaryPart.CFrame = CFrame.new(self.spawnLocation)
 	end
-
 end
 
 function Agent:wander(): nil
@@ -161,13 +184,42 @@ function Agent:takeDamage(value: number, damagingPlayer: Player?): nil
 	return AgentCombat.takeDamage(self, value, damagingPlayer)
 end
 
-function Agent:Die(): nil
-	return AgentCombat.die(self)
+function Agent:die(): nil
+	AgentMovement.stop(self)
+
+	if not self.model then
+		return nil
+	end
+
+	self.alive = false
+
+	if self.onDiedCallback then
+		self.onDiedCallback(self)
+	end
+
+	if self._moveConnection then
+		self._moveConnection:Disconnect()
+		self._moveConnection = nil
+	end
+
+	for _, child in pairs(self.model:GetDescendants()) do
+		if child.Name == "NameTagTemplate" then
+			child:Destroy()
+		end
+
+		if child:IsA("Motor6D") then
+			child:Destroy()
+		elseif child:IsA("BasePart") then
+			Debris:AddItem(child, 2)
+		end
+	end
+
+	Debris:AddItem(self.model, 5)
+
+	return nil
 end
 
 function Agent:Destroy(): nil
-	AgentMovement.stop(self)
-
 	if self.model then
 		self.model:Destroy()
 	end
@@ -176,14 +228,14 @@ function Agent:Destroy(): nil
 	return nil
 end
 
-function Agent.tick(self : Agent , deltaTime)
-	-- update vision on interval (placeholder; keep your logic here later)
+function Agent.tick(self: Agent, deltaTime: number)
+	-- Update vision on interval
 	self.tickVisionUpdate += deltaTime
-	if self.tickVisionUpdate >= VISION_UPDATE_INTERVAL then
+	if self.tickVisionUpdate >= VISION_UPDATE_INTERVAL and self.alive then
 		self.tickVisionUpdate = 0
 
-		local playersAgentsAround = AgentUtil.getPlayersInRadius(self , self.threatRadius)
-		if #playersAgentsAround > 1 then -- assuming the agent is always within its own radius
+		local playersAgentsAround = AgentUtil.getPlayersInRadius(self, self.AgentConfig.threatRadius)
+		if #playersAgentsAround > 1 then -- assuming the self is always within its own radius
 			self.threatState = 1
 		else
 			self.threatState = 0
@@ -191,7 +243,7 @@ function Agent.tick(self : Agent , deltaTime)
 
 	end
 
-	if self.agentType == "PASSIVE" then
+	if self.selfType == "PASSIVE" then
 		return
 	end
 

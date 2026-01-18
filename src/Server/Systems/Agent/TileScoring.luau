@@ -12,21 +12,20 @@ local LoadedBlocks = require(ModuleDirectory.Systems.Map.LoadedBlocks)
 
 local TileScoring = {}
 
-local currentMap  = nil
-local groupedLayers : {[number] : {}} = {}
+local currentMap = nil
+local groupedLayers: { [number]: {} } = {}
 
 -- IMPORTANT: keys are layerY (e.g. 15, 30, 45)
-local combinedLayer : {[number] : {[string] : {}}} = {}
-local scoreGrid : {[number] : {[string] : any}} = {}
-local neighborCount : {[number] : {[string] : number}} = {}
-
+local combinedLayer: { [number]: { [string]: {} } } = {}
+local scoreGrid: { [number]: { [string]: any } } = {}
+local neighborCount: { [number]: { [string]: number } } = {}
 
 export type TileScore = {
-	position : Vector2,
-	layerY : number,
-	ProxScore : number,
-	NeighborScore : number,
-	blockId : number?,
+	position: Vector2,
+	layerY: number,
+	ProxScore: number,
+	NeighborScore: number,
+	blockId: number?,
 }
 
 local NEIGHBORS = {
@@ -37,10 +36,14 @@ local NEIGHBORS = {
 }
 
 local NEIGHBORS_8 = {
-	Vector2.new( 1,  0), Vector2.new(-1,  0),
-	Vector2.new( 0,  1), Vector2.new( 0, -1),
-	Vector2.new( 1,  1), Vector2.new( 1, -1),
-	Vector2.new(-1,  1), Vector2.new(-1, -1),
+	Vector2.new(1, 0),
+	Vector2.new(-1, 0),
+	Vector2.new(0, 1),
+	Vector2.new(0, -1),
+	Vector2.new(1, 1),
+	Vector2.new(1, -1),
+	Vector2.new(-1, 1),
+	Vector2.new(-1, -1),
 }
 
 local function snapTile(v: Vector2): Vector2
@@ -63,7 +66,7 @@ local function initScoreGrid()
 				Score = 0,
 				NeighborScore = 0,
 				ProxScore = 0,
-				blockId = block._blockId
+				blockId = block._blockId,
 			}
 		end
 	end
@@ -92,7 +95,6 @@ local function initNeighborCount()
 end
 
 local function calcProxScores()
-
 	local MAX_DIST = 16
 	local FALLOFF = 0.35
 	local SCORE_SCALE = 3
@@ -105,7 +107,7 @@ local function calcProxScores()
 	end
 
 	-- sourcesByLayerY[layerY] = { Vector2, Vector2, ... }
-	local sourcesByLayerY: {[number]: {Vector2}} = {}
+	local sourcesByLayerY: { [number]: { Vector2 } } = {}
 
 	for _, eachPlayer in PlayersInGame.getActivePlayers() do
 		local records = TouchedBlockTracker.getLastTouchedBlocks(eachPlayer)
@@ -135,7 +137,6 @@ local function calcProxScores()
 
 		sourcesByLayerY[layerY] = sourcesByLayerY[layerY] or {}
 		table.insert(sourcesByLayerY[layerY], pos)
-
 	end
 
 	for layerY, sources in pairs(sourcesByLayerY) do
@@ -146,7 +147,7 @@ local function calcProxScores()
 
 		local queue = table.create(128)
 		local head, tail = 1, 0
-		local visited: {[string]: number} = {}
+		local visited: { [string]: number } = {}
 
 		-- Seed queue
 		for _, srcPos in ipairs(sources) do
@@ -176,10 +177,9 @@ local function calcProxScores()
 			local dist: number = node.dist
 
 			local proxScore = SCORE_SCALE * (1 / (1 + (FALLOFF * dist)))
-			
-			-- Make source tiles less attractive than surrounding tiles
+
 			if dist == 0 then
-				proxScore *= 0.5  -- Apply 70% penalty to source tile
+				proxScore = 0
 			end
 
 			local posKey = VectorUtil.SerializeVector2(pos)
@@ -208,9 +208,9 @@ end
 
 local function calcNeighborScores()
 	-- Tunables
-	local W_NEIGHBORS = 1.0          -- overall weight applied to neighbor score
-	local EDGE_PENALTY = 0.35        -- penalty applied when neighbor count is very low
-	local EDGE_THRESHOLD = 1         -- <= this count is considered "edge/trap"
+	local W_NEIGHBORS = 1.0 -- overall weight applied to neighbor score
+	local EDGE_PENALTY = 0.35 -- penalty applied when neighbor count is very low
+	local EDGE_THRESHOLD = 1 -- <= this count is considered "edge/trap"
 
 	for layerY, layerScores in pairs(scoreGrid) do
 		local nTable = neighborCount[layerY]
@@ -223,8 +223,8 @@ local function calcNeighborScores()
 		end
 
 		for posKey, tile: TileScore in pairs(layerScores) do
-			local n = nTable[posKey] or 0      -- 0..8
-			local base = n / 8                 -- 0..1
+			local n = nTable[posKey] or 0 -- 0..8
+			local base = n / 8 -- 0..1
 
 			local penalty = 0
 			if n <= EDGE_THRESHOLD then
@@ -235,8 +235,6 @@ local function calcNeighborScores()
 		end
 	end
 end
-
-
 
 function TileScoring.setCurrentMap(cMap)
 	currentMap = cMap
@@ -254,15 +252,16 @@ function TileScoring.onBlockDestroyed(layerY: number, blockPosition: Vector2)
 		return
 	end
 
-	local pos = Vector2.new(
-		math.floor(blockPosition.X + 0.5),
-		math.floor(blockPosition.Y + 0.5)
-	)
+	local pos = Vector2.new(math.floor(blockPosition.X + 0.5), math.floor(blockPosition.Y + 0.5))
 	local key = VectorUtil.SerializeVector2(pos)
 
 	combinedLayer[layerY][key] = nil
-	if scoreGrid[layerY] then scoreGrid[layerY][key] = nil end
-	if neighborCount[layerY] then neighborCount[layerY][key] = nil end
+	if scoreGrid[layerY] then
+		scoreGrid[layerY][key] = nil
+	end
+	if neighborCount[layerY] then
+		neighborCount[layerY][key] = nil
+	end
 
 	-- decrement the 8 surrounding tiles (only if they exist)
 	for _, d in ipairs(NEIGHBORS_8) do
@@ -273,7 +272,6 @@ function TileScoring.onBlockDestroyed(layerY: number, blockPosition: Vector2)
 	end
 end
 
-
 function TileScoring.calcStep()
 	if not currentMap then
 		return
@@ -281,11 +279,10 @@ function TileScoring.calcStep()
 
 	calcNeighborScores()
 	calcProxScores()
-
 end
 
-function TileScoring.getScoresAt(layer: number, position: Vector2, radius: number): {[Vector2]: TileScore}
-	local results: {[Vector2]: TileScore} = {}
+function TileScoring.getScoresAt(layer: number, position: Vector2, radius: number): { [Vector2]: TileScore }
+	local results: { [Vector2]: TileScore } = {}
 
 	if not layer or not position or radius == nil then
 		warn("[TileScoring.getScoresAt] invalid args")
@@ -306,7 +303,6 @@ function TileScoring.getScoresAt(layer: number, position: Vector2, radius: numbe
 
 	local center = snapTile(position)
 
-
 	for dy = -radius, radius do
 		for dx = -radius, radius do
 			local offset = Vector2.new(dx, dy)
@@ -314,7 +310,7 @@ function TileScoring.getScoresAt(layer: number, position: Vector2, radius: numbe
 			local key = VectorUtil.SerializeVector2(tilePos)
 
 			-- if tile doesn't exist / destroyed, this will be nil (as requested)
-			local value = layerScores[key] 
+			local value = layerScores[key]
 			if value then
 				results[VectorUtil.SerializeVector2(offset)] = table.clone(value)
 			else
@@ -337,13 +333,10 @@ function TileScoring.start()
 			task.wait(7)
 		end
 	end)
-
-
 end
 
 function TileScoring.stop()
 	roundActive = false
 end
-
 
 return TileScoring

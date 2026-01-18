@@ -59,7 +59,12 @@ local function tryPlayPendingIfAllowed()
 	end
 	if pendingWin then
 		playedThisIntermission = true
-		WinnerEffect.onWin(pendingWin.name, pendingWin.player)
+		if pendingWin.name and pendingWin.player then
+			WinnerEffect.onWin(pendingWin.name, pendingWin.player)
+		else
+			WinnerEffect.onNobodyWins()
+		end
+	
 		pendingWin = nil
 	end
 end
@@ -114,6 +119,9 @@ local function fireworkEffect()
 	emitter3:Emit(15)
 	emitter4:Emit(15)
 	SoundPlayer.playSound("rbxassetid://121821052187356")
+end
+
+function WinnerEffect.onNobodyWins()
 end
 
 function WinnerEffect.onWin(winnerName: string, winner: Player?)

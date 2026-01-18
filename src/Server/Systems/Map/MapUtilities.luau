@@ -1,6 +1,7 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
 local LayerUtilities = require(ModuleDirectory.LayerUtilities)
+local Map = require(ModuleDirectory.Systems.Map.Map)
 
 local MapUtilities = {}
 
@@ -18,6 +19,10 @@ function MapUtilities.getLayerFromAgentPos(agentPosition: Vector3): number?
 	
 	return LayerUtilities.getLayerPositionIsOn(groupedLayers , agentPosition)
 
+end
+
+function MapUtilities.getCurrentMap() : Map.Map?
+	return currentMap
 end
 
 local function roundToNearest(n: number): number

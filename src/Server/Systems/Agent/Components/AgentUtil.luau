@@ -24,13 +24,12 @@ function AgentUtil.getPlayersInRadius(agent: Agent.Agent, radius: number): { Age
 			continue
 		end
 		if character:HasTag("AGENT") then
-			table.insert(inRadius , Agent.getByModel(character))
+			table.insert(inRadius, Agent.getByModel(character))
 		else
-			table.insert(inRadius , Players:GetPlayerFromCharacter(character))
+			table.insert(inRadius, Players:GetPlayerFromCharacter(character))
 		end
 		seenChars[character] = true
 	end
-	print(#inRadius)
 
 	return inRadius
 end

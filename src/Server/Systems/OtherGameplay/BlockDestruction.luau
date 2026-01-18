@@ -11,9 +11,12 @@ local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 
 local BlockDestruction = {}
 
+local Agent
+
 function BlockDestruction.init()
     
     RemoteEventHandler.newEventConnection("REQUEST_DESTROY_BLOCK", BlockDestruction.destroyBlockFor)
+	Agent = require(ModuleDirectory.Systems.Agent.Agent)
 
 end
 
@@ -66,5 +69,25 @@ function BlockDestruction.destroyBlockFor(player : Player , blockId : number)
     RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , blockToDestroy , blockPosition , player , "spade")
     
 end
+
+function BlockDestruction.destroyBlockAgent(blockId : number) -- will only be called on server 
+	local blockToDestroy : Block.Block? = LoadedBlocks[blockId]
+
+	if blockToDestroy == nil then
+		warn("Agent destruction failed: block is nil")
+		return
+	end
+
+	if RoundSystem.getState() ~= "ACTIVE" and blockToDestroy.TutorialBlock == false then
+		return
+	end
+
+	local blockPosition = blockToDestroy.Part.Position
+	BlockFactory.destroyById(blockId, Agent)
+	
+	RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION", blockId, blockToDestroy, blockPosition, nil, "spade")
+end
+
+
 
 return BlockDestruction

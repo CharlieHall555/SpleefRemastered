@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local PlayerDeathDetector = require(ModuleDirectory.Systems.Round.PlayerDeathDetector)
+local AgentsInGame = require(ModuleDirectory.Systems.Round.AgentsInGame)
 
 local WinnerDetection = {}
 local _rng = Random.new()
@@ -9,12 +10,16 @@ function WinnerDetection.init()
     -- no-op
 end
 
-function WinnerDetection.getWinner(playerList: { Player }): Player
+function WinnerDetection.getWinner(playerList: { Player }): Player?
     assert(playerList and #playerList > 0, "playerList must be a non-empty array")
 
     local alive: { Player } = {}
     local latestTime = -math.huge
     local latest: { Player } = {}
+
+    if AgentsInGame.getSize() > 0 then
+        return nil
+    end
 
     for _, player in ipairs(playerList) do
         local deathTime = PlayerDeathDetector.getDeathTime(player)

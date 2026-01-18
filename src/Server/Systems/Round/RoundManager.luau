@@ -140,6 +140,7 @@ local function onRoundEnding(currentRound)
 			Overhead.refreshForPlayer(Winner)
 			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
 		else
+			RemoteEventHandler.FireOnAllClients("PLAYER_WON", nil , nil)
 			PodiumManager.clear()
 			print("No winner")
 		end
@@ -184,6 +185,7 @@ function RoundManager.init(): nil
 	RoundSystem.connectIntermission(onRoundIntermission)
 	RoundSystem.connectActive(onRoundActive)
 	PlayerDeathDetector.setCallback(RoundManager.onPlayerDeath)
+	AgentManager.setOnAgentDeath(RoundManager.onAgentDeath)
 	LobbySpawn = game.Workspace:WaitForChild("Lobby"):WaitForChild("SpawnLocation")
 
 	RemoteEventHandler.newEventConnection("QUERY_SERVER_STATE", function(player)
@@ -217,6 +219,11 @@ function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
 			RemoteEventHandler.FireOnClient(Eliminator, "ELIMINATION", playerWhoDied)
 		end
 	end
+end
+
+function RoundManager.onAgentDeath(agentWhoDied)
+	local Eliminator = nil
+	RemoteEventHandler.FireOnAllClients("AGENT_DIED", agentWhoDied, Eliminator)
 end
 
 return RoundManager
