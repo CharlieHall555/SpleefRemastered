@@ -54,7 +54,7 @@ local function bindRemovalCallback()
         if uidToPosition[removedId] ~= nil then
             local position = uidToPosition[removedId]
             uidToPosition[removedId] = nil
-            positionSet:remove(VectorUtil.SerializeVector3(position))
+            positionSet:remove(VectorUtil.serializeVector3(position))
         end
 
         local layer = uidToLayer[removedId]
@@ -95,7 +95,7 @@ local function chooseLayerForSpawn(): Layer.Layer?
 end
 
 function AmmoPickupManager.isPositionFree(position : Vector3)
-    return positionSet:contains(VectorUtil.SerializeVector3(position)) == false
+    return positionSet:contains(VectorUtil.serializeVector3(position)) == false
 end
 
 local function trySpawnOne(): boolean
@@ -131,7 +131,7 @@ local function trySpawnOne(): boolean
 
             if uid then
                 uidToPosition[uid] = spawnGridPos
-                positionSet:add(VectorUtil.SerializeVector3(spawnGridPos))
+                positionSet:add(VectorUtil.serializeVector3(spawnGridPos))
                 aliveTimeCache[uid] = 0
                 uidToLayer[uid] = layer
                 layerCounts[layer] = (layerCounts[layer] or 0) + 1

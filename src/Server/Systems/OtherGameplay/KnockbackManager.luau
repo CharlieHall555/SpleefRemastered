@@ -10,7 +10,7 @@ local KnockbackUtilities = require(ModuleDirectory.KnockbackUtilities)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
 local AgentManager = require(ModuleDirectory.Systems.Agent.AgentManager)
-local AgentMovement = require(ModuleDirectory.Systems.Agent.Movement)
+local AgentMovement = require(ModuleDirectory.Systems.Agent.AgentMovement)
 
 local lastHitCache: { [number]: number } = {}
 

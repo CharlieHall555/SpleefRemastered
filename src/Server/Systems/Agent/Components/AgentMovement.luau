@@ -56,31 +56,121 @@ local function chooseDestination(agent : Agent.Agent) : Vector2
 
     end
 
-    return bestScoringBlock.layerPosition
+    return bestScoringBlock
 
 end
 
 local function onInvalidPath(agent : Agent.Agent)
+    warn("Agent ", agent.id, " failed to find path, stopping wander")
+    agent.wanderActive = false
+    agent.movementState.currentPath = nil
+    agent.movementState.waypointN = 0
+end
+
+function AgentMovement.resetWander(agent : Agent.Agent)
+    -- Cancel current movement
+    if agent.movementState.currentPath then
+        Pathfinding.discardPath(agent.movementState.currentPath.pathId)
+    end
     
+    agent.movementState.currentPath = nil
+    agent.movementState.waypointN = 0
+    
+    -- Start new wander if still active
+    if agent.wanderActive then
+        AgentMovement.agentStartWander(agent)
+    end
 end
 
 function AgentMovement.agentStartWander(agent : Agent.Agent)
-    AgentMovement.newSubgoal(agent)
+    local currentLayer = agent:getLayerCurrentlyOn()
+    if not currentLayer then
+        warn("[AgentMovement] Agent has no current layer")
+        return
+    end
+    
+    local snappedToGrid = agent:snapToGrid()
+    if not snappedToGrid then
+        warn("Agent failed to snap to grid")
+        return
+    end
+    
+    -- Choose destination
+    local targetPos = chooseDestination(agent)
+    if not targetPos then
+        warn("Agent failed to choose destination")
+        return
+    end
+    
+    -- Find path
+    local path = Pathfinding.findPath(currentLayer, snappedToGrid.layerPosition, targetPos)
+    if not path then
+        onInvalidPath(agent)
+        return
+    end
+    
+    -- Store path and start moving
+    agent.movementState.currentPath = path
+    agent.movementState.waypointN = 1
+    
+    -- Move to first waypoint
+    if path.waypoints[1] then
+        agent.humanoid:MoveTo(path.waypoints[1]:getWorldPosition())
+    end
 end
 
 function AgentMovement.agentCompletedWanderStep(agent : Agent.Agent , reached : boolean)
-    --choose goal and start wander to it
+    if not agent.wanderActive then
+        return
+    end
+    
+    -- If failed to reach waypoint, reset wander
+    if not reached then
+        AgentMovement.resetWander(agent)
+        return
+    end
+    
+    local currentPath = agent.movementState.currentPath
+    if not currentPath then
+        return
+    end
+    
+    -- Advance to next waypoint
+    agent.movementState.waypointN += 1
+    local nextWaypoint = currentPath.waypoints[agent.movementState.waypointN]
+    
+    if nextWaypoint then
+        -- Move to next waypoint
+        agent.humanoid:MoveTo(nextWaypoint:getWorldPosition())
+    else
+        -- Path complete
+        AgentMovement.agentCompletedFullWander(agent)
+    end
 end
 
 function AgentMovement.agentCompletedFullWander(agent : Agent.Agent)
+    -- Discard completed path
+    if agent.movementState.currentPath then
+        Pathfinding.discardPath(agent.movementState.currentPath.pathId)
+    end
     
-end
-
-function AgentMovement.newSubgoal(agent : Agent.Agent)
+    agent.movementState.currentPath = nil
+    agent.movementState.waypointN = 0
     
-
+    if not agent.wanderActive then
+        return
+    end
+    
+    -- If threatened, restart immediately. Otherwise wait wanderTime
+    if agent.threatened then
+        AgentMovement.agentStartWander(agent)
+    else
+        task.wait(agent.config.wanderTime)
+        if agent.wanderActive then
+            AgentMovement.agentStartWander(agent)
+        end
+    end
 end
-
 
 function AgentMovement.init()
     Agent = require(ModuleDirectory.Systems.Agent.Agent)

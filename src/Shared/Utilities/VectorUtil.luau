@@ -1,6 +1,6 @@
 local VectorUtil = {}
 
-function VectorUtil.DeserializeVector3(posString : string) : Vector3
+function VectorUtil.deserializeVector3(posString : string) : Vector3
     local x, y, z = posString:match("%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)")
     if not x or not y or not z then
         error("Invalid Vector3 format: "..tostring(posString))
@@ -8,7 +8,7 @@ function VectorUtil.DeserializeVector3(posString : string) : Vector3
     return Vector3.new(tonumber(x), tonumber(y), tonumber(z))
 end
 
-function VectorUtil.SerializeVector3(vec : Vector3) : string
+function VectorUtil.serializeVector3(vec : Vector3) : string
     return "("
         .. tostring(vec.X) .. ","
         .. tostring(vec.Y) .. ","
@@ -27,7 +27,7 @@ function VectorUtil.deserializeVector2(posString: string): Vector2
     return Vector2.new(tonumber(x), tonumber(y))
 end
 
-function VectorUtil.SerializeVector2(vec: Vector2): string
+function VectorUtil.serializeVector2(vec: Vector2): string
     return "("
         .. tostring(vec.X) .. ","
         .. tostring(vec.Y)

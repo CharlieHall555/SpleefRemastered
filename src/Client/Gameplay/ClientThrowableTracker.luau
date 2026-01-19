@@ -145,8 +145,8 @@ function ClientThrowableTracker.pollPing()
 end
 
 function ClientThrowableTracker.receiveFromServer(data: ThrowableData.ThrowableData)
-    local startPosition = VectorUtil.DeserializeVector3(data.sP)
-    local velocity = VectorUtil.DeserializeVector3(data.v)
+    local startPosition = VectorUtil.deserializeVector3(data.sP)
+    local velocity = VectorUtil.deserializeVector3(data.v)
     local typeName = data.t
     local launchTime = data.s
     local uid = data.uid

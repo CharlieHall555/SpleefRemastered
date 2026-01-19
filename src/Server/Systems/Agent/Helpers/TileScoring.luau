@@ -35,6 +35,24 @@ local startToken = 0 -- increments
 local proxScores: { [number]: { [number]: { [number]: number } } } = {}
 local connectedScores: { [number]: { [number]: { [number]: number } } } = {}
 
+-- How much work before we yield (tune)
+local YIELD_EVERY_BLOCKS = 600        -- while scanning blocks / building exists
+local YIELD_EVERY_BFS_NODES = 800     -- while popping BFS queue
+local YIELD_TIME = 0                 -- 0 = yield to scheduler without delaying
+
+local function makeYielder(every: number)
+	local n = 0
+	return function()
+		n += 1
+		if (n % every) == 0 then
+			task.wait(YIELD_TIME)
+		end
+	end
+end
+
+local yieldBlocks = makeYielder(YIELD_EVERY_BLOCKS)
+local yieldBfs = makeYielder(YIELD_EVERY_BFS_NODES)
+
 -- =========================
 -- Public API
 -- =========================
@@ -287,6 +305,7 @@ local function calcDangerScore()
 		local blockAt: { [number]: { [number]: any } } = {} -- [x][y] = block
 
 		for _, block in eachLayer:getBlocks() do
+			yieldBlocks()
 			if block:isActive() then
 				local p = block.layerPosition
 				local x = math.floor(p.X + 0.5)
@@ -321,6 +340,7 @@ local function calcDangerScore()
 		end
 
 		while head <= tail do
+			yieldBfs()
 			local x = queueX[head]
 			local y = queueY[head]
 			head += 1
@@ -382,10 +402,16 @@ function TileScoring.start()
 	local myToken = startToken
 
 	scoringTask = task.spawn(function()
+		task.wait(1)
 		while roundActive and myToken == startToken do
+			local startTime = os.clock()
 			local ok, err = pcall(calcStep)
+			local elapsed = os.clock() - startTime
+			
 			if not ok then
 				warn("[TileScoring] calcStep failed:", err)
+			else
+				warn(string.format("[TileScoring] calcStep completed in %.3f seconds", elapsed))
 			end
 			task.wait(TILE_SCORING_INTERVAL)
 		end

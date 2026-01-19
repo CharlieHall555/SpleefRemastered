@@ -9,6 +9,8 @@ local AgentsInGame = require(ModuleDirectory.Systems.Round.AgentsInGame)
 
 local AgentManager = {}
 
+local Map
+
 local charAgent: { [Model]: Agent.Agent } = {}
 local agentDeathCallback
 
@@ -39,6 +41,8 @@ function AgentManager.preDestroy(a: Agent.Agent)
 end
 
 function AgentManager.onLoaded()
+	Map = require(ModuleDirectory.Systems.Map.Map)
+
 	RunService.Heartbeat:Connect(function(deltaTime)
 		for each_id, each in Agent.getAll() do
 			each:tick(deltaTime)
@@ -54,9 +58,13 @@ function AgentManager.generateAgent(params: Agent.AgentCreationParams): Agent.Ag
 end
 
 function AgentManager.activateAgents()
+	local agentCount = 0
 	for _, agent in Agent.getAll() do
-		agent:wander()
+		print("[AgentManager.activateAgents] Starting wander for agent:", agent.id)
+		agent:startWander()
+		agentCount += 1
 	end
+	print("[AgentManager.activateAgents] Activated", agentCount, "agents")
 end
 
 function AgentManager.getAgentFromCharacter(char: Model): Agent.Agent?
@@ -75,21 +83,22 @@ end
 
 
 
-function AgentManager.createAgentsFor(currentMap: {}, n: number)
+function AgentManager.createAgentsFor(currentMap: Map.Map, n: number)
+	print("[AgentManager.createAgentsFor] Creating", n, "agents for map:", currentMap.id)
 	local topLayer = currentMap:getTopLayer()
 
 	for i = 1, n do
 		local randomBlock = topLayer:getRandomBlock()
-		local position = Vector3.new(0, 150, 0)
-		if randomBlock then
-			position = randomBlock.Part.Position + Vector3.new(0, 15, 0)
-		end
-
+		local position = randomBlock:getWorldPosition() + Vector3.new(0, 150, 0)
 		local agentParams = AgentPersonalities.createRandom(position)
 		local newAgent = AgentManager.generateAgent(agentParams)
+		print("[AgentManager.createAgentsFor] Created agent", i, "ID:", newAgent.id, "at position:", position)
 
 		charAgent[newAgent.model] = newAgent
 	end
+	print("[AgentManager.createAgentsFor] Finished creating", n, "agents")
 end
+
+
 
 return AgentManager

@@ -8,8 +8,8 @@ return {
     --// Performance / Part Pooling
     --//====================================================
     PARTS_PER_FRAME = 50,              -- Max parts processed each frame
-    INITIAL_PART_POOL = 50,            -- Initial pooled parts
-    MAX_PARTS_PER_FRAME_PER_LAYER = 65,-- Max parts per frame per map layer
+    INITIAL_PART_POOL = 1000,            -- Initial pooled parts
+    MAX_PARTS_PER_FRAME_PER_LAYER = 200,-- Max parts per frame per map layer
     BLOCK_SIZE = 5,                    -- Size of a block in studs
 
     UPDATE_LEADERBOARD_IN_STUDIO = false,
@@ -87,7 +87,7 @@ return {
     MAX_AMMO_PICKUPS = 10,
     MIN_AMMO_PICKUP_PER_FLOOR = 1,
     AMMO_SPAWN_HEIGHT_OFFSET = 7,
-    BOTS_ACTIVE = false,
+    BOTS_ACTIVE = true,
     TARGET_PLAYER_COUNT = 6,
 
     KNOCKBACK_COOLDOWN = 1,

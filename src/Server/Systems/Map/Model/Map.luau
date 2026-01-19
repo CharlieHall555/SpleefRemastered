@@ -1,5 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+local config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
 local Layer , Block
 
@@ -72,26 +73,36 @@ function Map.removeLayer(self : Map , layer : Layer) : nil
     end
 end
 
-function Map.snapPositionToGrid(self: Map , worldPosition: Vector3) : {layerIndex : number , layerPosition : Vector2}
+function Map.snapPositionToGrid(self: Map, worldPosition: Vector3): { layerIndex: number, layerPosition: Vector2 }
+    local layer = self:getClosestLayerTo(worldPosition.Y)
+    assert(layer, "[Map] snapPositionToGrid: No layer found")
+    assert(layer.originPosition, "[Map] snapPositionToGrid: Layer missing originPosition")
+
+    local tileSize = config.BLOCK_SIZE
+
+    -- Calculate the corner where blocks start (block 1,1)
+    -- The layer.originPosition is the center, blocks are offset by half the layer size
+    local halfWidth = (layer.size.X - 1) * tileSize / 2
+    local halfHeight = (layer.size.Y - 1) * tileSize / 2
     
-	local layer = self:getClosestLayerTo(worldPosition.Y)
-	assert(layer ~= nil, "[Map] snapPositionToGrid: No layer found")
+    local cornerX = layer.originPosition.X - halfWidth
+    local cornerZ = layer.originPosition.Z - halfHeight
 
-	local localX = worldPosition.X - self.originPosition.X
-	local localZ = worldPosition.Z - self.originPosition.Z
+    local localX = worldPosition.X - cornerX
+    local localZ = worldPosition.Z - cornerZ
 
-	-- Tile size should be a constant or stored on map/layer
-	local tileSize = self.tileSize or layer.tileSize
-	assert(tileSize ~= nil, "[Map] snapPositionToGrid: Missing tileSize")
+    -- Convert to grid coordinates (1-based)
+    local gridX = math.floor(localX / tileSize) + 1
+    local gridY = math.floor(localZ / tileSize) + 1
 
-	local gridX = math.floor((localX / tileSize) + 0.5)
-	local gridY = math.floor((localZ / tileSize) + 0.5)
+    -- Clamp to layer bounds
+    gridX = math.clamp(gridX, 1, layer.size.X)
+    gridY = math.clamp(gridY, 1, layer.size.Y)
 
-	return {
-		layerIndex = layer.layerIndex,
-		layerPosition = Vector2.new(gridX, gridY),
-	}
-    
+    return {
+        layerIndex = layer.layerIndex,
+        layerPosition = Vector2.new(gridX, gridY),
+    }
 end
 
 function Map.getClosestLayerTo(self: Map , worldHeight: number): Layer?
@@ -99,7 +110,7 @@ function Map.getClosestLayerTo(self: Map , worldHeight: number): Layer?
     local closestDist = math.huge
 
     for _, layer in self:getLayers() do
-        local layerY = layer.worldY -- or however you store it
+        local layerY = layer.originPosition.Y
         local d = math.abs(worldHeight - layerY)
 
         if d < closestDist then

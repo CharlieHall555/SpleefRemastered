@@ -61,12 +61,11 @@ end
 
 local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd this fires first 
 
-
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 	local nextMapData = MapSaves.getMap(MapSelection.getNextMap())
 	currentMap = MapGenerator.generate(nextMapData)
 	print("CurrentMap" , currentMap)
-	print("MapSpawn: @" .. VectorUtil.SerializeVector3(currentMap.originPosition))
+	print("MapSpawn: @" .. VectorUtil.serializeVector3(currentMap.originPosition))
 	task.wait(1)
 
 	for _, each in currentRound.startingPlayers do
@@ -83,6 +82,8 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 		end
 	end
 
+	Agent.setCurrentMap(currentMap)
+
 	TileScoring.start()
 
 end
@@ -96,7 +97,6 @@ local function onRoundPreparing(currentRound) -- and then this
 	)
 	AmmoManager.setUp(PlayersInGame.getActivePlayers())
 	RespawnManager.setMap(currentMap)
-	Agent.setMap(nil)
 	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers(), "CHANGE_STATE", "ACTIVE")
 
 	for _, eachPlayer in PlayersInGame.getActivePlayers() do
@@ -116,10 +116,9 @@ local function onRoundPreparing(currentRound) -- and then this
 		TeleportManager.teleport(eachPlayer, Position)
 	end
 
+	print("[RoundManager.onRoundPreparing] Activating agents")
 	AgentManager.activateAgents()
 	AgentManager.sendAgentModels(PlayersInGame.getActivePlayers())
-
-
 
 end
 
@@ -132,7 +131,7 @@ local function onRoundEnding(currentRound)
 	AmmoManager.reset()
 	RespawnManager.onRoundEnd()
 	RespawnManager.setMap(nil)
-	Agent.setMap(nil)
+	Agent.setCurrentMap(nil)
 	Block.stopAllTweens()
 	local Winner
 	if ServerStatus.get() == "OK" then

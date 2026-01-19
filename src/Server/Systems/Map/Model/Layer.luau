@@ -118,7 +118,7 @@ function Layer.getNeighbors(self: Layer, position: Vector2): { [string]: Block? 
 		local neighborPos = position + direction
 		local block = self:getBlock(neighborPos)
 			if block then
-				local key = VectorUtil.SerializeVector2(direction)
+				local key = VectorUtil.serializeVector2(direction)
 				neighbors[key] = block
 			end
 	end

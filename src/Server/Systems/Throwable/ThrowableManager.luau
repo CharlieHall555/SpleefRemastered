@@ -125,8 +125,8 @@ end
 
 local function updateClients(newThrowable: Throwable.Throwable)
 	local dataToSend = {
-		sP = VectorUtil.SerializeVector3(newThrowable.position),
-		v = VectorUtil.SerializeVector3(newThrowable.velocity),
+		sP = VectorUtil.serializeVector3(newThrowable.position),
+		v = VectorUtil.serializeVector3(newThrowable.velocity),
 		t = newThrowable.typeName,
 		s = workspace:GetServerTimeNow(),
 		uid = newThrowable.uid,

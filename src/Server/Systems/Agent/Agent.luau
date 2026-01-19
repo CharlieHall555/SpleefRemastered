@@ -35,6 +35,7 @@ export type AgentConfig = {
 	scoreNoiseAmp: number,
 	connectionWeight : number,
 	proximityWeight : number,
+	noiseMagnitude : number
 }
 
 export type Agent = {
@@ -45,6 +46,7 @@ export type Agent = {
 	humanoid: Humanoid,
 	threatened : boolean,
 	visionTimer: number,
+	wanderActive : boolean,
 	connections: { [string]: RBXScriptConnection },
 
 	movementState : MovementState,
@@ -62,16 +64,12 @@ export type Agent = {
 
 export type AgentCreationParams = {
 	spawnLocation: Vector3,
-	maxHealth: number?,
 	AgentConfig: AgentConfig?,
 }
 
 export type MovementState = {
-
 	currentPath : Pathfinding.path?,
-	waypointN : number?,
-	subGoalPos : Vector3?
-
+	waypointN : number?
 }
 
 export type CombatState = {
@@ -83,8 +81,8 @@ export type CombatState = {
 local loadedAgents: { [string]: Agent } = {}
 
 function Agent.setCurrentMap(n : Map.Map)
+	print("[Agent] setCurrentMap called - Map:", n and n.id or "NIL", "Layers:", n and #n:getLayers() or 0)
 	currentMap = n
-	
 end
 
 function Agent.getAll()
@@ -103,8 +101,6 @@ function Agent.getByModel(model: Model): Agent?
 	return loadedAgents[selfId]
 end
 
-
-
 function Agent.new(params: AgentCreationParams): Agent
 	local self : Agent = setmetatable({}, Agent)
 	self.id = HttpService:GenerateGUID(false)
@@ -119,9 +115,12 @@ function Agent.new(params: AgentCreationParams): Agent
 		scoreNoiseAmp = 0.1,
 		connectionWeight = 1,
 		proximityWeight = 1,
+		noiseMagnitude = 0.25
 	}
+	self.wanderActive = false
 	self.connections = {} -- should be cleaned up on destroy
-	self.model = CharacterGeneration.generateCharacter(params.spawnLocation, params.maxHealth)
+	self.model = CharacterGeneration.generateDummy()
+	self.model:PivotTo(CFrame.new(params.spawnLocation))
 	self.model:SetAttribute("AgentId", self.id)
 	self.humanoid = self.model:FindFirstChild("Humanoid")
 	self.threatened = false
@@ -129,8 +128,7 @@ function Agent.new(params: AgentCreationParams): Agent
 	
 	self.movementState = {
 		currentPath = nil,
-		waypointN = 0,
-		subGoalPos = Vector3.zero
+		waypointN = 0
 	}
 	
 	self.combatState = {
@@ -145,19 +143,19 @@ function Agent.new(params: AgentCreationParams): Agent
 	return self
 end
 
-function Agent.respawn(self: Agent)
-
-end
-
 function Agent.startWander(self: Agent): nil
+	self.wanderActive = true
+	AgentMovement.agentStartWander(self)
 
 end
 
 function Agent.stopWander(self: Agent): nil
+	self.wanderActive = false
 	
 end
 
 function Agent.resetWander(self: Agent)
+	AgentMovement.resetWander(self)
 	
 end
 
@@ -175,13 +173,16 @@ end
 
 function Agent.getLayerCurrentlyOn(self: Agent) : Layer.Layer?
 	if not currentMap then
+		print("[Agent.getLayerCurrentlyOn] currentMap is NIL for agent:", self.id)
 		return nil
 	else
 		local rootPart = self.model:FindFirstChild("HumanoidRootPart") or self.model.PrimaryPart
 		if not rootPart then
+			print("[Agent.getLayerCurrentlyOn] No rootPart for agent:", self.id)
 			return nil
 		end
-		return currentMap:getClosestLayerTo(rootPart.Position.Y)
+		local layer = currentMap:getClosestLayerTo(rootPart.Position.Y)
+		return layer
 	end
 end
 

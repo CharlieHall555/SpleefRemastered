@@ -91,7 +91,6 @@ local function createPart(blockConfig: BlockConfig?): Part
 	part.Material = materialDef.material or Enum.Material.Plastic
 	part.Anchored = true
 	part.Shape = Enum.PartType.Block
-	part.Parent = BlocksFolder
 	part:AddTag("block")
 	part:AddTag("Block")
 
@@ -100,6 +99,7 @@ local function createPart(blockConfig: BlockConfig?): Part
 		part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
 	end
 
+	part.Parent = BlocksFolder
 	return part
 end
 

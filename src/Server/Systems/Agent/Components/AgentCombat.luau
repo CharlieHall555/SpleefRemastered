@@ -20,27 +20,27 @@ function AgentCombat.getPlayersInRadius(agent: Agent.Agent, radius: number): ({ 
 	local parts = workspace:GetPartBoundsInRadius(origin, radius)
 
 	for _, eachPart: Instance in parts do
-		local character = eachPart.Parent
-		local characterPrimary = character.PrimaryPart 
-		if seenChars[character] or not characterPrimary then
+		local model = eachPart.Parent
+		if seenChars[model] then
 			continue
 		end
 		
-		local distance = (characterPrimary.Position - origin).Magnitude
 		local entity
 		
-		if character:HasTag("AGENT") then
-			entity = Agent.getByModel(character)
+		if model:HasTag("AGENT") then
+			entity = Agent.getByModel(model)
 		else
-			entity = Players:GetPlayerFromCharacter(character)
+			entity = Players:GetPlayerFromCharacter(model)
 		end
 		
 		if entity then
+			local characterPrimary = model.PrimaryPart 
+			local distance = (characterPrimary.Position - origin).Magnitude
 			inRadius[distance] = entity
 			contactCount += 1
 		end
 		
-		seenChars[character] = true
+		seenChars[model] = true
 	end
 
 	return inRadius, contactCount

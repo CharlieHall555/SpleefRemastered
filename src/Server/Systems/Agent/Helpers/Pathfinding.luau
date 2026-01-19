@@ -134,19 +134,28 @@ local function aStar(layer: Layer.Layer, startPos: Vector2, goalPos: Vector2): {
 end
 
 function Pathfinding.findPath(layer: Layer.Layer, startPos: Vector2, toPos: Vector2): path?
+	
 	local startBlock = layer:getBlock(startPos)
 	local goalBlock = layer:getBlock(toPos)
 	
-	if not startBlock or not goalBlock then
+	if not startBlock then
+		warn("[Pathfinding.findPath] No start block at position:", startPos)
+		return nil
+	end
+	
+	if not goalBlock then
+		warn("[Pathfinding.findPath] No goal block at position:", toPos)
 		return nil
 	end
 
+	
 	-- compute
 	local result = aStar(layer, startPos, toPos)
 	if #result == 0 then
 		return nil
 	end
 
+	
 	local newPath: path = {
 		pathId = HttpService:GenerateGUID(false),
 		waypoints = {},
