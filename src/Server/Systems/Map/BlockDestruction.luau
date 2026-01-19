@@ -7,6 +7,7 @@ local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
 local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
+local AgentMovement = require(ModuleDirectory.Systems.Agent.AgentMovement)
 
 export type DestroyRecord = {
     player: Player?,
@@ -121,6 +122,7 @@ local function destroyBlockRequest(player : Player , blockId : number)
 	
 		blockDestroyed(block.id , player)
     	TileScoring.onBlockDestroyed(parentLayer.layerIndex , block.layerPosition)
+		AgentMovement.onBlockDestroyed(block.id)
 		block:destroy()
 	end
 
@@ -134,6 +136,33 @@ local function destroyBlockRequest(player : Player , blockId : number)
 	end
     RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION" , blockId , blockToDestroy , blockPosition , player , "spade")
     
+end
+
+function BlockDestruction.destroyBlockFromAgent(block : number | Block.Block) -- dont need to track from agent
+	local blockToDestroy
+	if block == nil then
+		warn("Block to destroy cannot be nil must be a block instance or block.id.")
+		return
+	elseif typeof(block) == "string" or typeof(block) == "number" then
+		blockToDestroy = Block.get(block)
+	else
+		blockToDestroy = block
+	end
+
+	if blockToDestroy == nil then
+		warn("Agent destruction failed: block is nil")
+		return
+	end
+
+	local parentLayer = blockToDestroy:getParentLayer()
+	local blockPosition = blockToDestroy:getWorldPosition()
+	
+	TileScoring.onBlockDestroyed(parentLayer.layerIndex, blockToDestroy.layerPosition)
+	AgentMovement.onBlockDestroyed(block.id)
+
+	blockToDestroy:destroy()
+
+	RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION", blockToDestroy.id, blockToDestroy, blockPosition, nil, "agent")
 end
 
 function BlockDestruction.destroyBlock(block : number | Block.Block , fromPlayer : Player?) -- will only be called on server 
@@ -152,6 +181,10 @@ function BlockDestruction.destroyBlock(block : number | Block.Block , fromPlayer
 		warn("Destruction failed: block is nil")
 		return
 	end
+
+	local parentLayer = blockToDestroy:getParentLayer()
+	TileScoring.onBlockDestroyed(parentLayer.layerIndex, blockToDestroy.layerPosition)
+	AgentMovement.onBlockDestroyed(block.id)
 
 	blockToDestroy:destroy()
 

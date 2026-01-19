@@ -43,7 +43,7 @@ return {
 		{
 			height = 0,
 			size = Vector2.new(35, 35),
-			shape = "Override",
+			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			-- Combined: sandstone (light) + sand (dark)
@@ -54,7 +54,7 @@ return {
 		{
 			height = 30,
 			size = Vector2.new(35, 35),
-			shape = "Override",
+			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			tileMap = makeCheckerTileMapFromSize(Vector2.new(35, 35), "sandstone", "sand", true),
@@ -64,7 +64,7 @@ return {
 		{
 			height = 60,
 			size = Vector2.new(35, 35),
-			shape = "Override",
+			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			tileMap = makeCheckerTileMapFromSize(Vector2.new(35, 35), "sandstone", "sand", true),

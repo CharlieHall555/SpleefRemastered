@@ -61,10 +61,10 @@ function TouchedBlockTracker.init()
 end
 
 function TouchedBlockTracker.getLastTouchedBlocks(input: Player | Agent.Agent ): { TouchRecord }
-    if typeof(input) == "Player" then
-        return lastTouchedBlocks[input] or {}
+    if typeof(input) == "table" then
+        return lastTouchedBlocks[input.id] or {}
     else
-        return lastTouchedAgentBlocks[input.id] 
+        return lastTouchedAgentBlocks[input.UserId] 
     end
 
 end

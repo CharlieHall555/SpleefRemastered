@@ -133,13 +133,54 @@ local function aStar(layer: Layer.Layer, startPos: Vector2, goalPos: Vector2): {
 	end
 end
 
+-- Helper: Find nearest valid block position within a small radius
+local function findNearestValidBlock(layer: Layer.Layer, pos: Vector2, maxRadius: number): Vector2?
+	-- First check the exact position
+	if layer:getBlock(pos) then
+		return pos
+	end
+	
+	-- Search in expanding radius
+	for radius = 1, maxRadius do
+		for dx = -radius, radius do
+			for dy = -radius, radius do
+				if math.abs(dx) == radius or math.abs(dy) == radius then
+					local checkPos = Vector2.new(pos.X + dx, pos.Y + dy)
+					if layer:getBlock(checkPos) then
+						return checkPos
+					end
+				end
+			end
+		end
+	end
+	
+	return nil
+end
+
 function Pathfinding.findPath(layer: Layer.Layer, startPos: Vector2, toPos: Vector2): path?
 	
 	local startBlock = layer:getBlock(startPos)
 	local goalBlock = layer:getBlock(toPos)
 	
+	-- Try to find nearby valid blocks if exact positions don't have blocks
 	if not startBlock then
-		warn("[Pathfinding.findPath] No start block at position:", startPos)
+		local nearestStart = findNearestValidBlock(layer, startPos, 2)
+		if nearestStart then
+			startPos = nearestStart
+			startBlock = layer:getBlock(startPos)
+		end
+	end
+	
+	if not goalBlock then
+		local nearestGoal = findNearestValidBlock(layer, toPos, 2)
+		if nearestGoal then
+			toPos = nearestGoal
+			goalBlock = layer:getBlock(toPos)
+		end
+	end
+	
+	if not startBlock then
+		warn("[Pathfinding.findPath] No start block at position:", layer.layerIndex, startPos, "- block may have been destroyed")
 		return nil
 	end
 	

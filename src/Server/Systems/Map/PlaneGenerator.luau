@@ -7,7 +7,7 @@ export type Cell = {filled : "EMPTY | PLACE" , Material : string}
 
 export type PlaneCreationParams = {
     size: Vector2,
-    shape: "Circle" | "Square" | "Override" | "Checked_Even" | "Checked_Odd",
+    shape: "Circle" | "Square" | "OVERRIDE" | "Checked_Even" | "Checked_Odd",
     tileMap: ({ [number]: { [number]: Cell } })?,
 }
 
@@ -63,7 +63,7 @@ function PlaneGenerator.create(params: PlaneCreationParams): PlaneData
     elseif shape == "TILEMAP" then
         local tileMap = params.tileMap
         if not tileMap then
-            error("PlaneFactory.create: shape 'Override' requires params.tileMap")
+            error("PlaneFactory.create: shape 'OVERRIDE' requires params.tileMap")
         end
 
         -- Build from tileMap, ignoring size if dimensions differ

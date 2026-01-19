@@ -3,7 +3,7 @@ local MapSaves = script.Parent
 export type LayerParams = {
 	height: number,
 	size: Vector2,
-	shape: "Circle" | "Square" | "Override" | "Checked_Even" | "Checked_Odd",
+	shape: "Circle" | "Square" | "OVERRIDE" | "Checked_Even" | "Checked_Odd",
 	spawnsAmmo: boolean?,
 	regenerates: boolean?,
 	material: string,

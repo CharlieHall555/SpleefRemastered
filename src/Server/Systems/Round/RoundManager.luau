@@ -64,7 +64,6 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 	local nextMapData = MapSaves.getMap(MapSelection.getNextMap())
 	currentMap = MapGenerator.generate(nextMapData)
-	print("CurrentMap" , currentMap)
 	print("MapSpawn: @" .. VectorUtil.serializeVector3(currentMap.originPosition))
 	task.wait(1)
 

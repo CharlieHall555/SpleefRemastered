@@ -42,7 +42,7 @@ return {
 		{
 			height = 0,
 			size = Vector2.new(GRID, GRID),
-			shape = "Override",
+			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			-- start with ICE at (1,1)
@@ -51,7 +51,7 @@ return {
 		{
 			height = 30,
 			size = Vector2.new(GRID, GRID),
-			shape = "Override",
+			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			-- flip the checker so it doesn't visually “line up” with layer 0
@@ -60,7 +60,7 @@ return {
 		{
 			height = 60,
 			size = Vector2.new(GRID, GRID),
-			shape = "Override",
+			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			-- back to ICE at (1,1)

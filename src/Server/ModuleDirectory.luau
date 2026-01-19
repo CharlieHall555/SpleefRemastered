@@ -60,6 +60,7 @@ ModuleDirectory.Systems.Agent.AgentPersonalities = serverRoot.Systems.Agent.Agen
 
 ModuleDirectory.Systems.Agent.AgentMovement = serverRoot.Systems.Agent.Components.AgentMovement
 ModuleDirectory.Systems.Agent.AgentCombat = serverRoot.Systems.Agent.Components.AgentCombat
+ModuleDirectory.Systems.Agent.AgentAnimations = serverRoot.Systems.Agent.Components.AgentAnimations
 
 
 ModuleDirectory.Systems.Agent.CharacterGeneration = serverRoot.Systems.Agent.Helpers.CharacterGeneration

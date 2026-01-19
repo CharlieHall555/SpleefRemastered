@@ -137,7 +137,6 @@ function MapGenerator.generate(mapData: MapSaves.MapSave): Map.Map
 	local startTime = os.clock()
 	
 	local backgroundModel = cloneAndPlaceBackground(mapData)
-	print(backgroundModel)
 	local origin = resolveOriginAndPersist(mapData, backgroundModel)
 
 	local newMap = Map.new(origin)
@@ -150,8 +149,6 @@ function MapGenerator.generate(mapData: MapSaves.MapSave): Map.Map
 		placeBlocksForPlaneData(newLayer, layerOrigin, eachLayerParams, planeData)
         
 	end
-
-	print(newMap)
 	
 	local elapsed = os.clock() - startTime
 	warn(string.format("[MapGenerator] Map generation completed in %.3f seconds", elapsed))

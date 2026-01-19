@@ -20,8 +20,13 @@ end
 function CharacterGeneration.generateDummy() : Model
     local out = dummyTemplate:Clone()
     out.Parent = game.Workspace
+    out:AddTag("AGENT")
     local s , r = pcall(function()
-         out.PrimaryPart:SetNetworkOwner(nil)
+        for _ , each : BasePart in out:GetChildren() do
+            if each:IsA("BasePart") then
+                each:SetNetworkOwner(nil)
+            end
+        end
     end)
     if not s then
         warn(r)

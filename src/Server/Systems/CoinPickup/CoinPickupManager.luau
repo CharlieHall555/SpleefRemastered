@@ -130,6 +130,9 @@ local function trySpawnOne(): boolean
     while tries < 6 do
         tries += 1
         local block : Block.Block = layer:getRandomBlock()
+        if not block then
+            continue
+        end
         local spawnGridPos = Vector3.new(
                 block.layerPosition.X,
                 layer.originPosition.Y,
