@@ -172,6 +172,11 @@ ClientModuleDirectory.Spectate.FreecamMode = Root.Spectate.FreecamMode
 ClientModuleDirectory.Spectate.Controller = Root.Spectate.SpectateController
 ClientModuleDirectory.Spectate.CelebrationTracker = Root.Spectate.CelebrationTracker
 
+
+ClientModuleDirectory.Weather = {}
+ClientModuleDirectory.Weather.WeatherData = Root.Weather.WeatherData
+ClientModuleDirectory.Weather.WeatherManager = Root.Weather.WeatherManager
+
 --//====================================================
 --// Sound
 --//====================================================
@@ -197,6 +202,7 @@ ClientModuleDirectory.TutorialAnnouncer = Root.Tutorial.TutorialAnnouncer
 ClientModuleDirectory.PartPool = game:GetService("ReplicatedStorage").Utilities.PartPool
 ClientModuleDirectory.VectorUtil = game:GetService("ReplicatedStorage").Utilities.VectorUtil
 ClientModuleDirectory.TextUtilities = game:GetService("ReplicatedStorage").Utilities.TextUtilities
+
 
 --//====================================================
 --// Resources Handler

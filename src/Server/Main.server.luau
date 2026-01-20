@@ -18,16 +18,11 @@ local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
-local TutorialManager = require(ModuleDirectory.Systems.Tutorial.TutorialManager)
 
 RemoteEventHandler.newEventConnection("PLAYER_LOADED", function(player: Player)
 
 	local hasCompletedTutorial = PlayerData.getHasCompletedTutorial(player) or false
-	if hasCompletedTutorial then
-		PlayerPool.addToPool(player)
-	else
-		TutorialManager.start(player)
-	end
+	PlayerPool.addToPool(player)
 end)
 
 local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)

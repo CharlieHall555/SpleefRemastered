@@ -183,10 +183,14 @@ function BlockDestruction.destroyBlock(block : number | Block.Block , fromPlayer
 	end
 
 	local parentLayer = blockToDestroy:getParentLayer()
+	local blockPosition = blockToDestroy:getWorldPosition()
+
 	TileScoring.onBlockDestroyed(parentLayer.layerIndex, blockToDestroy.layerPosition)
 	AgentMovement.onBlockDestroyed(block.id)
 
 	blockToDestroy:destroy()
+	RemoteEventHandler.FireOnAllClients("BLOCK_DESTROY_CONFIRMATION", blockToDestroy.id, blockToDestroy, blockPosition, nil, "agent")
+
 
 end
 

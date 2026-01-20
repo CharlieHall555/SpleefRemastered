@@ -6,9 +6,12 @@ local Remove = LoadingScreen:WaitForChild("removeEvent")
 LoadingScreen.Parent = localPlayer:WaitForChild("PlayerGui")
 
 local Spinner = LoadingScreen.Loading:WaitForChild("Spinner")
+local SpinnerShadow = LoadingScreen.Loading:WaitForChild("SpinnerShadow")
 local LoadingFrame = LoadingScreen:WaitForChild("Loading")
 
 local LoadingMessage : TextLabel = LoadingFrame:WaitForChild("LoadingMessage")
+local LoadingMessageShadow : TextLabel = LoadingFrame:WaitForChild("LoadingMessageShadow")
+
 
 local Messages = {
     "Packing snowballs",
@@ -72,6 +75,7 @@ local dotCount = 0
 local function updateLabel()
 	if not running or not LoadingMessage or not LoadingMessage.Parent then return end
 	LoadingMessage.Text = string.format("%s%s", currentBase, string.rep(".", dotCount))
+    LoadingMessageShadow.Text = string.format("%s%s", currentBase, string.rep(".", dotCount))
 end
 
 -- stop loops if the screen is removed

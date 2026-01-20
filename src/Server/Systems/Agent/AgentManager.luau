@@ -20,20 +20,12 @@ function AgentManager.setOnAgentDeath(fn: (a: Agent.Agent) -> nil)
 	agentDeathCallback = fn
 end
 
-local function onAgentDied(a: Agent.Agent, killingPlayer: Player?)
+function AgentManager.onAgentDied(a: Agent.Agent)
 	if agentDeathCallback then
 		agentDeathCallback(a)
 	end
 
 	AgentsInGame.removeAgent(a)
-	
-	task.spawn(function()
-		task.wait()
-		if a then
-			a:Destroy()
-		end
-	end)
-
 end
 
 function AgentManager.preDestroy(a: Agent.Agent)

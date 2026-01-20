@@ -38,6 +38,7 @@ local GRID = 35
 
 return {
 	background = "Icefields",
+	weatherName = "snowyWeather",
 	layerParams = {
 		{
 			height = 0,

@@ -8,6 +8,14 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local VibrationService = require(ClientModuleDirectory.VibrationService)
 
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local ParticleText = require(ClientModuleDirectory.Gui.ParticleText)
+
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
+
+local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
+
 local KnockbackUtilities = require(ClientModuleDirectory.KnockbackUtilities)
 
 local ClientKnockback = {}
@@ -17,94 +25,119 @@ local FLASH_TIME = 0.25
 local HOLD_TIME = 0.05
 
 local function removeExisting(character: Model)
-    local existing = character:FindFirstChild(HIGHLIGHT_NAME)
-    if existing and existing:IsA("Highlight") then
-        existing:Destroy()
-    end
+	local existing = character:FindFirstChild(HIGHLIGHT_NAME)
+	if existing and existing:IsA("Highlight") then
+		existing:Destroy()
+	end
 end
 
 local function playHitFlashOn(character)
-    if not character then
-        return
-    end
+	if not character then
+		return
+	end
 
-    removeExisting(character)
+	removeExisting(character)
 
-    local highlight = Instance.new("Highlight")
-    highlight.Name = HIGHLIGHT_NAME
-    highlight.Adornee = character
-    highlight.DepthMode = Enum.HighlightDepthMode.Occluded
-    highlight.FillColor = Color3.fromRGB(255, 70, 70)
-    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-    highlight.FillTransparency = 1
-    highlight.OutlineTransparency = 1
-    highlight.Parent = character
+	local highlight = Instance.new("Highlight")
+	highlight.Name = HIGHLIGHT_NAME
+	highlight.Adornee = character
+	highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+	highlight.FillColor = Color3.fromRGB(255, 70, 70)
+	highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+	highlight.FillTransparency = 1
+	highlight.OutlineTransparency = 1
+	highlight.Parent = character
 
-    local tweenIn = TweenService:Create(
-        highlight,
-        TweenInfo.new(FLASH_TIME, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        { FillTransparency = 0.35, OutlineTransparency = 0 }
-    )
+	local tweenIn = TweenService:Create(
+		highlight,
+		TweenInfo.new(FLASH_TIME, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{ FillTransparency = 0.35, OutlineTransparency = 0 }
+	)
 
-    local tweenOut = TweenService:Create(
-        highlight,
-        TweenInfo.new(FLASH_TIME, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
-        { FillTransparency = 1, OutlineTransparency = 1 }
-    )
+	local tweenOut = TweenService:Create(
+		highlight,
+		TweenInfo.new(FLASH_TIME, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+		{ FillTransparency = 1, OutlineTransparency = 1 }
+	)
 
-    tweenIn:Play()
-    tweenIn.Completed:Wait()
+	tweenIn:Play()
+	tweenIn.Completed:Wait()
 
-    task.wait(HOLD_TIME)
+	task.wait(HOLD_TIME)
 
-    tweenOut:Play()
-    tweenOut.Completed:Wait()
+	tweenOut:Play()
+	tweenOut.Completed:Wait()
 
-    if highlight then
-        highlight:Destroy()
-    end
+	if highlight then
+		highlight:Destroy()
+	end
 end
 
 function ClientKnockback.knockback(dir: Vector3, power: number)
-    VibrationService.medium()
-    local character = LocalPlayer.Character
-    if not character then return end
+	VibrationService.medium()
+	local character = LocalPlayer.Character
+	if not character then
+		return
+	end
 
-    local rootPart = character:FindFirstChild("HumanoidRootPart") :: BasePart?
-    local humanoid = character:FindFirstChildOfClass("Humanoid") :: Humanoid?
-    if not rootPart or not humanoid then return end
-    if dir.Magnitude < 1e-3 then return end
+	local rootPart = character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local humanoid = character:FindFirstChildOfClass("Humanoid") :: Humanoid?
+	if not rootPart or not humanoid then
+		return
+	end
+	if dir.Magnitude < 1e-3 then
+		return
+	end
 
-    local impulse = KnockbackUtilities.computeImpulse(rootPart, humanoid, dir, power)
+	local impulse = KnockbackUtilities.computeImpulse(rootPart, humanoid, dir, power)
 
-    -- Optional micro-lift to reduce ground friction stickiness; tune as desired.
-    impulse += Vector3.new(0, rootPart.AssemblyMass * 15, 0)
+	-- Optional micro-lift to reduce ground friction stickiness; tune as desired.
+	impulse += Vector3.new(0, rootPart.AssemblyMass * 15, 0)
 
-    rootPart:ApplyImpulse(impulse)
+	rootPart:ApplyImpulse(impulse)
 end
 
 function ClientKnockback.init()
-    RemoteEventHandler.newEventConnection("KNOCKBACK", ClientKnockback.knockback)
+	RemoteEventHandler.newEventConnection("KNOCKBACK", ClientKnockback.knockback)
 
-    RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player)
-        if playerTarget and playerTarget.Character and playerTarget.Character.PrimaryPart then
-            SoundPlayer.queuePositionalSound("rbxassetid://146163534", playerTarget.Character.PrimaryPart.Position)
-        end
+	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player)
+		if playerTarget and playerTarget.Character and playerTarget.Character.PrimaryPart then
+			SoundPlayer.playSound("rbxassetid://146163534")
 
-        if not playerTarget or playerTarget == LocalPlayer then
-            return
-        end
+			if ClientStateTracker.getState() == "ACTIVE" then
+				local randomX = (math.random() - 0.5) / 5
+				local randomY = 1
+				local opts = {
+					speed = Vector2.new(randomX, randomY),
+					color = Color3.fromRGB(255, 255, 255),
+				}
 
-        playHitFlashOn(playerTarget.Character)
-    end)
+				local platform = PlatformDetector.getPlatform()
+				local lastMousePos = InputHandler.getLastMousePos()
 
-    RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION_CHAR", function(Char: Model)
-        if Char and Char.PrimaryPart then
-            SoundPlayer.queuePositionalSound("rbxassetid://146163534", Char.PrimaryPart.Position)
-        end
+				if platform == "PC" and lastMousePos then
+					ParticleText.new(LocalPlayer.PlayerGui.General, "HIT!", lastMousePos, opts)
+				elseif platform == "MOBILE" then
+					local screenPos = MobileCamera.getMobileCenterOffsetPos()
+					ParticleText.new(LocalPlayer.PlayerGui.General, "HIT!", screenPos, opts)
+				end
+			end
+		end
 
-        playHitFlashOn(Char)
-    end)
+		if not playerTarget or playerTarget == LocalPlayer then
+			return
+		end
+
+		playHitFlashOn(playerTarget.Character)
+	end)
+
+	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION_CHAR", function(Char: Model)
+		if Char and Char.PrimaryPart then
+			SoundPlayer.queuePositionalSound("rbxassetid://146163534", Char.PrimaryPart.Position)
+		end
+
+		playHitFlashOn(Char)
+	end)
 end
 
 return ClientKnockback

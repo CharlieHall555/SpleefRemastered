@@ -5,6 +5,7 @@ local CrossHair = require(ClientModuleDirectory.Gui.CrossHair)
 local AimAssistController = require(ClientModuleDirectory.Input.AimAssistController)
 
 local LocalPlayer = game.Players.LocalPlayer
+local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 local gameSettings = UserSettings().GameSettings
 
@@ -198,6 +199,29 @@ end
 function MobileCamera.setSensitivity(newX: number, newY: number?)
     _sensitivityX = newX
     _sensitivityY = newY or newX
+end
+
+function MobileCamera.getMobileCenterOffsetPos(): Vector2
+	local cam = workspace.CurrentCamera
+	local viewport: Vector2 = cam and cam.ViewportSize or Vector2.new(1280, 720)
+	local inset: Vector2 = GuiService:GetGuiInset()
+
+	local center = viewport * 0.5
+	-- Offset radius (~8% width, ~6% height); tweak to taste
+	local rX = viewport.X * 0.08
+	local rY = viewport.Y * 0.06
+
+	local offset = Vector2.new((math.random() * 2 - 1) * rX, (math.random() * 2 - 1) * rY)
+	local pos = center + offset
+
+	-- Clamp inside screen, respecting top inset
+	local pad = 12
+	local minX = math.max(pad, inset.X + pad)
+	local minY = math.max(pad, inset.Y + pad)
+	local maxX = viewport.X - pad
+	local maxY = viewport.Y - pad
+
+	return Vector2.new(math.clamp(pos.X, minX, maxX), math.clamp(pos.Y, minY, maxY))
 end
 
 return MobileCamera

@@ -11,6 +11,7 @@ local MapSaves = require(ModuleDirectory.Systems.Map.MapSaves)
 local PlaneGenerator = require(ModuleDirectory.Systems.Map.PlaneGenerator)
 local ServerConfigurations = require(game:GetService("ServerScriptService").ServerConfigurations)
 local LavaManager = require(ModuleDirectory.Systems.Gameplay.LavaManager)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 
 --ServerConfigurations.MAX_PARTS_PER_FRAME_PER_LAYER
 
@@ -139,6 +140,8 @@ function MapGenerator.generate(mapData: MapSaves.MapSave): Map.Map
 	local backgroundModel = cloneAndPlaceBackground(mapData)
 	local origin = resolveOriginAndPersist(mapData, backgroundModel)
 
+	RemoteEventHandler.FireOnAllClients("NEW_BACKGROUND_LOADED" , backgroundModel)
+	
 	local newMap = Map.new(origin)
 	newMap:setBackground(backgroundModel)
 

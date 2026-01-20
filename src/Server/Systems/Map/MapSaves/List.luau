@@ -11,6 +11,7 @@ export type LayerParams = {
 }
 
 export type MapSave = {
+	weatherName : string,
 	background: string,
 	originPosition: Vector3?,
 	layerParams: { LayerParams },

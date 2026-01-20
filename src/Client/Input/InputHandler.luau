@@ -27,6 +27,7 @@ local keyBindings: { [Enum.KeyCode]: { [string]: (InputAction) -> () } } = {}
 
 local inputStartTimes: { [InputObject]: number } = {} --[InputObject] to time
 
+local lastMousePos
 
 local function isAreaClear(xPos: number, yPos: number): boolean
 	for Index, EachGui: GuiObject in Player.PlayerGui:GetGuiObjectsAtPosition(xPos, yPos) do
@@ -179,7 +180,19 @@ function InputHandler.init()
 		InputHandler.queueEnd(input, data)
 	end)
 
+	UserInputService.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		lastMousePos = input.Position
+	end
+end)
+
+
 	RunService.RenderStepped:Connect(processInputs)
+end
+
+
+function InputHandler.getLastMousePos() : Vector3?
+	return lastMousePos
 end
 
 return InputHandler

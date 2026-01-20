@@ -158,7 +158,7 @@ function RoundSystem.processEvent(eventToProcess: EventContext): nil
         elseif eventToProcess.name == "ACTIVE_POOL_CHANGED" then
             if #PlayersInGame.getActivePlayers() <= Config.PLAYERS_TO_END then
                 RoundSystem.changeState("ENDING")
-            elseif nPlayersAndAgents() <= Config.REQ_PLAYERS_AND_AGENTS then
+            elseif nPlayersAndAgents() < Config.REQ_PLAYERS_AND_AGENTS then
                 RoundSystem.changeState("ENDING")
             end
         end

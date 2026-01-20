@@ -25,15 +25,11 @@ local VibrationService = require(ClientModuleDirectory.VibrationService)
 local HitBoxManager = require(ClientModuleDirectory.HitBoxManager)
 local ParticlePlayer = require(ClientModuleDirectory.ParticlePlayer)
 local MouseIcon = require(ClientModuleDirectory.Gui.MouseIcon)
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
+local Camera = workspace.CurrentCamera
+local WeatherManager = require(ClientModuleDirectory.Weather.WeatherManager)
 
-
-local lastMousePos
-
-UserInputService.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		lastMousePos = input.Position
-	end
-end)
 
 local MiscBindings = {}
 
@@ -53,28 +49,7 @@ end
 
 local GuiService = game:GetService("GuiService")
 
-local function getMobileCenterOffsetPos(): Vector2
-	local cam = workspace.CurrentCamera
-	local viewport: Vector2 = cam and cam.ViewportSize or Vector2.new(1280, 720)
-	local inset: Vector2 = GuiService:GetGuiInset()
 
-	local center = viewport * 0.5
-	-- Offset radius (~8% width, ~6% height); tweak to taste
-	local rX = viewport.X * 0.08
-	local rY = viewport.Y * 0.06
-
-	local offset = Vector2.new((math.random() * 2 - 1) * rX, (math.random() * 2 - 1) * rY)
-	local pos = center + offset
-
-	-- Clamp inside screen, respecting top inset
-	local pad = 12
-	local minX = math.max(pad, inset.X + pad)
-	local minY = math.max(pad, inset.Y + pad)
-	local maxX = viewport.X - pad
-	local maxY = viewport.Y - pad
-
-	return Vector2.new(math.clamp(pos.X, minX, maxX), math.clamp(pos.Y, minY, maxY))
-end
 
 function MiscBindings.onSnowballGained(amount)
 	local platform = PlatformDetector.getPlatform()
@@ -85,11 +60,11 @@ function MiscBindings.onSnowballGained(amount)
 		speed = Vector2.new(randomX, randomY),
 		color = Color3.fromRGB(255, 255, 255),
 	}
-
+	local lastMousePos = InputHandler.getLastMousePos()
 	if platform == "PC" and lastMousePos then
 		ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), lastMousePos, opts)
 	elseif platform == "MOBILE" then
-		local screenPos = getMobileCenterOffsetPos()
+		local screenPos = MobileCamera.getMobileCenterOffsetPos()
 		ParticleText.new(LocalPlayer.PlayerGui.General, "+" .. tostring(amount), screenPos, opts)
 	end
 end
@@ -109,11 +84,8 @@ function MiscBindings.init()
 		end
 	end)
 
-	RemoteEventHandler.newEventConnection("AGENT_DIED", function(playerWhoDied: Player)
+	RemoteEventHandler.newEventConnection("AGENT_DIED", function()
 		SoundPlayer.playSound(lightning, { volume = 0.3 })
-		if playerWhoDied == LocalPlayer then
-			VibrationService.medium()
-		end
 	end)
 
 	RemoteEventHandler.newEventConnection("AMMO_GAINED", MiscBindings.onSnowballGained)
@@ -127,6 +99,9 @@ function MiscBindings.init()
 	end)
 
 	ClientStateTracker.connectIntermission(function()
+		
+	
+		WeatherManager.setWeather("lobbyWeather")
 		MouseIcon.reset()
 	end)
 
@@ -142,24 +117,12 @@ function MiscBindings.init()
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(died: Player, killer: Player)
-		if died and killer then
-			SystemMessage.send(
-				killer.DisplayName .. " ELIMINATED " .. died.DisplayName,
-				Color3.new(0.937254, 0.019607, 0.019607),
-				true
-			)
-		else
-			SystemMessage.send(died.DisplayName .. " DIED", Color3.new(0.788235, 0.129411, 0.043137), true)
-		end
+
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
 
-		if playerName and winner then
-			SystemMessage.send(winner.DisplayName .. " WON", Color3.new(0.862745, 0.890196, 0.352941), true)
-		else
-			SystemMessage.send("NOBODY " .. " WON", Color3.new(0.862745, 0.890196, 0.352941), true)
-		end
+	
 
 	end)
 
@@ -185,6 +148,7 @@ function MiscBindings.init()
 
 	local CoinSound = "rbxassetid://607665037"
 	HitBoxManager.setUpCallback("COIN_PICKUP", function(part: BasePart)
+		ParticlePlayer.queueEmission("coin", part.Position, 12)
 		SoundPlayer.playSound(CoinSound)
 	 end)
 

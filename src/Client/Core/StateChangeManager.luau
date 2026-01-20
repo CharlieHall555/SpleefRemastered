@@ -17,7 +17,6 @@ function StateChangeManager.init()
 
     ClientStateTracker.connectRoundStarting(function()
         
-        SystemMessage.send("ROUND STARTING" , Color3.fromRGB(9, 134, 16) , true)
 
     end)
 

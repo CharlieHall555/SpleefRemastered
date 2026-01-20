@@ -10,6 +10,9 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local TweenService = game:GetService("TweenService")
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local SummaryWidget = require(ClientModuleDirectory.Gui.SummaryWidget)
+local Camera = game.Workspace.CurrentCamera
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local WinnerEffect = {}
 
@@ -18,6 +21,15 @@ local label: TextLabel
 local particleTemplate: ImageLabel?
 local hook1: Frame
 local hook2: Frame
+
+local function resetCamera()
+	if LocalPlayer.Character then
+		Camera.CameraSubject = LocalPlayer.Character
+		if PlatformDetector:getPlatform() == "MOBILE" then
+			MobileCamera.enable()
+		end
+	end
+end
 
 -- helper to create a configured emitter
 local function createEmitter(hook: Frame, color: Color3): any
@@ -64,7 +76,7 @@ local function tryPlayPendingIfAllowed()
 		else
 			WinnerEffect.onNobodyWins()
 		end
-	
+
 		pendingWin = nil
 	end
 end
@@ -98,36 +110,41 @@ function WinnerEffect.onProfileLoaded()
 	SummaryWidget.connectOnClose(function()
 		tryPlayPendingIfAllowed()
 	end)
+
+	RemoteEventHandler.newEventConnection("WINNDER_DISPLAY_END", function(player)
+		resetCamera()
+	end)
 end
 
 local function fireworkEffect()
-	SoundPlayer.playSound("rbxassetid://121821052187356")
+	SoundPlayer.playSound("rbxassetid://9113263649")
 	emitter1:Emit(15)
 	emitter2:Emit(15)
 
 	task.wait(0.5)
-	SoundPlayer.playSound("rbxassetid://121821052187356")
+	SoundPlayer.playSound("rbxassetid://9113263649")
 	emitter3:Emit(15)
 	emitter4:Emit(15)
 
 	task.wait(0.65)
 	emitter1:Emit(15)
 	emitter2:Emit(15)
-	SoundPlayer.playSound("rbxassetid://121821052187356")
+	SoundPlayer.playSound("rbxassetid://9113263649")
 
 	task.wait(0.85)
 	emitter3:Emit(15)
 	emitter4:Emit(15)
-	SoundPlayer.playSound("rbxassetid://121821052187356")
+	SoundPlayer.playSound("rbxassetid://9113263649")
 end
 
-function WinnerEffect.onNobodyWins()
-end
+function WinnerEffect.onNobodyWins() end
 
 function WinnerEffect.onWin(winnerName: string, winner: Player?)
 	task.spawn(function()
-		-- brief delay so the HUD has settled
-		task.wait(3)
+		if winner.Character then
+			print("set camera")
+			Camera.CameraSubject = winner.Character
+		end
 
 		local display = (winner and winner.DisplayName) or winnerName or "Winner"
 		label.Text = display .. " Won"
@@ -140,7 +157,7 @@ function WinnerEffect.onWin(winnerName: string, winner: Player?)
 		winnerWidget.Visible = true
 		winnerWidget.Position = offscreenTop
 
-		SoundPlayer.playSound("rbxassetid://113939513589596" , {volume = 0.4})
+		SoundPlayer.playSound("rbxassetid://113939513589596", { volume = 0.4 })
 		local inTweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		local inTween = TweenService:Create(winnerWidget, inTweenInfo, { Position = targetPos })
 		inTween:Play()

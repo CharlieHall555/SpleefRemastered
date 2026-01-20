@@ -38,6 +38,7 @@ end
 
 return {
 	background = "Desert",
+	weatherName = "desertWeather",
 	layerParams = {
 		-- height 0 (combined)
 		{

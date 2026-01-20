@@ -138,8 +138,8 @@ local function trySpawnOne(): boolean
                 layer.originPosition.Y,
                 block.layerPosition.Y
             )
-        if block and block.Part and block.Part:IsA("BasePart") and SnowballPickupManager.isPositionFree(spawnGridPos) and CoinPickupManager.isPositionFree(spawnGridPos) then
-            local pos = block.Part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
+        if block and block.part and block.part:IsA("BasePart") and SnowballPickupManager.isPositionFree(spawnGridPos) and CoinPickupManager.isPositionFree(spawnGridPos) then
+            local pos = block.part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
             local uid = CoinPickup.new(pos)
 
             if uid then

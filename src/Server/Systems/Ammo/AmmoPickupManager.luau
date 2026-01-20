@@ -120,13 +120,16 @@ local function trySpawnOne(): boolean
     while tries < 6 do
         tries += 1
         local block : Block.Block = layer:getRandomBlock()
+        if not block then
+            continue
+        end
         local spawnGridPos = Vector3.new(
                 block.layerPosition.X,
                 layer.originPosition.Y,
                 block.layerPosition.Y
             )
-        if block and block.Part and block.Part:IsA("BasePart") and AmmoPickupManager.isPositionFree(spawnGridPos) then
-            local pos = block.Part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
+        if block and block.part and block.part:IsA("BasePart") and AmmoPickupManager.isPositionFree(spawnGridPos) then
+            local pos = block.part.Position + Vector3.new(0, Config.AMMO_SPAWN_HEIGHT_OFFSET, 0)
             local uid = SnowballAmmoPickup.new(pos)
 
             if uid then

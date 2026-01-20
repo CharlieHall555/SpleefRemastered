@@ -27,6 +27,7 @@ end
 
 return {
 	background = "Grasslands",
+	weatherName = "lobbyWeather",
 	layerParams = {
 		{
             shape = "SQUARE",

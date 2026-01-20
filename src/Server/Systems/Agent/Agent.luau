@@ -19,6 +19,8 @@ local AgentMovement = require(ModuleDirectory.Systems.Agent.AgentMovement)
 local AgentCombat = require(ModuleDirectory.Systems.Agent.AgentCombat)
 local AgentAnimations = require(ModuleDirectory.Systems.Agent.AgentAnimations)
 
+local AgentManager
+
 local currentMap: Map.Map? = nil
 
 local Agent = {}
@@ -214,15 +216,41 @@ end
 
 function Agent.die(self: Agent): nil 
 	self.alive = false
+	AgentManager.onAgentDied(self)
 	self:destroy()
 end
 
 function Agent.destroy(self: Agent): nil
+	-- Stop active behaviors
+	if self.wanderActive then
+		self:stopWander()
+	end
+	
+	-- Disconnect all connections
+	for _, connection in pairs(self.connections) do
+		connection:Disconnect()
+	end
+	table.clear(self.connections)
+	
+	-- Clear combat state
+	if self.combatState and self.combatState.threats then
+		table.clear(self.combatState.threats)
+	end
+	
+	-- Clear movement state
+	if self.movementState then
+		self.movementState.currentPath = nil
+		self.movementState.waypointN = nil
+	end
+	
+	-- Remove from registry
 	loadedAgents[self.id] = nil
+	
+	-- Destroy model
 	if self.model then
 		self.model:Destroy()
+		self.model = nil
 	end
-	self.eventQueue = {}
 end
 
 function Agent.getLayerCurrentlyOn(self: Agent): Layer.Layer?
@@ -251,10 +279,6 @@ function Agent.snapToGrid(self: Agent): { layerIndex: number, layerPosition: Vec
 	return currentMap:snapPositionToGrid(rootPart.Position)
 end
 
-function Agent.init()
-	Layer = require(ModuleDirectory.Systems.Map.Layer)
-	Map = require(ModuleDirectory.Systems.Map.Map)
-end
 
 function Agent.visionUpdate(self: Agent)
 	local threats, threatCount = AgentCombat.getPlayersInRadius(self, self.config.threatRadius)
@@ -280,5 +304,12 @@ function Agent.tick(self: Agent, dt: number)
 	AgentCombat.tick(self , dt)
 
 end
+
+function Agent.init()
+	Layer = require(ModuleDirectory.Systems.Map.Layer)
+	Map = require(ModuleDirectory.Systems.Map.Map)
+	AgentManager = require(ModuleDirectory.Systems.Agent.AgentManager)
+end
+
 
 return Agent

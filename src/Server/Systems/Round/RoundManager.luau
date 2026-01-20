@@ -32,16 +32,17 @@ local CoinPickupManager = require(ModuleDirectory.Systems.Coins.CoinPickupManage
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local Overhead = require(ModuleDirectory.Overhead)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
-local TutorialManager = require(ModuleDirectory.Systems.Tutorial.TutorialManager)
 local AgentManager = require(ModuleDirectory.Systems.Agent.AgentManager)
 local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
 local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
 local Agent = require(ModuleDirectory.Systems.Agent.Agent)
+local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
 
-local LobbySpawn
+local LobbySpawn 
+local currentWeather
 
 local SuddenDeathTimer = Timer.new()
 
@@ -64,6 +65,7 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
 	local nextMapData = MapSaves.getMap(MapSelection.getNextMap())
 	currentMap = MapGenerator.generate(nextMapData)
+	currentWeather = nextMapData.weatherName or "lobbyWeather"
 	print("MapSpawn: @" .. VectorUtil.serializeVector3(currentMap.originPosition))
 	task.wait(1)
 
@@ -115,6 +117,8 @@ local function onRoundPreparing(currentRound) -- and then this
 		TeleportManager.teleport(eachPlayer, Position)
 	end
 
+	RemoteEventHandler.FireOnClients(PlayersInGame.getActivePlayers() , "SET_CLIENT_WEATHER" , currentWeather)
+
 	print("[RoundManager.onRoundPreparing] Activating agents")
 	AgentManager.activateAgents()
 	AgentManager.sendAgentModels(PlayersInGame.getActivePlayers())
@@ -122,11 +126,9 @@ local function onRoundPreparing(currentRound) -- and then this
 end
 
 local function onRoundEnding(currentRound)
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 	SuddenDeathTimer:End()
 	AmmoPickupManager.stop()
 	TileScoring.stop()
-
 	AmmoManager.reset()
 	RespawnManager.onRoundEnd()
 	RespawnManager.setMap(nil)
@@ -151,21 +153,29 @@ local function onRoundEnding(currentRound)
 			Leaderstats.updateStat(Winner, "Wins", totalWins)
 			WinBadgeHandler.playerAwardedWin(Winner, totalWins)
 			Overhead.refreshForPlayer(Winner)
-			RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
 		else
-			RemoteEventHandler.FireOnAllClients("PLAYER_WON", nil , nil)
 			PodiumManager.clear()
 			print("No winner")
 		end
 	end
 
-	RoundSummary.onRoundEnd(currentRound, Winner)
 	CoinPickupManager.stop()
 	KnockbackTracker.reset()
 	EliminationTracker.reset()
 	BlockDestruction.reset()
+		
+	if Winner then
+		RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
+		task.wait(3) -- 3 second pause before teleporting and destroing map
+	else
+		RemoteEventHandler.FireOnAllClients("PLAYER_WON", nil, nil)
+	end
+
+	RemoteEventHandler.FireOnAllClients("WINNDER_DISPLAY_END")
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
+
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
-	task.wait()
+	RoundSummary.onRoundEnd(currentRound, Winner)
 	
 	local success, err = pcall(function()
 		currentMap:destroy()
@@ -179,7 +189,11 @@ local function onRoundEnding(currentRound)
 	task.wait(1)
 end
 
-local function onRoundIntermission(currentRound) end
+local function onRoundIntermission(currentRound) 
+	RemoteEventHandler.FireOnClients(PlayerPool.getActivePool(), "CHANGE_STATE", "INTERMISSION")
+
+
+end
 
 function RoundManager.getCurrentMap(): {}?
 	return currentMap
@@ -233,7 +247,7 @@ end
 function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
 	if SessionVariables.getValue(playerWhoDied, "inTutorial") == true then
 
-		local tutorailMap = TutorialManager.getTutorialMap(playerWhoDied)
+		--[[local tutorailMap = TutorialManager.getTutorialMap(playerWhoDied)
 		print(tutorailMap)
 		if tutorailMap and tutorailMap.originPosition then
 			local TELEPORT_OFFSET = Vector3.new(0, 50, 0)
@@ -243,7 +257,7 @@ function RoundManager.onPlayerDeath(playerWhoDied: Player, wasAlive: boolean)
 					TeleportManager.teleport(playerWhoDied, tutorailMap.originPosition + TELEPORT_OFFSET, true)
 				end
 			end)
-		end
+		end]]--
 	else
 		RemoteEventHandler.FireOnClient(playerWhoDied, "CHANGE_STATE", "INTERMISSION")
 		local Eliminator = EliminationTracker.getEliminator(playerWhoDied)
@@ -260,7 +274,8 @@ end
 
 function RoundManager.onAgentDeath(agentWhoDied)
 	local Eliminator = nil
-	RemoteEventHandler.FireOnAllClients("AGENT_DIED", agentWhoDied, Eliminator)
+	-- Send only the agent's model instead of the entire Agent object (which has circular references)
+	RemoteEventHandler.FireOnAllClients("AGENT_DIED", agentWhoDied.id , agentWhoDied.model, Eliminator)
 end
 
 return RoundManager

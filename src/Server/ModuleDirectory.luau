@@ -158,10 +158,6 @@ ModuleDirectory.Systems.Tool.ShovelCustomization = serverRoot.Systems.Tools.Shov
 --//====================================================
 --// Tutorial System
 --//====================================================
-ModuleDirectory.Systems.Tutorial = {}
-ModuleDirectory.Systems.Tutorial.TutorialManager = serverRoot.Systems.Tutorial.TutorialManager
-ModuleDirectory.Systems.Tutorial.tutorialMapGenerator = serverRoot.Systems.Tutorial.TutorialMapGenerator
-ModuleDirectory.Systems.Tutorial.Dummy = serverRoot.Systems.Tutorial.Npc
 
 --//====================================================
 --// Rewards System

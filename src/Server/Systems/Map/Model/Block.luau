@@ -266,7 +266,9 @@ function Block.destroy(self : Block): nil
 
 	if self.parentLayerId then
 		local parentLayer = self:getParentLayer()
-		parentLayer:removeBlock(self)
+		if parentLayer then
+			parentLayer:removeBlock(self)
+		end
 	end
 
 	loadedBlocks[self.id] = nil

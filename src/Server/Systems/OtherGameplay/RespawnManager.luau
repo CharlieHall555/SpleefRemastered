@@ -76,7 +76,7 @@ function RespawnManager.respawnPlayer(player): boolean
 		local randomBlock = topLayer:getRandomBlock()
 		local Position = Vector3.new(0, 150, 0)
 		if randomBlock then
-			Position = randomBlock.Part.Position + Vector3.new(0, 30, 0)
+			Position = randomBlock:getWorldPosition() + Vector3.new(0, 30, 0)
 		else
 			Position = currentMap.originPosition + Vector3.new(0, 150, 0)
 		end

@@ -170,18 +170,31 @@ end
 
 
 function Map.destroy(self: Map): nil
+    -- Stop all block tweens (slow falling blocks) before destroying
+    Block.stopAllTweens()
+    
+    -- Destroy background
     if self.background then
         self.background:Destroy()
+        self.background = nil
     end
-    for _, layer in self.layers do
-        for _, blk in ipairs(table.clone(layer.blocks)) do
-            blk:destroy()
+    
+    -- Destroy all layers (making a copy to avoid mutation during iteration)
+    local layersCopy = table.clone(self.layers)
+    for _, layer in ipairs(layersCopy) do
+        if layer then
+            layer:destroy()
         end
-        layer:destroy()
     end
-
+    
+    -- Clear all references
+    table.clear(self.layers)
+    if self.worldHeightToLayer then
+        table.clear(self.worldHeightToLayer)
+    end
+    
+    -- Remove from registry
     loadedMaps[self.id] = nil
-    self = nil
 end
 
 function Map.init()

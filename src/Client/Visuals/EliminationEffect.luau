@@ -5,6 +5,10 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local VibrationService = require(ClientModuleDirectory.VibrationService)
+local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
+local ParticleText = require(ClientModuleDirectory.Gui.ParticleText)
+local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
+local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
 
 local EliminationEffect = {}
 
@@ -32,12 +36,21 @@ local function fireEffect()
 	local opts: ParticleText.ParticleTextOptions = {
 		image = "rbxassetid://111822138056370",
 		speed = Vector2.new(randomX, randomY),
-		color = Color3.fromRGB(255, 255, 255), -- optional highlight color
+		color = Color3.fromRGB(165, 9, 9), -- optional highlight color
 		size = UDim2.fromScale(0.15, 0.15),
 	}
 
+	local platform = PlatformDetector.getPlatform()
+	local lastMousePos = InputHandler.getLastMousePos()
+
+	if platform == "PC" and lastMousePos then
+		ParticleText.new(Screens.general, "ELIMINATION!", lastMousePos, opts)
+	elseif platform == "MOBILE" then
+		local screenPos = MobileCamera.getMobileCenterOffsetPos()
+		ParticleText.new(Screens.general, "ELIMINATION!", screenPos, opts)
+	end
+
     SoundPlayer.playSound("rbxassetid://8595984380" , {volume = 0.35 , playbackSpeed = 1.1})
-	ParticleText.new(Screens.general, "Elimination", calcMidScreen(), opts)
 end
 
 function EliminationEffect.init()

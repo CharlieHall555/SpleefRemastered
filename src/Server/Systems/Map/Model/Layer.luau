@@ -166,20 +166,26 @@ end
 
 -- Destroy layer
 function Layer.destroy(self: Layer): nil
-
+	-- Remove from parent map first
 	local parentMap = self:getMap()
 	if parentMap then
 		parentMap:removeLayer(self)
 	end
 
+	-- Remove from registry
 	loadedLayers[self.id] = nil
 
-	for _, blk in ipairs(self.blocks) do
-		blk:destroy()
+	-- Destroy all blocks (making a copy to avoid mutation during iteration)
+	for _, blk in ipairs(table.clone(self.blocks)) do
+		if blk then
+			blk:destroy()
+		end
 	end
 
-	self.blocks = {}
-	self.tileMap = {}
+	-- Clear all references
+	table.clear(self.blocks)
+	table.clear(self.tileMap)
+	self.parentMapId = nil
 end
 
 -- Is empty
