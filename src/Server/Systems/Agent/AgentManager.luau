@@ -90,9 +90,10 @@ function AgentManager.createAgentsFor(currentMap: Map.Map, n: number)
 	for i = 1, n do
 		local randomBlock = topLayer:getRandomBlock()
 		local position = randomBlock:getWorldPosition() + Vector3.new(0, 150, 0)
-		local agentParams = AgentPersonalities.createRandom(position)
+		local agentParams, difficulty = AgentPersonalities.createRandom(position)
 		local newAgent = AgentManager.generateAgent(agentParams)
-		print("[AgentManager.createAgentsFor] Created agent", i, "ID:", newAgent.id, "at position:", position)
+		newAgent.model:SetAttribute("AgentDifficulty", difficulty)
+		print("[AgentManager.createAgentsFor] Created agent", i, "ID:", newAgent.id, "Difficulty:", difficulty, "at position:", position)
 
 		charAgent[newAgent.model] = newAgent
 	end
