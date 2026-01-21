@@ -23,6 +23,7 @@ local hook1: Frame
 local hook2: Frame
 
 local function resetCamera()
+	print("RESET CAMERA")
 	if LocalPlayer.Character then
 		Camera.CameraSubject = LocalPlayer.Character
 		if PlatformDetector:getPlatform() == "MOBILE" then

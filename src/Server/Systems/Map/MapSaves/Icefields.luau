@@ -34,7 +34,7 @@ local function makeCheckerTileMap(
 	return tileMap
 end
 
-local GRID = 35
+local GRID = 30
 
 return {
 	background = "Icefields",

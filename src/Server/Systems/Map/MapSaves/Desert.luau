@@ -36,6 +36,8 @@ local function makeCheckerTileMapFromSize(
 	return tileMap
 end
 
+local GRID = 30
+
 return {
 	background = "Desert",
 	weatherName = "desertWeather",
@@ -43,32 +45,32 @@ return {
 		-- height 0 (combined)
 		{
 			height = 0,
-			size = Vector2.new(35, 35),
+			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
 			spawnsAmmo = true,
 
 			-- Combined: sandstone (light) + sand (dark)
-			tileMap = makeCheckerTileMapFromSize(Vector2.new(35, 35), "sandstone", "sand", true),
+			tileMap = makeCheckerTileMapFromSize(Vector2.new(GRID, GRID), "sandstone", "sand", true),
 		},
 
 		-- height 30 (combined)
 		{
 			height = 30,
-			size = Vector2.new(35, 35),
+			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
 			spawnsAmmo = true,
 
-			tileMap = makeCheckerTileMapFromSize(Vector2.new(35, 35), "sandstone", "sand", true),
+			tileMap = makeCheckerTileMapFromSize(Vector2.new(GRID, GRID), "sandstone", "sand", true),
 		},
 
 		-- height 60 (combined)
 		{
 			height = 60,
-			size = Vector2.new(35, 35),
+			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
 			spawnsAmmo = true,
 
-			tileMap = makeCheckerTileMapFromSize(Vector2.new(35, 35), "sandstone", "sand", true),
+			tileMap = makeCheckerTileMapFromSize(Vector2.new(GRID, GRID), "sandstone", "sand", true),
 		},
 	},
 }

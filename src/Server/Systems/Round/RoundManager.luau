@@ -159,23 +159,23 @@ local function onRoundEnding(currentRound)
 		end
 	end
 
+	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
+
+	if Winner then
+		RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
+	else
+		RemoteEventHandler.FireOnAllClients("PLAYER_WON", nil, nil)
+	end
+
+	RoundSummary.onRoundEnd(currentRound, Winner)
+
 	CoinPickupManager.stop()
 	KnockbackTracker.reset()
 	EliminationTracker.reset()
 	BlockDestruction.reset()
 		
-	if Winner then
-		RemoteEventHandler.FireOnAllClients("PLAYER_WON", Winner.DisplayName, Winner)
-		task.wait(3) -- 3 second pause before teleporting and destroing map
-	else
-		RemoteEventHandler.FireOnAllClients("PLAYER_WON", nil, nil)
-	end
-
-	RemoteEventHandler.FireOnAllClients("WINNDER_DISPLAY_END")
-	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "INTERMISSION")
 
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
-	RoundSummary.onRoundEnd(currentRound, Winner)
 	
 	local success, err = pcall(function()
 		currentMap:destroy()

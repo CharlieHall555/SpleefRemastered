@@ -25,6 +25,9 @@ local function makeCheckerTileMap(rows: number, cols: number, lightMat: string, 
 	return tileMap
 end
 
+local GRID = 30
+
+
 return {
 	background = "Grasslands",
 	weatherName = "lobbyWeather",
@@ -32,27 +35,27 @@ return {
 		{
             shape = "SQUARE",
 			height = 0,
-			size = Vector2.new(35, 35),
+			size = Vector2.new(GRID, GRID),
 			spawnsAmmo = true,
 
 			-- Combined from Checked_Odd (grass_light) + Checked_Even (grass)
-			tileMap = makeCheckerTileMap(35, 35, "grass_light", "grass", true),
+			tileMap = makeCheckerTileMap(GRID, GRID, "grass_light", "grass", true),
 		},
 		{
             shape = "SQUARE",
 			height = 30,
-			size = Vector2.new(35, 35),
+			size = Vector2.new(GRID, GRID),
 			spawnsAmmo = true,
 
-			tileMap = makeCheckerTileMap(35, 35, "grass_light", "grass", true),
+			tileMap = makeCheckerTileMap(GRID, GRID, "grass_light", "grass", true),
 		},
 		{
             shape = "SQUARE",
 			height = 60,
-			size = Vector2.new(35, 35),
+			size = Vector2.new(GRID, GRID),
 			spawnsAmmo = true,
 
-			tileMap = makeCheckerTileMap(35, 35, "grass_light", "grass", true),
+			tileMap = makeCheckerTileMap(GRID, GRID, "grass_light", "grass", true),
 		},
 	},
 }

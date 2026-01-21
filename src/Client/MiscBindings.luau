@@ -127,6 +127,13 @@ function MiscBindings.init()
 	end)
 
 	ClientStateTracker.connectActive(function()
+
+		if LocalPlayer.Character then
+			Camera.CameraSubject = LocalPlayer.Character
+			if PlatformDetector:getPlatform() == "MOBILE" then
+				MobileCamera.enable()
+			end
+		end
 		MovementDampener.enable()
 	end)
 
