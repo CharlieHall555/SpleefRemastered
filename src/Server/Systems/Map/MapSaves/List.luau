@@ -31,7 +31,8 @@ export type PlaceInfo = {
 local MapSaves = {
 	Grasslands = require(MapSaves.Grasslands),
 	Icefields = require(MapSaves.Icefields),
-	Desert = require(MapSaves.Desert)
+	Desert = require(MapSaves.Desert),
+	Candy = require(MapSaves.Candy)
 }
 
 function MapSaves.getMap(mapName : string): MapSave?
@@ -39,7 +40,7 @@ function MapSaves.getMap(mapName : string): MapSave?
 end
 
 function MapSaves.getNames() : {string}
-	return {"Grasslands", "Desert", "Icefields"}
+	return {"Grasslands", "Desert", "Icefields" ,}
 end
 
 function MapSaves.chooseRandom(excludes : {string}?) : (MapSave, string)

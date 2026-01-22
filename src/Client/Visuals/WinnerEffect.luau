@@ -10,9 +10,6 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local TweenService = game:GetService("TweenService")
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local SummaryWidget = require(ClientModuleDirectory.Gui.SummaryWidget)
-local Camera = game.Workspace.CurrentCamera
-local MobileCamera = require(ClientModuleDirectory.Input.MobileCamera)
-local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
 local WinnerEffect = {}
 
@@ -22,15 +19,7 @@ local particleTemplate: ImageLabel?
 local hook1: Frame
 local hook2: Frame
 
-local function resetCamera()
-	print("RESET CAMERA")
-	if LocalPlayer.Character then
-		Camera.CameraSubject = LocalPlayer.Character
-		if PlatformDetector:getPlatform() == "MOBILE" then
-			MobileCamera.enable()
-		end
-	end
-end
+
 
 -- helper to create a configured emitter
 local function createEmitter(hook: Frame, color: Color3): any
@@ -112,9 +101,7 @@ function WinnerEffect.onProfileLoaded()
 		tryPlayPendingIfAllowed()
 	end)
 
-	RemoteEventHandler.newEventConnection("WINNDER_DISPLAY_END", function(player)
-		resetCamera()
-	end)
+
 end
 
 local function fireworkEffect()
@@ -142,10 +129,6 @@ function WinnerEffect.onNobodyWins() end
 
 function WinnerEffect.onWin(winnerName: string, winner: Player?)
 	task.spawn(function()
-		if winner.Character then
-			print("set camera")
-			Camera.CameraSubject = winner.Character
-		end
 
 		local display = (winner and winner.DisplayName) or winnerName or "Winner"
 		label.Text = display .. " Won"

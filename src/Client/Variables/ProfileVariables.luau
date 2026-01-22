@@ -1,4 +1,4 @@
--- UserProfile.lua
+-- ProfileVariables.lua
 -- Client-side profile cache with queued updates & filtered callbacks.
 
 local Players = game:GetService("Players")
@@ -9,7 +9,7 @@ export type CallbackFn = (valueName: string, newValue: any) -> nil
 export type CallbackRec = { id: number, fn: CallbackFn, filter: string? }
 export type QueueItem = { name: string, value: any }
 
-export type UserProfile = {
+export type ProfileVariables = {
     data: { [string]: any },
     loadProfile: () -> (),
     onProfileLoaded: () -> (),
@@ -23,11 +23,11 @@ local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
-local UserProfile: UserProfile = {} :: any
-UserProfile.__index = UserProfile
+local ProfileVariables: ProfileVariables = {} :: any
+ProfileVariables.__index = ProfileVariables
 
 -- public data bag
-UserProfile.data = {} :: { [string]: any }
+ProfileVariables.data = {} :: { [string]: any }
 
 -- internals
 local _didInit = false
@@ -76,7 +76,7 @@ local function _dispatch(name: string, value: any)
         if rec and (rec.filter == nil or rec.filter == name) then
             local ok, err = pcall(rec.fn, name, value)
             if not ok then
-                warn("[UserProfile] callback error for '", name, "': ", err)
+                warn("[ProfileVariables] callback error for '", name, "': ", err)
             end
         end
     end
@@ -89,7 +89,7 @@ local function _beginHeartbeat()
         while true do
             local item = _pop()
             if not item then break end
-            UserProfile.data[item.name] = item.value
+            ProfileVariables.data[item.name] = item.value
             _dispatch(item.name, item.value)
         end
     end)
@@ -105,17 +105,17 @@ end
 local function initialSetup(profileDataJson: string)
     local ok, decoded = _decodeJsonSafely(profileDataJson)
     if not ok then
-        warn("[UserProfile] Failed to decode initial profile data; got string instead.")
+        warn("[ProfileVariables] Failed to decode initial profile data; got string instead.")
         return
     end
     for k, v in decoded do
-        UserProfile.data[k] = v
+        ProfileVariables.data[k] = v
     end
 end
 
 -- ==== public API ====
 
-function UserProfile.loadProfile()
+function ProfileVariables.loadProfile()
     -- Example extra arg "2" retained to match existing server signature.
     local profileData = RemoteEventHandler.InvokeOnServer("QUERY_PROFILE_DATA", 2)
     if typeof(profileData) == "string" and #profileData > 0 then
@@ -123,15 +123,15 @@ function UserProfile.loadProfile()
     elseif profileData ~= nil then
         if typeof(profileData) == "table" then
             for k, v in profileData do
-                UserProfile.data[k] = v
+                ProfileVariables.data[k] = v
             end
         else
-            warn("[UserProfile] Unexpected profileData type: ", typeof(profileData))
+            warn("[ProfileVariables] Unexpected profileData type: ", typeof(profileData))
         end
     end
 end
 
-function UserProfile.onProfileLoaded()
+function ProfileVariables.onProfileLoaded()
     if _didInit then return end
     _didInit = true
 
@@ -140,13 +140,13 @@ function UserProfile.onProfileLoaded()
     -- Listen for server-side updates
     _profileEventId = RemoteEventHandler.newEventConnection("PROFILE_UPDATE", function(valueName: string, newValue: any, json: boolean?)
         print(valueName , newValue)
-        UserProfile.receiveFromServer(valueName, newValue, json)
+        ProfileVariables.receiveFromServer(valueName, newValue, json)
     end)
 end
 
-function UserProfile.receiveFromServer(valueName: string, newValue: any, json: boolean?)
+function ProfileVariables.receiveFromServer(valueName: string, newValue: any, json: boolean?)
     if typeof(valueName) ~= "string" or valueName == "" then
-        warn("[UserProfile] receiveFromServer called with invalid valueName")
+        warn("[ProfileVariables] receiveFromServer called with invalid valueName")
         return
     end
 
@@ -156,25 +156,25 @@ function UserProfile.receiveFromServer(valueName: string, newValue: any, json: b
         if ok then
             value = decoded
         else
-            warn("[UserProfile] JSON decode failed for key '", valueName, "'; storing raw string.")
+            warn("[ProfileVariables] JSON decode failed for key '", valueName, "'; storing raw string.")
         end
     end
 
     _push(valueName, value)
 end
 
-function UserProfile.getValue(valueName: string): any
-    return UserProfile.data[valueName]
+function ProfileVariables.getValue(valueName: string): any
+    return ProfileVariables.data[valueName]
 end
 
-function UserProfile.setOnUpdateCallback(callback: CallbackFn, valueNameFilter: string?): number
+function ProfileVariables.setOnUpdateCallback(callback: CallbackFn, valueNameFilter: string?): number
     _nextId += 1
     _callbacks[_nextId] = { id = _nextId, fn = callback, filter = valueNameFilter }
     return _nextId
 end
 
-function UserProfile.disconnectOnUpdateCallback(id: number)
+function ProfileVariables.disconnectOnUpdateCallback(id: number)
     _callbacks[id] = nil
 end
 
-return UserProfile
+return ProfileVariables

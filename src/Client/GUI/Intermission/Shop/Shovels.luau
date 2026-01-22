@@ -9,7 +9,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
@@ -49,7 +49,7 @@ end
 local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 	local card = itemTemplate:Clone()
 
-	local equippedShovel = UserProfile.getValue("shovel") or ""
+	local equippedShovel = ProfileVariables.getValue("shovel") or ""
 
 	if item.name == equippedShovel then
 		card.Price.Text = "Equipped"
@@ -58,7 +58,7 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 		card.EquipButton.Visible = false
 		card.EquippedBadge.Visible = true
 		card.ImageLabel.Image = item.image
-	elseif table.find(UserProfile.getValue("shovels") or {}, item.name) then
+	elseif table.find(ProfileVariables.getValue("shovels") or {}, item.name) then
 		card.Price.Text = "Owned"
 		card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
 		card.BuyButton.Visible = false
@@ -95,11 +95,11 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 		elseif item.canBuy == false then
 			return
 		else
-			if (UserProfile.getValue("coins") or 0) < item.cost then
+			if (ProfileVariables.getValue("coins") or 0) < item.cost then
 				print("missing")
 				print(onMissingFunds)
 				if onMissingFunds then
-					onMissingFunds(item.cost - (UserProfile.getValue("coins") or 0))
+					onMissingFunds(item.cost - (ProfileVariables.getValue("coins") or 0))
 				end
 			else
                 RemoteEventHandler.FireOnServer("REQUEST_BUY_SHOVEL", item.name)
@@ -156,23 +156,23 @@ function ShopShovels.start(frame: Frame, template: Frame, missingFundsFunction: 
 	coinLabel = shovelsFrame:WaitForChild("Coins")
 	shovelLabel = shovelsFrame:WaitForChild("Equipped")
 
-	coinLabel.Text = "Coins: " .. TextUtilities.formatCurrency(UserProfile.getValue("coins") or 0) .. "C"
-	shovelLabel.Text = "Equipped: " .. tostring(UserProfile.getValue("shovel") or "None")
+	coinLabel.Text = "Coins: " .. TextUtilities.formatCurrency(ProfileVariables.getValue("coins") or 0) .. "C"
+	shovelLabel.Text = "Equipped: " .. tostring(ProfileVariables.getValue("shovel") or "None")
 	loadItems()
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		shovelLabel.Text = "Equipped: " .. tostring(newValue or "None")
 	end, "shovel")
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		coinLabel.Text = "Coins: " .. TextUtilities.formatCurrency(newValue or 0) .. "C"
 	end, "coins")
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		loadItems()
 	end, "shovels")
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		loadItems()
 	end, "shovel")
 

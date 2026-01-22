@@ -4,7 +4,7 @@ local TweenService = game:GetService("TweenService")
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local LevelUtilities = require(ClientModuleDirectory.LevelUtilities)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
@@ -21,8 +21,8 @@ local Fill: Frame
 local FILL_TWEEN = TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
 local function getLevelAndXp(): (number, number)
-	local level = tonumber(UserProfile.getValue("level")) or 1
-	local xp = tonumber(UserProfile.getValue("xp")) or 0
+	local level = tonumber(ProfileVariables.getValue("level")) or 1
+	local xp = tonumber(ProfileVariables.getValue("xp")) or 0
 	return level, xp
 end
 
@@ -74,7 +74,7 @@ function ExperienceBar.onProfileLoaded()
 	renderAll()
 
 	-- callbacks
-	UserProfile.setOnUpdateCallback(function(_, newLevel)
+	ProfileVariables.setOnUpdateCallback(function(_, newLevel)
 		-- level changed: update texts and recompute bar against new threshold
 		local level = tonumber(newLevel) or 1
 		local xp = select(2, getLevelAndXp())
@@ -82,7 +82,7 @@ function ExperienceBar.onProfileLoaded()
 		refreshBar(level, xp)
 	end, "level")
 
-	UserProfile.setOnUpdateCallback(function(_, newXp)
+	ProfileVariables.setOnUpdateCallback(function(_, newXp)
 		print("got")
 		-- xp changed: update texts and tween bar
 		local level = select(1, getLevelAndXp())

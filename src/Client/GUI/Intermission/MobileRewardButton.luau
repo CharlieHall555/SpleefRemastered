@@ -6,7 +6,7 @@ local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local TweenService = game:GetService("TweenService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local DailyRewards = require(ClientModuleDirectory.Gui.DailyRewardsGui)
 
 local MobileRewardButton = {}
@@ -36,9 +36,9 @@ function MobileRewardButton.onLoaded()
 
     RewardsStar = ButtonGUI.Star
 
-    RewardsStar.Visible = (UserSessionVariables.getValue("hasRewardsToClaim") or false) == true
+    RewardsStar.Visible = (SessionVariables.getValue("hasRewardsToClaim") or false) == true
 
-    UserSessionVariables.setOnUpdateCallback(function(valueName, newValue)
+    SessionVariables.setOnUpdateCallback(function(valueName, newValue)
         
         if valueName == "hasRewardsToClaim" then
             RewardsStar.Visible = (newValue == true)

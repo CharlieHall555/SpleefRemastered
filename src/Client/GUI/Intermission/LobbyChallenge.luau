@@ -4,10 +4,10 @@ local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local FrameSystem = require(ClientModuleDirectory.Gui.FrameSystem)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local RewardsData = require(ClientModuleDirectory.RewardsData)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local LobbyChallenge = {}

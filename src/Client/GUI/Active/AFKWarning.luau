@@ -13,7 +13,7 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 
 local AFK_ELIMINATION_TIME = 25
 local ALERT_TIME = 5
@@ -27,7 +27,7 @@ function AFKWarning.onProfileLoaded()
     AFKGui.Parent = Screens.gameHUD
     AFKGui.Visible = false
 
-    UserSessionVariables.setOnUpdateCallback(function(valueName, newValue)
+    SessionVariables.setOnUpdateCallback(function(valueName, newValue)
 
         local timeLeft = AFK_ELIMINATION_TIME - newValue
 

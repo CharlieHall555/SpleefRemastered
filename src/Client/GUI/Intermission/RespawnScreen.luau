@@ -10,7 +10,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local ProductList = require(ClientModuleDirectory.ProductList)
@@ -76,7 +76,7 @@ end
 
 local function onRespawnButton()
     RespawnScreen.hide()
-    local lives = tonumber(UserProfile.getValue("respawns")) or 0
+    local lives = tonumber(ProfileVariables.getValue("respawns")) or 0
     if lives > 0 then
         RemoteEventHandler.FireOnServer("REQUEST_RESPAWN")
         print("REQUEST!")
@@ -135,7 +135,7 @@ function RespawnScreen.show(playerWhoDied: Player, eliminator: Player?)
         deathLabel.Text = "You fell!"
     end
 
-    local lives = tonumber(UserProfile.getValue("respawns")) or 0
+    local lives = tonumber(ProfileVariables.getValue("respawns")) or 0
     respawnInfoFrame.RemainingLivesCounter.Text = "Remaining: " .. tostring(lives)
 
     showFrame()

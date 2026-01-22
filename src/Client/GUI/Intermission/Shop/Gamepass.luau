@@ -6,7 +6,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local ShopItem = require(ClientModuleDirectory.ShopItem)
 
 -- Data source of purchasable extra lives (array of ShopItem.ShopItem)
@@ -39,7 +39,7 @@ end
 
 local function buildItemCard(item: ShopItem.ShopItem): Frame
 
-    local ownedGamepasses = UserSessionVariables.getValue("ownedGamepasses") or {}
+    local ownedGamepasses = SessionVariables.getValue("ownedGamepasses") or {}
 
     if table.find(ownedGamepasses, item.passId) then
         local card = itemTemplate:Clone()
@@ -97,7 +97,7 @@ function ShopExtraLives.start(frame: Frame, template: Frame)
 
     loadItems()
 
-    UserSessionVariables.setOnUpdateCallback(function(name: string, value: any)
+    SessionVariables.setOnUpdateCallback(function(name: string, value: any)
        loadItems()
     end, "ownedGamepasses")
 

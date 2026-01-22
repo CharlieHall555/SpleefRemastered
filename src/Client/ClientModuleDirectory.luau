@@ -125,15 +125,17 @@ ClientModuleDirectory.ClientBlockSelector = Root.Gameplay.ClientBlockSelector
 ClientModuleDirectory.PostDeathSystem = Root.Gameplay.PostDeathSystem
 ClientModuleDirectory.CooldownPredicter = Root.Gameplay.CooldownPredicter
 
+
 ClientModuleDirectory.AnimationManager = Root.Visuals.AnimationManager
 
 --//====================================================
 --// Profile
 --//====================================================
 
-ClientModuleDirectory.Profile = {}
-ClientModuleDirectory.Profile.UserProfile = Root.Profile.UserProfile
-ClientModuleDirectory.Profile.UserSessionVariables = Root.Profile.UserSessionVariables
+ClientModuleDirectory.Variables = {}
+ClientModuleDirectory.Variables.ProfileVariables = Root.Variables.ProfileVariables
+ClientModuleDirectory.Variables.SessionVariables = Root.Variables.SessionVariables
+ClientModuleDirectory.Variables.ServerConstants = Root.Variables.ServerConstants
 
 --//====================================================
 --// Chat
@@ -241,6 +243,8 @@ ClientModuleDirectory.RewardsData = SharedRoot.Data.DailyRewards
 
 ClientModuleDirectory.TutorialData = Root.Tutorial.TutorialData
 ClientModuleDirectory.TutorialFunctions = Root.Tutorial.TutorialFunctions
+
+ClientModuleDirectory.ClolorNumberMapping = SharedRoot.Data.ColorNumberMapping
 
 return ClientModuleDirectory
 

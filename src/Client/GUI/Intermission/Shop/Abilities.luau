@@ -9,7 +9,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local ShopItem = require(ClientModuleDirectory.ShopItem)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 
@@ -48,7 +48,7 @@ end
 local function buildItemCard(item: ShopItem.ShopItem): Frame
     local card = itemTemplate:Clone()
 
-    local equippedAbility = UserProfile.getValue("ability") or ""
+    local equippedAbility = ProfileVariables.getValue("ability") or ""
 
     if item.enabled == false then
         card.Visible = false
@@ -62,7 +62,7 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
         card.EquipButton.Visible = false
         card.EquippedBadge.Visible = true
         card.ImageLabel.Image = item.icon
-    elseif table.find(UserProfile.getValue("abilities") or {}, item.name) then
+    elseif table.find(ProfileVariables.getValue("abilities") or {}, item.name) then
         card.Price.Text = "Owned"
         card.Price.TextColor3 = Color3.fromRGB(0, 255, 0)
         card.BuyButton.Visible = false
@@ -78,11 +78,11 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
 
     local buttonConnection = card.BuyButton.Clickable.Activated:Connect(function()
 
-        if (UserProfile.getValue("coins") or 0) < item.cost then
+        if (ProfileVariables.getValue("coins") or 0) < item.cost then
             print("missing")
             print(onMissingFunds)
             if onMissingFunds then
-                onMissingFunds(item.cost - (UserProfile.getValue("coins") or 0))
+                onMissingFunds(item.cost - (ProfileVariables.getValue("coins") or 0))
             end
             return
         end
@@ -143,23 +143,23 @@ function ShopAbilities.start(frame: Frame, template: Frame , missingFundsFunc : 
     coinLabel = abilitiesFrame:WaitForChild("Coins")
     abilityLabel = abilitiesFrame:WaitForChild("Equipped")
 
-    print(UserProfile.getValue("coins") , UserProfile.getValue("ability"))
-    coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(UserProfile.getValue("coins") or 0).."C"
-    local def = AbilitiesData[UserProfile.getValue("ability") or ""] or {displayName = "None"}
+    print(ProfileVariables.getValue("coins") , ProfileVariables.getValue("ability"))
+    coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(ProfileVariables.getValue("coins") or 0).."C"
+    local def = AbilitiesData[ProfileVariables.getValue("ability") or ""] or {displayName = "None"}
     abilityLabel.Text = "Equipped: " .. tostring(def.displayName)
     loadItems()
 
-    UserProfile.setOnUpdateCallback(function(valueName, newValue)  
+    ProfileVariables.setOnUpdateCallback(function(valueName, newValue)  
         loadItems()
         local def = AbilitiesData[newValue] or {displayName = "None"}
         abilityLabel.Text = "Equipped: " .. tostring(def.displayName)
     end , "ability")
     
-    UserProfile.setOnUpdateCallback(function(valueName, newValue)  
+    ProfileVariables.setOnUpdateCallback(function(valueName, newValue)  
         coinLabel.Text = "Coins: " ..TextUtilities.formatCurrency(newValue or 0).."C"
     end , "coins")
 
-    UserProfile.setOnUpdateCallback(function(valueName, newValue)  
+    ProfileVariables.setOnUpdateCallback(function(valueName, newValue)  
         loadItems()
     end , "abilities")
 

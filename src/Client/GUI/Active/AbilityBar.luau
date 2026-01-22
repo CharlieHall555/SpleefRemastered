@@ -10,7 +10,7 @@ local localPlayer = game.Players.LocalPlayer
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 
 local onPowerUp: (() -> ())? = nil
 
@@ -25,6 +25,17 @@ local cooldownText: TextLabel?
 
 local HIGHLIGHT_COLOR = Color3.fromRGB(241, 241, 241)
 local DARK_COLOR = Color3.fromRGB(37, 37, 37)
+
+local DEFAULT_BAR_COLOR = Color3.fromRGB(176, 39, 179)
+local FULL_BAR_COLOR = Color3.fromRGB(251, 0, 255)
+
+local function animateText(label: TextLabel)
+	local original = label:GetAttribute("originalSize") or label.Size
+	label.Size = UDim2.fromScale(original.X.Scale * 1.25, original.Y.Scale * 1.25)
+	TweenService:Create(label, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = original,
+	}):Play()
+end
 
 local function isTouch(input: InputObject): boolean
 	return input.UserInputType == Enum.UserInputType.Touch
@@ -66,7 +77,7 @@ function AbilityBar.onProfileLoaded()
 			end
 		end)
 
-		local abilityDef = AbilitiesData[UserProfile.getValue("ability") or ""]
+		local abilityDef = AbilitiesData[ProfileVariables.getValue("ability") or ""]
 		if abilityDef then
 			currentCooldown = abilityDef.cooldown or 0
 			abilityName = abilityDef.displayName or "Powerup"
@@ -75,7 +86,7 @@ function AbilityBar.onProfileLoaded()
 			end
 		end
 
-		UserProfile.setOnUpdateCallback(function(valueName, newValue)
+		ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 			if valueName == "ability" then
 				local abilityDef = AbilitiesData[newValue]
 				if abilityDef then
@@ -97,7 +108,7 @@ function AbilityBar.onProfileLoaded()
 	abilityBarMoveable = AbilityBarGUI.Bar.Moveable
 	abilityText = AbilityBarGUI:FindFirstChild("AbilityName")
 
-	local abilityDef = AbilitiesData[UserProfile.getValue("ability")]
+	local abilityDef = AbilitiesData[ProfileVariables.getValue("ability")]
 	if abilityDef then
 		currentCooldown = abilityDef.cooldown or 0
 		abilityName = abilityDef.displayName
@@ -106,7 +117,7 @@ function AbilityBar.onProfileLoaded()
 		end
 	end
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		if valueName == "ability" then
 			local abilityDef = AbilitiesData[newValue]
 			if abilityDef then
@@ -128,6 +139,8 @@ function AbilityBar.onProfileLoaded()
 		)
 		tween:Play()
 	end
+
+	cooldownText:SetAttribute("originalSize" , cooldownText.Size)
 end
 
 function AbilityBar.setArrowVisible(value)
@@ -137,10 +150,18 @@ function AbilityBar.setArrowVisible(value)
 	end
 end
 
+local previousDisplayed = ""
+
 function AbilityBar.setCooldown(value: number)
 	if AbilityBarGUI then
 		local abilityValue = math.floor(value + 0.99)
 		cooldownText.Text = tostring(abilityValue)
+
+		if cooldownText.Text ~= previousDisplayed then
+			animateText(cooldownText)
+		end
+
+		previousDisplayed = cooldownText.Text
 		if abilityValue <= 0 then
 			cooldownText.Text = ""
 		end

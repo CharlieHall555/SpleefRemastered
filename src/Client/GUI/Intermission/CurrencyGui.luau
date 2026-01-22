@@ -5,7 +5,7 @@ local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local TextUtilities = require(ClientModuleDirectory.TextUtilities)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
@@ -17,14 +17,14 @@ function Respawns.onProfileLoaded()
 	CurrencyGui.Parent = Screens.intermissionHUD
 	CurrencyGui.Visible = true
 
-	CurrencyGui.RespawnCount.Text = TextUtilities.formatCurrency(UserProfile.getValue("respawns"))
-	CurrencyGui.CoinCount.Text = TextUtilities.formatCurrency(UserProfile.getValue("coins"))
+	CurrencyGui.RespawnCount.Text = TextUtilities.formatCurrency(ProfileVariables.getValue("respawns"))
+	CurrencyGui.CoinCount.Text = TextUtilities.formatCurrency(ProfileVariables.getValue("coins"))
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		CurrencyGui.RespawnCount.Text = TextUtilities.formatCurrency(newValue)
 	end, "respawns")
 
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		CurrencyGui.CoinCount.Text = TextUtilities.formatCurrency(newValue)
 	end, "coins")
 

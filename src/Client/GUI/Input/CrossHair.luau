@@ -39,6 +39,7 @@ function CrossHair.snowball()
 	if CrossHairGui then
 		CrossHairGui.Image = SMALL_SNOWBALL
         CrossHairGui.Size = UDim2.fromScale(0.012, 0.031)
+		CrossHairGui.ImageColor3 = Color3.fromRGB(255, 255, 255)
 	end
 end
 
@@ -46,6 +47,7 @@ function CrossHair.shovel()
 	if CrossHairGui then
 		CrossHairGui.Image = SMALL_SHOVEL
         CrossHairGui.Size = UDim2.fromScale(0.025, 0.039)
+		CrossHairGui.ImageColor3 = Color3.fromRGB(255, 0, 0)
 	end
 end
 

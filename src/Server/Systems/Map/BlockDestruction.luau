@@ -175,12 +175,12 @@ function BlockDestruction.destroyBlock(block : number | Block.Block , fromPlayer
 		blockToDestroy = block
 	end
 
-	blockDestroyed(blockToDestroy.id , fromPlayer)
-
 	if blockToDestroy == nil then
 		warn("Destruction failed: block is nil")
 		return
 	end
+
+	blockDestroyed(blockToDestroy.id , fromPlayer)
 
 	local parentLayer = blockToDestroy:getParentLayer()
 	local blockPosition = blockToDestroy:getWorldPosition()

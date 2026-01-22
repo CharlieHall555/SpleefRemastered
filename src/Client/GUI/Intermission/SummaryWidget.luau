@@ -2,7 +2,7 @@ local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -144,7 +144,7 @@ function SummaryWidget.show()
 	end
 
 
-	local coinMultiplierValue = math.floor(UserSessionVariables.getValue("coinsMultiplier") or 1)
+	local coinMultiplierValue = math.floor(SessionVariables.getValue("coinsMultiplier") or 1)
 	print("Coin Multiplier: " .. tostring(coinMultiplierValue))
 	if coinMultiplierValue > 1 then
 		bonusLabel.Text = "(C Multiplier: x" .. tostring(coinMultiplierValue) .. ")"

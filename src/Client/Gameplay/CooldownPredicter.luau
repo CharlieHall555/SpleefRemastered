@@ -2,7 +2,7 @@ local RunService = game:GetService("RunService")
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
@@ -17,12 +17,12 @@ local abilityName
 local cooldownPredicter = {}
 
 function cooldownPredicter.onProfileLoaded()
-	UserProfile.setOnUpdateCallback(function(valueName, newValue)
+	ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
 		abilityName = newValue
 		abilityDef = AbilitiesData[abilityName]
 	end, "ability")
 
-	abilityName = UserProfile.getValue("ability")
+	abilityName = ProfileVariables.getValue("ability")
 	abilityDef = AbilitiesData[abilityName]
 
 	RemoteEventHandler.newEventConnection("FIRE_ABILITY", function()

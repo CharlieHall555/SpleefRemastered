@@ -9,11 +9,12 @@ local localPlayer = game.Players.LocalPlayer
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
-
-
+local ClolorNumberMapping = require(ClientModuleDirectory.ClolorNumberMapping)
 
 local StatusGUI
 local isShaking = false
+
+
 
 local TweenService = game:GetService("TweenService")
 local isShaking = false
@@ -40,12 +41,12 @@ function RoundStatus.shakePrepare()
 	local offsets = {
 		UDim2.new(originalPos.X.Scale, originalPos.X.Offset - 5, originalPos.Y.Scale, originalPos.Y.Offset),
 		UDim2.new(originalPos.X.Scale, originalPos.X.Offset + 5, originalPos.Y.Scale, originalPos.Y.Offset),
-		originalPos
+		originalPos,
 	}
 
 	task.spawn(function()
 		for _, targetPos in ipairs(offsets) do
-			local tween = TweenService:Create(stateLabel, tweenInfo, {Position = targetPos})
+			local tween = TweenService:Create(stateLabel, tweenInfo, { Position = targetPos })
 			tween:Play()
 			tween.Completed:Wait()
 		end
@@ -53,11 +54,26 @@ function RoundStatus.shakePrepare()
 	end)
 end
 
-
 function RoundStatus.outOfAmmo(value: boolean)
 	--if StatusGUI then
 	--	StatusGUI.AmmoWarning.Visible = value
 	--end
+end
+
+local function animateText(label: TextLabel)
+	local original = label:GetAttribute("originalSize") or label.Size
+	local color = ClolorNumberMapping[label.Text]
+
+	if color then
+		label.TextColor3 = color
+	else
+		label.TextColor3 = Color3.new(255 , 255 , 255)
+	end
+
+	label.Size = UDim2.fromScale(original.X.Scale * 1.25, original.Y.Scale * 1.25)
+	TweenService:Create(label, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = original,
+	}):Play()
 end
 
 function RoundStatus.onProfileLoaded()
@@ -83,19 +99,32 @@ function RoundStatus.onProfileLoaded()
 	end)
 
 	RemoteEventHandler.newEventConnection("PLAYERS_IN_GAME_CHANGED", function(aliveNow: number, maxAlive: number)
-		print("PLayers in game" , aliveNow , maxAlive)
+		print("PLayers in game", aliveNow, maxAlive)
 		StatusGUI.TopBar.AliveLabel.Text = aliveNow .. " / " .. maxAlive
+		animateText(StatusGUI.TopBar.AliveLabel)
 	end)
+
+	local currentTime = 0
 
 	RemoteEventHandler.newEventConnection("PREPARING_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getState() == "ACTIVE" then
-			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
+			local previousTime = currentTime
+			currentTime = math.max(0, math.floor(time))
+			if previousTime ~= currentTime then
+				StatusGUI.TopBar.TimerLabel.Text = currentTime
+				animateText(StatusGUI.TopBar.TimerLabel)
+			end
 		end
 	end)
 
 	RemoteEventHandler.newEventConnection("SUDDEN_DEATH_TIMER_CHANGED", function(time)
 		if ClientStateTracker.getState() == "ACTIVE" then
-			StatusGUI.TopBar.TimerLabel.Text = math.max(0, math.floor(time))
+			local previousTime = currentTime
+			currentTime = math.max(0, math.floor(time))
+			if previousTime ~= currentTime then
+				StatusGUI.TopBar.TimerLabel.Text = currentTime
+				animateText(StatusGUI.TopBar.TimerLabel)
+			end
 		end
 	end)
 
@@ -107,28 +136,30 @@ function RoundStatus.onProfileLoaded()
 		else
 			StatusGUI.AmmoWarning.Position = StatusGUI.State.Position
 		end
-	end)]]--
-	
+	end)]]
+	--
+
 	ClientStateTracker.connectActive(function()
 		StatusGUI.Visible = true
 	end)
 
 	ClientStateTracker.connectTutorial(function()
 		StatusGUI.Visible = false
-        StatusGUI.TopBar.AliveLabel.Text = 1 .. " / " .. 1
+		StatusGUI.TopBar.AliveLabel.Text = 1 .. " / " .. 1
 		StatusGUI.State.Text = "Tutorial"
 		StatusGUI.TopBar.TimerLabel.Text = 0
 		StatusGUI.State.Visible = true
 		StatusGUI.State.Fire1.Visible = false
 		StatusGUI.State.Fire2.Visible = false
-    end)
+	end)
 
-	
+	StatusGUI.TopBar.TimerLabel:SetAttribute("originalSize" , StatusGUI.TopBar.TimerLabel.Size)
+	StatusGUI.TopBar.AliveLabel:SetAttribute("originalSize" , StatusGUI.TopBar.AliveLabel.Size)
+
 end
 
 function RoundStatus.getStateGui()
 	return StatusGUI.State
 end
-
 
 return RoundStatus

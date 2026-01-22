@@ -37,6 +37,7 @@ local Weathers = {
 		clockTime = 10,
 		fogColor = Color3.fromRGB(130, 94, 49),
 	},
+
 }
 
 return Weathers

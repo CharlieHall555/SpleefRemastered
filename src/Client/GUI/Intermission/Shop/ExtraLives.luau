@@ -6,7 +6,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local ShopItem = require(ClientModuleDirectory.ShopItem)
 
 -- Data source of purchasable extra lives (array of ShopItem.ShopItem)
@@ -75,9 +75,9 @@ function ShopExtraLives.start(frame: Frame, template: Frame)
     itemTemplate = template
     currentLivesLabel = extraLifeFrame:WaitForChild("CurrentLives")
 
-    currentLivesLabel.Text = "Respawns : " .. (UserProfile.getValue("respawns") or "0")
+    currentLivesLabel.Text = "Respawns : " .. (ProfileVariables.getValue("respawns") or "0")
 
-    UserProfile.setOnUpdateCallback(function(valueName, newValue)
+    ProfileVariables.setOnUpdateCallback(function(valueName, newValue)
         if valueName == "respawns" then
             currentLivesLabel.Text = "Respawns : " .. (newValue or "0")
         end

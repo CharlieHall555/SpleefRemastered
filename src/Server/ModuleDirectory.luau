@@ -14,6 +14,7 @@ ModuleDirectory.ValueBinder = serverRoot.Core.ValueBinder
 ModuleDirectory.RemoteEventHandler = sharedRoot.RemoteEventHandler
 ModuleDirectory.Setup = serverRoot.Core.Setup
 ModuleDirectory.ServerStatus = serverRoot.ServerStatus
+ModuleDirectory.ServerConstants = serverRoot.Core.ServerConstants
 
 ModuleDirectory.DebugTools = {}
 ModuleDirectory.DebugTools.TileScoreDebug = serverRoot.DebugTools.TileScoreDebug

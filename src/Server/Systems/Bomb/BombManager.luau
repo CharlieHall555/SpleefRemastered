@@ -45,6 +45,7 @@ function BombManager.createBomb(position) : Bomb.Bomb
     
     local newBomb = Bomb.new(BOMB_COUNTDOWN, position, BOMB_EXPLOSION_RADIUS, onExplode)
     bombs[newBomb.id] = newBomb
+    RemoteEventHandler.FireOnAllClients("NEW_BOMB" , newBomb.model)
     return newBomb
 
 end

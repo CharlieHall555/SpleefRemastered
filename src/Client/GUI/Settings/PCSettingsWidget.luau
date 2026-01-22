@@ -11,7 +11,7 @@ local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local TextService = game:GetService("TextService")
 local TweenService = game:GetService("TweenService")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local RewardsData = require(ClientModuleDirectory.RewardsData)
 
 local PCSettingsWidget = {}

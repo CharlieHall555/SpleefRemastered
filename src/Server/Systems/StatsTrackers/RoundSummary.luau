@@ -21,7 +21,9 @@ export type EndSummary = {
     winnerBonus: number -- explicit coin win bonus granted
 }
 
-
+function countUpEffect(label : TextLabel , start : number , target : number)
+    
+end
 
 -- Utility: safe table length
 local function count(list)

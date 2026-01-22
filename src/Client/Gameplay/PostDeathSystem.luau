@@ -9,7 +9,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local RespawnScreen = require(ClientModuleDirectory.Gui.RespawnScreen)
 local EliminationScreen = require(ClientModuleDirectory.Gui.EliminationScreen)
 local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
-local PlayerSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local PlayerSessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 
 local PostDeathSystem = {}
 

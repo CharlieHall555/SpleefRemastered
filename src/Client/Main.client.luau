@@ -23,8 +23,8 @@ while ProfileLoaded == false do
 	task.wait(0.1)
 end
 
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
-UserProfile.loadProfile()
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
+ProfileVariables.loadProfile()
 ClientLoader.profileLoaded()
 
 local ButtonUtilities = require(ClientModuleDirectory.Gui.ButtonUtilities)

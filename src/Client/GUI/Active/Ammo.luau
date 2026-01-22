@@ -13,8 +13,18 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
+local ServerConstants = require(ClientModuleDirectory.Variables.ServerConstants)
 
 local AmmoGui: Frame?
+
+
+local function animateText(label: TextLabel)
+	local original = label:GetAttribute("originalSize") or label.Size
+	label.Size = UDim2.fromScale(original.X.Scale * 1.15, original.Y.Scale * 1.15)
+	TweenService:Create(label, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = original,
+	}):Play()
+end
 
 function Ammo.onProfileLoaded()
 	AmmoGui = GuiAssets:WaitForChild("InGame"):WaitForChild("Ammo")
@@ -28,6 +38,8 @@ function Ammo.onProfileLoaded()
 		local ammoAmount = ClientAmmoTracker.getAmmo()
 
 		AmmoGui.Count.Text = tostring(ammoAmount or 0) .. " / " .. tostring(ClientAmmoTracker.getMaxAmmo() or 0)
+		animateText(AmmoGui.Count)
+
 
 		if ammoAmount <= 0 then
 			AmmoGui.OutOfAmmo.Visible = true
@@ -53,6 +65,8 @@ function Ammo.onProfileLoaded()
 		end
 
 		AmmoGui.Count.Text = newAmmo .. " / " .. maxammo
+		animateText(AmmoGui.Count)
+
 		if newAmmo == 0 then
 			AmmoGui.OutOfAmmo.Visible = true
 			RoundStatus.outOfAmmo(true)
@@ -64,6 +78,8 @@ function Ammo.onProfileLoaded()
 
 	ClientAmmoTracker.setInfiniteOn(function()
 		AmmoGui.Count.Text = "∞"
+		animateText(AmmoGui.Count)
+		
 		AmmoGui.OutOfAmmo.Visible = false
 		RoundStatus.outOfAmmo(false)
 	end)
@@ -74,6 +90,8 @@ function Ammo.onProfileLoaded()
 	end
 
 	local Arrow = AmmoGui.Arrow
+	AmmoGui.Count:SetAttribute("originalSize" , AmmoGui.Count.Size)
+
 	
 	if Arrow then
 		local tween = TweenService:Create(

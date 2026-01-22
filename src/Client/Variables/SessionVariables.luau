@@ -14,11 +14,11 @@ local Root = Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 
-local UserSessionVariables = {} :: any
-UserSessionVariables.__index = UserSessionVariables
+local SessionVariables = {} :: any
+SessionVariables.__index = SessionVariables
 
 -- public data bag
-UserSessionVariables.data = {} :: { [string]: any }
+SessionVariables.data = {} :: { [string]: any }
 
 -- internals
 local _didInit = false
@@ -78,7 +78,7 @@ local function _beginHeartbeat()
         while true do
             local item = _pop()
             if not item then break end
-            UserSessionVariables.data[item.name] = item.value
+            SessionVariables.data[item.name] = item.value
             _dispatch(item.name, item.value)
         end
     end)
@@ -93,18 +93,18 @@ end
 
 -- ==== public API ====
 
-function UserSessionVariables.init()
+function SessionVariables.init()
     if _didInit then return end
     _didInit = true
 
     _beginHeartbeat()
 
     _sessionEventId = RemoteEventHandler.newEventConnection("SESSION_VARIABLE_UPDATED", function(valueName: string, newValue: any, json: boolean?)
-        UserSessionVariables.receiveFromServer(valueName, newValue, json)
+        SessionVariables.receiveFromServer(valueName, newValue, json)
     end)
 end
 
-function UserSessionVariables.receiveFromServer(valueName: string, newValue: any, json: boolean?)
+function SessionVariables.receiveFromServer(valueName: string, newValue: any, json: boolean?)
     if typeof(valueName) ~= "string" or valueName == "" then
         warn("[UserSessionVaraibles] receiveFromServer called with invalid valueName")
         return
@@ -123,18 +123,18 @@ function UserSessionVariables.receiveFromServer(valueName: string, newValue: any
     _push(valueName, value)
 end
 
-function UserSessionVariables.getValue(valueName: string): any
-    return UserSessionVariables.data[valueName]
+function SessionVariables.getValue(valueName: string): any
+    return SessionVariables.data[valueName]
 end
 
-function UserSessionVariables.setOnUpdateCallback(callback: CallbackFn, valueNameFilter: string?): number
+function SessionVariables.setOnUpdateCallback(callback: CallbackFn, valueNameFilter: string?): number
     _nextId += 1
     _callbacks[_nextId] = { id = _nextId, fn = callback, filter = valueNameFilter }
     return _nextId
 end
 
-function UserSessionVariables.disconnectOnUpdateCallback(id: number)
+function SessionVariables.disconnectOnUpdateCallback(id: number)
     _callbacks[id] = nil
 end
 
-return UserSessionVariables
+return SessionVariables

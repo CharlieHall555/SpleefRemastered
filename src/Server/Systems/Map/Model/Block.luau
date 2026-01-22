@@ -84,7 +84,7 @@ local function createPart(blockConfig: BlockConfig?): Part
 	part.CanCollide = true
 	part.CanTouch = true
 	part.CanQuery = true
-	part.Transparency = 0
+	part.Transparency = materialDef.transparency or 0
 	part.CollisionGroup = "CG_BLOCKS"
 	part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
 	part.Color = (materialDef.color or Color3.fromRGB(187, 47, 187))

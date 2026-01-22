@@ -7,10 +7,10 @@ local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local FrameSystem = require(ClientModuleDirectory.Gui.FrameSystem)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local RewardsData = require(ClientModuleDirectory.RewardsData)
-local UserProfile = require(ClientModuleDirectory.Profile.UserProfile)
+local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local COIN_IMAGE = "rbxassetid://99780735877626"
@@ -39,8 +39,8 @@ local function safeGetMainChild(index: number): Frame?
 end
 
 local function recomputeHasClaimable()
-    local playTime = UserSessionVariables.getValue("playTime") or 0
-    local claimed = UserProfile.getValue("dailyRewardClaims") or {}
+    local playTime = SessionVariables.getValue("playTime") or 0
+    local claimed = ProfileVariables.getValue("dailyRewardClaims") or {}
     local newHasClaimable = false
 
     for i = 1, 3 do
@@ -89,7 +89,7 @@ function DailyRewards.refreshTimers()
         local givenClaimable = safeGetMainChild(i)
         if givenClaimable then
             local timeRequired = RewardsData[i]
-            local playTime = UserSessionVariables.getValue("playTime") or 0
+            local playTime = SessionVariables.getValue("playTime") or 0
             local timeLeft = math.max(timeRequired - playTime, 0)
 
             givenClaimable.Claim.Locked.Visible = timeLeft > 0
@@ -102,7 +102,7 @@ function DailyRewards.refreshTimers()
 end
 
 function DailyRewards.refreshClaimed()
-    local claimedRewards = UserProfile.getValue("dailyRewardClaims") or {}
+    local claimedRewards = ProfileVariables.getValue("dailyRewardClaims") or {}
     for i = 1, 3 do
         local givenClaimable = safeGetMainChild(i)
         if givenClaimable then
@@ -145,12 +145,12 @@ function DailyRewards.onProfileLoaded()
         DailyRewards.hide()
     end)
 
-    UserProfile.setOnUpdateCallback(function()
+    ProfileVariables.setOnUpdateCallback(function()
         recomputeHasClaimable()
         DailyRewards.refreshClaimed()
     end, "dailyRewardClaims")
 
-    UserSessionVariables.setOnUpdateCallback(function()
+    SessionVariables.setOnUpdateCallback(function()
         recomputeHasClaimable()
         DailyRewards.refreshTimers()
     end, "playTime")

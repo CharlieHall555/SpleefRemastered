@@ -30,13 +30,11 @@ local InputHandler = require(ClientModuleDirectory.Input.InputHandler)
 local Camera = workspace.CurrentCamera
 local WeatherManager = require(ClientModuleDirectory.Weather.WeatherManager)
 
-
 local MiscBindings = {}
 
 local lightning = "rbxassetid://6994934244"
 
 function MiscBindings.onProfileLoaded()
-
 	if PlatformDetector.getPlatform() == "PC" then
 		LocalPlayer.CameraMinZoomDistance = 0
 	end
@@ -48,8 +46,6 @@ function MiscBindings.onProfileLoaded()
 end
 
 local GuiService = game:GetService("GuiService")
-
-
 
 function MiscBindings.onSnowballGained(amount)
 	local platform = PlatformDetector.getPlatform()
@@ -69,14 +65,11 @@ function MiscBindings.onSnowballGained(amount)
 	end
 end
 
-
-
 function MiscBindings.init()
-
 	ClientBlockSelector.newBlockSelected = function(newBlock)
 		ModeDetector.newBlock(newBlock)
 	end
-	
+
 	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(playerWhoDied: Player)
 		SoundPlayer.playSound(lightning, { volume = 0.3 })
 		if playerWhoDied == LocalPlayer then
@@ -99,35 +92,26 @@ function MiscBindings.init()
 	end)
 
 	ClientStateTracker.connectIntermission(function()
-		
-	
 		WeatherManager.setWeather("lobbyWeather")
 		MouseIcon.reset()
 	end)
 
 	ClientStateTracker.connectIntermission(function()
 		task.wait(0.25)
-		if ClientStateTracker.getServerState() == "ACTIVE" and  ClientStateTracker.getState() == "INTERMISSION" then
+		if ClientStateTracker.getServerState() == "ACTIVE" and ClientStateTracker.getState() == "INTERMISSION" then
 			SpectateButton.show()
 		end
 	end)
-	
+
 	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH", function()
 		SoundPlayer.playSound("rbxassetid://88338250840662", { volume = 0.38 })
 	end)
 
-	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(died: Player, killer: Player)
+	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(died: Player, killer: Player) end)
 
-	end)
-
-	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player)
-
-	
-
-	end)
+	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player) end)
 
 	ClientStateTracker.connectActive(function()
-
 		if LocalPlayer.Character then
 			Camera.CameraSubject = LocalPlayer.Character
 			if PlatformDetector:getPlatform() == "MOBILE" then
@@ -153,11 +137,54 @@ function MiscBindings.init()
 		end
 	end)
 
+	local s, BillBoardCountDown = pcall(function()
+		return game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets", 2):WaitForChild("BillboardCountDown", 2)
+	end)
+
+	RemoteEventHandler.newEventConnection("NEW_BOMB", function(newBomb: Model) --VERY DANGEROUS FOR MEMORY LEAKS HERE PROBLALLY SHOULD DOM SEOMTHING BETTER
+		print("newBomb")
+
+		local cooldownConnection
+		local bombDestroyedConnection 
+
+		if not BillBoardCountDown then
+			warn("Missing, BillBoardCountDown")warn("Missing, BillBoardCountDown")		
+		end
+
+		local newCountDown = BillBoardCountDown:Clone()
+		newCountDown.Adornee = newBomb
+		newCountDown.Parent = newBomb
+		newCountDown.Cooldown.Text = math.floor(newBomb:GetAttribute("countDown") or 0) + 1
+
+		bombDestroyedConnection = newBomb.Destroying:Connect(function()
+			
+			warn("bomb destroying")
+			if bombDestroyedConnection then
+				bombDestroyedConnection:Disconnect()
+			end
+
+			if cooldownConnection then
+				cooldownConnection:Disconnect()
+
+			end
+			
+		end)
+
+		cooldownConnection = newBomb.AttributeChanged:Connect(function()
+			
+			newCountDown.Cooldown.Text = math.floor(newBomb:GetAttribute("countDown") or 0) + 1
+
+		end)
+
+	
+
+	end)
+
 	local CoinSound = "rbxassetid://607665037"
 	HitBoxManager.setUpCallback("COIN_PICKUP", function(part: BasePart)
 		ParticlePlayer.queueEmission("coin", part.Position, 12)
 		SoundPlayer.playSound(CoinSound)
-	 end)
+	end)
 
 	ClientStateTracker.connectActive(function()
 		TouchButtons.setVisiblePowerUpButton(true)
@@ -167,26 +194,20 @@ function MiscBindings.init()
 		TouchButtons.setVisiblePowerUpButton(false)
 	end)
 
-	RemoteEventHandler.newEventConnection("EXPLOSION", function(pos : Vector3, radius : number)
+	RemoteEventHandler.newEventConnection("EXPLOSION", function(pos: Vector3, radius: number)
 		if pos and radius then
 			local explosionSound = "rbxassetid://5801257793" -- explosion sound
 			SoundPlayer.queuePositionalSound(explosionSound, pos, { volume = 0.5 })
 			if ParticlePlayer.getVisible() then
 				local explosionEffect = Instance.new("Explosion")
 				explosionEffect.Position = pos
-				explosionEffect.BlastRadius = math.max(1 , radius)
+				explosionEffect.BlastRadius = math.max(1, radius)
 				explosionEffect.BlastPressure = 0
 				explosionEffect.Parent = workspace
 				Debris:AddItem(explosionEffect, 5)
 			end
 		end
-		
-		
-
 	end)
-
 end
-
-
 
 return MiscBindings

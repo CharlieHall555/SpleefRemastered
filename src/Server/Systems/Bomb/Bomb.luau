@@ -1,7 +1,8 @@
+---@diagnostic disable: invalid-class-name
 local Bomb = {}
 Bomb.__index = Bomb
 
-local BombTemplate = game.ReplicatedStorage:WaitForChild("Resources"):WaitForChild("BombTemplate")
+local BombTemplate : Part = game.ReplicatedStorage:WaitForChild("Resources"):WaitForChild("BombTemplate")
 
 local counter = 0
 
@@ -25,8 +26,10 @@ function Bomb.new(timeToExplode : number , position : Vector3 , explosionRadius 
     self.timeToExplode = timeToExplode
     self.onExplode = onExplode
     self.model = BombTemplate:Clone()
-    self.model:PivotTo(CFrame.new(position))
+    self.model:PivotTo(CFrame.new(position) * CFrame.Angles(BombTemplate.CFrame:ToEulerAnglesXYZ()))
     self.model.Parent = workspace
+    self.model:SetAttribute("countDown" , self.timeToExplode)
+
     return self
 end
 
@@ -42,10 +45,12 @@ end
 
 function Bomb:loop(dt : number)
 
-    print(self.countDown)
     self.countDown = self.countDown - dt
+    if self.model then
+        self.model:SetAttribute("countDown" , self.countDown)
+    end
+
     if self.countDown <= 0 then
----@diagnostic disable-next-line: invalid-class-name
         if typeof(self.model) == "Model" then
             self.position = self.model.PrimaryPart.Position
         else

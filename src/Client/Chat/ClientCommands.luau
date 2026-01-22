@@ -7,7 +7,7 @@ local TapDebugView = require(ClientModuleDirectory.TapDebugView)
 local SpectateController = require(ClientModuleDirectory.Spectate.Controller)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local SystemMessage = require(ClientModuleDirectory.Chat.SystemMessage)
 
 
@@ -78,7 +78,7 @@ function ClientCommands.init(): nil
 
     connectToTrigger(createCommand("playTime", "/playTime"), function(originTextSource, unfilteredText)
         
-        local playTime = math.floor(UserSessionVariables.getValue("playTime") or 0)
+        local playTime = math.floor(SessionVariables.getValue("playTime") or 0)
 
         SystemMessage.send("Play time: " .. tostring(playTime))
         

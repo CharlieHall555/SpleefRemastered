@@ -10,7 +10,7 @@ local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local CooldownPredicter = require(ClientModuleDirectory.CooldownPredicter)
 local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
-local UserSessionVariables = require(ClientModuleDirectory.Profile.UserSessionVariables)
+local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
 local ClientTutorial = require(ClientModuleDirectory.ClientTutorial)
 
 local AbilityActionHandler = {}
@@ -24,7 +24,7 @@ function AbilityActionHandler.useAbility()
         return
     end
 
-    if (CooldownPredicter.getCooldown() > 0 or UserSessionVariables.getValue("spawnProtectionActive") or false) == true then
+    if (CooldownPredicter.getCooldown() > 0 or SessionVariables.getValue("spawnProtectionActive") or false) == true then
         local errorBlip = "rbxassetid://70373378044427"
 		SoundPlayer.playSound(errorBlip, { volume = 1.5 })
         AbilityBar.shake()

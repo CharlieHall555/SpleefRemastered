@@ -4,7 +4,8 @@ local validMateirals = {}
 
 export type CustomMaterial = {
     material : string,
-    color : Color3
+    color : Color3,
+    transparency : number?
 }
 
 materials = {}
@@ -91,6 +92,18 @@ materials.sand_red = {
 materials.sand_green = {
     material = Enum.Material.Sand,
     color = Color3.new(0.333333, 0.666667, 0.498039)
+}
+
+
+materials.dark_candy = {
+    material = Enum.Material.Grass,
+    color = Color3.fromRGB(128, 0, 96)
+}
+
+
+materials.light_candy = {
+    material = Enum.Material.Grass,
+    color = Color3.fromRGB(255, 102, 204)
 }
 
 
