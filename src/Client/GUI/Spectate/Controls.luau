@@ -44,6 +44,8 @@ function Controls.onProfileLoaded()
 	exitButton = SpectateGui.ButtonHolder["2.Spectate"].Clickable
 	nextButton = SpectateGui.ButtonHolder["3.Left"].Clickable
 
+	celebrateButton.Visible = false -- dsiable for now
+
 	playerName = SpectateGui.SpectatingPlayer.Label
 
 	celebrateButton.Activated:Connect(function(inputObject, clickCount)

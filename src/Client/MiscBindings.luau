@@ -77,10 +77,7 @@ function MiscBindings.init()
 		end
 	end)
 
-	RemoteEventHandler.newEventConnection("AGENT_DIED", function()
-		SoundPlayer.playSound("death_sound", { volume = 0.3 })
-	end)
-
+	
 	RemoteEventHandler.newEventConnection("AMMO_GAINED", MiscBindings.onSnowballGained)
 
 	ClientStateTracker.connectServerStateChange(function(newState)
@@ -131,8 +128,13 @@ function MiscBindings.init()
 			AlertSystem.show(died.DisplayName .. " Died." , skull)
 		end
 	
-
 	end)
+
+	RemoteEventHandler.newEventConnection("AGENT_DIED", function()
+		SoundPlayer.playSound("death_sound", { volume = 0.3 })
+		AlertSystem.show("Computer Character Died!" , skull)
+	end)
+
 
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player) end)
 

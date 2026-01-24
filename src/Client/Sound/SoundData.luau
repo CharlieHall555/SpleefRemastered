@@ -69,6 +69,11 @@ local SoundData: { [string]: SoundEntry } = {
         id = "rbxassetid://18919192805",
         volume = 0.3,
         playbackSpeed = 1
+    },
+    ["slap"] = {
+        id = "rbxassetid://107118274345536",
+        volume = 0.5,
+        playbackSpeed = 1
     }
 
 }

@@ -100,9 +100,8 @@ end
 function ClientKnockback.init()
 	RemoteEventHandler.newEventConnection("KNOCKBACK", ClientKnockback.knockback)
 
-	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player)
-		if playerTarget and playerTarget.Character and playerTarget.Character.PrimaryPart then
-			 --SoundPlayer.playSound("rbxassetid://146163534")
+	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player , fromPlayer : Player)
+		if playerTarget and playerTarget.Character and playerTarget.Character.PrimaryPart and fromPlayer == LocalPlayer then
 
 			if ClientStateTracker.getState() == "ACTIVE" then
 				local randomX = (math.random() - 0.5) / 5
@@ -114,6 +113,8 @@ function ClientKnockback.init()
 
 				local platform = PlatformDetector.getPlatform()
 				local lastMousePos = InputHandler.getLastMousePos()
+
+				SoundPlayer.playSound("slap")
 
 				if platform == "PC" and lastMousePos then
 					ParticleText.new(LocalPlayer.PlayerGui.General, "HIT!", lastMousePos, opts)
@@ -133,10 +134,10 @@ function ClientKnockback.init()
 
 	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION_CHAR", function(Char: Model)
 		if Char and Char.PrimaryPart then
-			--SoundPlayer.queuePositionalSound("rbxassetid://146163534", Char.PrimaryPart.Position)
+			playHitFlashOn(Char)
 		end
 
-		playHitFlashOn(Char)
+
 	end)
 end
 

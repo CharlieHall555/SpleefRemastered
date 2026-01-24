@@ -109,7 +109,7 @@ function KnockBackManager.hitHitbox(hitBox: Part, dir: Vector3, fromPlayer: Play
 	end
 
 	KnockbackTracker.newKnockback(fromPlayer, hitPlayer)
-	RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION", hitPlayer)
+	RemoteEventHandler.FireOnAllClients("KNOCKBACK_ANIMATION", hitPlayer , fromPlayer)
 
 	if primary:GetNetworkOwner() == hitPlayer then
 		RemoteEventHandler.FireOnClient(hitPlayer, "KNOCKBACK", dir, power)
