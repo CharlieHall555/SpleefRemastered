@@ -243,5 +243,7 @@ ClientModuleDirectory.TutorialFunctions = Root.Tutorial.TutorialFunctions
 
 ClientModuleDirectory.ClolorNumberMapping = SharedRoot.Data.ColorNumberMapping
 
+ClientModuleDirectory.ClientCollectableManager = Root.Collectable.ClientCollectableManager
+
 return ClientModuleDirectory
 

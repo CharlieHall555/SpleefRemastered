@@ -89,13 +89,6 @@ ModuleDirectory.Systems.Throwable.PlayerRaycastParamsHandler = serverRoot.System
 ModuleDirectory.Systems.Throwable.SnowballManager = serverRoot.Systems.Throwable.SnowballManager
 
 --//====================================================
---// Coins System
---//====================================================
-ModuleDirectory.Systems.Coins = {}
-ModuleDirectory.Systems.Coins.CoinPickup = serverRoot.Systems.CoinPickup.CoinPickup
-ModuleDirectory.Systems.Coins.CoinPickupManager = serverRoot.Systems.CoinPickup.CoinPickupManager
-
---//====================================================
 --// Bomb System
 --//====================================================
 ModuleDirectory.Systems.Bomb = {}
@@ -123,8 +116,6 @@ ModuleDirectory.Systems.Map.BlockDestruction = serverRoot.Systems.Map.BlockDestr
 --// Ammo System
 --//====================================================
 ModuleDirectory.Systems.Ammo = {}
-ModuleDirectory.Systems.Ammo.SnowballAmmoPickup = serverRoot.Systems.Ammo.SnowballAmmoPickup
-ModuleDirectory.Systems.Ammo.AmmoPickupManager = serverRoot.Systems.Ammo.AmmoPickupManager
 ModuleDirectory.Systems.Ammo.AmmoManager = serverRoot.Systems.Ammo.AmmoManager
 
 --//====================================================
@@ -222,15 +213,14 @@ ModuleDirectory.Chat = {}
 ModuleDirectory.Chat.ServerCommands = serverRoot.Services.Chat.ServerCommands
 ModuleDirectory.Chat.ServerVoice = serverRoot.Services.Chat.ServerVoice
 
+ModuleDirectory.Systems.Collectable = {}
+ModuleDirectory.Systems.Collectable.Collectable = serverRoot.Systems.Collectable.Collectable
+ModuleDirectory.Systems.Collectable.CollectableManager = serverRoot.Systems.Collectable.CollectableManager
+ModuleDirectory.Systems.Collectable.CollectablePickupLogic = serverRoot.Systems.Collectable.CollectablePickupLogic
+
 --//====================================================
 --// Lobby Challenges
 --//====================================================
-ModuleDirectory.Challenge = {}
-ModuleDirectory.Challenge.LobbyChallengeMain = serverRoot.Systems.LobbyChallenges.LobbyChallengeMain
-ModuleDirectory.Challenge.ChallengeStart = serverRoot.Systems.LobbyChallenges.ChallengeStart
-ModuleDirectory.Challenge.ChallengeEnd = serverRoot.Systems.LobbyChallenges.ChallengeEnd
-ModuleDirectory.Challenge.ChallengeLoop = serverRoot.Systems.LobbyChallenges.ChallengeLoop
-ModuleDirectory.Challenge.ChallengeSnowball = serverRoot.Systems.LobbyChallenges.Models.ChallengeSnowball
 
 --//====================================================
 --// Shared Utilities / Data (top-level like original)

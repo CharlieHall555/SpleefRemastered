@@ -47,7 +47,7 @@ return {
 			height = 0,
 			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			-- Combined: sandstone (light) + sand (dark)
 			tileMap = makeCheckerTileMapFromSize(Vector2.new(GRID, GRID), "dark_candy", "light_candy", true),
@@ -58,7 +58,7 @@ return {
 			height = 30,
 			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			tileMap = makeCheckerTileMapFromSize(Vector2.new(GRID, GRID), "light_candy", "dark_candy", true),
 		},
@@ -68,7 +68,7 @@ return {
 			height = 60,
 			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			tileMap = makeCheckerTileMapFromSize(Vector2.new(GRID, GRID), "dark_candy", "light_candy", true),
 		},

@@ -5,10 +5,7 @@ local ThrowableManager = require(ModuleDirectory.Systems.Throwable.ThrowableMana
 local Throwable = require(ModuleDirectory.Systems.Throwable.Throwable)
 local Block = require(ModuleDirectory.Systems.Map.Block)
 local SnowballManager = {}
-local RoundSystem = require(ModuleDirectory.Systems.Round.RoundSystem)
 local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
-local ServerHitBoxManager = require(ModuleDirectory.Systems.Gameplay.ServerHitBoxManager)
-local SnowballAmmoPickup = require(ModuleDirectory.Systems.Ammo.SnowballAmmoPickup)
 local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
 local PlayersInGame = require(ModuleDirectory.Systems.Round.PlayersInGame)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
@@ -21,14 +18,7 @@ function SnowballManager.init()
 	RemoteEventHandler.newEventConnection("REQUEST_SNOWBALL", SnowballManager.createSnowballFor)
 	ThrowableManager.registerOnHit("snowball", SnowballManager.onHit)
 
-	ServerHitBoxManager.setUpCallback("SNOWBALL_AMMO", function(player, otherPart)
-		local snowballId = otherPart:GetAttribute("Id")
-		local pickup = SnowballAmmoPickup.get(snowballId or -1)
-		local increment = (pickup or {}).increment or 1
-		AmmoManager.incrementAmmo(player, increment)
-		RemoteEventHandler.FireOnClient(player, "AMMO_GAINED", increment)
-		SnowballAmmoPickup.remove(snowballId)
-	end)
+
 end
 
 function SnowballManager.onHit(throwable: Throwable.Throwable, hit: RaycastResult , active : boolean)

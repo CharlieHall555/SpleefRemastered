@@ -76,18 +76,20 @@ return {
     AMMO_GAINED_FROM_FLOOR = 1,
     MAX_THORWABLE_LIFETIME = 10,
 
+    --//====================================================
+    --// CollectableSystem
+    --//====================================================
 
-    MAX_COIN_PICKUPS = 10,
-    COIN_SPAWN_INTERVAL = 1,
-    MIN_COIN_PICKUP_PER_FLOOR = 1,
+    MAX_COLLECTABLES = 19,
+    COLLECTABLE_SPAWN_INTERVAL = 1,
+    MIN_COLLECTABLE_PER_FLOOR = 1,
+    COLLECTABLE_LIFE_SPAN = 30,
+    COLLECTABLE_OFFSET_HEIGHT = 7,
+    COLLECTION_THRESHOLD_DISTANCE = 10,
+    COLLECTABLE_TYPES = {"ammo" , "coin"},
 
 
-    AMMO_SPAWN_INTERVAL = 10,
-    AMMO_PICKUP_LIFETIME = 30,
-    MAX_AMMO_PICKUPS = 10,
-    MIN_AMMO_PICKUP_PER_FLOOR = 1,
-    AMMO_SPAWN_HEIGHT_OFFSET = 7,
-    BOTS_ACTIVE = true,
+    BOTS_ACTIVE = false,
     TARGET_PLAYER_COUNT = 6,
 
     KNOCKBACK_COOLDOWN = 1,

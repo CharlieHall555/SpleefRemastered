@@ -4,7 +4,7 @@ export type LayerParams = {
 	height: number,
 	size: Vector2,
 	shape: "Circle" | "Square" | "OVERRIDE" | "Checked_Even" | "Checked_Odd",
-	spawnsAmmo: boolean?,
+	spawnsCollectables: boolean?,
 	regenerates: boolean?,
 	material: string,
 	tileMap: { [number]: { [number]: string } }?,

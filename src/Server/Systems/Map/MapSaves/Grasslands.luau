@@ -36,7 +36,7 @@ return {
             shape = "SQUARE",
 			height = 0,
 			size = Vector2.new(GRID, GRID),
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			-- Combined from Checked_Odd (grass_light) + Checked_Even (grass)
 			tileMap = makeCheckerTileMap(GRID, GRID, "grass_light", "grass", true),
@@ -45,7 +45,7 @@ return {
             shape = "SQUARE",
 			height = 30,
 			size = Vector2.new(GRID, GRID),
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			tileMap = makeCheckerTileMap(GRID, GRID, "grass_light", "grass", true),
 		},
@@ -53,7 +53,7 @@ return {
             shape = "SQUARE",
 			height = 60,
 			size = Vector2.new(GRID, GRID),
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			tileMap = makeCheckerTileMap(GRID, GRID, "grass_light", "grass", true),
 		},

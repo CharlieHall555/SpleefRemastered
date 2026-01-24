@@ -56,7 +56,7 @@ local function createAndAttachLayer(newMap: Map.Map, origin: Vector3, index: num
 		originPosition = origin,
 		size = params.size,
 		layerIndex = index,
-		spawnsAmmo = params.spawnsAmmo,
+		spawnsCollectables = params.spawnsCollectables,
 	}
 
 	local newLayer = Layer.new(eachLayerConfig)

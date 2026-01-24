@@ -44,7 +44,7 @@ return {
 			height = 0,
 			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			-- start with ICE at (1,1)
 			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "snow", true),
@@ -53,7 +53,7 @@ return {
 			height = 30,
 			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			-- flip the checker so it doesn't visually “line up” with layer 0
 			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "snow", false),
@@ -62,7 +62,7 @@ return {
 			height = 60,
 			size = Vector2.new(GRID, GRID),
 			shape = "SQUARE",
-			spawnsAmmo = true,
+			spawnsCollectables = true,
 
 			-- back to ICE at (1,1)
 			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "snow", true),

@@ -169,15 +169,7 @@ function MiscBindings.init()
 	end)
 
 	
-	HitBoxManager.setUpCallback("SNOWBALL_AMMO", function(otherPart: Part)
-		SoundPlayer.playSound("ammo_pickup", { volume = 0.4 })
-		if otherPart then
-			ParticlePlayer.queueEmission("ammo_pickup" , otherPart.Position)
-			otherPart.Transparency = 1
-		end
-	end)
-
-
+	
 	RemoteEventHandler.newEventConnection("NEW_BOMB", function(newBomb: Model) --VERY DANGEROUS FOR MEMORY LEAKS HERE PROBLALLY SHOULD DOM SEOMTHING BETTER
 		print("newBomb")
 
@@ -217,10 +209,6 @@ function MiscBindings.init()
 
 	end)
 
-	HitBoxManager.setUpCallback("COIN_PICKUP", function(part: BasePart)
-		ParticlePlayer.queueEmission("coin", part.Position, 12)
-		 SoundPlayer.playSound("coin_ding")
-	end)
 
 	ClientStateTracker.connectActive(function()
 		TouchButtons.setVisiblePowerUpButton(true)

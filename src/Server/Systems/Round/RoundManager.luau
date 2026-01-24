@@ -13,7 +13,6 @@ local WinnerDetection = require(ModuleDirectory.Systems.Stats.WinnerDetection)
 local PlayerData = require(ModuleDirectory.Player.PlayerData)
 local Leaderstats = require(ModuleDirectory.Player.Leaderstats)
 local AmmoManager = require(ModuleDirectory.Systems.Ammo.AmmoManager)
-local AmmoPickupManager = require(ModuleDirectory.Systems.Ammo.AmmoPickupManager)
 local ToolManager = require(ModuleDirectory.Systems.Tool.ToolManager)
 local PLayerManger = require(ModuleDirectory.Player.PlayerManager)
 local Onboarding = require(ModuleDirectory.Services.Analytics.Onboarding)
@@ -28,7 +27,6 @@ local LevelController = require(ModuleDirectory.LevelSystem.LevelController)
 local LeaderboardUpdater = require(ModuleDirectory.Services.Analytics.LeaderboardUpdater)
 local RespawnManager = require(ModuleDirectory.Systems.Gameplay.RespawnManager)
 local PodiumManager = require(ModuleDirectory.Systems.Round.PodiumManager)
-local CoinPickupManager = require(ModuleDirectory.Systems.Coins.CoinPickupManager)
 local VectorUtil = require(ModuleDirectory.VectorUtil)
 local Overhead = require(ModuleDirectory.Overhead)
 local SessionVariables = require(ModuleDirectory.Player.SessionVariables)
@@ -38,6 +36,7 @@ local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
 local Agent = require(ModuleDirectory.Systems.Agent.Agent)
 local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
 local MapVoting = require(ModuleDirectory.Systems.Voting.MapVoting)
+local CollectableManager = require(ModuleDirectory.Systems.Collectable.CollectableManager)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -77,6 +76,8 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 	end
 
 	TileScoring.setCurrentMap(currentMap)
+	CollectableManager.setMap(currentMap)
+	Agent.setCurrentMap(currentMap)
 
 	if Config.BOTS_ACTIVE then
 		local agentsToFill = Config.TARGET_PLAYER_COUNT - #currentRound.startingPlayers
@@ -86,7 +87,6 @@ local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd th
 		end
 	end
 
-	Agent.setCurrentMap(currentMap)
 
 	TileScoring.start()
 
@@ -130,11 +130,11 @@ end
 
 local function onRoundEnding(currentRound)
 	SuddenDeathTimer:End()
-	AmmoPickupManager.stop()
 	TileScoring.stop()
 	AmmoManager.reset()
 	RespawnManager.onRoundEnd()
 	RespawnManager.setMap(nil)
+	CollectableManager.reset()
 	Agent.setCurrentMap(nil)
 	Block.stopAllTweens()
 
@@ -173,7 +173,6 @@ local function onRoundEnding(currentRound)
 		
 	RoundSummary.onRoundEnd(currentRound, Winner)
 
-	CoinPickupManager.stop()
 	KnockbackTracker.reset()
 	EliminationTracker.reset()
 	BlockDestruction.reset()
@@ -211,8 +210,7 @@ end
 local function onRoundActive(currentRound)
 	--ToolManager.giveTools(PlayersInGame.getActivePlayers())
 	SuddenDeathTimer:Start(Config.ROUND_TIME)
-	AmmoPickupManager.start(currentMap)
-	CoinPickupManager.start(currentMap)
+	CollectableManager.start()
 	
 	local success, err = pcall(function()
 		ClearLobby.clear()

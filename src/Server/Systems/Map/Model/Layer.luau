@@ -10,7 +10,7 @@ export type LayerConfig = {
 	originPosition: Vector3,
 	size: Vector2,
 	layerIndex: number?,
-	spawnsAmmo: boolean?,
+	spawnsCollectables: boolean?,
 }
 
 export type Layer = {
@@ -20,7 +20,7 @@ export type Layer = {
 	tileMap: { [number]: { [number]: Block? } },
 	originPosition: Vector3,
 	layerIndex: number,
-	spawnsAmmo: boolean,
+	spawnsCollectables: boolean,
 	parentMapId: string?,
 
 	new: (config: LayerConfig) -> Layer,
@@ -38,8 +38,8 @@ export type Layer = {
 	getRandomBlock: (self: Layer) -> Block?,
 	destroy: (self: Layer) -> nil,
 	isEmpty: (self: Layer) -> boolean,
-	getSpawnsAmmo: (self: Layer) -> boolean,
-	setSpawnsAmmo: (self: Layer, value: boolean) -> nil,
+	getSpawnsCollectables: (self: Layer) -> boolean,
+	setspawnsCollectables: (self: Layer, value: boolean) -> nil,
 }
 
 local loadedLayers: { [string]: Layer } = {}
@@ -61,7 +61,7 @@ function Layer.new(conig : LayerConfig): Layer
 	self.blocks = {}
 	self.layerIndex = conig.layerIndex or 0
 	self.tileMap = {}
-	self.spawnsAmmo = conig.spawnsAmmo
+	self.spawnsCollectables = conig.spawnsCollectables
     self.parentMapId = nil
 
 	for x = 1, self.size.X do
@@ -194,12 +194,12 @@ function Layer.isEmpty(self: Layer): boolean
 end
 
 -- Ammo spawn flag
-function Layer.setSpawnsAmmo(self: Layer, value: boolean): nil
-	self.spawnsAmmo = value
+function Layer.setspawnsCollectables(self: Layer, value: boolean): nil
+	self.spawnsCollectables = value
 end
 
-function Layer.getSpawnsAmmo(self: Layer): boolean
-	return self.spawnsAmmo
+function Layer.getSpawnsCollectables(self: Layer): boolean
+	return self.spawnsCollectables
 end
 
 -- Init dependencies
