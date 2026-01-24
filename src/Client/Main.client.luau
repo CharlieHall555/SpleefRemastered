@@ -45,13 +45,6 @@ local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local player = game.Players.LocalPlayer
 
-HitBoxManager.setUpCallback("SNOWBALL_AMMO", function(otherPart: Part)
-	local increment = otherPart:GetAttribute("Increment") or 1
-	SoundPlayer.playSound("rbxassetid://18919192805", { volume = 0.4 })
-	--ClientAmmoTracker.predictIncrement(increment)
-	otherPart.Transparency = 1
-end)
-
 local ClientDestructionHandler = require(ClientModuleDirectory.ClientDestructionHandler)
 
 ClientThrowableTracker.registerOnHit("snowball", function(throwable: ClientThrowableTracker.Throwable, hit)

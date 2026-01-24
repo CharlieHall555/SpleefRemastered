@@ -10,6 +10,8 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ClientAmmoTracker = require(ClientModuleDirectory.ClientAmmoTracker)
 local Screens = require(ClientModuleDirectory.Gui.Screens)
 local ClolorNumberMapping = require(ClientModuleDirectory.ClolorNumberMapping)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
+
 
 local StatusGUI
 local isShaking = false
@@ -113,6 +115,13 @@ function RoundStatus.onProfileLoaded()
 			if previousTime ~= currentTime then
 				StatusGUI.TopBar.TimerLabel.Text = currentTime
 				animateText(StatusGUI.TopBar.TimerLabel)
+				
+				-- Only play sound when time actually changes
+				if currentTime == 0 then
+					SoundPlayer.playSound("countdown_end")
+				elseif currentTime == 1 or currentTime == 2 or currentTime == 3 then
+					SoundPlayer.playSound("countdown_tick")
+				end
 			end
 		end
 	end)
@@ -124,6 +133,13 @@ function RoundStatus.onProfileLoaded()
 			if previousTime ~= currentTime then
 				StatusGUI.TopBar.TimerLabel.Text = currentTime
 				animateText(StatusGUI.TopBar.TimerLabel)
+				
+				-- Only play sound when time actually changes
+				if currentTime == 0 then
+					SoundPlayer.playSound("countdown_end")
+				elseif currentTime == 1 or currentTime == 2 or currentTime == 3 then
+					SoundPlayer.playSound("countdown_tick")
+				end
 			end
 		end
 	end)

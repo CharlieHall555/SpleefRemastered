@@ -14,6 +14,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local RoundStatus = require(ClientModuleDirectory.Gui.RoundStatus)
 local TouchButtons = require(ClientModuleDirectory.Gui.TouchButtons)
 local SessionVariables = require(ClientModuleDirectory.Variables.SessionVariables)
+local AmmoGui = require(ClientModuleDirectory.Gui.Ammo)
 
 local CoinGui: Frame?
 
@@ -45,6 +46,11 @@ function Coin.onProfileLoaded()
         current = newValue
        
     end, "coinsCollected")
+    
+	if PlatformDetector.getPlatform() == "MOBILE" then --{0.99, -25},{0.4, 10}
+		AmmoGui.Position = UDim2.new(UDim.new(0.99, -25), UDim.new(0.4, 10))
+		AmmoGui.UIScale.Scale = 1.2
+	end
 
 end
 

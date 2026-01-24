@@ -80,10 +80,7 @@ ClientModuleDirectory.Gui.Shop.Coins = Root.Gui.Intermission.Shop.Coins
 ClientModuleDirectory.Gui.Shop.Gamepass = Root.Gui.Intermission.Shop.Gamepass
 
 ClientModuleDirectory.Gui.AFKWarning = Root.Gui.Active.AFKWarning
-
-ClientModuleDirectory.AbilitiesZone = Root.Zones.AbilitiesZone
-ClientModuleDirectory.InvitePlayersZone = Root.Zones.InvitePlayersZone
-
+ClientModuleDirectory.Gui.VotingGui = Root.Gui.Intermission.VotingGui
 
 ClientModuleDirectory.Gui.DailyRewardsGui = Root.Gui.Intermission.DailyRewards
 

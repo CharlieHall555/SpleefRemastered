@@ -32,11 +32,12 @@ local deathLabel: TextLabel?
 -- helpers
 local function getScreenFrame(): Frame
     local intermission = GuiAssets:WaitForChild("Intermission")
+    local frame = intermission:WaitForChild("EliminationScreen"):Clone()
+
     if PlatformDetector.getPlatform() == "MOBILE" then
-        return intermission:WaitForChild("MobileEliminationScreen") :: Frame
-    else
-        return intermission:WaitForChild("EliminationScreen") :: Frame
+        frame.Size = UDim2.fromScale(0.83 , 0.855)
     end
+    return frame
 end
 
 local function updateLockByState()

@@ -167,6 +167,9 @@ ModuleDirectory.Systems.Rewards = {}
 ModuleDirectory.Systems.Rewards.RewardsMain = serverRoot.Systems.Rewards.RewardsMain
 ModuleDirectory.Systems.Rewards.RewardData = sharedRoot.Data.DailyRewards
 
+ModuleDirectory.Systems.Voting = {}
+ModuleDirectory.Systems.Voting.MapVoting = serverRoot.Systems.Voting.MapVoting
+
 --//====================================================
 --// Player Systems
 --//====================================================

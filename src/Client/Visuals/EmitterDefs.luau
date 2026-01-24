@@ -43,6 +43,54 @@ return {
 		-- Timing
 		TimeScale = 1,
 	},
+	["ammo_pickup"] = {
+	-- Core
+	Brightness = 2.3,
+	Color = ColorSequence.new(
+		Color3.fromRGB(235, 245, 255), -- bright icy white
+		Color3.fromRGB(180, 220, 255)  -- soft blue tint
+	),
+	LightEmission = 0.35,
+	LightInfluence = 0,
+	LockedToPart = false,
+	Enabled = true,
+
+	-- Lifetime & Rate
+	Lifetime = NumberRange.new(0.45, 0.7),
+	Rate = 14,
+	Speed = NumberRange.new(4, 7),
+	SpreadAngle = Vector2.new(360, 360),
+
+	-- Shape
+	Shape = Enum.ParticleEmitterShape.Sphere,
+	ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward,
+	ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume,
+
+	-- Size & Transparency
+	Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.45),
+		NumberSequenceKeypoint.new(0.5, 0.35),
+		NumberSequenceKeypoint.new(1, 0.15),
+	}),
+	Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0),
+		NumberSequenceKeypoint.new(0.6, 0.1),
+		NumberSequenceKeypoint.new(1, 1),
+	}),
+
+	-- Rotation & Movement
+	Rotation = NumberRange.new(0, 360),
+	RotSpeed = NumberRange.new(120),
+	Drag = 2,
+	Acceleration = Vector3.new(0, 2, 0), -- slight float upward
+
+	-- Visual
+	Texture = "http://www.roblox.com/asset/?id=241685484",
+	ZOffset = 0,
+
+	-- Timing
+	TimeScale = 1,
+},
 	["grass"] = {
 		-- Core
 		Brightness = 2,

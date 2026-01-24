@@ -164,7 +164,7 @@ function DailyRewards.onProfileLoaded()
         if clickable and clickable:IsA("TextButton") then
             clickable.Activated:Connect(function()
                 RemoteEventHandler.FireOnServer("CLAIM_REWARD", buttonIndex)
-                SoundPlayer.playSound(CLAIM_SOUND)
+                -- --SoundPlayer.playSound(CLAIM_SOUND)
             end)
         end
     end

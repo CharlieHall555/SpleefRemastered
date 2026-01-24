@@ -50,7 +50,7 @@ local function fireEffect()
 		ParticleText.new(Screens.general, "ELIMINATION!", screenPos, opts)
 	end
 
-    SoundPlayer.playSound("rbxassetid://8595984380" , {volume = 0.35 , playbackSpeed = 1.1})
+    -- --SoundPlayer.playSound("rbxassetid://8595984380" , {volume = 0.35 , playbackSpeed = 1.1})
 end
 
 function EliminationEffect.init()

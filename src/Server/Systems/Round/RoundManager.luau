@@ -37,6 +37,7 @@ local TileScoring = require(ModuleDirectory.Systems.Agent.TileScoring)
 local BlockDestruction = require(ModuleDirectory.Systems.Map.BlockDestruction)
 local Agent = require(ModuleDirectory.Systems.Agent.Agent)
 local PlayerPool = require(ModuleDirectory.Systems.Round.PlayerPool)
+local MapVoting = require(ModuleDirectory.Systems.Voting.MapVoting)
 
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
@@ -63,7 +64,9 @@ end
 local function onRoundStarting(currentRound: RoundSystem.Round) --realy wierd this fires first 
 
 	RemoteEventHandler.FireOnClients(currentRound.startingPlayers, "CHANGE_STATE", "ROUND_STARTING")
-	local nextMapData = MapSaves.getMap(MapSelection.getNextMap())
+
+	local chosenMapName = MapVoting.getResult() or "Grasslands"
+	local nextMapData = MapSaves.getMap(chosenMapName)
 	currentMap = MapGenerator.generate(nextMapData)
 	currentWeather = nextMapData.weatherName or "lobbyWeather"
 	print("MapSpawn: @" .. VectorUtil.serializeVector3(currentMap.originPosition))
@@ -134,6 +137,7 @@ local function onRoundEnding(currentRound)
 	RespawnManager.setMap(nil)
 	Agent.setCurrentMap(nil)
 	Block.stopAllTweens()
+
 	local Winner
 	if ServerStatus.get() == "OK" then
 		Winner = WinnerDetection.getWinner(currentRound.startingPlayers)
@@ -166,14 +170,13 @@ local function onRoundEnding(currentRound)
 	else
 		RemoteEventHandler.FireOnAllClients("PLAYER_WON", nil, nil)
 	end
-
+		
 	RoundSummary.onRoundEnd(currentRound, Winner)
 
 	CoinPickupManager.stop()
 	KnockbackTracker.reset()
 	EliminationTracker.reset()
 	BlockDestruction.reset()
-		
 
 	TeleportManager.teleportPlayers(PlayersInGame.getActivePlayers(), LobbySpawn.Position + Vector3.new(0, 6, 0))
 	
@@ -192,6 +195,12 @@ end
 local function onRoundIntermission(currentRound) 
 	RemoteEventHandler.FireOnClients(PlayerPool.getActivePool(), "CHANGE_STATE", "INTERMISSION")
 
+	local randomMapChoices = MapSaves.generateRandomChoices()
+	MapVoting.setChoices(randomMapChoices)
+
+	task.delay(math.floor(Config.INTERMISSION_TIME / 2) ,function()
+		MapVoting.startVote(math.floor((Config.INTERMISSION_TIME / 2) -5))
+	end)
 
 end
 

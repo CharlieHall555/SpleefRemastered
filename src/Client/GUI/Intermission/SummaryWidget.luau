@@ -135,7 +135,7 @@ end
 function SummaryWidget.show()
 
 	
-	SoundPlayer.playSound(CoinSound)
+	 --SoundPlayer.playSound(CoinSound)
 
 	FrameSystem.setCurrent(SummaryWidgetGui)
 
@@ -163,10 +163,12 @@ function SummaryWidget.show()
 
 	local totalCoins = (record.coinsGained or 0) + (record.winnerBonus or 0)
 
+	SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(totalCoins) .. "C"
+
 	if record.winnerBonus and record.winnerBonus > 0 then
-		SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(totalCoins) .. "C (+" .. tostring(record.winnerBonus) .. "C Winner Bonus)"
+		SummaryWidgetGui.WinReward.Text = "(" .. tostring(record.winnerBonus) .. "C Winner Bonus)"
 	else
-		SummaryWidgetGui.CoinsReward.Text = "+" .. tostring(totalCoins) .. "C"
+		SummaryWidgetGui.WinReward.Text = ""
 	end
 
 	ensurePositions()

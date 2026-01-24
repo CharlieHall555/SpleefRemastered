@@ -16,6 +16,7 @@ local Config = require(ClientModuleDirectory.Config)
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local Workspace = game:GetService("Workspace")
+local SoundData = require(script.Parent.SoundData)
 
 local SoundPlayer = {} :: any
 
@@ -37,12 +38,25 @@ local endedHandlers: { [Sound]: RBXScriptConnection } = {}
 local _toggleListeners: { [number]: (enabled: boolean) -> nil } = {}
 local _nextToggleUid = 1
 
-local function normalizeId(soundId: string): string
-    if soundId:match("^rbxassetid://") then
-        return soundId
-    else
-        return "rbxassetid://" .. soundId
+local function getSoundEntry(soundKey: string): (string, SoundOptions)
+    local entry = SoundData[soundKey]
+    if not entry then
+        warn("SoundPlayer: Sound key '" .. soundKey .. "' not found in SoundData")
+        return "", {}
     end
+    
+    local id = entry.id
+    if not id:match("^rbxassetid://") then
+        id = "rbxassetid://" .. id
+    end
+    
+    local defaultOptions: SoundOptions = {
+        volume = entry.volume,
+        playbackSpeed = entry.playbackSpeed,
+        looped = entry.looped
+    }
+    
+    return id, defaultOptions
 end
 
 local function fireToggle(enabled: boolean)
@@ -155,10 +169,13 @@ function SoundPlayer.init()
     end)
 end
 
-function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3, options: SoundOptions?): nil
+function SoundPlayer.queuePositionalSound(soundKey: string, position: Vector3, options: SoundOptions?): nil
+    local soundId, defaultOptions = getSoundEntry(soundKey)
+    if soundId == "" then return end
+    
     options = options or {}
     if #idlePlayers == 0 then
-        table.insert(queuedSounds, { soundId = soundId, position = position })
+        table.insert(queuedSounds, { soundId = soundKey, position = position })
         return
     end
 
@@ -169,9 +186,9 @@ function SoundPlayer.queuePositionalSound(soundId: string, position: Vector3, op
     player.part.Parent = Workspace
     player.part.Position = position
 
-    player.sound.Volume = options.volume or 0.5
-    player.sound.PlaybackSpeed = options.playbackSpeed or 1
-    player.sound.SoundId = normalizeId(soundId)
+    player.sound.Volume = options.volume or defaultOptions.volume or 0.5
+    player.sound.PlaybackSpeed = options.playbackSpeed or defaultOptions.playbackSpeed or 1
+    player.sound.SoundId = soundId
 
     if not isMuted then
         player.sound:Play()
@@ -197,15 +214,22 @@ function SoundPlayer.endSound(playerId: number): nil
     end
 end
 
-function SoundPlayer.playSound(soundId: string, options: SoundOptions?): Sound
+function  SoundPlayer.playSound(soundKey: string, options: SoundOptions?): Sound
+    local soundId, defaultOptions = getSoundEntry(soundKey)
+    if soundId == "" then
+        -- return a dummy sound to avoid errors
+        local dummy = Instance.new("Sound")
+        dummy.Parent = SoundService
+        return dummy
+    end
+    
     options = options or {}
 
-    local id = normalizeId(soundId)
-    local sound = acquireSound(id)
+    local sound = acquireSound(soundId)
 
-    sound.Volume = options.volume or 0.5
-    sound.Looped = options.looped or false
-    sound.PlaybackSpeed = options.playbackSpeed or 1
+    sound.Volume = options.volume or defaultOptions.volume or 0.5
+    sound.Looped = options.looped or defaultOptions.looped or false
+    sound.PlaybackSpeed = options.playbackSpeed or defaultOptions.playbackSpeed or 1
 
     sound:SetAttribute("playerId", counter)
     playingSounds[counter] = sound

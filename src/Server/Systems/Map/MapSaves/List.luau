@@ -43,6 +43,36 @@ function MapSaves.getNames() : {string}
 	return {"Grasslands", "Desert", "Icefields" ,}
 end
 
+function MapSaves.generateRandomChoices() : { [number]: string } -- choose 3 unique maps at index 1 , 2, 3
+	local mapNames = MapSaves.getNames()
+	local choices: { [number]: string } = {}
+
+	-- If there are 3 or fewer maps, just shuffle and return them
+	if #mapNames <= 3 then
+		-- Fisher-Yates shuffle
+		for i = #mapNames, 2, -1 do
+			local j = math.random(1, i)
+			mapNames[i], mapNames[j] = mapNames[j], mapNames[i]
+		end
+
+		for i = 1, #mapNames do
+			choices[i] = mapNames[i]
+		end
+		return choices
+	end
+
+	-- Otherwise pick 3 unique at random (no repeats)
+	local pool = table.clone(mapNames)
+
+	for i = 1, 3 do
+		local idx = math.random(1, #pool)
+		choices[i] = pool[idx]
+		table.remove(pool, idx) -- ensures uniqueness
+	end
+
+	return choices
+end
+
 function MapSaves.chooseRandom(excludes : {string}?) : (MapSave, string)
 	excludes = excludes or {}
 	

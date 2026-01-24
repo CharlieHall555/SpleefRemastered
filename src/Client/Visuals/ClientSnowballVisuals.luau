@@ -30,7 +30,7 @@ end
 local function onSnowballHit(hitPos: Vector3, hitInstance: Instance? , snowballOwner : Player?)
 	if hitPos then
 		ParticlePlayer.queueEmission("PARTICLE_SNOWBALL", hitPos, 12)
-		SoundPlayer.queuePositionalSound(SNOWBALL_IMPACT_SOUND, hitPos, { volume = 0.45, playbackSpeed = 1.2 })
+		SoundPlayer.queuePositionalSound("snowball_impact", hitPos, { volume = 0.3, playbackSpeed = 0.9 })
 	end
 
 	if not hitInstance then

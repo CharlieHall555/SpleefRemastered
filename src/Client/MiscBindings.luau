@@ -71,14 +71,14 @@ function MiscBindings.init()
 	end
 
 	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(playerWhoDied: Player)
-		SoundPlayer.playSound(lightning, { volume = 0.3 })
+		SoundPlayer.playSound("death_sound", { volume = 0.3 })
 		if playerWhoDied == LocalPlayer then
 			VibrationService.medium()
 		end
 	end)
 
 	RemoteEventHandler.newEventConnection("AGENT_DIED", function()
-		SoundPlayer.playSound(lightning, { volume = 0.3 })
+		SoundPlayer.playSound("death_sound", { volume = 0.3 })
 	end)
 
 	RemoteEventHandler.newEventConnection("AMMO_GAINED", MiscBindings.onSnowballGained)
@@ -103,11 +103,36 @@ function MiscBindings.init()
 		end
 	end)
 
-	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH", function()
-		SoundPlayer.playSound("rbxassetid://88338250840662", { volume = 0.38 })
+	ClientStateTracker.connectServerStateChange(function(newState)
+		
+		print("newstate" , newState)
+
+		if newState == "PREPARING" then
+			AlertSystem.show("PREPARE!")
+		elseif  newState == "ACTIVE" then
+			AlertSystem.show("SPLEEF!")
+		end
+
 	end)
 
-	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(died: Player, killer: Player) end)
+	RemoteEventHandler.newEventConnection("START_SUDDEN_DEATH", function()
+		SoundPlayer.playSound("death_sound", { volume = 0.38 })
+		AlertSystem.show("SUDDEN DEATH!")
+	end)
+
+	local sword = "rbxassetid://111822138056370"
+	local skull = "rbxassetid://112304910791011"
+
+	RemoteEventHandler.newEventConnection("PLAYER_DIED", function(died: Player, killer: Player)
+	
+		if died and killer then
+			AlertSystem.show(killer.DisplayName .. " Eliminated " .. died.DisplayName , sword)
+		elseif died then
+			AlertSystem.show(died.DisplayName .. " Died." , skull)
+		end
+	
+
+	end)
 
 	RemoteEventHandler.newEventConnection("PLAYER_WON", function(playerName: string, winner: Player) end)
 
@@ -133,13 +158,23 @@ function MiscBindings.init()
 
 	CLientSnowballVisuals.registerTag("Target", function(hitObject, snowballOwner: Player?)
 		if snowballOwner and snowballOwner == LocalPlayer then
-			SoundPlayer.playSound(DING) -- ding sound
+			 --SoundPlayer.playSound(DING) -- ding sound
 		end
 	end)
 
 	local s, BillBoardCountDown = pcall(function()
 		return game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets", 2):WaitForChild("BillboardCountDown", 2)
 	end)
+
+	
+	HitBoxManager.setUpCallback("SNOWBALL_AMMO", function(otherPart: Part)
+		SoundPlayer.playSound("ammo_pickup", { volume = 0.4 })
+		if otherPart then
+			ParticlePlayer.queueEmission("ammo_pickup" , otherPart.Position)
+			otherPart.Transparency = 1
+		end
+	end)
+
 
 	RemoteEventHandler.newEventConnection("NEW_BOMB", function(newBomb: Model) --VERY DANGEROUS FOR MEMORY LEAKS HERE PROBLALLY SHOULD DOM SEOMTHING BETTER
 		print("newBomb")
@@ -180,10 +215,9 @@ function MiscBindings.init()
 
 	end)
 
-	local CoinSound = "rbxassetid://607665037"
 	HitBoxManager.setUpCallback("COIN_PICKUP", function(part: BasePart)
 		ParticlePlayer.queueEmission("coin", part.Position, 12)
-		SoundPlayer.playSound(CoinSound)
+		 SoundPlayer.playSound("coin_ding")
 	end)
 
 	ClientStateTracker.connectActive(function()
@@ -197,7 +231,7 @@ function MiscBindings.init()
 	RemoteEventHandler.newEventConnection("EXPLOSION", function(pos: Vector3, radius: number)
 		if pos and radius then
 			local explosionSound = "rbxassetid://5801257793" -- explosion sound
-			SoundPlayer.queuePositionalSound(explosionSound, pos, { volume = 0.5 })
+			--SoundPlayer.queuePositionalSound(explosionSound, pos, { volume = 0.5 })
 			if ParticlePlayer.getVisible() then
 				local explosionEffect = Instance.new("Explosion")
 				explosionEffect.Position = pos

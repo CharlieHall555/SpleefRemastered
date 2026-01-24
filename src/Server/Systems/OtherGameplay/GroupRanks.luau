@@ -19,7 +19,7 @@ function GroupRanks.init()
 			SessionVariables.setValue(player, "inGroup", false)
 		end
 
-		if player.UserId == Config.DEV_ID then
+		if table.find(Config.DEV_ID , player.UserId)  then
 			SessionVariables.setValue(player, "isDev", true)
 		else
 			SessionVariables.setValue(player, "isDev", false)

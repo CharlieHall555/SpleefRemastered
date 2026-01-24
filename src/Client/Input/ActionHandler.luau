@@ -198,8 +198,8 @@ function ActionHandler.mainAttack(action)
 		local selectedBlock = ClientBlockSelector.getSelected()
 
 		if ClientStateTracker.getState() == "ACTIVE" and ClientStateTracker.getServerState() == "PREPARING" then
-			local errorBlip = "rbxassetid://70373378044427"
-			SoundPlayer.playSound(errorBlip, { volume = 1.5 })
+
+			SoundPlayer.playSound("error_blip", { volume = 1.5 })
 			RoundStatus.shakePrepare()
 			VibrationService.light()
 			return
@@ -218,12 +218,12 @@ function ActionHandler.mainAttack(action)
 				and ClientAmmoTracker.getIsInfinite() == false
 			then
 				AmmoGui.shake()
-				SoundPlayer.playSound(OUT_SOUND)
+				 SoundPlayer.playSound("no_ammo")
 				VibrationService.light()
 
 				return
 			elseif ClientStateTracker.getState() == "TUTORIAL" and TutorialAmmo.getState().current <= 0 then
-				SoundPlayer.playSound(OUT_SOUND)
+				SoundPlayer.playSound("no_ammo")
 				VibrationService.light()
 
 				return
@@ -246,7 +246,6 @@ function ActionHandler.mainAttack(action)
 			AnimationManager.playAnimation(snowballThrowAnim)
 		end
 
-		SoundPlayer.playSound(THROW_SOUND)
 		RemoteEventHandler.FireOnServer("REQUEST_SNOWBALL", playerPosition, direction)
 		ClientTutorial.onAction("SHOOT")
 	end

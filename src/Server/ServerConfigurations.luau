@@ -2,7 +2,7 @@ return {
 
     LEADERBOARD_API_ENDPOINT = "https://leaderboardapi-production.up.railway.app",
     GROUP_ID = 34337368,
-    DEV_ID = 5025209448,
+    DEV_ID = {5025209448},
 
     --//====================================================
     --// Performance / Part Pooling
@@ -20,8 +20,8 @@ return {
     REQUIRED_PLAYERS = 2,              -- Players needed to start a round
     PLAYERS_TO_END = 0,                -- Players left to trigger end
     REQ_PLAYERS_AND_AGENTS = 2,
-    INTERMISSION_TIME = 22,             -- Time between rounds
-    PREPARING_TIME = 12,                -- Pre-round prep time
+    INTERMISSION_TIME = 28,             -- Time between rounds
+    PREPARING_TIME = 10,                -- Pre-round prep time
     ROUND_TIME = 80,                   -- Normal round duration
     MAXIMUM_ROUND_TIME = 500,           -- Emergency round cut-off
 
@@ -87,7 +87,7 @@ return {
     MAX_AMMO_PICKUPS = 10,
     MIN_AMMO_PICKUP_PER_FLOOR = 1,
     AMMO_SPAWN_HEIGHT_OFFSET = 7,
-    BOTS_ACTIVE = false,
+    BOTS_ACTIVE = true,
     TARGET_PLAYER_COUNT = 6,
 
     KNOCKBACK_COOLDOWN = 1,

@@ -188,7 +188,7 @@ function PCSettingsWidget.onLoaded()
         if claimable then
             if ClientStateTracker.getState() == "INTERMISSION" then
                 local DING_SOUND = "rbxassetid://75368614305052"
-		        SoundPlayer.playSound(DING_SOUND)
+		        -- --SoundPlayer.playSound(DING_SOUND)
             end
         end
 

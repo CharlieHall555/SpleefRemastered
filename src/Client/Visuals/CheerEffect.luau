@@ -24,10 +24,10 @@ function CheerEffect.onCheer(target: Player, from: Player)
 	task.spawn(function()
 		if target.Character and target.Character.PrimaryPart then
 			local playPos = target.Character.PrimaryPart.Position + Vector3.new(0, 6, 0)
-			SoundPlayer.queuePositionalSound("rbxassetid://135428675638330", playPos)
+			--SoundPlayer.queuePositionalSound("rbxassetid://135428675638330", playPos)
 
 			if target == LocalPlayer or from == LocalPlayer then
-				SoundPlayer.queuePositionalSound("rbxassetid://97218547862968", playPos)
+				--SoundPlayer.queuePositionalSound("rbxassetid://97218547862968", playPos)
 			end
 
 			local fromString = ""
@@ -77,7 +77,7 @@ function CheerEffect.onWin(winnerName: string, winner: Player)
 			if winner and winner.Character and winner.Character.PrimaryPart then
 				local playPos = winner.Character.PrimaryPart.Position + Vector3.new(0, 6, 0)
 				local offset = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1))
-				SoundPlayer.queuePositionalSound("rbxassetid://135428675638330", playPos)
+				--SoundPlayer.queuePositionalSound("rbxassetid://135428675638330", playPos)
 				task.wait(0.1)
 				CheerEffect.playParticle(playPos + offset)
 			else

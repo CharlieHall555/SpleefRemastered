@@ -11,6 +11,7 @@ local Screens = require(ClientModuleDirectory.Gui.Screens)
 local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local AbilitiesData = require(ClientModuleDirectory.AbilitiesData)
 local ProfileVariables = require(ClientModuleDirectory.Variables.ProfileVariables)
+local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 
 local onPowerUp: (() -> ())? = nil
 
@@ -22,6 +23,7 @@ local AbilityBarGUI: Frame?
 local abilityBarMoveable: Frame?
 local abilityText: TextLabel?
 local cooldownText: TextLabel?
+
 
 local HIGHLIGHT_COLOR = Color3.fromRGB(241, 241, 241)
 local DARK_COLOR = Color3.fromRGB(37, 37, 37)
@@ -151,6 +153,7 @@ function AbilityBar.setArrowVisible(value)
 end
 
 local previousDisplayed = ""
+local hasPlayedChargedSound = false
 
 function AbilityBar.setCooldown(value: number)
 	if AbilityBarGUI then
@@ -164,6 +167,15 @@ function AbilityBar.setCooldown(value: number)
 		previousDisplayed = cooldownText.Text
 		if abilityValue <= 0 then
 			cooldownText.Text = ""
+			
+			-- Play charged sound once when ability becomes available
+			if not hasPlayedChargedSound and ClientStateTracker.getState() == "ACTIVE" then
+				--SoundPlayer.playSound("powerup_charged")
+				hasPlayedChargedSound = true
+			end
+		else
+			-- Reset flag when cooldown is active again
+			hasPlayedChargedSound = false
 		end
 		abilityBarMoveable.Size = UDim2.new(1 - (value / currentCooldown), 0, 1, 0)
 	end

@@ -102,7 +102,7 @@ function ClientKnockback.init()
 
 	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION", function(playerTarget: Player)
 		if playerTarget and playerTarget.Character and playerTarget.Character.PrimaryPart then
-			SoundPlayer.playSound("rbxassetid://146163534")
+			 --SoundPlayer.playSound("rbxassetid://146163534")
 
 			if ClientStateTracker.getState() == "ACTIVE" then
 				local randomX = (math.random() - 0.5) / 5
@@ -133,7 +133,7 @@ function ClientKnockback.init()
 
 	RemoteEventHandler.newEventConnection("KNOCKBACK_ANIMATION_CHAR", function(Char: Model)
 		if Char and Char.PrimaryPart then
-			SoundPlayer.queuePositionalSound("rbxassetid://146163534", Char.PrimaryPart.Position)
+			--SoundPlayer.queuePositionalSound("rbxassetid://146163534", Char.PrimaryPart.Position)
 		end
 
 		playHitFlashOn(Char)

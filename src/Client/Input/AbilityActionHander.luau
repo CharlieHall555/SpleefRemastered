@@ -19,14 +19,14 @@ function AbilityActionHandler.useAbility()
     
     if ClientStateTracker.getServerState() == "PREPARING" then
         local errorBlip = "rbxassetid://70373378044427"
-		SoundPlayer.playSound(errorBlip, { volume = 1.5 })
+		 --SoundPlayer.playSound(errorBlip, { volume = 1.5 })
 	    RoundStatus.shakePrepare()
         return
     end
 
     if (CooldownPredicter.getCooldown() > 0 or SessionVariables.getValue("spawnProtectionActive") or false) == true then
         local errorBlip = "rbxassetid://70373378044427"
-		SoundPlayer.playSound(errorBlip, { volume = 1.5 })
+		 --SoundPlayer.playSound(errorBlip, { volume = 1.5 })
         AbilityBar.shake()
         return
     end

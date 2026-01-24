@@ -4,6 +4,7 @@ local RemoteEventHandler = require(ClientModuleDirectory.RemoteEventHandler)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 local RunService = game:GetService("RunService")
 local ClientToolManager = require(ClientModuleDirectory.ClientToolManager)
+local ServerConstants = require(ClientModuleDirectory.Variables.ServerConstants)
 
 workspace:GetServerTimeNow()
 
@@ -101,33 +102,26 @@ local function ensureHeartbeat()
 end
 
 function ClientAmmoTracker.init(): nil
-	AMMO_REGEN_INTERVAL = RemoteEventHandler.InvokeOnServer("QUERY_AMMO_REGEN_INTERVAL", 2) or 2
+	AMMO_REGEN_INTERVAL = RemoteEventHandler.InvokeOnServer("QUERY_AMMO_REGEN_INTERVAL", 2) or 0
 	emitProgressIfChanged()
 	ensureHeartbeat()
 
-	task.spawn(function()
-		isInfiniteAmmo = (RemoteEventHandler.InvokeOnServer("QUERY_AMMO_INFINITE", 0.5) or false)
+	isInfiniteAmmo = ServerConstants.getValue("infiniteAmmo")
+
+	ServerConstants.setOnUpdateCallback(function(valueName, newValue)
+		isInfiniteAmmo = newValue
+
 		if isInfiniteAmmo then
+			ClientToolManager.setSnowballVisible(true)
 			if onInfiniteOn then
 				onInfiniteOn()
 			end
+		else
+			if onInfiniteOff then
+				onInfiniteOff()
+			end
 		end
-	end)
-
-	RemoteEventHandler.newEventConnection("INFINITE_AMMO_ON", function()
-		isInfiniteAmmo = true
-		ClientToolManager.setSnowballVisible(true)
-		if onInfiniteOn then
-			onInfiniteOn()
-		end
-	end)
-
-	RemoteEventHandler.newEventConnection("INFINITE_AMMO_OFF", function()
-		isInfiniteAmmo = false
-		if onInfiniteOff then
-			onInfiniteOff()
-		end
-	end)
+	end, "infiniteAmmo")
 
 	RemoteEventHandler.newEventConnection("SET_MAX_AMMO", function(newMaxAmmo)
 		if typeof(newMaxAmmo) == "number" then

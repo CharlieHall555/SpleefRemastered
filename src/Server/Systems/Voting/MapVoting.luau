@@ -1,5 +1,6 @@
 local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
 local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local ServerConstants = require(ModuleDirectory.ServerConstants)
 
 local MapVoting = {}
 
@@ -65,14 +66,16 @@ local function recieveVote(player: Player, voteN: number)
 	end
 
 	votesCast[player.UserId] = voteN
-	updateTallies()
+	updateTallies(true)
 end
 
 function MapVoting.setChoices(values: { [number]: string })
 	choices = values
+	RemoteEventHandler.FireOnAllClients("VOTE_CHOICES_SET", choices)
+	updateTallies()
 end
 
-local function getResult(): string
+function MapVoting.getResult(): string
 	local tallies = tally()
 
 	local bestCount = -1
@@ -89,7 +92,7 @@ local function getResult(): string
 
 	if #bestChoices == 0 then
 		warn("MapVoting: No choices set.")
-		return ""
+		return nil
 	end
 
 	local winningIndex = bestChoices[math.random(1, #bestChoices)]
@@ -113,6 +116,7 @@ function MapVoting.startVote(voteLength: number)
 	resetVotes()
 	voteRunning = true
 	endTime = tick() + voteLength
+	RemoteEventHandler.FireOnAllClients("START_VOTE" , voteLength)
 
 	updateTallies(true) -- send initial 0-0-0 to clients
 
@@ -123,7 +127,9 @@ function MapVoting.startVote(voteLength: number)
 
 		voteRunning = false
 
-		local result = getResult()
+		local result = MapVoting.getResult()
+		RemoteEventHandler.FireOnAllClients("END_VOTE" , choices)
+
 		if onEndVote then
 			onEndVote(result)
 		end

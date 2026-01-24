@@ -43,7 +43,7 @@ function ButtonUtilities.setUpButton(buttonRoot : Frame)
         local soundToPlay = buttonRoot:GetAttribute("clickSound")
         print(soundToPlay)
         if soundToPlay then
-            SoundPlayer.playSound(soundToPlay , {volume = 0.4})
+            -- --SoundPlayer.playSound(soundToPlay , {volume = 0.4})
         end
 
     end)

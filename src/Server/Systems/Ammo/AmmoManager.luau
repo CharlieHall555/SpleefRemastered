@@ -25,7 +25,7 @@ end
 
 function AmmoManager.init()
 
-    ServerConstants.setValue("infiniteAmmo" , true)
+    ServerConstants.setValue("infiniteAmmo" , isInfiniteAmmo)
     ServerConstants.setValue("ammoRegenInterval" , Config.AMMO_REGEN_INTERVAL)
 
     table.clear(AmmoStore)
@@ -51,7 +51,7 @@ end
 function AmmoManager.setInfinite(value : boolean)
 
     isInfiniteAmmo = value
-    ServerConstants.setValue("infiniteAmmo" , true)
+    ServerConstants.setValue("infiniteAmmo" , isInfiniteAmmo)
 end
 
 function AmmoManager.isInfiniteAmmo()

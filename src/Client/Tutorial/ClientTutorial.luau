@@ -92,7 +92,7 @@ end
 
 function ClientTutorial.start()
 	local SuccessSound = "rbxassetid://86832085549408"
-	SoundPlayer.playSound(SuccessSound, { volume = 0.5 })
+	 --SoundPlayer.playSound(SuccessSound, { volume = 0.5 })
 	currentStep = 0
 	currentStepData = {}
 	ClientTutorial.nextStep()
@@ -118,7 +118,7 @@ function ClientTutorial.onAction(actionName : string)
 			return
 		end
 		if actionName ~= "AUTO_COMPLETE" then
-			SoundPlayer.playSound("rbxassetid://1788243907", { volume = 0.5 })	
+			 --SoundPlayer.playSound("rbxassetid://1788243907", { volume = 0.5 })	
 		end
 		ClientTutorial.nextStep()
 	end

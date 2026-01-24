@@ -89,12 +89,12 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
 
         RemoteEventHandler.FireOnServer("REQUEST_BUY_ABILITY", item.name)
         local coinSound = "rbxassetid://86832085549408"
-		SoundPlayer.playSound(coinSound)
+		 --SoundPlayer.playSound(coinSound)
     end)
     table.insert(buttonConnections, buttonConnection)
 
     buttonConnection = card.EquipButton.Clickable.Activated:Connect(function()
-        SoundPlayer.playSound("rbxassetid://86158976528555" , {volume = 0.5})
+        -- --SoundPlayer.playSound("rbxassetid://86158976528555" , {volume = 0.5})
         RemoteEventHandler.FireOnServer("REQUEST_EQUIP_ABILITY", item.name)
     end)
     table.insert(buttonConnections, buttonConnection)

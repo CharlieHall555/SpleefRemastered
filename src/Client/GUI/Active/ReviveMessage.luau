@@ -124,7 +124,7 @@ function ReviveMessage.show(playerName: string)
     inTweens[1].Completed:Once(function()
         
         local respawnChime = "rbxassetid://118694334396316"
-		SoundPlayer.playSound(respawnChime , {volume = 0.5})
+		 --SoundPlayer.playSound(respawnChime , {volume = 0.5})
 
         task.wait(HOLD_TIME)
         -- slow fade out

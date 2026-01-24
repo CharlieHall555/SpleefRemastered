@@ -104,14 +104,14 @@ local function buildItemCard(item: ShovelsData.ShovelDefinition): Frame
 			else
                 RemoteEventHandler.FireOnServer("REQUEST_BUY_SHOVEL", item.name)
 				local coinSound = "rbxassetid://86832085549408"
-				SoundPlayer.playSound(coinSound)
+				 --SoundPlayer.playSound(coinSound)
 			end
 		end
 	end)
 	table.insert(buttonConnections, connection)
 
 	local connection = card.EquipButton.Clickable.Activated:Connect(function()
-		SoundPlayer.playSound("rbxassetid://86158976528555" , {volume = 0.5})
+		 --SoundPlayer.playSound("rbxassetid://86158976528555" , {volume = 0.5})
 		RemoteEventHandler.FireOnServer("REQUEST_EQUIP_SHOVEL", item.name)
 	end)
 	table.insert(buttonConnections, connection)
