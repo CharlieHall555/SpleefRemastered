@@ -6,6 +6,8 @@ local Block , Map
 type Block = Block.Block
 type Map = Map.Map
 
+local layerFolder : Folder = nil
+
 export type LayerConfig = {
 	originPosition: Vector3,
 	size: Vector2,
@@ -22,6 +24,7 @@ export type Layer = {
 	layerIndex: number,
 	spawnsCollectables: boolean,
 	parentMapId: string?,
+	folder: Folder,
 
 	new: (config: LayerConfig) -> Layer,
 	get: (id: string) -> Layer?,
@@ -63,6 +66,9 @@ function Layer.new(conig : LayerConfig): Layer
 	self.tileMap = {}
 	self.spawnsCollectables = conig.spawnsCollectables
     self.parentMapId = nil
+	self.folder = Instance.new("Folder") 
+	self.folder.Parent = layerFolder
+	self.folder.Name = self.id
 
 	for x = 1, self.size.X do
 		self.tileMap[x] = {}
@@ -206,6 +212,10 @@ end
 function Layer.init(): nil
 	Block = require(ModuleDirectory.Systems.Map.Block)
     Map = require(ModuleDirectory.Systems.Map.Map)
+
+	layerFolder = Instance.new("Folder")
+	layerFolder.Parent = workspace
+	layerFolder.Name = "Layers"
 end
 
 return Layer

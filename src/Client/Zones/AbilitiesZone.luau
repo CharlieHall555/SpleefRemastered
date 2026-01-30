@@ -1,7 +1,7 @@
 local Root = game.Players.LocalPlayer.PlayerScripts
 local ClientModuleDirectory = require(Root.ClientModuleDirectory)
 local localPlayer = game.Players.LocalPlayer
-local Shop = require(ClientModuleDirectory.Gui.Shop.Main)
+local Shop = require(ClientModuleDirectory.Gui.Shop.ShopMain)
 
 local AbilitiesZone = {}
 

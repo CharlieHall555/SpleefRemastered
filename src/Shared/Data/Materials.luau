@@ -1,22 +1,37 @@
+local RunService = game:GetService("RunService")
 local CustomMaterials = {}
+
+local ModuleDirectory
+
+
+if RunService:IsServer() then
+    ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDirectory)
+else
+    ModuleDirectory = require(game.Players.LocalPlayer.PlayerScripts.ClientModuleDirectory)
+end
+local Textures = require(ModuleDirectory.Textures)
 
 local validMateirals = {}
 
 export type CustomMaterial = {
     material : string,
     color : Color3,
-    transparency : number?
+    transparency : number?,
+    texture : Texture?
 }
 
 materials = {}
 materials.sand = {
     material = Enum.Material.Sand,
-    color = Color3.fromRGB(177, 139, 79)
+    color = Color3.fromRGB(177, 139, 79),
+    texture = Textures.light_sand,
 }
 
 materials.sandstone = {
     material = Enum.Material.Sandstone,
-    color = Color3.fromRGB(130, 94, 49)
+    color = Color3.fromRGB(130, 94, 49),
+    texture = Textures.dark_sand,
+
 }
 
 materials.mud = {
@@ -31,12 +46,14 @@ materials.obsidian = {
 
 materials.grass = {
     material = Enum.Material.Grass,
-    color = Color3.fromRGB(52, 142, 64)
+    color = Color3.fromRGB(0, 36, 7),
+    texture = Textures.grass_dark
 }
 
 materials.grass_light = {
     material = Enum.Material.Grass,
-    color = Color3.fromRGB(46, 224, 69)
+    color = Color3.fromRGB(64, 255, 0),
+    texture = Textures.grass_light
 }
 
 materials.stone = {
@@ -51,7 +68,14 @@ materials.snow = {
 
 materials.ice = {
     material = Enum.Material.Ice,
-    color = Color3.fromRGB(19, 181, 226)
+    color = Color3.fromRGB(19, 181, 226),
+    texture = Textures.ice
+}
+
+materials.dark_ice = {
+    material = Enum.Material.Ice,
+    color = Color3.fromRGB(10, 110, 138),
+    texture = Textures.dark_ice
 }
 
 materials.plastic_yellow = {

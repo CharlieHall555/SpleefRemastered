@@ -116,24 +116,24 @@ function WinnerEffect.onProfileLoaded()
 end
 
 local function fireworkEffect()
-	 --SoundPlayer.playSound("rbxassetid://9113263649")
+	SoundPlayer.playSound("firework")
 	emitter1:Emit(15)
 	emitter2:Emit(15)
 
 	task.wait(0.5)
-	 --SoundPlayer.playSound("rbxassetid://9113263649")
+	SoundPlayer.playSound("firework")
 	emitter3:Emit(15)
 	emitter4:Emit(15)
 
 	task.wait(0.65)
 	emitter1:Emit(15)
 	emitter2:Emit(15)
-	 --SoundPlayer.playSound("rbxassetid://9113263649")
+	SoundPlayer.playSound("firework")
 
 	task.wait(0.85)
 	emitter3:Emit(15)
 	emitter4:Emit(15)
-	 --SoundPlayer.playSound("rbxassetid://9113263649")
+	SoundPlayer.playSound("firework")
 end
 
 function WinnerEffect.onNobodyWins() end

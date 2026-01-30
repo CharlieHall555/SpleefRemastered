@@ -72,7 +72,7 @@ ClientModuleDirectory.Gui.SpectateControls = Root.Gui.Spectate.Controls
 ClientModuleDirectory.Gui.SummaryWidget = Root.Gui.Intermission.SummaryWidget
 
 ClientModuleDirectory.Gui.Shop = {} 
-ClientModuleDirectory.Gui.Shop.Main = Root.Gui.Intermission.Shop.Main
+ClientModuleDirectory.Gui.Shop.ShopMain = Root.Gui.Intermission.Shop.ShopMain
 ClientModuleDirectory.Gui.Shop.ExtraLives = Root.Gui.Intermission.Shop.ExtraLives
 ClientModuleDirectory.Gui.Shop.Abilities = Root.Gui.Intermission.Shop.Abilities
 ClientModuleDirectory.Gui.Shop.Shovels = Root.Gui.Intermission.Shop.Shovels
@@ -244,6 +244,10 @@ ClientModuleDirectory.TutorialFunctions = Root.Tutorial.TutorialFunctions
 ClientModuleDirectory.ClolorNumberMapping = SharedRoot.Data.ColorNumberMapping
 
 ClientModuleDirectory.ClientCollectableManager = Root.Collectable.ClientCollectableManager
+ClientModuleDirectory.Materials = SharedRoot.Data.Materials
+ClientModuleDirectory.Textures= SharedRoot.Data.Textures
+ClientModuleDirectory.TextureManager = Root.Visuals.TextureManager
+
 
 return ClientModuleDirectory
 

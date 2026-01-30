@@ -105,7 +105,7 @@ ModuleDirectory.Systems.Map.Block = serverRoot.Systems.Map.Model.Block
 ModuleDirectory.Systems.Map.Layer = serverRoot.Systems.Map.Model.Layer
 ModuleDirectory.Systems.Map.Map = serverRoot.Systems.Map.Model.Map
 ModuleDirectory.Systems.Map.MapSaves = serverRoot.Systems.Map.MapSaves.List
-ModuleDirectory.Systems.Map.Materials = serverRoot.Systems.Map.MapSaves.Materials
+ModuleDirectory.Systems.Map.Materials = sharedRoot.Data.Materials
 ModuleDirectory.Systems.Map.PlaneGenerator = serverRoot.Systems.Map.PlaneGenerator
 ModuleDirectory.Systems.Map.MapGenerator = serverRoot.Systems.Map.MapGenerator
 ModuleDirectory.Systems.Map.BlockDestruction = serverRoot.Systems.Map.BlockDestruction
@@ -218,6 +218,10 @@ ModuleDirectory.Systems.Collectable.Collectable = serverRoot.Systems.Collectable
 ModuleDirectory.Systems.Collectable.CollectableManager = serverRoot.Systems.Collectable.CollectableManager
 ModuleDirectory.Systems.Collectable.CollectablePickupLogic = serverRoot.Systems.Collectable.CollectablePickupLogic
 
+ModuleDirectory.Systems.Meteor = {}
+ModuleDirectory.Systems.Meteor.Meteor = serverRoot.Systems.Meteor.Meteor
+ModuleDirectory.Systems.Meteor.MeteorManager =  serverRoot.Systems.Meteor.MeteorManager
+
 --//====================================================
 --// Lobby Challenges
 --//====================================================
@@ -238,6 +242,8 @@ ModuleDirectory.Set = sharedRoot.Utilities.Set
 -- Shared definitions / lists
 ModuleDirectory.ProductList = sharedRoot.ProductsList
 ModuleDirectory.ShovelDefinitions = sharedRoot.Data.ShovelDefinitions
+
+ModuleDirectory.Textures = sharedRoot.Data.Textures
 
 --//====================================================
 --// Return

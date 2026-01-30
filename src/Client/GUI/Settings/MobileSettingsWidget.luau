@@ -24,10 +24,10 @@ local sfxButtonIcon: ImageLabel
 
 local onClick
 
-local SOUND_ON_IMAGE = "rbxassetid://102335554495793"
-local SOUND_OFF_IMAGE = "rbxassetid://108653430274728"
-local MUSIC_ON_IMAGE = "rbxassetid://110651581351042"
-local MUSIC_OFF_IMAGE = "rbxassetid://92620108688852"
+local SOUND_ON_IMAGE = "rbxassetid://130670549946232"
+local SOUND_OFF_IMAGE = "rbxassetid://75538409950387"
+local MUSIC_ON_IMAGE = "rbxassetid://90089293571221"
+local MUSIC_OFF_IMAGE = "rbxassetid://76486360065986"
 
 
 

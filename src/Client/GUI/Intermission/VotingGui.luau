@@ -104,14 +104,14 @@ local function pressButton(button: Frame)
 end
 
 local function resetAllButtons()
-	if choice1 then
+	if choice1 and myVote ~= 1 then
 		resetButton(choice1.Vote)
 	end
-	if choice2 then
-		resetButton(choice1.Vote)
+	if choice2 and myVote ~= 2 then
+		resetButton(choice2.Vote)
 	end
-	if choice3 then
-		resetButton(choice1.Vote)
+	if choice3 and myVote ~= 3 then
+		resetButton(choice2.Vote)
 	end
 end
 
@@ -121,9 +121,9 @@ local function applyMyVoteVisual()
 	if myVote == 1 and choice1 then
 		pressButton(choice1.Vote)
 	elseif myVote == 2 and choice2 then
-		pressButton(choice1.Vote)
+		pressButton(choice2.Vote)
 	elseif myVote == 3 and choice3 then
-		pressButton(choice1.Vote)
+		pressButton(choice3.Vote)
 	end
 end
 

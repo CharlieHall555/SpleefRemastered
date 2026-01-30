@@ -47,7 +47,7 @@ return {
 			spawnsCollectables = true,
 
 			-- start with ICE at (1,1)
-			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "snow", true),
+			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "dark_ice", true),
 		},
 		{
 			height = 30,
@@ -56,7 +56,7 @@ return {
 			spawnsCollectables = true,
 
 			-- flip the checker so it doesn't visually “line up” with layer 0
-			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "snow", false),
+			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "dark_ice", false),
 		},
 		{
 			height = 60,
@@ -65,7 +65,7 @@ return {
 			spawnsCollectables = true,
 
 			-- back to ICE at (1,1)
-			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "snow", true),
+			tileMap = makeCheckerTileMap(GRID, GRID, "ice", "dark_ice", true),
 		},
 	},
 }

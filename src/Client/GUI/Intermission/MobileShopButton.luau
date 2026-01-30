@@ -4,7 +4,7 @@ local PlatformDetector = require(ClientModuleDirectory.Input.PlatformDetector)
 local SoundPlayer = require(ClientModuleDirectory.Sound.SoundPlayer)
 local GuiAssets = game:GetService("ReplicatedStorage"):WaitForChild("GuiAssets")
 local Screens = require(ClientModuleDirectory.Gui.Screens)
-local Shop = require(ClientModuleDirectory.Gui.Shop.Main)
+local Shop = require(ClientModuleDirectory.Gui.Shop.ShopMain)
 local ClientStateTracker = require(ClientModuleDirectory.ClientStateTracker)
 
 local MobileSettingsWidget = require(ClientModuleDirectory.Gui.MobileSettingsWidget)

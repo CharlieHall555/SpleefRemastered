@@ -29,11 +29,22 @@ local active = false
 -- layerId -> count
 local collectablesOnLayer: { [string]: number } = {}
 
+-- position tracking to prevent duplicates (positionKey -> collectableId)
+local collectablesAtPosition: { [string]: string } = {}
+
 -- timing
 local nextSpawnAt: number = 0
 
 local function clamp0(n: number): number
 	return (n < 0) and 0 or n
+end
+
+local function positionToKey(position: Vector3): string
+	-- Round to nearest 0.1 to handle floating point variations
+	local x = math.floor(position.X * 10 + 0.5) / 10
+	local y = math.floor(position.Y * 10 + 0.5) / 10
+	local z = math.floor(position.Z * 10 + 0.5) / 10
+	return string.format("%.1f,%.1f,%.1f", x, y, z)
 end
 
 local function getTotalCollectables(): number
@@ -99,6 +110,12 @@ local function collectableDestroyed(collectable: Collectable.Collectable)
 		collectablesOnLayer[layerId] = clamp0((collectablesOnLayer[layerId] :: number) - 1)
 	end
 
+	-- Remove from position tracking
+	local posKey = positionToKey(collectable.worldPosition)
+	if collectablesAtPosition[posKey] == collectable.id then
+		collectablesAtPosition[posKey] = nil
+	end
+
 	RemoteEventHandler.FireOnAllClients("COLLECTABLE_DESTROYED", collectable.id)
 end
 
@@ -147,6 +164,12 @@ function CollectableManager.newCollectable(
 		return nil
 	end
 
+	-- Check if position is already occupied
+	local posKey = positionToKey(position)
+	if collectablesAtPosition[posKey] then
+		return nil -- Position already has a collectable
+	end
+
 	-- global cap
 	local maxAll = tonumber(Configurations.MAX_COLLECTABLES) or 0
 	if maxAll > 0 and getTotalCollectables() >= maxAll then
@@ -164,7 +187,9 @@ function CollectableManager.newCollectable(
 
 	-- increment counts
 	collectablesOnLayer[layerId] = (collectablesOnLayer[layerId] :: number) + 1
-
+	-- Track position
+	local posKey = positionToKey(position)
+	collectablesAtPosition[posKey] = collectable.id
 	-- auto-expire (don’t double-destroy if already gone)
 	if lifeSpan > 0 then
 		task.delay(lifeSpan, function()
@@ -248,6 +273,7 @@ end
 function CollectableManager.reset()
 	active = false
 	collectablesOnLayer = {}
+	collectablesAtPosition = {}
 	currentMap = nil
 end
 

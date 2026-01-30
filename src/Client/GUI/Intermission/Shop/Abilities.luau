@@ -88,8 +88,7 @@ local function buildItemCard(item: ShopItem.ShopItem): Frame
         end
 
         RemoteEventHandler.FireOnServer("REQUEST_BUY_ABILITY", item.name)
-        local coinSound = "rbxassetid://86832085549408"
-		 --SoundPlayer.playSound(coinSound)
+		 SoundPlayer.playSound("cha_ching")
     end)
     table.insert(buttonConnections, buttonConnection)
 

@@ -85,8 +85,7 @@ function ShopMain.missingFunds(amount : number)
     missingFundsFrame.Visible = true
     missingFundsFrame.Window.AmountMissing.Text = "You are missing " .. string.format("<font color='rgb(255,205,23)'>%dC</font>", amount)
 
-    local errorBlip = "rbxassetid://70373378044427"
-	 --SoundPlayer.playSound(errorBlip, { volume = 1.5 })
+	SoundPlayer.playSound("error_blip")
     VibrationService.light()
 end
 
@@ -108,6 +107,7 @@ function ShopMain.onProfileLoaded()
 
     shopGui.Visible = false
     shopGui.Parent = Screens.intermissionHUD
+    print(shopGui.Parent , "parent")
 
     main = shopGui:WaitForChild("Main")
     buttonSelection = main:WaitForChild("ButtonSelection")

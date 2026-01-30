@@ -36,6 +36,8 @@ local ModuleDirectory = require(game:GetService("ServerScriptService").ModuleDir
 local partPool = require(ModuleDirectory.PartPool)
 local Materials = require(ModuleDirectory.Systems.Map.Materials)
 local Config = require(game:GetService("ServerScriptService").ServerConfigurations)
+local RemoteEventHandler = require(ModuleDirectory.RemoteEventHandler)
+local VectorUtil = require(ModuleDirectory.VectorUtil)
 local TweenService = game:GetService("TweenService")
 
 local Layer, Map, BlocksFolder
@@ -99,7 +101,6 @@ local function createPart(blockConfig: BlockConfig?): Part
 		part.Size = Vector3.new(1, 1, 1) * Config.BLOCK_SIZE
 	end
 
-	part.Parent = BlocksFolder
 	return part
 end
 
@@ -133,6 +134,8 @@ function Block.new(blockConfig: BlockConfig?): Block
 	self.part:SetAttribute("type", self.type)
 	self.part:SetAttribute("Id", self.id)
 	self.part:SetAttribute("Type", self.type)
+	self.part:SetAttribute("parentLayerId" , self.parentLayerId)
+
 
 	-- config
 	self.shape = shape
@@ -152,6 +155,8 @@ function Block.new(blockConfig: BlockConfig?): Block
 	-- initial state
 	self.state = "VISIBLE"
 	self.layerPosition = blockConfig.layerPosition or Vector2.new(0,0)
+	self.part.Name = VectorUtil.serializeVector2(self.layerPosition)
+
 	self.parentLayerId = nil
 	self.falling = false
 
@@ -160,7 +165,9 @@ function Block.new(blockConfig: BlockConfig?): Block
 end
 
 function Block:setParentLayer(parentLayer: Layer): nil
+	self.part.Parent = parentLayer.folder
 	self.parentLayerId = parentLayer.id
+	self.part:SetAttribute("parentLayerId" , self.parentLayerId)
 end
 
 function Block:getParentLayer()
@@ -178,6 +185,9 @@ end
 
 function Block:setLayerPosition(newLayerPosition: Vector2): nil
 	self.layerPosition = newLayerPosition
+	if self.part then
+		self.part.Name = VectorUtil.serializeVector2(self.layerPosition)
+	end
 end
 
 function Block:getWorldPosition(): Vector3
@@ -201,6 +211,8 @@ function Block:show(): nil
 	self.part.CanQuery = true
 	self.part.CanTouch = true
 
+	RemoteEventHandler.FireOnAllClients("BLOCK_SHOWN" , self.part)
+
 	self.state = "VISIBLE"
 end
 
@@ -217,6 +229,9 @@ function Block:hide(): nil
 	self.part.CanCollide = false
 	self.part.CanQuery = false
 	self.part.CanTouch = false
+
+	RemoteEventHandler.FireOnAllClients("BLOCK_HIDDEN" , self.part)
+
 
 	self.state = "HIDDEN"
 end
@@ -251,6 +266,8 @@ function Block.destroy(self : Block): nil
 			partPool.add(self.part)
 		end)
 
+		RemoteEventHandler.FireOnAllClients("BLOCK_DESTROYED" , self.part)
+
 		self.part = nil
 	end
 
@@ -271,6 +288,8 @@ function Block.destroy(self : Block): nil
 		end
 	end
 
+	
+
 	loadedBlocks[self.id] = nil
 end
 
@@ -278,6 +297,9 @@ function Block.slowDestroy(self: Block): nil
 	if not self or not self.part then
 		return
 	end
+
+
+	RemoteEventHandler.FireOnAllClients("BLOCK_SLOWFALL" , self.part)
 
 	self.part.Transparency = 0
 	local tweenInfo = TweenInfo.new(1)

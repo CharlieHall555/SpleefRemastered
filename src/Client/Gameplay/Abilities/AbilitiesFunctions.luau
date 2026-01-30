@@ -32,13 +32,13 @@ end
 abilityFunctions["DASH"] = function(player, character)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-    local dashSound = "rbxassetid://80426554346602"
+
 
     if humanoid then
         local rootPart = character:FindFirstChild("HumanoidRootPart")
         if rootPart then
             local charMass = getModelMass(character)
-            -- --SoundPlayer.playSound(dashSound , {volume = 0.35 , playbackSpeed = 1.2})
+            SoundPlayer.playSound("dash_sound" , {volume = 0.35 , playbackSpeed = 1.2})
             local principle = Camera or rootPart
             local linearVelocity = Instance.new("LinearVelocity")
             linearVelocity.Attachment0 = rootPart:FindFirstChildWhichIsA("Attachment")
@@ -58,7 +58,7 @@ abilityFunctions["SPRING"] = function(player, character)
         local rootPart = character:FindFirstChild("HumanoidRootPart")
         if rootPart then
             local charMass = getModelMass(character)
-            -- --SoundPlayer.playSound(dashSound , {volume = 0.35 , playbackSpeed = 1.2})
+            SoundPlayer.playSound("dash_sound" , {volume = 0.35 , playbackSpeed = 1.2})
             local principle = Camera or rootPart
             local linearVelocity = Instance.new("LinearVelocity")
             linearVelocity.Attachment0 = rootPart:FindFirstChildWhichIsA("Attachment")
@@ -78,7 +78,7 @@ abilityFunctions["BALLOONS"] = function(player, character)
         local rootPart = character:FindFirstChild("HumanoidRootPart")
         if rootPart then
             local charMass = getModelMass(character)
-            -- --SoundPlayer.playSound(dashSound , {volume = 0.35 , playbackSpeed = 1.2})
+            SoundPlayer.playSound("dash_sound" , {volume = 0.35 , playbackSpeed = 1.2})
             local principle = Camera or rootPart
             local linearVelocity = Instance.new("LinearVelocity")
             linearVelocity.Attachment0 = rootPart:FindFirstChildWhichIsA("Attachment")
@@ -147,10 +147,7 @@ end
 
 abilityFunctions["TELEPORT"] = function(player, character)
     local selectedBlock = ClientBlockSelector.getFocused()
-
-    print(selectedBlock)
-    local teleportNoise = "rbxassetid://4562690876"
-    -- --SoundPlayer.playSound(teleportNoise , {volume = 0.8 , playbackSpeed = 1.1})
+    SoundPlayer.playSound("teleport_noise" , {volume = 0.8 , playbackSpeed = 1.1})
 
     if selectedBlock then      
         RemoteEventHandler.FireOnServer("REQUEST_TELEPORT" , selectedBlock)

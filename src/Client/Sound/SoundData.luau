@@ -17,8 +17,14 @@ local SoundData: { [string]: SoundEntry } = {
     --     playbackSpeed = 1.2,
     -- },
     ["coin_ding"] = {
-        id = "rbxassetid://86832085549408",
+        id = "rbxassetid://135402320029366",
         volume = 0.25,
+        playbackSpeed = 1
+    },
+
+    ["firework"] = {
+        id = "rbxassetid://9113263649",
+        volume = 0.5,
         playbackSpeed = 1
     },
 
@@ -57,7 +63,7 @@ local SoundData: { [string]: SoundEntry } = {
     },
     ["error_blip"] = {
         id = "rbxassetid://70373378044427",
-        volume = 0.5,
+        volume = 1,
         playbackSpeed = 1
     },
     ["no_ammo"] = {
@@ -74,6 +80,27 @@ local SoundData: { [string]: SoundEntry } = {
         id = "rbxassetid://107118274345536",
         volume = 0.5,
         playbackSpeed = 1
+    },
+    ["dash_sound"] = {
+        id = "rbxassetid://80426554346602",
+        volume = 0.5,
+        playbackSpeed = 1
+    },
+    ["teleport_noise"] = {
+        id = "rbxassetid://4562690876",
+        volume = 0.5,
+        playbackSpeed = 1,
+    },
+    ["claim_sound"] = {
+        id = "rbxassetid://86832085549408",
+        volume = 0.5,
+        playbackSpeed = 1,
+    },
+
+    ["cha_ching"] = {
+        id = "rbxassetid://116467459427704",
+        volume = 0.45,
+        playbackSpeed = 1,
     }
 
 }
